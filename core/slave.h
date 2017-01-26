@@ -16,12 +16,19 @@
 #define __TORUS_SLAVE_H
 
 #include "../threads/thread.h"
+#include "../threads/cond.h"
 
 class SlaveThread : public Thread {
 public:
+    SlaveThread(ConditionVariable * cv);
+    unsigned int id();
     void * run();
-    void ticks();
+    void halt();
 private:
+    static unsigned int slave_id;
+    unsigned int _id;
+    bool _run;
+    ConditionVariable * _condvar;
 };
 
 #endif //__TORUS_SLAVE_H

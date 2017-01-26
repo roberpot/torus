@@ -15,13 +15,24 @@
 #ifndef __TORUS_TORUS_H
 #define __TORUS_TORUS_H
 
+#include <map>
+#include "../threads/utils.h"
+#include "../threads/mutex.h"
+#include "../threads/cond.h"
+#include "slave.h"
+
 extern class Torus {
 public:
     Torus();
     void stop();
-    bool keep_running();
+    void set_thread_time(unsigned int id, unsigned int t);
+    void mainloop();
 private:
     bool _run;
+    Mutex _time_map_mutex;
+    ConditionVariable _slaves_condvar;
+    std::map<unsigned int, unsigned int> _time_map;
+    std::map<unsigned int, SlaveThread *> _slaves;
 } torus;
 
 #endif //__TORUS_TORUS_H

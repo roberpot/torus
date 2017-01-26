@@ -24,7 +24,7 @@ public:
     */
     ///@{
     Thread();
-    ~Thread();
+    virtual ~Thread();
 private:
     Thread(const Thread& copy);
     Thread& operator=(const Thread& other);

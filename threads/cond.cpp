@@ -18,6 +18,7 @@
 ConditionVariable::ConditionVariable() {
 #ifdef __TORUS_THREAD_WINAPI
     InitializeCriticalSectionAndSpinCount(&_mutex, 0x80000020);
+    InitializeConditionVariable(&_condvar);
 #endif
 #ifdef __TORUS_THREAD_PTHREAD
     // Initialize pthread mutex attr.
@@ -73,6 +74,7 @@ void ConditionVariable::wait() {
 
 void ConditionVariable::signal() {
 #ifdef __TORUS_THREAD_WINAPI
+    WakeConditionVariable(&_condvar);
 #endif
 #ifdef __TORUS_THREAD_PTHREAD
     pthread_cond_signal(&_condvar);
@@ -81,6 +83,7 @@ void ConditionVariable::signal() {
 
 void ConditionVariable::broadcast() {
 #ifdef __TORUS_THREAD_WINAPI
+    WakeAllConditionVariable(&_condvar);
 #endif
 #ifdef __TORUS_THREAD_PTHREAD
     pthread_cond_broadcast(&_condvar);

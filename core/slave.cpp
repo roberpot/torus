@@ -12,25 +12,41 @@
  * along with Torus. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <ctime>
 #include "slave.h"
+#include "torus.h"
 #include "../debug/callstack.h"
+
+unsigned int SlaveThread::slave_id = 0;
+
+SlaveThread::SlaveThread(ConditionVariable * cv) {
+    _condvar = cv;
+    _id = ++slave_id;
+}
+
+unsigned int SlaveThread::id() {
+    return _id;
+}
 
 void * SlaveThread::run() {
     ADDTOCALLSTACK();
     EXC_TRY("");
-        ticks();
+        _run = true;
+        while (_run) {
+            clock_t init_ticks = clock();
+            torus.set_thread_time(_id, (unsigned int)((float)(clock() - init_ticks) / CLOCKS_PER_SEC * 1000));
+            _condvar->lock();
+            _condvar->wait();
+            _condvar->unlock();
+        }
+        DEBUG_NOTICE("Stopping slave: " << _id);
     EXC_CATCH;
     EXC_DEBUG_START;
     EXC_DEBUG_END;
     return NULL;
 }
 
-void panete() {
+void SlaveThread::halt() {
     ADDTOCALLSTACK();
-    throw 1;
-}
-
-void SlaveThread::ticks() {
-    ADDTOCALLSTACK();
-    panete();
+    _run = false;
 }

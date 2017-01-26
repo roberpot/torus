@@ -28,15 +28,18 @@ StackEntry::StackEntry(const char * file, const char * function, unsigned int li
 }
 
 void CallStack::push(torus_thread_id tid, StackEntry e) {
+    _m.lock();
     if (_stacks.count(tid) == 0) {
         _stacks[tid] = new std::stack<StackEntry>;
         _tmp_queue[tid] = new std::queue<StackEntry>;
     }
     _stacks[tid]->push(e);
     while (!_tmp_queue[tid]->empty()) _tmp_queue[tid]->pop();
+    _m.unlock();
 }
 
 void CallStack::pop(torus_thread_id tid) {
+    _m.lock();
     std::stack<StackEntry> * s = _stacks[tid];
     _tmp_queue[tid]->push(s->top());
     s->pop();
@@ -45,9 +48,11 @@ void CallStack::pop(torus_thread_id tid) {
         _tmp_queue.erase(tid);
         delete s;
     }
+    _m.unlock();
 }
 
 void CallStack::print(torus_thread_id tid) {
+    _m.lock();
     std::stack<StackEntry> * s = _stacks[tid], s2;
     std::queue<StackEntry> * q = _tmp_queue[tid];
     TORUSSHELLECHO("_Thread__________ | #  | _file_________________________ | _line_ | _function___________ | ticks ");
@@ -66,6 +71,7 @@ void CallStack::print(torus_thread_id tid) {
         s2.pop();
         if (i <= count) s->push(e);
     }
+    _m.unlock();
 }
 
 CallStackControl::CallStackControl(const char * file, const char * function, unsigned int line) {

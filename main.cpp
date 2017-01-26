@@ -28,12 +28,7 @@ int main() {
     TORUSSHELLECHO("Initializing Torus...");
     torusnet.start();
     TORUSSHELLECHO("Initializing Torus... OK.");
-    SlaveThread s;
-    s.start();
-    while (torus.keep_running()) {
-
-    }
-    s.join();
+    torus.mainloop();
     torusnet.halt();
     torusnet.join();
     TORUSSHELLECHO("Shutting down Torus...");

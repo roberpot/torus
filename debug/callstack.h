@@ -43,6 +43,7 @@ private:
     CallStack & operator=(const CallStack & o);
     std::map<torus_thread_id, std::stack<StackEntry> * > _stacks;
     std::map<torus_thread_id, std::queue<StackEntry> * > _tmp_queue;
+    Mutex _m;
 } _classtack;
 
 class CallStackControl {
