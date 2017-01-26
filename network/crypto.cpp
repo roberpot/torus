@@ -33,11 +33,11 @@ Crypto::Crypto() {
     LL |= ((C&0x0000ff00))<<8,\
     LL |= ((C&0x000000ff)<<24)
 
-void Crypto::set_client_key(UDWORD key) {
+void Crypto::set_client_key(t_udword key) {
     //_key = key;
     N2L(key, _key);
-    _curr_key_0 = (UDWORD)((((~key) ^ 0x00001357) << 16) | ((key ^ 0xFFFFAAAA) & 0x0000FFFF));
-    _curr_key_1 = (UDWORD)(((key ^ 0x43210000) >> 16) | (((~key) ^ 0xABCDFFFF) & 0xFFFF0000));
+    _curr_key_0 = (t_udword)((((~key) ^ 0x00001357) << 16) | ((key ^ 0xFFFFAAAA) & 0x0000FFFF));
+    _curr_key_1 = (t_udword)(((key ^ 0x43210000) >> 16) | (((~key) ^ 0xABCDFFFF) & 0xFFFF0000));
 }
 
 void Crypto::set_mode_none() {
@@ -52,10 +52,10 @@ void Crypto::set_mode_game() {
     _crypt_mode = CRYPTMODE_GAME;
 }
 
-void Crypto::detect_client_keys(char * buffer, unsigned int l) {
-    unsigned int length = toruscfg.crypto_keys.size();
-    char * temp_buffer = new char[l];
-    for (unsigned int i = 0; i < length; i++) {
+void Crypto::detect_client_keys(t_byte * buffer, t_udword l) {
+    t_udword length = (t_udword)toruscfg.crypto_keys.size();
+    t_byte * temp_buffer = new t_byte[l];
+    for (t_udword i = 0; i < length; i++) {
         memcpy(temp_buffer, buffer, l);
         _client_key_0 = toruscfg.crypto_keys[i].first;
         _client_key_1 = toruscfg.crypto_keys[i].second;
@@ -71,7 +71,7 @@ void Crypto::detect_client_keys(char * buffer, unsigned int l) {
     _client_key_1 = 0;
 }
 
-void Crypto::decrypt(char * buffer, unsigned int l) {
+void Crypto::decrypt(t_byte * buffer, t_udword l) {
     switch(_crypt_mode) {
         case CRYPTMODE_NONE: return;
         case CRYPTMODE_LOGIN: {
@@ -83,7 +83,7 @@ void Crypto::decrypt(char * buffer, unsigned int l) {
     }
 }
 
-void Crypto::crypt(char * buffer, unsigned int l) {
+void Crypto::crypt(t_byte * buffer, t_udword l) {
     switch(_crypt_mode) {
         case CRYPTMODE_NONE: return;
         case CRYPTMODE_LOGIN: {
@@ -95,36 +95,36 @@ void Crypto::crypt(char * buffer, unsigned int l) {
     }
 }
 
-void Crypto::_decrypt_loginmode(char * buffer, unsigned int l) {
-    UDWORD old_key_0, old_key_1;
-    for(unsigned int i = 0; i < l; i++)
+void Crypto::_decrypt_loginmode(t_byte * buffer, t_udword l) {
+    t_udword old_key_0, old_key_1;
+    for(t_udword i = 0; i < l; i++)
     {
-//        buffer[i] = buffer[i] ^ (BYTE) _curr_key_0;
+//        buffer[i] = buffer[i] ^ (t_byte) _curr_key_0;
 //        old_key_0 = _curr_key_0;
 //        old_key_1 = _curr_key_1;
 //        _curr_key_0 = ((old_key_0 >> 1) | (old_key_1 << 31)) ^ _client_key_0;
 //        _curr_key_1 = ((old_key_1 >> 1) | (old_key_0 << 31)) ^ _client_key_1;
         // Decrypt the byte:
-        buffer[i] = (BYTE)_curr_key_0 ^ buffer[i];
+        buffer[i] = (t_byte)_curr_key_0 ^ buffer[i];
         // Reset the keys:
         old_key_0 = _curr_key_0;
         old_key_1 = _curr_key_1;
-        _curr_key_0 = (UDWORD)(((old_key_0 >> 1) | (old_key_1 << 31)) ^ _client_key_0);
+        _curr_key_0 = (t_udword)(((old_key_0 >> 1) | (old_key_1 << 31)) ^ _client_key_0);
         old_key_1 = (((old_key_1 >> 1) | (old_key_0 << 31)) ^ _client_key_1);
         _curr_key_1 = ((old_key_1 >> 1) | (old_key_0 << 31)) ^ _client_key_1;
 
-//        _curr_key_1 = (UDWORD)((((((old_key_1 >> 1) | (old_key_0 << 31)) ^ (_client_key_1 - 1)) >> 1) | (old_key_0 << 31)) ^ _client_key_1);
+//        _curr_key_1 = (t_udword)((((((old_key_1 >> 1) | (old_key_0 << 31)) ^ (_client_key_1 - 1)) >> 1) | (old_key_0 << 31)) ^ _client_key_1);
     }
 }
 
-void Crypto::_decrypt_gamemode(char * buffer, unsigned int l) {
+void Crypto::_decrypt_gamemode(t_byte * buffer, t_udword l) {
 
 }
 
-void Crypto::_crypt_loginmode(char * buffer, unsigned int l) {
+void Crypto::_crypt_loginmode(t_byte * buffer, t_udword l) {
     _decrypt_loginmode(buffer, l);
 }
 
-void Crypto::_crypt_gamemode(char * buffer, unsigned int l) {
+void Crypto::_crypt_gamemode(t_byte * buffer, t_udword l) {
 
 }

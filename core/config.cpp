@@ -25,7 +25,7 @@ Config::Config() {
     _reset();
 }
 
-void Config::load_config_file(const char * file) {
+void Config::load_config_file(const t_byte * file) {
     UNREFERENCED_PARAMETER(file);
     _reset();
     crypto_keys.push_back(std::make_pair(0x29cd362d, 0xa1d59e7f)); // 7.00.290

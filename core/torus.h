@@ -20,19 +20,20 @@
 #include "../threads/mutex.h"
 #include "../threads/cond.h"
 #include "slave.h"
+#include "types.h"
 
 extern class Torus {
 public:
     Torus();
     void stop();
-    void set_thread_time(unsigned int id, unsigned int t);
+    void set_thread_time(t_udword id, t_udword t);
     void mainloop();
 private:
     bool _run;
     Mutex _time_map_mutex;
     ConditionVariable _slaves_condvar;
-    std::map<unsigned int, unsigned int> _time_map;
-    std::map<unsigned int, SlaveThread *> _slaves;
+    std::map<t_udword, t_udword> _time_map;
+    std::map<t_udword, SlaveThread *> _slaves;
 } torus;
 
 #endif //__TORUS_TORUS_H

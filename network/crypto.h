@@ -20,23 +20,23 @@
 class Crypto {
 public:
     Crypto();
-    void set_client_key(UDWORD key);
+    void set_client_key(t_udword key);
     void set_mode_none();
     void set_mode_login();
     void set_mode_game();
-    void detect_client_keys(char * buffer, unsigned int l);
-    void decrypt(char * buffer, unsigned int l);
-    void crypt(char * buffer, unsigned int l);
+    void detect_client_keys(t_byte * buffer, t_udword l);
+    void decrypt(t_byte * buffer, t_udword l);
+    void crypt(t_byte * buffer, t_udword l);
 private:
-    void _decrypt_loginmode(char * buffer, unsigned int l);
-    void _decrypt_gamemode(char * buffer, unsigned int l);
-    void _crypt_loginmode(char * buffer, unsigned int l);
-    void _crypt_gamemode(char * buffer, unsigned int l);
-    UDWORD _client_key_0;
-    UDWORD _client_key_1;
-    UDWORD _curr_key_0;
-    UDWORD _curr_key_1;
-    UDWORD _key;
+    void _decrypt_loginmode(t_byte * buffer, t_udword l);
+    void _decrypt_gamemode(t_byte * buffer, t_udword l);
+    void _crypt_loginmode(t_byte * buffer, t_udword l);
+    void _crypt_gamemode(t_byte * buffer, t_udword l);
+    t_udword _client_key_0;
+    t_udword _client_key_1;
+    t_udword _curr_key_0;
+    t_udword _curr_key_1;
+    t_udword _key;
     enum {
         CRYPTMODE_NONE = 0,
         CRYPTMODE_LOGIN,

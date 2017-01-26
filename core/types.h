@@ -15,12 +15,13 @@
 #ifndef __TORUS_TYPES_H
 #define __TORUS_TYPES_H
 
-typedef char BYTE;
-typedef short int WORD;
-typedef int DWORD;
-typedef unsigned char UBYTE;
-typedef unsigned short int UWORD;
-typedef unsigned int UDWORD;
-typedef long long QWORD;
+typedef char t_byte;
+typedef short int t_word;
+typedef int t_dword;
+typedef long long t_qword;
+typedef unsigned char t_ubyte;
+typedef unsigned short int t_uword;
+typedef unsigned int t_udword;
+typedef unsigned long long t_uqword;
 
 #endif //__TORUS_TYPES_H

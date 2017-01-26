@@ -16,17 +16,15 @@
 #define __TORUS_SOCKET_H
 
 
-#ifdef _WIN64
+#ifdef _WIN32
 #include <winsock2.h>
-#include <windows.h>
 #include <ws2tcpip.h>
-#endif // _WIN64
+#endif // _WIN32
 #ifdef __linux__
 #include <sys/socket.h>
 #include <netinet/in.h>
 #endif
 
-#include "../core/types.h"
 #include "packet.h"
 #include "crypto.h"
 
@@ -39,30 +37,30 @@ enum SocketType {
 class Socket {
 public:
     Socket();
-#ifdef _WIN64
+#ifdef _WINDOWS
     Socket(SOCKET s);
-#endif //_WIN64
+#endif //_WINDOWS
     void init_client_socket();
-    void bind(const char * addr, WORD port);
+    void bind(const t_byte * addr, t_word port);
     bool client_pending();
     Socket * get_client();
-    const char * get_ip();
+    const t_byte * get_ip();
     bool data_ready();
     Packet * read_packet();
     void write_packet(Packet * p);
-    void read_bytes(unsigned int len = 1024);
+    void read_bytes(t_udword len = 1024);
     void shutdown();
     ~Socket();
 private:
-    char * buffer;
-    unsigned int buffer_len;
+    t_byte * buffer;
+    t_udword buffer_len;
     SocketType type;
     Crypto * crypto;
-#ifdef _WIN64
+#ifdef _WINDOWS
     SOCKET _socket;
-#endif // _WIN64
+#endif // _WINDOWS
 #ifdef __linux__
-    int _socket_fd;
+    t_dword _socket_fd;
 #endif //__linux__
 };
 

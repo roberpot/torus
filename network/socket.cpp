@@ -25,43 +25,43 @@
 Socket::Socket() {
     ADDTOCALLSTACK();
     type = SOCKETTYPE_SERVER;
-#ifdef _WIN64
+#ifdef _WINDOWS
     //_socket = INVALID_SOCKET;
     _socket = socket(AF_INET, SOCK_STREAM, 0);
     if (_socket == INVALID_SOCKET) {
         THROW_ERROR(NetworkError, "Create socket failed with error: " << WSAGetLastError());
     }
-    buffer = new char[1024];
-#endif // _WIN64
+    buffer = new t_byte[1024];
+#endif // _WINDOWS
 }
 
-#ifdef _WIN64
+#ifdef _WINDOWS
 Socket::Socket(SOCKET s) {
     _socket = s;
     init_client_socket();
 }
-#endif // _WIN64
+#endif // _WINDOWS
 
 void Socket::init_client_socket() {
     ADDTOCALLSTACK();
     type = SOCKETTYPE_CLIENT;
-    buffer = new char[1024];
+    buffer = new t_byte[1024];
     crypto = new Crypto();
     crypto->set_mode_login();
     read_bytes(4);
-    UDWORD key;
-    memcpy(&key, buffer, sizeof(UDWORD));
+    t_udword key;
+    memcpy(&key, buffer, sizeof(t_udword));
     crypto->set_client_key(key);
     crypto->set_mode_none();
     read_bytes();
     crypto->detect_client_keys(buffer, buffer_len);
 }
 
-void Socket::bind(const char * addr, WORD port) {
+void Socket::bind(const t_byte * addr, t_word port) {
     ADDTOCALLSTACK();
     DEBUG_INFO("Binding " << addr << ":" << port);
-#ifdef _WIN64
-    int status;
+#ifdef _WINDOWS
+    t_dword status;
     struct sockaddr_in sockaddr_loc;
     memset(&sockaddr_loc, 0, sizeof(struct sockaddr_in));
     sockaddr_loc.sin_family = AF_INET;
@@ -77,7 +77,7 @@ void Socket::bind(const char * addr, WORD port) {
         closesocket(_socket);
         THROW_ERROR(NetworkError, "listen failed with error: " << WSAGetLastError());
     }
-#endif // _WIN64
+#endif // _WINDOWS
 #ifdef __linux__
     _socket_fd = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0);
     if (_socket_fd < 0) {
@@ -97,7 +97,7 @@ void Socket::bind(const char * addr, WORD port) {
 
 bool Socket::client_pending() {
     ADDTOCALLSTACK();
-#ifdef _WIN64
+#ifdef _WINDOWS
     fd_set readSet;
     FD_ZERO(&readSet);
     FD_SET(_socket, &readSet);
@@ -108,32 +108,32 @@ bool Socket::client_pending() {
         return false;
     }
     return true;
-#endif // _WIN64
+#endif // _WINDOWS
     return false;
 }
 
 Socket * Socket::get_client() {
     ADDTOCALLSTACK();
     Socket * s;
-#ifdef _WIN64
-    s = new Socket(accept(_socket, NULL, NULL));
-#endif // _WIN64
+#ifdef _WINDOWS
+    s = new Socket(accept(_socket, 0, 0));
+#endif // _WINDOWS
     return s;
 }
 
-const char * Socket::get_ip() {
+const t_byte * Socket::get_ip() {
     ADDTOCALLSTACK();
-#ifdef _WIN64
+#ifdef _WINDOWS
     sockaddr_in client_info;
-    int addrsize = sizeof(client_info);
+    t_dword addrsize = sizeof(client_info);
     getpeername(_socket, (sockaddr *)&client_info, &addrsize);
     return inet_ntoa(client_info.sin_addr);
-#endif // _WIN64
+#endif // _WINDOWS
 }
 
 bool Socket::data_ready() {
     ADDTOCALLSTACK();
-#ifdef _WIN64
+#ifdef _WINDOWS
     fd_set readSet;
     FD_ZERO(&readSet);
     FD_SET(_socket, &readSet);
@@ -144,7 +144,7 @@ bool Socket::data_ready() {
         return false;
     }
     return true;
-#endif // _WIN64
+#endif // _WINDOWS
 }
 
 Packet * Socket::read_packet() {
@@ -158,38 +158,38 @@ Packet * Socket::read_packet() {
 
 void Socket::write_packet(Packet * p) {
     ADDTOCALLSTACK();
-#ifdef _WIN64
-    unsigned int data_sended = send(_socket, p->dumps(), p->length(), 0);
+#ifdef _WINDOWS
+    t_udword data_sended = send(_socket, p->dumps(), p->length(), 0);
     if (data_sended == SOCKET_ERROR) {
         THROW_ERROR(NetworkError, "Send failed with error: " << WSAGetLastError());
     } else if (data_sended != p->length()) {
         THROW_ERROR(NetworkError, "Send " << data_sended << " bytes, instead of " << p->length() << " bytes.");
     }
-#endif // _WIN64
+#endif // _WINDOWS
 }
 
-void Socket::read_bytes(unsigned int len) {
+void Socket::read_bytes(t_udword len) {
     ADDTOCALLSTACK();
-#ifdef _WIN64
+#ifdef _WINDOWS
     buffer_len = recv(_socket, buffer, len, 0);
-#endif // _WIN64
+#endif // _WINDOWS
     crypto->decrypt(buffer, buffer_len);
 }
 
 void Socket::shutdown() {
     ADDTOCALLSTACK();
-#ifdef _WIN64
-    int status = ::shutdown(_socket, SD_SEND);
+#ifdef _WINDOWS
+    t_dword status = ::shutdown(_socket, SD_SEND);
     if (status == SOCKET_ERROR) {
         closesocket(_socket);
         THROW_ERROR(NetworkError, "shutdown failed with error: " << WSAGetLastError());
     }
-#endif // _WIN64
+#endif // _WINDOWS
 }
 
 Socket::~Socket() {
     ADDTOCALLSTACK();
-#ifdef _WIN64
+#ifdef _WINDOWS
     closesocket(_socket);
-#endif // _WIN64
+#endif // _WINDOWS
 }

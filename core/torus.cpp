@@ -24,7 +24,7 @@ void Torus::stop() {
     _run = false;
 }
 
-void Torus::set_thread_time(unsigned int id, unsigned int t) {
+void Torus::set_thread_time(t_udword id, t_udword t) {
     ADDTOCALLSTACK();
     _time_map_mutex.lock();
     _time_map[id] = t;
@@ -45,7 +45,7 @@ void Torus::mainloop() {
             _slaves_condvar.broadcast();
         }
         DEBUG_NOTICE("End of mainloop. Stopping slaves...");
-        std::map<unsigned int, SlaveThread *>::iterator it = _slaves.begin(), end = _slaves.end();
+        std::map<t_udword, SlaveThread *>::iterator it = _slaves.begin(), end = _slaves.end();
         while(it != end) {
             it->second->halt();
             it++;

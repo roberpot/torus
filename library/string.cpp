@@ -16,11 +16,11 @@
 #include <sstream>
 #include "string.h"
 
-std::string print_hex_buffer(const char * buffer, unsigned int len) {
+std::string print_hex_buffer(const t_byte * buffer, t_udword len) {
     std::stringstream s;
     s << std::hex;
-    for (unsigned int i = 0; i < len; i++) {
-        s << ":"  << std::setfill('0') << std::setw(2) << (int)(unsigned char)buffer[i];
+    for (t_udword i = 0; i < len; i++) {
+        s << ":"  << std::setfill('0') << std::setw(2) << (t_dword)(t_udword)buffer[i];
     }
     return s.str();
 }
@@ -29,9 +29,9 @@ std::string remove_prefix(std::string p, std::string s) {
     return remove_prefix(p.c_str(), s);
 }
 
-std::string remove_prefix(const char * p, std::string s) {
-    unsigned int n = 0, l = strlen(p);
-    char * c = (char *)s.c_str();
+std::string remove_prefix(const t_byte * p, std::string s) {
+    size_t n = 0, l = strlen(p);
+    t_byte * c = (char *)s.c_str();
     while (n < l && *c == *p) {
         c++;
         p++;
@@ -41,7 +41,7 @@ std::string remove_prefix(const char * p, std::string s) {
     return r;
 }
 
-std::string remove_prefix(const char * p, const char * s) {
+std::string remove_prefix(const t_byte * p, const t_byte * s) {
     std::string ss(s);
     return remove_prefix(p, ss);
 }

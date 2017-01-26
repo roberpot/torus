@@ -23,25 +23,25 @@
 extern class Config {
 public:
     Config();
-    void load_config_file(const char * file);
+    void load_config_file(const t_byte * file);
     // torus.ini config.
     std::string log_filename;
     std::string server_name;
     std::string server_desc;
     std::string torustable_file;
-    char * net_addr;
-    WORD net_port;
+    t_byte * net_addr;
+    t_word net_port;
     // extra config.
     std::set<std::string> obscene_strings;
-    std::vector<int> fame_ranges;
+    std::vector<t_dword> fame_ranges;
     std::vector<std::string> fame_titles;
-    std::vector<int> karma_ranges;
+    std::vector<t_dword> karma_ranges;
     std::vector<std::string> karma_titles;
-    std::vector<int> noto_karma_ranges;
-    std::vector<int> noto_fame_ranges;
+    std::vector<t_dword> noto_karma_ranges;
+    std::vector<t_dword> noto_fame_ranges;
     std::vector<std::string> noto_titles;
     std::vector<std::string> runes;
-    std::vector<std::pair<UDWORD, UDWORD> > crypto_keys;
+    std::vector<std::pair<t_udword, t_udword> > crypto_keys;
 private:
     void _reset();
 } toruscfg;

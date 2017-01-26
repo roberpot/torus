@@ -22,7 +22,7 @@
 
 std::string _get_curr_datetime() {
     std::string r;
-    char buffer[100];
+    t_byte buffer[100];
     std::time_t t = std::time(NULL);
     std::strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", std::localtime(&t));
     r = buffer;
@@ -34,13 +34,13 @@ TorusShell::TorusShell() {
 
 void * TorusShell::run() {
     bool continue_proc = true;
-    char c;
-    char buffer[256];
-    char * stripped_buffer;
-    unsigned int counter = 0;
+    t_byte c;
+    t_byte buffer[256];
+    t_byte * stripped_buffer;
+    t_udword counter = 0;
     //DBG_MSG_INF("Starting User Interface Thread.");
     do {
-        c = (char)getchar();
+        c = (t_byte)getchar();
         if (c != 10) {
             buffer[counter] = c;
             if (counter < 255) {
@@ -68,7 +68,7 @@ void * TorusShell::run() {
     return NULL;
 }
 
-void TorusShell::print(const char * s) {
+void TorusShell::print(const t_byte * s) {
     std::string t = _get_curr_datetime();
     std::cout << "[" << t << "] " << s << std::endl;
     //log_file << "[" << t << "] " << c << std::endl;

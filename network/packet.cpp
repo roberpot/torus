@@ -16,26 +16,25 @@
 
 #include "../library/string.h"
 #include "../core/errors.h"
-#include "packet.h"
 
-Packet * packet_factory(BYTE t) {
+Packet * packet_factory(t_byte t) {
     switch(t) {
-        default: THROW_ERROR(NetworkError, "Unknown packet code 0x" << std::hex << (unsigned int)t << std::dec << ".");
+        default: THROW_ERROR(NetworkError, "Unknown packet code 0x" << std::hex << (t_udword)t << std::dec << ".");
     }
-    return NULL;
+    //return 0;
 }
 
-Packet * packet_factory(const char * buffer, unsigned int len) {
+Packet * packet_factory(const t_byte * buffer, t_udword len) {
     switch(buffer[0]) {
         default: THROW_ERROR(NetworkError, "Unknown packet [" << len << "] " << std::hex << print_hex_buffer(buffer, len) << std::dec << ".");
     }
-    return NULL;
+    //return 0;
 }
 
-const char * Packet::dumps() {
+const t_byte * Packet::dumps() {
     return buffer;
 }
 
-const unsigned int Packet::length() {
+const t_udword Packet::length() {
     return len;
 }

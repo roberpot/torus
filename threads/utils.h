@@ -16,12 +16,11 @@
 #define __TORUS_THREAD_UTILS_H
 
 #include "thread_defines.h"
-
 #ifdef __TORUS_THREAD_WINAPI
 typedef DWORD torus_thread_id;
 #endif //__TORUS_THREAD_WINAPI
-typedef pthread_t torus_thread_id;
 #ifdef __TORUS_THREAD_PTHREAD
+typedef pthread_t torus_thread_id;
 
 #endif //__TORUS_THREAD_PTHREAD
 

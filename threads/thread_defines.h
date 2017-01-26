@@ -16,7 +16,7 @@
 #define __TORUS_THREAD_DEFINES_H
 
 #ifdef _WIN32
-#ifdef _MSVC
+    #ifdef _WINDOWS
         #define __TORUS_THREAD_WINAPI
     #endif
     #ifdef __MINGW32__

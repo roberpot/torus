@@ -17,6 +17,17 @@
 
 #include <string>
 #include <sstream>
+#include "types.h"
+
+class NetworkError : public std::exception {
+public:
+    NetworkError(const t_byte * e);
+    NetworkError(const std::string e);
+    const t_byte * what();
+    std::ostream & operator<<(std::ostream & o);
+private:
+    std::string _error;
+};
 
 #define THROW_ERROR(CLASS, ERROR_MSG) { \
     std::stringstream s; \
@@ -24,15 +35,5 @@
     CLASS error(s.str().c_str()); \
     throw error; \
 }
-
-class NetworkError : public std::exception {
-public:
-    NetworkError(const char * e);
-    NetworkError(const std::string e);
-    const char * what();
-    std::ostream & operator<<(std::ostream & o);
-private:
-    std::string _error;
-};
 
 #endif //__TORUS_ERRORS_H

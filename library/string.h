@@ -17,12 +17,13 @@
 
 #include <cstring>
 #include <string>
+#include "../core/types.h"
 
 #define ISWHITESPACE(X) (X == ' ' || X == '\t')
 #define LSTRIP(X) while (ISWHITESPACE(X[0])) { X++; }
 #define RSTRIP(X) \
 { \
-    unsigned int l = strlen(X) - 1; \
+    size_t l = strlen(X) - 1; \
     while (l && ISWHITESPACE(X[l])) { \
         X[l] = '\0';\
         l--; \
@@ -34,9 +35,9 @@
     RSTRIP(X); \
 }
 
-std::string print_hex_buffer(const char * buffer, unsigned int len);
+std::string print_hex_buffer(const t_byte * buffer, t_udword len);
 std::string remove_prefix(std::string p, std::string s);
-std::string remove_prefix(const char * p, std::string s);
-std::string remove_prefix(const char * p, const char * s);
+std::string remove_prefix(const t_byte * p, std::string s);
+std::string remove_prefix(const t_byte * p, const t_byte * s);
 
 #endif //__TORUS_STRING_H

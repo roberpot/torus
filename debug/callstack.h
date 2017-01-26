@@ -21,15 +21,17 @@
 #include <string>
 #include <typeinfo>
 
+#include "../threads/utils.h"
+#include "../threads/mutex.h"
 #include "debug.h"
 #include "info.h"
-#include "../threads/utils.h"
+#include "../core/types.h"
 
 class StackEntry {
 public:
-    StackEntry(const char * file, const char * function, unsigned int line);
+    StackEntry(const t_byte * file, const t_byte * function, t_udword line);
     std::string _file, _function;
-    unsigned int _line;
+    t_udword _line;
 };
 
 extern class CallStack {
@@ -48,7 +50,7 @@ private:
 
 class CallStackControl {
 public:
-    CallStackControl(const char * file, const char * function, unsigned int line);
+    CallStackControl(const t_byte * file, const t_byte * function, t_udword line);
     ~CallStackControl();
 };
 
@@ -57,7 +59,7 @@ public:
 #define EXC_TRY(a) \
     std::string ___current_block = ""; \
     std::string ___local_args = a; \
-    uint ___block_count = 0; \
+    t_udword ___block_count = 0; \
     bool ___catch_except = false; \
     UNREFERENCED_PARAMETER(___catch_except); \
     try \

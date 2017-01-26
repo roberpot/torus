@@ -17,16 +17,17 @@
 
 #include "../threads/thread.h"
 #include "../threads/cond.h"
+#include "types.h"
 
 class SlaveThread : public Thread {
 public:
     SlaveThread(ConditionVariable * cv);
-    unsigned int id();
+    t_udword id();
     void * run();
     void halt();
 private:
-    static unsigned int slave_id;
-    unsigned int _id;
+    static t_udword slave_id;
+    t_udword _id;
     bool _run;
     ConditionVariable * _condvar;
 };

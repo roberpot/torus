@@ -16,8 +16,8 @@
 #define __TORUS_NETWORKMANAGER_H
 
 #include <vector>
-#include "../threads/thread.h"
 #include "socket.h"
+#include "../threads/thread.h"
 
 extern class NetworkManager : public Thread {
 public:

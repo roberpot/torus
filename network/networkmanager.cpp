@@ -18,6 +18,7 @@
 #include "../threads/utils.h"
 #include "../debug/info.h"
 #include "../debug/callstack.h"
+#include "../core/errors.h"
 
 class NetworkManager torusnet;
 
@@ -27,7 +28,7 @@ void * NetworkManager::run() {
     _run = true;
     _clientconnector.start();
     while (_run) {
-        unsigned int l = _sockets.size();
+        size_t l = _sockets.size();
         Socket * s;
         Packet * p;
         UNREFERENCED_PARAMETER(p);
@@ -64,14 +65,14 @@ void * NetworkManager::NetworkClientConector::run() {
     ADDTOCALLSTACK();
     EXC_TRY("");
     _run = true;
-#ifdef _WIN64
+#ifdef _WINDOWS
     WSADATA wsadata;
-    int status;
+    t_dword status;
     status = WSAStartup(MAKEWORD(2,2), &wsadata);
     if (status != 0) {
         THROW_ERROR(NetworkError, "WSAStartup failed with error: " << status);
     }
-#endif //_WIN64
+#endif //_WINDOWS
     _s = new Socket;
     _s->bind(toruscfg.net_addr, toruscfg.net_port);
 
@@ -83,9 +84,9 @@ void * NetworkManager::NetworkClientConector::run() {
         }
         torus_thread_sleep(50);
     }
-#ifdef _WIN64
+#ifdef _WINDOWS
     WSACleanup();
-#endif //_WIN64
+#endif //_WINDOWS
     EXC_CATCH;
     EXC_DEBUG_START;
     EXC_DEBUG_END;

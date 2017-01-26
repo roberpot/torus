@@ -14,11 +14,11 @@
 
 #include <iostream>
 
+#include "network/networkmanager.h"
 #include "core/torus.h"
 #include "shell.h"
 #include "debug/debug.h"
 #include "core/slave.h"
-#include "network/networkmanager.h"
 
 TorusShell torus_shell;
 Torus torus;

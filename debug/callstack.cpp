@@ -16,11 +16,12 @@
 
 #include "callstack.h"
 #include "../shell.h"
+#include "../core/types.h"
 
 CallStack _classtack;
 std::string prefix = SOURCE_PATH;
 
-StackEntry::StackEntry(const char * file, const char * function, unsigned int line) {
+StackEntry::StackEntry(const t_byte * file, const t_byte * function, t_udword line) {
     _file = file;
     _file.erase(0, prefix.length());
     _function = function;
@@ -56,7 +57,7 @@ void CallStack::print(torus_thread_id tid) {
     std::stack<StackEntry> * s = _stacks[tid], s2;
     std::queue<StackEntry> * q = _tmp_queue[tid];
     TORUSSHELLECHO("_Thread__________ | #  | _file_________________________ | _line_ | _function___________ | ticks ");
-    unsigned int count = s->size();
+    size_t count = s->size();
     while(!q->empty()) {
         s2.push(q->front());
         q->pop();
@@ -65,7 +66,7 @@ void CallStack::print(torus_thread_id tid) {
         s2.push(s->top());
         s->pop();
     }
-    for (unsigned int i = 0; s2.size(); i++) {
+    for (t_udword i = 0; s2.size(); i++) {
         StackEntry e = s2.top();
         TORUSSHELLECHO(">> 0x" << std::hex << tid << " | " << std::setw(2) << std::right << i  << " | " << std::setw(30) << std::left << e._file << " | "<< std::setw(6) << std::dec << std::right << e._line << " | " << std::setw(20) << std::left << e._function << " | ??  " << (( i == (count - 1) ) ? "<-- exception catch point" : ""));
         s2.pop();
@@ -74,7 +75,7 @@ void CallStack::print(torus_thread_id tid) {
     _m.unlock();
 }
 
-CallStackControl::CallStackControl(const char * file, const char * function, unsigned int line) {
+CallStackControl::CallStackControl(const t_byte * file, const t_byte * function, t_udword line) {
     StackEntry e(file, function, line);
     _classtack.push(get_current_thread_id(), e);
 }

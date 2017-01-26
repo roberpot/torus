@@ -14,7 +14,7 @@
 
 #include "errors.h"
 
-NetworkError::NetworkError(const char * e) {
+NetworkError::NetworkError(const t_byte * e) {
     _error = e;
 }
 

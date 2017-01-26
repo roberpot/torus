@@ -28,7 +28,7 @@ extern class TorusShell : public Thread {
 public:
     TorusShell();
     void * run();
-    void print(const char * s);
+    void print(const t_byte * s);
 private:
 } torus_shell;
 

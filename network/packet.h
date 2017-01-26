@@ -21,18 +21,18 @@ class Socket;
 
 class Packet {
 public:
-    const unsigned int length();
-    const char * dumps();
-    virtual void loads(const char *) = 0;
+    const t_udword length();
+    const t_byte * dumps();
+    virtual void loads(const t_byte *) = 0;
     virtual void loads(Socket * s) = 0;
     virtual ~Packet() = 0;
 protected:
-    char * buffer;
-    unsigned int len;
+    t_byte * buffer;
+    t_udword len;
 };
 
-Packet * packet_factory(BYTE t);
+Packet * packet_factory(t_byte t);
 
-Packet * packet_factory(const char * buffer, unsigned int len);
+Packet * packet_factory(const t_byte * buffer, t_udword len);
 
 #endif //__TORUS_PACKET_H

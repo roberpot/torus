@@ -115,5 +115,5 @@ void * Thread::_run(void * c) {
 #ifdef __TORUS_THREAD_PTHREAD
     pthread_exit(NULL);
 #endif
-    return NULL;
+    //return NULL;
 }

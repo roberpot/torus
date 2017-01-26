@@ -17,14 +17,14 @@
 #include "torus.h"
 #include "../debug/callstack.h"
 
-unsigned int SlaveThread::slave_id = 0;
+t_udword SlaveThread::slave_id = 0;
 
 SlaveThread::SlaveThread(ConditionVariable * cv) {
     _condvar = cv;
     _id = ++slave_id;
 }
 
-unsigned int SlaveThread::id() {
+t_udword SlaveThread::id() {
     return _id;
 }
 
@@ -34,7 +34,7 @@ void * SlaveThread::run() {
         _run = true;
         while (_run) {
             clock_t init_ticks = clock();
-            torus.set_thread_time(_id, (unsigned int)((float)(clock() - init_ticks) / CLOCKS_PER_SEC * 1000));
+            torus.set_thread_time(_id, (t_udword)((float)(clock() - init_ticks) / CLOCKS_PER_SEC * 1000));
             _condvar->lock();
             _condvar->wait();
             _condvar->unlock();
