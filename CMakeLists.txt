@@ -13,11 +13,11 @@ if(WIN32)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -W4 ")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -W4 ")
 endif(WIN32)
-if(gcc) # additional flags for gcc, msvc doesn't support them.
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ansi -pedantic -Wall -pthread -static-libgcc -static-libstdc++")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -ansi -pedantic -Wall -pthread -static-libgcc")
+if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_GNUCC) # additional flags for gcc, msvc doesn't support them.
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ansi -pedantic -Wall -pthread -static-libgcc -static-libstdc++ --std=c++11")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -ansi -pedantic -Wall -pthread -static-libgcc --std=c11")
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -s -Wl,--whole-archive -lpthread -ldl -Wl,--no-whole-archive")
-endif(gcc)
+endif(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_GNUCC)
 
 set(COMPILE_DEFINITIONS_RELEASE DEBUG_MODE=0)
 
@@ -78,5 +78,5 @@ add_definitions(-DSOURCE_PATH="${CMAKE_SOURCE_DIR}")
 add_executable(torus_server ${SOURCE_FILES})
 if(WIN32)
     target_link_libraries(torus_server wsock32 ws2_32) #ws2_32.lib for windows
+    set_target_properties(torus_server PROPERTIES COMPILE_FLAGS "/wd4820 /wd4710 /wd4365")
 endif()
-set_target_properties(torus_server PROPERTIES COMPILE_FLAGS "/wd4820 /wd4710 /wd4365")

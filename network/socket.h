@@ -34,12 +34,17 @@ enum SocketType {
     SOCKETTYPE_SERVER
 };
 
+#ifdef _WIN64
+typedef SOCKET socket_t;
+#endif //_WIN64
+#ifdef __linux__
+typedef int socket_t;
+#endif //__linux__
+
 class Socket {
 public:
     Socket();
-#ifdef _WINDOWS
-    Socket(SOCKET s);
-#endif //_WINDOWS
+    Socket(socket_t s);
     void init_client_socket();
     void bind(const t_byte * addr, t_word port);
     bool client_pending();
@@ -56,12 +61,7 @@ private:
     t_udword buffer_len;
     SocketType type;
     Crypto * crypto;
-#ifdef _WINDOWS
-    SOCKET _socket;
-#endif // _WINDOWS
-#ifdef __linux__
-    t_dword _socket_fd;
-#endif //__linux__
+    socket_t _socket;
 };
 
 #endif //__TORUS_SOCKET_H

@@ -13,6 +13,9 @@
  */
 
 
+#ifdef __linux__
+#include <cerrno>
+#endif //__linux__
 #include <cstring>
 #include "socket.h"
 
@@ -20,6 +23,7 @@
 #include "../debug/debug.h"
 #include "../library/string.h"
 #include "../debug/callstack.h"
+
 
 
 Socket::Socket() {
@@ -31,16 +35,21 @@ Socket::Socket() {
     if (_socket == INVALID_SOCKET) {
         THROW_ERROR(NetworkError, "Create socket failed with error: " << WSAGetLastError());
     }
-    buffer = new t_byte[1024];
 #endif // _WINDOWS
+#ifdef __linux__
+    _socket = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0);
+    if (_socket < 0) {
+        throw NetworkError("ERROR opening socket");
+    }
+#endif //__linux__
+    buffer = new char[1024];
 }
 
-#ifdef _WINDOWS
-Socket::Socket(SOCKET s) {
+Socket::Socket(socket_t s) {
+    ADDTOCALLSTACK();
     _socket = s;
     init_client_socket();
 }
-#endif // _WINDOWS
 
 void Socket::init_client_socket() {
     ADDTOCALLSTACK();
@@ -60,14 +69,14 @@ void Socket::init_client_socket() {
 void Socket::bind(const t_byte * addr, t_word port) {
     ADDTOCALLSTACK();
     DEBUG_INFO("Binding " << addr << ":" << port);
-#ifdef _WINDOWS
     t_dword status;
-    struct sockaddr_in sockaddr_loc;
-    memset(&sockaddr_loc, 0, sizeof(struct sockaddr_in));
-    sockaddr_loc.sin_family = AF_INET;
-    sockaddr_loc.sin_port = htons(port);
-    sockaddr_loc.sin_addr.s_addr = inet_addr(addr);
-    status = ::bind(_socket, (struct sockaddr *)&sockaddr_loc, sizeof(struct sockaddr));
+    sockaddr_in _serv_addr;
+    memset(&_serv_addr, 0, sizeof(sockaddr_in));
+    _serv_addr.sin_family = AF_INET;
+    _serv_addr.sin_port = htons(port);
+#ifdef _WINDOWS
+    _serv_addr.sin_addr.s_addr = inet_addr(addr);
+    status = ::bind(_socket, (sockaddr *)&_serv_addr, sizeof(sockaddr));
     if (status == SOCKET_ERROR) {
         closesocket(_socket);
         THROW_ERROR(NetworkError, "bind failed with error: " << WSAGetLastError() << ". Can not bind " << addr << ":" << port);
@@ -79,19 +88,13 @@ void Socket::bind(const t_byte * addr, t_word port) {
     }
 #endif // _WINDOWS
 #ifdef __linux__
-    _socket_fd = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0);
-    if (_socket_fd < 0) {
-        throw NetworkError("ERROR opening socket");
-    }
-    sockaddr_in _serv_addr;
-    memset(&_serv_addr, 0, sizeof(sockaddr_in));
-    _serv_addr.sin_family = AF_INET;
     _serv_addr.sin_addr.s_addr = INADDR_ANY;
-    _serv_addr.sin_port = htons(port);
-    if (::bind(_socket_fd, (struct sockaddr *) &_serv_addr, sizeof(_serv_addr)) < 0) {
-        throw NetworkError("ERROR on binding");
+    status = ::bind(_socket, (sockaddr*) &_serv_addr, sizeof(sockaddr));
+    if (status < 0) {
+        THROW_ERROR(NetworkError,"bind failed with error: " << strerror(errno) << ". Can not bind " << addr << ":" << port);
     }
-    listen(_socket_fd, 10); // TODO: replace this magic number.
+    status = listen(_socket, SOMAXCONN);
+
 #endif //__linux__
 }
 
