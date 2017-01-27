@@ -42,6 +42,7 @@ void Torus::mainloop() {
         DEBUG_NOTICE("Start of mainloop.");
         while(_run) {
             torus_thread_sleep(100);
+            balance_control();
             _slaves_condvar.broadcast();
         }
         DEBUG_NOTICE("End of mainloop. Stopping slaves...");
@@ -62,4 +63,61 @@ void Torus::mainloop() {
     EXC_CATCH;
     EXC_DEBUG_START;
     EXC_DEBUG_END;
+}
+
+void Torus::balance_control() {
+    ADDTOCALLSTACK();
+    std::queue<SlaveThread *> slaves_idle, slaves_overloaded;
+    SlaveThread * thread;
+    // First, remove joinable slaves.
+    while (_slaves_joinable.size()) {
+        thread = _slaves_joinable.front();
+        _slaves_joinable.pop();
+        thread->join();
+        _slaves.erase(thread->id());
+        _time_map.erase(thread->id());
+        delete thread;
+    }
+    // Now check times.
+    std::map<unsigned int, unsigned int>::iterator i = _time_map.begin(), e = _time_map.end();
+    while(i != e) {
+        if (i->second < 50) {
+            slaves_idle.push(_slaves[i->first]);
+        } else if (i->second > 200) {
+            slaves_overloaded.push(_slaves[i->first]);
+        }
+        i++;
+    }
+    // Now try to split overloaded slaves.
+    while(slaves_overloaded.size()) {
+        thread = slaves_overloaded.front();
+        slaves_overloaded.pop();
+        // If any idle thread, delegate work on it.
+        if (slaves_idle.size()) {
+            SlaveThread * o = slaves_idle.front();
+            DEBUG_INFO("Thread " << thread->id() << " overloaded! Delegating on thread " << o->id());
+            slaves_idle.pop();
+            thread->delegate(o);
+        } else {
+            // If not idle threads, create a new thread.
+            DEBUG_INFO("Thread " << thread->id() << " overloaded! Delegating on a new thread.");
+            SlaveThread * o = new SlaveThread(&_slaves_condvar);
+            _slaves[o->id()] = thread;
+            _time_map[o->id()] = 0;
+            o->start();
+            thread->delegate(o);
+        }
+    }
+    // Now try to fuse idle threads.
+    while(slaves_idle.size() > 1) {
+        SlaveThread * t1, * t2;
+        t1 = slaves_idle.front();
+        slaves_idle.pop();
+        t2 = slaves_idle.front();
+        slaves_idle.pop();
+        DEBUG_INFO("Threads idle " << t1->id() << " and " << t2->id() << ". Delegating all to " << t2->id() << ".");
+        t1->delegate_all(t2);
+        t1->halt();
+        _slaves_joinable.push(t1);
+    }
 }

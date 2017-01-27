@@ -25,6 +25,8 @@ public:
     t_udword id();
     void * run();
     void halt();
+    void delegate(SlaveThread * o);
+    void delegate_all(SlaveThread * o);
 private:
     static t_udword slave_id;
     t_udword _id;

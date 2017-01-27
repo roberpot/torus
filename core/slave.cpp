@@ -50,3 +50,14 @@ void SlaveThread::halt() {
     ADDTOCALLSTACK();
     _run = false;
 }
+
+
+void SlaveThread::delegate(SlaveThread * o) {
+    UNREFERENCED_PARAMETER(o);
+    // Try to split my work and give a portion to o.
+}
+
+void SlaveThread::delegate_all(SlaveThread * o) {
+    UNREFERENCED_PARAMETER(o);
+    // Give all my work to o.
+}

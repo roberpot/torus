@@ -16,6 +16,7 @@
 #define __TORUS_TORUS_H
 
 #include <map>
+#include <queue>
 #include "../threads/utils.h"
 #include "../threads/mutex.h"
 #include "../threads/cond.h"
@@ -29,11 +30,13 @@ public:
     void set_thread_time(t_udword id, t_udword t);
     void mainloop();
 private:
+    void balance_control();
     bool _run;
     Mutex _time_map_mutex;
     ConditionVariable _slaves_condvar;
     std::map<t_udword, t_udword> _time_map;
     std::map<t_udword, SlaveThread *> _slaves;
+    std::queue<SlaveThread *> _slaves_joinable;
 } torus;
 
 #endif //__TORUS_TORUS_H

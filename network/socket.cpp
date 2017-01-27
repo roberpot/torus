@@ -75,9 +75,9 @@ void Socket::bind(const t_byte * addr, t_word port) {
     memset(&_serv_addr, 0, sizeof(sockaddr_in));
     _serv_addr.sin_family = AF_INET;
     _serv_addr.sin_port = htons(port);
-#ifdef _WINDOWS
     _serv_addr.sin_addr.s_addr = inet_addr(addr);
-    status = ::bind(_socket, (sockaddr *)&_serv_addr, sizeof(sockaddr));
+    status = ::bind(_socket, (sockaddr*)&_serv_addr, sizeof(sockaddr));
+#ifdef _WINDOWS
     if (status == SOCKET_ERROR) {
         closesocket(_socket);
         THROW_ERROR(NetworkError, "bind failed with error: " << WSAGetLastError() << ". Can not bind " << addr << ":" << port);
@@ -89,13 +89,13 @@ void Socket::bind(const t_byte * addr, t_word port) {
     }
 #endif // _WINDOWS
 #ifdef __linux__
-    _serv_addr.sin_addr.s_addr = INADDR_ANY;
-    status = ::bind(_socket, (sockaddr*) &_serv_addr, sizeof(sockaddr));
     if (status < 0) {
         THROW_ERROR(NetworkError,"bind failed with error: " << strerror(errno) << ". Can not bind " << addr << ":" << port);
     }
     status = listen(_socket, SOMAXCONN);
-
+    if (status < 0) {
+        THROW_ERROR(NetworkError, "listen failed with error: " << strerror(errno));
+    }
 #endif //__linux__
 }
 
@@ -107,10 +107,7 @@ bool Socket::client_pending() {
     timeval timeout;
     timeout.tv_sec = 0;  // Zero timeout (poll)
     timeout.tv_usec = 0;
-    if(select(_socket, &readSet, NULL, NULL, &timeout) != 1){
-        return false;
-    }
-    return true;
+    return (select(_socket, &readSet, NULL, NULL, &timeout) == 1);
 }
 
 Socket * Socket::get_client() {
@@ -144,10 +141,7 @@ bool Socket::data_ready() {
     timeval timeout;
     timeout.tv_sec = 0;  // Zero timeout (poll)
     timeout.tv_usec = 0;
-    if(select(_socket, &readSet, NULL, NULL, &timeout) != 1){
-        return false;
-    }
-    return true;
+    return (select(_socket, &readSet, NULL, NULL, &timeout) == 1);
 }
 
 Packet * Socket::read_packet() {
