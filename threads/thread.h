@@ -17,6 +17,7 @@
 
 #include "thread_defines.h"
 #include "mutex.h"
+#include "../core/types.h"
 
 class Thread {
 public:
@@ -33,10 +34,10 @@ public:
     /** @name Interaction:
     */
     ///@{
-    int start();
+    t_dword start();
     virtual void * run() = 0;
-    int stop();
-    int join();
+    t_dword stop();
+    t_dword join();
     ///@}
 private:
     static void * _run(void * c);
