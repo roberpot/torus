@@ -18,6 +18,8 @@
 #include <vector>
 #include "socket.h"
 #include "../threads/thread.h"
+#include "../threads/mutex.h"
+
 
 extern class NetworkManager : public Thread {
 public:
@@ -36,6 +38,7 @@ private:
         Socket * _s;
         bool _run;
     } _clientconnector;
+    Mutex _m;
 } torusnet;
 
 #endif //__TORUS_NETWORKMANAGER_H

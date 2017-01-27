@@ -15,6 +15,7 @@
 
 #ifdef __linux__
 #include <cerrno>
+#include <arpa/inet.h>
 #endif //__linux__
 #include <cstring>
 #include "socket.h"
@@ -100,7 +101,6 @@ void Socket::bind(const t_byte * addr, t_word port) {
 
 bool Socket::client_pending() {
     ADDTOCALLSTACK();
-#ifdef _WINDOWS
     fd_set readSet;
     FD_ZERO(&readSet);
     FD_SET(_socket, &readSet);
@@ -111,16 +111,12 @@ bool Socket::client_pending() {
         return false;
     }
     return true;
-#endif // _WINDOWS
-    return false;
 }
 
 Socket * Socket::get_client() {
     ADDTOCALLSTACK();
     Socket * s;
-#ifdef _WINDOWS
     s = new Socket(accept(_socket, 0, 0));
-#endif // _WINDOWS
     return s;
 }
 
@@ -132,11 +128,16 @@ const t_byte * Socket::get_ip() {
     getpeername(_socket, (sockaddr *)&client_info, &addrsize);
     return inet_ntoa(client_info.sin_addr);
 #endif // _WINDOWS
+#if __linux__
+    sockaddr_in client_info;
+    socklen_t addrsize = sizeof(client_info);
+    getpeername(_socket, (sockaddr *)&client_info, &addrsize);
+    return inet_ntoa(client_info.sin_addr);
+#endif //__linux__
 }
 
 bool Socket::data_ready() {
     ADDTOCALLSTACK();
-#ifdef _WINDOWS
     fd_set readSet;
     FD_ZERO(&readSet);
     FD_SET(_socket, &readSet);
@@ -147,7 +148,6 @@ bool Socket::data_ready() {
         return false;
     }
     return true;
-#endif // _WINDOWS
 }
 
 Packet * Socket::read_packet() {
@@ -169,6 +169,14 @@ void Socket::write_packet(Packet * p) {
         THROW_ERROR(NetworkError, "Send " << data_sended << " bytes, instead of " << p->length() << " bytes.");
     }
 #endif // _WINDOWS
+#ifdef __linux__
+    ssize_t data_sended = send(_socket, p->dumps(), p->length(), 0);
+    if (data_sended == -1) {
+        THROW_ERROR(NetworkError, "Send failed");
+    } else if (data_sended != p->length()) {
+        THROW_ERROR(NetworkError, "Send " << data_sended << " bytes, instead of " << p->length() << " bytes.");
+    }
+#endif //__linux__
 }
 
 void Socket::read_bytes(t_udword len) {
@@ -176,6 +184,9 @@ void Socket::read_bytes(t_udword len) {
 #ifdef _WINDOWS
     buffer_len = recv(_socket, buffer, len, 0);
 #endif // _WINDOWS
+#ifdef __linux__
+    buffer_len = (t_udword)recv(_socket, buffer, len, 0);
+#endif //__linux__
     crypto->decrypt(buffer, buffer_len);
 }
 
@@ -188,6 +199,13 @@ void Socket::shutdown() {
         THROW_ERROR(NetworkError, "shutdown failed with error: " << WSAGetLastError());
     }
 #endif // _WINDOWS
+#ifdef __linux__
+    t_dword status = ::shutdown(_socket, SHUT_WR);
+    if (status == -1) {
+        close(_socket);
+        THROW_ERROR(NetworkError, "shutdown failed with error: " << strerror(errno));
+    }
+#endif //__linux__
 }
 
 Socket::~Socket() {
@@ -195,4 +213,7 @@ Socket::~Socket() {
 #ifdef _WINDOWS
     closesocket(_socket);
 #endif // _WINDOWS
+#ifdef __linux__
+    close(_socket);
+#endif //__linux__
 }

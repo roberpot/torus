@@ -28,16 +28,18 @@ void * NetworkManager::run() {
     _run = true;
     _clientconnector.start();
     while (_run) {
+        _m.lock();
         size_t l = _sockets.size();
         Socket * s;
         Packet * p;
         UNREFERENCED_PARAMETER(p);
         for (unsigned int i = 0; i < l; i++) {
             s = _sockets[i];
-            if (s->data_ready()) {
+            while (s->data_ready()) {
                 p = s->read_packet();
             }
         }
+        _m.unlock();
     }
     _clientconnector.halt();
     _clientconnector.join();
@@ -52,7 +54,9 @@ void NetworkManager::halt() {
 }
 
 void NetworkManager::_add_client(Socket * s) {
+    _m.lock();
     _sockets.push_back(s);
+    _m.unlock();
 }
 
 

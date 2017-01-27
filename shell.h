@@ -17,6 +17,7 @@
 
 #include <sstream>
 #include "threads/thread.h"
+#include "core/types.h"
 
 #define TORUSSHELLECHO(X) { \
     std::stringstream __torusshelecho__; \
