@@ -56,13 +56,15 @@ void Crypto::detect_client_keys(t_byte * buffer, t_udword l) {
     t_udword length = (t_udword)toruscfg.crypto_keys.size();
     t_byte * temp_buffer = new t_byte[l];
     for (t_udword i = 0; i < length; i++) {
-        memcpy(temp_buffer, buffer, l);
+        memcpy(temp_buffer, buffer, sizeof(t_byte) * l);
         _client_key_0 = toruscfg.crypto_keys[i].first;
         _client_key_1 = toruscfg.crypto_keys[i].second;
         _decrypt_loginmode(temp_buffer, l);
         if (temp_buffer[0] == 0x80 && temp_buffer[30] == 0x00 && temp_buffer[60] == 0x00) {
             TORUSSHELLECHO("Client keys [" << i << "] " << std::hex << _client_key_0 << ":" << _client_key_1);
             delete temp_buffer;
+            _client_key_0 = toruscfg.crypto_keys[i].first;
+            _client_key_1 = toruscfg.crypto_keys[i].second;
             return;
         }
     }

@@ -31,6 +31,9 @@ public:
     std::string torustable_file;
     t_byte * net_addr;
     t_word net_port;
+    t_uword tick_duration;
+    t_uword tick_duration_overloaded;
+    t_uword tick_duration_idle;
     // extra config.
     std::set<std::string> obscene_strings;
     std::vector<t_dword> fame_ranges;

@@ -127,6 +127,10 @@ void Config::_reset() {
     net_addr = new char[10];
     strcpy(net_addr, "127.0.0.1");
     net_port = 2597;
+    tick_duration = 250;
+    tick_duration_overloaded = 225;
+    tick_duration_idle = 30;
+
 
     obscene_strings.clear();
     fame_ranges.clear();

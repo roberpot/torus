@@ -12,27 +12,5 @@
  * along with Torus. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __TORUS_SHELL_H
-#define __TORUS_SHELL_H
 
-#include <sstream>
-#include <fstream>
-#include "threads/thread.h"
-#include "core/types.h"
-
-#define TORUSSHELLECHO(X) { \
-    std::stringstream __torusshelecho__; \
-    __torusshelecho__ << X; \
-    torus_shell.print(__torusshelecho__.str().c_str()); \
-}
-
-extern class TorusShell : public Thread {
-public:
-    TorusShell();
-    void * run();
-    void print(const t_byte * s);
-private:
-    std::ofstream _log_file;
-} torus_shell;
-
-#endif //__TORUS_SHELL_H
+#include "packetlist.h"

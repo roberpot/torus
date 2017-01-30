@@ -54,17 +54,19 @@ Socket::Socket(socket_t s) {
 
 void Socket::init_client_socket() {
     ADDTOCALLSTACK();
+    rewinded_len = 0;
     type = SOCKETTYPE_CLIENT;
     buffer = new t_byte[1024];
     crypto = new Crypto();
-    crypto->set_mode_login();
-    read_bytes(4);
+    crypto->set_mode_none();
     t_udword key;
-    memcpy(&key, buffer, sizeof(t_udword));
+    *this >> key;
     crypto->set_client_key(key);
     crypto->set_mode_none();
-    read_bytes();
+    _read_bytes(61);
     crypto->detect_client_keys(buffer, buffer_len);
+    _rewind(buffer, 61);
+    crypto->set_mode_login();
 }
 
 void Socket::bind(const t_byte * addr, t_word port) {
@@ -146,10 +148,9 @@ bool Socket::data_ready() {
 
 Packet * Socket::read_packet() {
     ADDTOCALLSTACK();
-    Packet * p;
-    read_bytes();
-    p = packet_factory(buffer, buffer_len);
-    p->loads(this);
+    Packet * p = 0;
+//    p = packet_factory(this);
+//    p->loads(this);
     return p;
 }
 
@@ -173,15 +174,43 @@ void Socket::write_packet(Packet * p) {
 #endif //__linux__
 }
 
-void Socket::read_bytes(t_udword len) {
+void Socket::_read_bytes(t_udword len) {
     ADDTOCALLSTACK();
+    // First check if we rewinded.
+    t_udword init = 0;
+    if (rewinded_len > 0) {
+        init = (((len)<(rewinded_len))?(len):(rewinded_len));
+        memcpy(buffer, rewinded, sizeof(t_byte) * init);
+        rewinded_len -= init;
+        if (rewinded_len == 0) {
+            delete rewinded;
+        } else {
+            memmove(rewinded, &rewinded[init], sizeof(t_byte) * rewinded_len);
+        }
+        len -= init;
+    }
+    if (len) {
 #ifdef _WINDOWS
-    buffer_len = recv(_socket, buffer, len, 0);
+        buffer_len = recv(_socket, &buffer[init], len, 0);
 #endif // _WINDOWS
 #ifdef __linux__
-    buffer_len = (t_udword)recv(_socket, buffer, len, 0);
+        buffer_len = (t_udword)recv(_socket, &buffer[init], len, 0);
 #endif //__linux__
-    crypto->decrypt(buffer, buffer_len);
+    }
+    crypto->decrypt(buffer, buffer_len + init);
+}
+
+void Socket::_rewind(t_byte * b, t_udword l) {
+    ADDTOCALLSTACK();
+    if (rewinded_len > 0) {
+        t_byte * new_rewind_buffer = new t_byte[rewinded_len + l];
+        memcpy(&new_rewind_buffer[l], rewinded, sizeof(t_byte) * rewinded_len);
+        delete rewinded;
+        rewinded = new_rewind_buffer;
+    } else {
+        rewinded = new t_byte[l];
+    }
+    memcpy(rewinded, b, sizeof(t_byte) * l);
 }
 
 void Socket::shutdown() {

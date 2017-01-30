@@ -16,6 +16,18 @@
 
 #include "../library/string.h"
 #include "../core/errors.h"
+#include "socket.h"
+
+
+
+Packet * packet_factory(Socket & s) {
+    t_byte t = 0;
+    s >> t;
+    switch(t) {
+        default: THROW_ERROR(NetworkError, "Unknown packet code 0x" << std::hex << (t_udword)t << std::dec << ".");
+    }
+    return 0;
+}
 
 Packet * packet_factory(t_byte t) {
     switch(t) {
@@ -37,4 +49,8 @@ const t_byte * Packet::dumps() {
 
 const t_udword Packet::length() {
     return len;
+}
+
+Packet::~Packet() {
+    delete buffer;
 }

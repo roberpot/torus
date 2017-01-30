@@ -16,6 +16,7 @@
 #include <iostream>
 #include <string>
 
+#include "core/config.h"
 #include "library/string.h"
 #include "core/torus.h"
 #include "shell.h"
@@ -38,6 +39,7 @@ void * TorusShell::run() {
     t_byte buffer[256];
     t_byte * stripped_buffer;
     t_udword counter = 0;
+    _log_file.open(toruscfg.log_filename, std::ios_base::out | std::ios_base::app);
     //DBG_MSG_INF("Starting User Interface Thread.");
     do {
         c = (t_byte)getchar();
@@ -64,12 +66,12 @@ void * TorusShell::run() {
             counter = 0;
         }
     } while (continue_proc);
-    //DBG_MSG_INF("User Interface Thread finished.");
+    _log_file.close();
     return NULL;
 }
 
 void TorusShell::print(const t_byte * s) {
     std::string t = _get_curr_datetime();
     std::cout << "[" << t << "] " << s << std::endl;
-    //log_file << "[" << t << "] " << c << std::endl;
+    _log_file << "[" << t << "] " << s << std::endl;
 }

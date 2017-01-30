@@ -12,27 +12,22 @@
  * along with Torus. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __TORUS_SHELL_H
-#define __TORUS_SHELL_H
 
-#include <sstream>
-#include <fstream>
-#include "threads/thread.h"
-#include "core/types.h"
+#ifndef __TORUS_PACKETLIST_H
+#define __TORUS_PACKETLIST_H
 
-#define TORUSSHELLECHO(X) { \
-    std::stringstream __torusshelecho__; \
-    __torusshelecho__ << X; \
-    torus_shell.print(__torusshelecho__.str().c_str()); \
-}
+#include "packet.h"
 
-extern class TorusShell : public Thread {
+#define PACKET_CREATE_CHARACTER Packet_0x00
+
+class Packet_0x00 : public Packet {
 public:
-    TorusShell();
-    void * run();
-    void print(const t_byte * s);
+    const t_udword length();
+    const t_byte * dumps();
+    void loads(const t_byte *);
+    void loads(Socket * s);
+    ~Packet();
 private:
-    std::ofstream _log_file;
-} torus_shell;
+};
 
-#endif //__TORUS_SHELL_H
+#endif //__TORUS_PACKETLIST_H

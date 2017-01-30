@@ -25,11 +25,14 @@ public:
     const t_byte * dumps();
     virtual void loads(const t_byte *) = 0;
     virtual void loads(Socket * s) = 0;
-    virtual ~Packet() = 0;
+    virtual ~Packet();
 protected:
     t_byte * buffer;
     t_udword len;
 };
+
+
+Packet * packet_factory(Socket & s);
 
 Packet * packet_factory(t_byte t);
 

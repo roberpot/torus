@@ -15,6 +15,7 @@
 #include "torus.h"
 #include "../debug/callstack.h"
 #include "../threads/utils.h"
+#include "config.h"
 
 Torus::Torus() {
 }
@@ -41,7 +42,7 @@ void Torus::mainloop() {
         thread->start();
         DEBUG_NOTICE("Start of mainloop.");
         while(_run) {
-            torus_thread_sleep(100);
+            torus_thread_sleep(toruscfg.tick_duration);
             balance_control();
             _slaves_condvar.broadcast();
         }
@@ -51,7 +52,7 @@ void Torus::mainloop() {
             it->second->halt();
             it++;
         }
-        torus_thread_sleep(100);
+        torus_thread_sleep(toruscfg.tick_duration);
         _slaves_condvar.broadcast();
         it = _slaves.begin();
         while(it != end) {
@@ -81,9 +82,9 @@ void Torus::balance_control() {
     // Now check times.
     std::map<unsigned int, unsigned int>::iterator i = _time_map.begin(), e = _time_map.end();
     while(i != e) {
-        if (i->second < 50) {
+        if (i->second < toruscfg.tick_duration_idle) {
             slaves_idle.push(_slaves[i->first]);
-        } else if (i->second > 200) {
+        } else if (i->second > toruscfg.tick_duration_overloaded) {
             slaves_overloaded.push(_slaves[i->first]);
         }
         i++;

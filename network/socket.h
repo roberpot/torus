@@ -25,8 +25,10 @@
 #include <netinet/in.h>
 #endif
 
+#include "../core/types.h"
 #include "packet.h"
 #include "crypto.h"
+#include "../debug/callstack.h"
 
 enum SocketType {
     SOCKETTYPE_NONE = 0,
@@ -48,20 +50,40 @@ public:
     void init_client_socket();
     void bind(const t_byte * addr, t_word port);
     bool client_pending();
+    bool data_ready();
     Socket * get_client();
     const t_byte * get_ip();
-    bool data_ready();
     Packet * read_packet();
     void write_packet(Packet * p);
-    void read_bytes(t_udword len = 1024);
     void shutdown();
     ~Socket();
+    template<typename T>
+    friend Socket & operator>>(Socket & s, T & d);
+//    friend Socket & operator>>(Socket & s, t_byte d);
+//    friend Socket & operator>>(Socket & s, t_word d);
+//    friend Socket & operator>>(Socket & s, t_dword d);
+//    friend Socket & operator>>(Socket & s, t_qword d);
+//    friend Socket & operator>>(Socket & s, t_ubyte d);
+//    friend Socket & operator>>(Socket & s, t_uword d);
+//    friend Socket & operator>>(Socket & s, t_udword d);
+//    friend Socket & operator>>(Socket & s, t_uqword d);
 private:
-    t_byte * buffer;
-    t_udword buffer_len;
+    void _read_bytes(t_udword len = 1024);
+    void _rewind(t_byte * b, t_udword l);
+    t_byte * buffer, * rewinded;
+    t_udword buffer_len, rewinded_len;
     SocketType type;
     Crypto * crypto;
     socket_t _socket;
 };
+
+template<typename T>
+Socket & operator>>(Socket & s, T & d) {
+    ADDTOCALLSTACK();
+    s._read_bytes(sizeof(T));
+    memcpy((void*)&d, s.buffer, sizeof(T));
+    return s;
+}
+
 
 #endif //__TORUS_SOCKET_H
