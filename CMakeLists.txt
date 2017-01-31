@@ -28,8 +28,8 @@ endif(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_GNUCC)
 # Setting a different DEBUG_MODE=lvl for each build type.
 set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS
     $<$<CONFIG:Release>:DEBUG_MODE=0>
-    $<$<CONFIG:Debug>:DEBUG_MODE=4>
-    $<$<CONFIG:RelWithDebInfo>:DEBUG_MODE=5> )
+    $<$<CONFIG:Debug>:DEBUG_MODE=5>
+    $<$<CONFIG:RelWithDebInfo>:DEBUG_MODE=4> )
 
 add_definitions(-DSOURCE_PATH="${CMAKE_SOURCE_DIR}")
 

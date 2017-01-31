@@ -36,8 +36,21 @@ set(THREAD_FILES
         threads/utils.cpp threads/utils.h)
 SOURCE_GROUP(threads FILES ${THREAD_FILES})
 
-set(GAME_FILES)
+set(GAME_FILES
+        game/account.cpp game/account.h
+        game/artifact.cpp game/artifact.h
+        game/char.cpp game/char.h
+        game/item.cpp game/item.h
+        game/uid.cpp game/uid.h)
 SOURCE_GROUP(game FILES ${GAME_FILES})
+
+set (GAME_UOFILES_FILES
+        game/uo_files/map_list.cpp game/uo_files/map_list.h
+        game/uo_files/map.cpp game/uo_files/map.h
+        game/uo_files/map_point.cpp game/uo_files/map_point.h
+        game/uo_files/static_tile.cpp game/uo_files/static_tile.h
+        game/uo_files/uo_file_reader.cpp game/uo_files/uo_file_reader.h)
+SOURCE_GROUP(game\\uo_files FILES ${GAME_UOFILES_FILES})
 
 set(MAIN_FILES
         shell.cpp shell.h
@@ -53,4 +66,5 @@ set(SOURCE_FILES
         ${NETWORK_FILES}
         ${THREAD_FILES}
         ${GAME_FILES}
+        ${GAME_UOFILES_FILES}
         ${MAIN_FILES})

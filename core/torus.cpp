@@ -16,6 +16,9 @@
 #include "../debug/callstack.h"
 #include "../threads/utils.h"
 #include "config.h"
+#include "../game/uo_files/map_list.h"
+
+MapList maplist;
 
 Torus::Torus() {
 }
@@ -40,6 +43,7 @@ void Torus::mainloop() {
         _slaves[thread->id()] = thread;
         _time_map[thread->id()] = 0;
         thread->start();
+        maplist.init();
         DEBUG_NOTICE("Start of mainloop.");
         while(_run) {
             torus_thread_sleep(toruscfg.tick_duration);

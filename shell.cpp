@@ -20,10 +20,12 @@
 #include "library/string.h"
 #include "core/torus.h"
 #include "shell.h"
+#include "debug/callstack.h"
 
 std::string _get_curr_datetime() {
+    ADDTOCALLSTACK();
     std::string r;
-    t_byte buffer[100];
+    t_byte buffer[255];
     std::time_t t = std::time(NULL);
     std::strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", std::localtime(&t));
     r = buffer;

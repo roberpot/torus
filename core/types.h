@@ -15,13 +15,43 @@
 #ifndef __TORUS_TYPES_H
 #define __TORUS_TYPES_H
 
+// -- typedefs --
+// byte / ubyte
+
 typedef char t_byte;
-typedef short int t_word;
-typedef int t_dword;
-typedef long long t_qword;
 typedef unsigned char t_ubyte;
+// int / uint
+
+typedef short int t_word;
 typedef unsigned short int t_uword;
+// dword / udword
+
+typedef int t_dword;
 typedef unsigned int t_udword;
+// qword / uqword 
+
+typedef long long t_qword;
 typedef unsigned long long t_uqword;
+// -- limits --
+// byte / ubyte
+
+#define TBYTE_MIN SCHAR_MIN
+#define TBYTE_MAX SCHAR_MAX
+#define TUBYTE_MAX UCHAR_MAX
+// int / uint
+
+#define TWORD_MIN SHRT_MIN
+#define TWORD_MAX SHRT_MAX
+#define TUWORD_MAX USHRT_MAX
+// dword / udword
+
+#define TDWORD_MIN INT_MIN
+#define TDWORD_MAX INT_MAX
+#define TUDWORD_MAX UINT_MAX
+// qword / uqword 
+
+#define TQWORD_MIN LLONG_MIN
+#define TQWORD_MAX LLONG_MAX
+#define TUQWORD_MAX ULLONG_MAX
 
 #endif //__TORUS_TYPES_H
