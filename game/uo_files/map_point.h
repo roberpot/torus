@@ -1,26 +1,43 @@
+/*
+* This file is part of Torus.
+* Torus is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Lesser General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+* Torus is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU Lesser General Public License for more details.
+* You should have received a copy of the GNU Lesser General Public License
+* along with Torus. If not, see <http://www.gnu.org/licenses/>.
+*/
+
 #ifndef _TORUS_GAME_MAP_POINT_H
 #define _TORUS_GAME_MAP_POINT_H
 
 #include "../../core/types.h"
-#include "static_tile.h"
-#include <vector>
 
-class MapPoint {
-private:
-    t_uword tileid; // map file value.
-    t_byte z;       // map file value.
-    t_uword flags = 0;  // custom value, fast walkchecks.
-    std::vector<UOStaticTile> _tiles;   // statics file items.
-public:
-    MapPoint(t_uword tid, t_byte pz);
-    ~MapPoint();
-    t_uword get_tileid();
-    t_uword get_flags();
-    t_byte get_z();
-    void add_static_tile(UOStaticTile &tile);
-    void add_item();
-    void del_item();
-    void reset_flags();
+#if defined(_WIN32) && defined(_MSC_VER)
+    #pragma pack(1) // MSVC dependant pragma
+    #define PACK_NEEDED
+#else
+    #define PACK_NEEDED __attribute__ ((packed)) // GCC definition
+#endif
+
+/*
+* @brief struct used in map* files containing the info of a x,y map tile
+* 
+* Struct's size: 3 bytes (Must be packed by compiler).
+*/
+struct UOMapPoint {
+    t_word terrain;
+    t_byte z;
 };
 
+// Turn off structure packing.
+#if defined(_WIN32) && defined(_MSC_VER)
+    #pragma pack()
+#else
+    #undef PACK_NEEDED
+#endif
 #endif //_TORUS_GAME_MAP_POINT_H

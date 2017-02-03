@@ -34,6 +34,8 @@ public:
     t_uword tick_duration;
     t_uword tick_duration_overloaded;
     t_uword tick_duration_idle;
+    // file cfg
+    std::string file_path;
     // extra config.
     std::set<std::string> obscene_strings;
     std::vector<t_dword> fame_ranges;

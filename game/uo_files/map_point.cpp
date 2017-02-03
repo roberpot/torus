@@ -1,56 +1,13 @@
-#include "map_point.h"
-#include "../../debug/callstack.h"
-
-
-
-MapPoint::MapPoint(t_uword tid, t_byte pz) {
-    ADDTOCALLSTACK();
-    tileid = tid;
-    z = pz;
-}
-
-MapPoint::~MapPoint() {
-    ADDTOCALLSTACK();
-    _tiles.clear();
-}
-
-t_uword MapPoint::get_tileid() {
-    ADDTOCALLSTACK();
-    return tileid;
-}
-
-t_uword MapPoint::get_flags() {
-    ADDTOCALLSTACK();
-    return flags;
-}
-
-t_byte MapPoint::get_z() {
-    ADDTOCALLSTACK();
-    return z;
-}
-
-void MapPoint::add_static_tile(UOStaticTile &tile) {
-    ADDTOCALLSTACK();
-    _tiles.push_back(tile);
-}
-
-void MapPoint::add_item() {
-    ADDTOCALLSTACK();
-    // item not really stored, it's stored and used from DB, this is just an event to reapply walkflags
-    reset_flags();
-}
-
-void MapPoint::del_item() {
-    ADDTOCALLSTACK();
-    reset_flags();
-}
-
-void MapPoint::reset_flags() {
-    ADDTOCALLSTACK();
-    t_byte minZ = z;    // map defines the lowest Z value to walk on.
-    if (_tiles.size()) {
-        for (size_t i = 0; i < _tiles.size(); i++) {
-
-        }
-    }
-}
+/*
+* This file is part of Torus.
+* Torus is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Lesser General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+* Torus is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU Lesser General Public License for more details.
+* You should have received a copy of the GNU Lesser General Public License
+* along with Torus. If not, see <http://www.gnu.org/licenses/>.
+*/

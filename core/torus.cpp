@@ -43,7 +43,10 @@ void Torus::mainloop() {
         _slaves[thread->id()] = thread;
         _time_map[thread->id()] = 0;
         thread->start();
-        maplist.init();
+        if (!maplist.init()) {
+            DEBUG_ERROR("No valid maps found, exiting ...");
+            _run = false;
+        }
         DEBUG_NOTICE("Start of mainloop.");
         while(_run) {
             torus_thread_sleep(toruscfg.tick_duration);

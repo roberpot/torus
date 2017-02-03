@@ -1,7 +1,22 @@
+/*
+* This file is part of Torus.
+* Torus is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Lesser General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+* Torus is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU Lesser General Public License for more details.
+* You should have received a copy of the GNU Lesser General Public License
+* along with Torus. If not, see <http://www.gnu.org/licenses/>.
+*/
+
 #ifndef _TORUS_GAME_ACCOUNT_H
 #define _TORUS_GAME_ACCOUNT_H
 
 #include "../core/types.h"
+#include <string>
 
 class Char;
 class Socket;
@@ -17,23 +32,55 @@ class Socket;
 
 class Account {
 private:
-    const t_byte *_name;
-    const t_byte *_password;
-    Char *_charlist[7];
-    t_udword _flags;
-    t_uword _expansion;
-    const t_byte *_lastip;
-    Socket *_socket;
+    std::string _name;    ///< Account name, used mostly for login.
+    std::string _password;///< Account password.
+    Char *_charlist[7];     ///< Character's list.
+    t_udword _flags;        ///< Account flags.
+    t_uword _expansion;     ///< Expansion level this account has access.
+    std::string _lastip;  ///< Last IP connected to this account.
+    Socket *_socket;        ///< Pointer to the socket currently connected to this account.
 public:
-    Account(const t_byte *name, const t_byte *pw, t_udword flags = 0, t_udword exp = 0);
+    Account(const t_byte *name, const t_byte *pw, t_udword flags = 0, t_uword exp = 0);
     ~Account();
-
+    /**
+    * @brief get the total count of characters this account has.
+    *
+    * @return the count of characters.
+    */
     t_byte get_char_count();
+    /**
+    * @brief get the max amount of characters this account can have.
+    *
+    * @return the max amount.
+    */
     t_byte get_max_chars();
+    /**
+    * @brief Checks if this account can have more characters.
+    *
+    * @return false if not.
+    */
     bool can_add_char();
+    /**
+    * @brief adds a character to this account.
+    *
+    * @param chr the character to add.
+    */
     bool add_char(Char *chr);
+    /**
+    * @brief remove a character from this account.
+    *
+    * @param chr the character to remove.
+    */
     bool delete_char(Char *chr);
+    /**
+    * @brief Reorder charlist, mostly after deleting a character.
+    */
     void fix_charlist();
+    /**
+    * @brief Receiving a connection for this account.
+    *
+    * @param socket the socket connecting to the account.
+    */
     void connect(Socket *socket);
 };
 

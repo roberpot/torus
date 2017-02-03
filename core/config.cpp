@@ -17,6 +17,7 @@
 #include "config.h"
 #include "../shell.h"
 #include "../debug/info.h"
+#include "../game/uo_files/map_list.h"
 //#include "../network/crypto.h"
 
 Config toruscfg;
@@ -130,6 +131,15 @@ void Config::_reset() {
     tick_duration = 250;
     tick_duration_overloaded = 225;
     tick_duration_idle = 30;
+    file_path = "";
+    maplist.add_map(7168, 4096, 0, 0);      // Map 0 (Felucca)
+    //maplist.add_map(7168, 4096, 1, 1);    // Map 1 (Trammel)
+    //maplist.add_map(2304, 1600, 2, 2);    // Map 2 (Ilshenar)
+    //maplist.add_map(2560, 2048, 3, 3);    // Map 3 (Malas)
+    //maplist.add_map(1448, 1448, 4, 4);    // Map 4 (Tokuno Islands)
+    //maplist.add_map(1280, 4096, 5, 5);    // Map 5 (Ter Mur)
+    //maplist.add_map(7168, 4096, 10, 0);   // Map 10 (Copy of Map 0).
+    //maplist.add_map(2560, 2048, 11, 3);   // Map 11 (Copy of Map 3).
 
 
     obscene_strings.clear();

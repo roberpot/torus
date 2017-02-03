@@ -1,3 +1,17 @@
+/*
+* This file is part of Torus.
+* Torus is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Lesser General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+* Torus is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU Lesser General Public License for more details.
+* You should have received a copy of the GNU Lesser General Public License
+* along with Torus. If not, see <http://www.gnu.org/licenses/>.
+*/
+
 #include "artifact.h"
 #include "../debug/debug.h"
 #include "../debug/callstack.h"
@@ -9,7 +23,7 @@
 Artifact::Artifact(t_udword uid){
     ADDTOCALLSTACK();
     _name = "";
-    if (uid &~(UID_ITEM | UID_RESOURCE) == UID_CLEAR) {
+    if ((uid &~(UID_ITEM | UID_RESOURCE)) == UID_CLEAR) {
         free_uid();
         set_uid_type(uid);
     }
@@ -57,8 +71,8 @@ void Artifact::move_to(t_word destX, t_word destY){
     if (!can_move_to_coord(destX, destY)) {
         DEBUG_ERROR("Trying to move 0x" << std::hex << get_uid() << "to a non-valid dest '" << destX << ", " << destY << ".");
     }
-    bool updateMapCache = false;    // Blocking items updates the map cache to improve the speed of walking checks.
-    /*if (is_item()) {
+    /*bool updateMapCache = false;    // Blocking items updates the map cache to improve the speed of walking checks.
+    if (is_item()) {
         Item *pitem = get_item();
         if (pitem && has_flag(UFLAG1_BLOCK)) {
             updateMapCache = true;

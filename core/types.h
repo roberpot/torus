@@ -14,6 +14,7 @@
 
 #ifndef __TORUS_TYPES_H
 #define __TORUS_TYPES_H
+#include <climits>
 
 // -- typedefs --
 // byte / ubyte

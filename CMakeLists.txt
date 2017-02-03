@@ -11,11 +11,11 @@ set(CMAKE_C_STANDARD 11)
 # compiler flags
 ## Windows flags
 if(WIN32)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -W4 ")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -W4 ")  
-    set(BOOST_ROOT "e:/boost")
-    set(PostgreSQL_ROOT "e:/PostgreSQL/9.6")
-    set(PQXX_ROOT  "e:/PostgreSQL/libpqxx")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -W4 -MP")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -W4 -MP")  
+    set(BOOST_ROOT "e:/boost")  #temp
+    set(PostgreSQL_ROOT "e:/PostgreSQL/9.6")  #temp
+    set(PQXX_ROOT  "e:/PostgreSQL/libpqxx") #temp
 endif(WIN32)
 
 ## gcc flags

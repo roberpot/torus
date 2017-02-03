@@ -1,60 +1,40 @@
+/*
+* This file is part of Torus.
+* Torus is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Lesser General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+* Torus is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU Lesser General Public License for more details.
+* You should have received a copy of the GNU Lesser General Public License
+* along with Torus. If not, see <http://www.gnu.org/licenses/>.
+*/
+
 #ifndef _TORUS_GAME_UO_FILE_READER_H
 #define _TORUS_GAME_UO_FILE_READER_H
 
 #include <fstream>
 #include "../../core/types.h"
 #include "map.h"
-
-class MapPoint;
-
-enum UOFILE_TYPES {
-    UOFT_VERDATA,
-    UOFT_MUL,
-    UOFT_UOP
-};
-
-enum UOFILE_IDS {
-    UOF_STATIC,
-    UOF_STAIDX,
-    UOF_MAP,
-    UOF_TILEDATA,
-    UOF_MULTI_IDX,
-    UOF_MULTI_MUL
-};
+#include "idx_entry.h"
 
 
-extern class UOFileReader : private std::ifstream {
-private:
-    std::string file_path;  ///< path for the files. TODO: set it from .ini.
-    std::streampos _size;   ///< size of the file, set on open.
+extern class UOFileReader : public std::ifstream {
+public:
+    UOFileReader();
+    ~UOFileReader();
 
-    /**
-    * @brief Retrieves the full name of the given file (type & id & format).
-    *
-    * @param file File type.
-    * @param id Expansion id.
-    * @param searchuop Search for .uop instead of .mul files.
-    * @return the full name (eg map3LegacyMUL.uop)
-    */
-    std::string get_file_name(UOFILE_IDS file, t_ubyte id = 0, bool searchuop = true);
     /**
     * @brief Overrides seekg with custom checks.
     *
     * Checks if the index requested is within the file's size.
     * @param index Position to set the pointer at.
-    * @param at std::ios::beg / end.
+    * @param from Start reading from (std::ios::beg / end).
     * @return success or fail.
     */
-    bool _seek(t_uqword index, t_ubyte at);
-    /**
-    * @brief Overrides read with custom checks.
-    *
-    * Checks if the retrieved data is valid (strlen == cnt).
-    * @param data Stream receiving readed data.
-    * @param cnt Amount of bytes to read.
-    * @return success or fail.
-    */
-    bool _read(t_byte* data, t_uqword cnt);
+    bool _seek(t_uqword index, t_ubyte from = std::ios::beg);
     /**
     * @brief Overrides open with custom checks.
     *
@@ -63,25 +43,41 @@ private:
     * @param flags Flags used to open the file.
     * @return success or fail.
     */
-    bool _open(const t_byte *file, t_udword flags = std::ios::in | std::ios::binary);
+    bool _open(const t_byte *file, t_udword flags = std::ifstream::in | std::ifstream::binary);
 
+    bool _close();
     /**
-    * @brief Returns the stored size of this file.
+    * @brief Get the map/uop header into the given IdxEntry.
     *
-    * @return the size.
+    * Reads a .idx file at 'index' position to retrieve the header for the mul/uop files. (Pointer must be placed with _seek before).
+    * @param idx the IdxEntry to insert data into.
     */
-    std::streampos get_size();
-public:
-    UOFileReader();
-    ~UOFileReader();
+    void get_idx(IdxEntry &idx);
 
-    /**
-    * @brief Reads mapx.mul/uop.
-    *
-    * Performs a full read of the map file(s) and insert their data into the given stream.
-    * @param id ExpansionID of the file to read (0 = lbr, 2 = AOS, 3 = SE, 4 = ML, 5 = SA).
+    /*
+    * @brief Returns the next value of the requested type.
     */
-    void read_map(t_ubyte id, UOMapPoint **&data);
+    t_byte get_byte();
+    /*
+    * @brief Returns the next value of the requested type.
+    */
+    t_ubyte get_ubyte();
+    /*
+    * @brief Returns the next value of the requested type.
+    */
+    t_word get_word();
+    /*
+    * @brief Returns the next value of the requested type.
+    */
+    t_uword get_uword();
+    /*
+    * @brief Returns the next value of the requested type.
+    */
+    t_dword get_dword();
+    /*
+    * @brief Returns the next value of the requested type.
+    */
+    t_udword get_udword();
 
 } uofilereader;
 

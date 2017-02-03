@@ -49,7 +49,9 @@ set (GAME_UOFILES_FILES
         game/uo_files/map.cpp game/uo_files/map.h
         game/uo_files/map_point.cpp game/uo_files/map_point.h
         game/uo_files/static_tile.cpp game/uo_files/static_tile.h
-        game/uo_files/uo_file_reader.cpp game/uo_files/uo_file_reader.h)
+        game/uo_files/uo_file_reader.cpp game/uo_files/uo_file_reader.h
+        game/uo_files/idx_entry.h
+        game/uo_files/map_block.h)
 SOURCE_GROUP(game\\uo_files FILES ${GAME_UOFILES_FILES})
 
 set(MAIN_FILES
