@@ -23,7 +23,6 @@
 #include "debug/callstack.h"
 
 std::string _get_curr_datetime() {
-    ADDTOCALLSTACK();
     std::string r;
     t_byte buffer[255];
     std::time_t t = std::time(NULL);
