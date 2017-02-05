@@ -16,6 +16,7 @@
 
 #include "network/networkmanager.h"
 #include "core/torus.h"
+#include "core/config.h"
 #include "shell.h"
 #include "debug/debug.h"
 #include "core/slave.h"
@@ -26,12 +27,13 @@ Torus torus;
 int main() {
     torus_shell.start();
     TORUSSHELLECHO("Initializing Torus...");
+    toruscfg.load_config_file("torus.ini");
     torusnet.start();
     TORUSSHELLECHO("Initializing Torus... OK.");
     torus.mainloop();
+    TORUSSHELLECHO("Shutting down Torus...");
     torusnet.halt();
     torusnet.join();
-    TORUSSHELLECHO("Shutting down Torus...");
     TORUSSHELLECHO("Shutting down Torus... OK.");
     torus_shell.join();
     return 0;

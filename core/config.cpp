@@ -23,7 +23,6 @@
 Config toruscfg;
 
 Config::Config() {
-    _reset();
 }
 
 void Config::load_config_file(const t_byte * file) {
