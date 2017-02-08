@@ -40,6 +40,7 @@ void * NetworkManager::run() {
             }
         }
         _m.unlock();
+        torus_thread_sleep(50);
     }
     _clientconnector.halt();
     _clientconnector.join();

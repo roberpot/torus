@@ -13,6 +13,7 @@
  */
 
 #include "packet.h"
+#include "packetlist.h"
 
 #include "../library/string.h"
 #include "../core/errors.h"
@@ -21,12 +22,16 @@
 
 
 Packet * packet_factory(Socket & s) {
-    t_byte t = 0;
+    ADDTOCALLSTACK();
+    t_ubyte t = 0;
     s >> t;
+    Packet * p = NULL;
     switch(t) {
+        case 0xef: p = new Packet_0xef; break;
         default: THROW_ERROR(NetworkError, "Unknown packet code 0x" << std::hex << (t_udword)t << std::dec << ".");
     }
-    return 0;
+    p->loads(&s);
+    return p;
 }
 
 Packet * packet_factory(t_byte t) {
@@ -43,6 +48,11 @@ Packet * packet_factory(const t_byte * buffer, t_udword len) {
     //return 0;
 }
 
+
+Packet::Packet() {
+    buffer = 0;
+}
+
 const t_byte * Packet::dumps() {
     return buffer;
 }
@@ -52,5 +62,5 @@ const t_udword Packet::length() {
 }
 
 Packet::~Packet() {
-    delete buffer;
+    if (buffer) delete buffer;
 }

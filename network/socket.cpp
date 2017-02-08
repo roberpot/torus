@@ -24,7 +24,8 @@
 #include "../debug/debug.h"
 #include "../library/string.h"
 #include "../debug/callstack.h"
-
+#include "packet.h"
+#include "packetlist.h"
 
 
 Socket::Socket() {
@@ -49,6 +50,7 @@ Socket::Socket() {
 Socket::Socket(socket_t s) {
     ADDTOCALLSTACK();
     _socket = s;
+    rewinded_len = 0;
     init_client_socket();
 }
 
@@ -59,14 +61,32 @@ void Socket::init_client_socket() {
     buffer = new t_byte[1024];
     crypto = new Crypto();
     crypto->set_mode_none();
-    t_udword key;
-    *this >> key;
-    crypto->set_client_key(key);
-    crypto->set_mode_none();
+    t_udword seed = _determinate_client_seed();
+    crypto->set_client_seed(seed);
     _read_bytes(61);
     crypto->detect_client_keys(buffer, buffer_len);
     _rewind(buffer, 61);
     crypto->set_mode_login();
+}
+
+
+t_udword Socket::_determinate_client_seed() {
+    ADDTOCALLSTACK();
+    t_ubyte _cmd;
+    (*this) >> _cmd;
+    _rewind((t_byte*)&_cmd, sizeof(t_ubyte));
+    t_udword seed;
+    if (_cmd == 0xef) {
+        DEBUG_NOTICE("Detected login seed packet.");
+        PACKET_KR_2D_CLIENT_SEED * p = static_cast<PACKET_KR_2D_CLIENT_SEED *>(packet_factory(*this));
+        seed = p->seed();
+        DEBUG_NOTICE("Client seed: " << seed);
+        delete p;
+    } else {
+        DEBUG_NOTICE("Detected login seed (no login seed packet).");
+        (*this) >> seed;
+    }
+    return seed;
 }
 
 void Socket::bind(const t_byte * addr, t_word port) {
@@ -103,6 +123,7 @@ void Socket::bind(const t_byte * addr, t_word port) {
 
 bool Socket::client_pending() {
     ADDTOCALLSTACK();
+#ifdef _WINDOWS
     fd_set readSet;
     FD_ZERO(&readSet);
     FD_SET(_socket, &readSet);
@@ -110,12 +131,22 @@ bool Socket::client_pending() {
     timeout.tv_sec = 0;  // Zero timeout (poll)
     timeout.tv_usec = 0;
     return (select(_socket, &readSet, NULL, NULL, &timeout) == 1);
+#endif //_WINDOWS
+#ifdef __linux__
+    _accepted_socket = accept(_socket, 0, 0);
+    return (_accepted_socket != -1);
+#endif //__linux__
 }
 
 Socket * Socket::get_client() {
     ADDTOCALLSTACK();
     Socket * s;
+#ifdef _WINDOWS
     s = new Socket(accept(_socket, 0, 0));
+#endif //_WINDOWS
+#ifdef __linux__
+    s = new Socket(_accepted_socket);
+#endif //__linux__
     return s;
 }
 
@@ -178,26 +209,53 @@ void Socket::_read_bytes(t_udword len) {
     ADDTOCALLSTACK();
     // First check if we rewinded.
     t_udword init = 0;
+    t_udword len_remaining = len;
+    buffer_len = 0;
     if (rewinded_len > 0) {
-        init = (((len)<(rewinded_len))?(len):(rewinded_len));
+        if (len_remaining < rewinded_len) {
+            init = len_remaining;
+        } else {
+            init = rewinded_len;
+        }
         memcpy(buffer, rewinded, sizeof(t_byte) * init);
         rewinded_len -= init;
+        len_remaining -= init;
         if (rewinded_len == 0) {
             delete rewinded;
         } else {
             memmove(rewinded, &rewinded[init], sizeof(t_byte) * rewinded_len);
         }
-        len -= init;
     }
-    if (len) {
+    if (len_remaining) {
 #ifdef _WINDOWS
-        buffer_len = recv(_socket, &buffer[init], len, 0);
+        buffer_len = recv(_socket, &buffer[init], len_remaining, 0);
 #endif // _WINDOWS
 #ifdef __linux__
-        buffer_len = (t_udword)recv(_socket, &buffer[init], len, 0);
+        buffer_len = (t_udword)recv(_socket, &buffer[init], len_remaining, 0);
 #endif //__linux__
+        if (buffer_len != len_remaining) {
+            THROW_ERROR(NetworkError, "Error reading socket: Expected len: " << len_remaining << ", readed: " << buffer_len);
+        }
     }
-    crypto->decrypt(buffer, buffer_len + init);
+    {
+        std::stringstream _l, _r, _s;
+        unsigned int i;
+        for (i = 1; i <= len; i++) {
+            _l << hex(buffer[i - 1]) << " ";
+            _r << std::dec << ((unsigned int) buffer[i - 1] & 0x000000FF) << " ";
+            if (!(i % 5)) {
+                _s << _l.str() << "| " << _r.str() << std::endl;
+                _l.str("");
+                _r.str("");
+            }
+        }
+        if ((i-1) % 5) {
+            _s << _l.str() << "| " << _r.str();
+        }
+        TORUSSHELLECHO("Network receive(" << len << " [ " << init << " , " << buffer_len << " ]): " << std::endl << _s.str());
+    }
+    buffer_len = len;
+    crypto->decrypt(buffer, len);
 }
 
 void Socket::_rewind(t_byte * b, t_udword l) {
@@ -211,6 +269,7 @@ void Socket::_rewind(t_byte * b, t_udword l) {
         rewinded = new t_byte[l];
     }
     memcpy(rewinded, b, sizeof(t_byte) * l);
+    rewinded_len += l;
 }
 
 void Socket::shutdown() {

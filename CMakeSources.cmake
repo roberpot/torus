@@ -25,7 +25,10 @@ set(NETWORK_FILES
         network/crypto.cpp network/crypto.h
         network/packet.cpp network/packet.h
         network/socket.cpp network/socket.h
-        network/networkmanager.cpp network/networkmanager.h)
+        network/networkmanager.cpp network/networkmanager.h
+        network/packetlist.h
+        network/packetlist_0x0.cpp
+        network/packetlist_0xe.cpp)
 SOURCE_GROUP(network FILES ${NETWORK_FILES})
 
 set(THREAD_FILES

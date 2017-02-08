@@ -32,7 +32,7 @@ UOFileReader::~UOFileReader() {
     ADDTOCALLSTACK();
 }
 
-bool UOFileReader::_open(const t_byte *file, t_udword flags) {
+bool UOFileReader::_open(const t_byte *file, std::ios_base::openmode flags) {
     ADDTOCALLSTACK();
     if (is_open()) {
         DEBUG_ERROR("Trying to open a file when another one is already opened.");
@@ -50,7 +50,7 @@ bool UOFileReader::_close() {
     return true;
 }
 
-bool UOFileReader::_seek(t_uqword index, t_ubyte from) {
+bool UOFileReader::_seek(t_uqword index, std::ios_base::seekdir from) {
     ADDTOCALLSTACK();
     seekg(index, from);
     if (!tellg() == index) {

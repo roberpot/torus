@@ -17,6 +17,8 @@
 
 #include <cstring>
 #include <string>
+#include <iomanip>
+#include <ostream>
 #include "../core/types.h"
 
 #define ISWHITESPACE(X) (X == ' ' || X == '\t')
@@ -39,5 +41,21 @@ std::string print_hex_buffer(const t_byte * buffer, t_udword len);
 std::string remove_prefix(std::string p, std::string s);
 std::string remove_prefix(const t_byte * p, std::string s);
 std::string remove_prefix(const t_byte * p, const t_byte * s);
+
+struct HexCharStruct
+{
+    unsigned char c;
+    HexCharStruct(unsigned char _c) : c(_c) { }
+};
+
+inline std::ostream& operator<<(std::ostream& o, const HexCharStruct& hs)
+{
+    return (o << std::hex << (int)hs.c);
+}
+
+inline HexCharStruct hex(unsigned char _c)
+{
+    return HexCharStruct(_c);
+}
 
 #endif //__TORUS_STRING_H

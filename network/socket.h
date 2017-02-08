@@ -68,6 +68,7 @@ public:
 //    friend Socket & operator>>(Socket & s, t_udword d);
 //    friend Socket & operator>>(Socket & s, t_uqword d);
 private:
+    t_udword _determinate_client_seed();
     void _read_bytes(t_udword len = 1024);
     void _rewind(t_byte * b, t_udword l);
     t_byte * buffer, * rewinded;
@@ -75,6 +76,9 @@ private:
     SocketType type;
     Crypto * crypto;
     socket_t _socket;
+#ifdef __linux__
+    socket_t _accepted_socket;
+#endif //__linux__
 };
 
 template<typename T>

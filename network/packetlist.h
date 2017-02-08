@@ -19,6 +19,7 @@
 #include "packet.h"
 
 #define PACKET_CREATE_CHARACTER Packet_0x00
+#define PACKET_KR_2D_CLIENT_SEED    Packet_0xef
 
 class Packet_0x00 : public Packet {
 public:
@@ -26,8 +27,24 @@ public:
     const t_byte * dumps();
     void loads(const t_byte *);
     void loads(Socket * s);
-    ~Packet();
+    ~Packet_0x00();
 private:
+};
+
+class Packet_0xef : public Packet {
+public:
+    const t_udword length();
+    const t_byte * dumps();
+    void loads(const t_byte * b);
+    void loads(Socket * s);
+    ~Packet_0xef();
+    t_udword seed() { return _seed; }
+private:
+    t_udword _seed;
+    t_udword _client_major_version;
+    t_udword _client_minor_version;
+    t_udword _client_revision_version;
+    t_udword _client_prototype_version;
 };
 
 #endif //__TORUS_PACKETLIST_H

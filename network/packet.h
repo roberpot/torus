@@ -21,6 +21,7 @@ class Socket;
 
 class Packet {
 public:
+    Packet();
     const t_udword length();
     const t_byte * dumps();
     virtual void loads(const t_byte *) = 0;

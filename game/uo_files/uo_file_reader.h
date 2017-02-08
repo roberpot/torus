@@ -15,6 +15,7 @@
 #ifndef _TORUS_GAME_UO_FILE_READER_H
 #define _TORUS_GAME_UO_FILE_READER_H
 
+#include <cstdio>
 #include <fstream>
 #include "../../core/types.h"
 #include "map.h"
@@ -34,7 +35,7 @@ public:
     * @param from Start reading from (std::ios::beg / end).
     * @return success or fail.
     */
-    bool _seek(t_uqword index, t_ubyte from = std::ios::beg);
+    bool _seek(t_uqword index, std::ios_base::seekdir from = std::ios::beg);
     /**
     * @brief Overrides open with custom checks.
     *
@@ -43,7 +44,7 @@ public:
     * @param flags Flags used to open the file.
     * @return success or fail.
     */
-    bool _open(const t_byte *file, t_udword flags = std::ifstream::in | std::ifstream::binary);
+    bool _open(const t_byte *file, std::ios_base::openmode flags = std::ifstream::in | std::ifstream::binary);
 
     bool _close();
     /**
