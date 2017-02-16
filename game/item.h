@@ -49,8 +49,16 @@
 #define UFLAG4_DOOR			0x20000000  ///< 1d= door
 #define UFLAG4_STAIRS		0x40000000  ///< 1e=
 #define UFLAG4_WALKABLE		0x80000000  ///< 1f= We can walk here.
-#define IFLAG_STATIC 0x00001000
-#define IFLAG_LOCKED 0x00002000
+#define IFLAG_STATIC        0x00001000
+#define IFLAG_LOCKED        0x00002000
+
+#define CAN_EQUIP_ALL           0x000   ///< Everyone can equip.
+#define CAN_EQUIP_MALE_ONLY     0x001   ///< Only male characters can equip.
+#define CAN_EQUIP_FEMALE_ONLY   0x002   ///< Only female characters can equip.
+#define CAN_EQUIP_HUMAN         0x004   ///< Only humans can equip.
+#define CAN_EQUIP_ELF           0x008   ///< Only elves can equip.
+#define CAN_EQUIP_GARGOYLE      0x010   ///< Only gargoyles can equip.
+#define CAN_EQUIP_NONE          0x020   ///< Cannot be equiped.
 
 class Item : public Artifact {
 public:

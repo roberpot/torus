@@ -14,11 +14,11 @@
 
 #include "networkmanager.h"
 #include "../core/config.h"
+#include "../core/errors.h"
 #include "../shell.h"
 #include "../threads/utils.h"
 #include "../debug/info.h"
 #include "../debug/callstack.h"
-#include "../core/errors.h"
 
 class NetworkManager torusnet;
 

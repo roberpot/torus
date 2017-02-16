@@ -12,14 +12,14 @@
  * along with Torus. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <iostream>
-
 #include "network/networkmanager.h"
 #include "core/torus.h"
 #include "core/config.h"
 #include "shell.h"
 #include "debug/debug.h"
 #include "core/slave.h"
+#include "game/uo_files/uo_file_manager.h"
+
 
 TorusShell torus_shell;
 Torus torus;
@@ -28,6 +28,9 @@ int main() {
     torus_shell.start();
     TORUSSHELLECHO("Initializing Torus...");
     toruscfg.load_config_file("torus.ini");
+    if (!uofilemgr.init()) {
+        return -1;
+    }
     torusnet.start();
     TORUSSHELLECHO("Initializing Torus... OK.");
     torus.mainloop();

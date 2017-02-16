@@ -19,14 +19,10 @@
 #include <map>
 #include "map.h"
 
-extern class MapList : private std::map < t_ubyte, Map>{
+extern class MapList : private std::map < t_ubyte, Map*>{
 public:
     MapList() {}
     ~MapList();
-    /**
-    * @brief check if the map_list was correctly initialized.
-    */
-    bool init();
     /**
     * @brief gets the Map with the given id.
     *
@@ -34,7 +30,7 @@ public:
     * @param id The ingame ID of this map.
     * @return The Map with this id.
     */
-    Map &get_map(t_ubyte id);
+    Map *get_map(t_ubyte id);
 
     /**
     * @brief Get the total count of maps.
@@ -43,7 +39,7 @@ public:
     */
     t_ubyte get_map_count();
 
-    void add_map(t_uword x, t_uword y, t_ubyte id, t_ubyte file_id);
+    void add_map(std::pair<t_ubyte, t_ubyte> map);
 } maplist;
 
 #endif //_TORUS_GAME_MAP_LIST_H

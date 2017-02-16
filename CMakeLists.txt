@@ -11,8 +11,8 @@ set(CMAKE_C_STANDARD 11)
 # compiler flags
 ## Windows flags
 if(WIN32)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -W4 -MP")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -W4 -MP")  
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -W4 -MP -MTd -openmp")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -W4 -MP -MTd")  
     set(BOOST_ROOT "e:/boost")  #temp
     set(PostgreSQL_ROOT "e:/PostgreSQL/9.6")  #temp
     set(PQXX_ROOT  "e:/PostgreSQL/libpqxx") #temp
@@ -39,7 +39,7 @@ add_executable(torus_server ${SOURCE_FILES})
 
 # additional libs for windows
 if(WIN32)
-    target_link_libraries(torus_server wsock32 ws2_32) #ws2_32.lib for windows
+    target_link_libraries(torus_server wsock32 ws2_32 kernel32) #ws2_32.lib for windows
 endif()
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake/")

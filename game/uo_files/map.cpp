@@ -13,37 +13,43 @@
 */
 
 #include "map.h"
-#include <iostream>
-#include <cstring>
 #include "../../debug/callstack.h"
 #include "../../debug/debug.h"
-#include "uo_file_reader.h"
 
 Map::Map(){
+    ADDTOCALLSTACK();
     _x = 0;
     _y = 0;
     _fileid = 0;
+    _sector_size = 64;
+    _filename = "map0.mul";
     _is_valid = false;
-    _isuop = false;
 }
 
 Map::~Map(){
-    ADDTOCALLSTACK();
 }
 
-void Map::create(t_word x, t_word y, t_ubyte file_id){
+bool Map::create(t_word x, t_word y, t_ubyte ss, t_ubyte file_id, std::string filename)
+{
     ADDTOCALLSTACK();
+    /*std::ifstream filetest(filename.c_str());
+    if (!filetest.is_open()) {
+        return false;
+    }
+    filetest.close();*/
     _x = x;
     _y = y;
     _fileid = file_id;
+    _sector_size = ss;
+    _filename = filename;
 
     _blocks = new UOMapBlock[get_block_count()];
-    memset(_blocks, 0, sizeof(UOMapBlock) * get_block_count());
-    if (read_from_file())
-        _is_valid = true;
+    memset((char*)_blocks, 0, sizeof(UOMapBlock) * get_block_count());
+    return true;
 }
 
 bool Map::is_valid() {
+    ADDTOCALLSTACK();
     return _is_valid;
 }
 
@@ -57,13 +63,24 @@ t_word Map::get_max_y(){
     return _y;
 }
 
+t_ubyte Map::get_sector_size() {
+    ADDTOCALLSTACK();
+    return _sector_size;
+}
+
+t_ubyte Map::get_sector_count() {
+    ADDTOCALLSTACK();
+    return (_x * _y) / get_sector_size();
+}
+
 t_ubyte Map::get_file_id() {
     ADDTOCALLSTACK();
     return _fileid;
 }
 
-t_uword Map::get_block_count() {
-    return (_x + _y) / UO_MAP_BLOCK_SIZE;
+t_udword Map::get_block_count() {
+    ADDTOCALLSTACK();
+    return (_x * _y) / UO_MAP_BLOCK_CELLS;
 }
 
 bool Map::is_valid_p(t_word x, t_word y){
@@ -74,33 +91,28 @@ bool Map::is_valid_p(t_word x, t_word y){
     return true;
 }
 
-bool Map::read_from_file(){
+bool Map::init(){
     ADDTOCALLSTACK();
-    std::stringstream fileuop;
-    fileuop << "map" << (int)_fileid << "LegacyUOP.mul";
-    if (uofilereader._open(fileuop.str().c_str())) {   //try to read mapNLegacyMUL.uop
-        _isuop = true;
-    }
-    else {
-        std::stringstream filemul;
-        filemul << "map" << (int)_fileid << ".mul";
-        if (!uofilereader._open(filemul.str().c_str())) { // if no .uop was found, try with mapN.mul.
-            DEBUG_ERROR("Couldn't open map files (either .mul or .uop).");
-            return false;
-        }
+    std::streamsize bytes_to_read = sizeof(UOMapBlock) * get_block_count();
+
+    // File opening & checks
+    std::ifstream mapfile(_filename.c_str(), std::ios_base::in | std::ios_base::binary);
+    if (!mapfile.is_open()){
+        DEBUG_ERROR("Couldn't open map file '" << _filename.c_str() << "'.");
+        return false;
     }
 
-    t_udword blocks_count = (_x / 8) * (_y / 8);
+    // Reading data...
+    mapfile.read((char*)_blocks, bytes_to_read);
+    _is_valid = mapfile.gcount() == bytes_to_read;
 
-    for (t_udword block = 0; block < blocks_count; block++) {
-        _blocks[block].init();
-        uofilereader._seek(sizeof(UOMapBlock)*block, std::ifstream::beg);
-        _blocks[block].header_lo = uofilereader.get_uword();
-        _blocks[block].header_hi = uofilereader.get_uword();
-        for (t_uword cell = 0; cell < 64; cell++) {
-            _blocks[block].points[cell].terrain = uofilereader.get_word();
-            _blocks[block].points[cell].z = uofilereader.get_byte();
-        }
+    // Done reading, closing ...
+    mapfile.close();
+
+    // Checking integrity of readed data.
+    if (!_is_valid) {
+        DEBUG_ERROR("Error reading map " << (int)get_file_id() << ", readed " << mapfile.gcount() << " bytes out of " << bytes_to_read << ".");
+        return false;
     }
     return true;
 }

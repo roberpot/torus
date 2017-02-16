@@ -17,9 +17,9 @@
 
 #include "../../core/types.h"
 #include "map_point.h"
-#include <cstring>
 
 #define UO_MAP_BLOCK_SIZE 8
+#define UO_MAP_BLOCK_CELLS 64
 
 /**
 * @brief Struct found on map* files containing a set of 8x8 map tiles.
@@ -27,12 +27,8 @@
 * Struct's size = 196 bytes per block = 8x8 tiles * UOMapPoint(3 bytes)
 */
 struct UOMapBlock {
-    t_uword header_lo;  ///< unused
-    t_uword header_hi;  ///< unused
-    UOMapPoint points[UO_MAP_BLOCK_SIZE * UO_MAP_BLOCK_SIZE];   ///< array of tiles
-    void init() {
-        header_lo = header_hi = 0;
-        memset(&points, 0, sizeof(UOMapPoint) * 64);
-    }
+    t_uword header_lo = 0;  ///< unused
+    t_uword header_hi = 0;  ///< unused
+    UOMapPoint points[UO_MAP_BLOCK_CELLS];   ///< array of tiles
 };
 #endif //_TORUS_GAME_MAP_BLOCK_H

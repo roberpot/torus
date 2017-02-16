@@ -20,6 +20,21 @@
 #include <vector>
 #include "types.h"
 
+struct MapFile {
+    t_uword x;
+    t_uword y;
+    t_ubyte sector_size;
+    t_ubyte id;
+    std::string filename;
+    MapFile(t_ubyte mid, t_uword mx, t_uword my, t_ubyte ss, std::string mfn) {
+        id = mid;
+        x = mx;
+        y = my;
+        sector_size = ss;
+        filename = mfn;
+    }
+};
+
 extern class Config {
 public:
     Config();
@@ -47,6 +62,8 @@ public:
     std::vector<std::string> noto_titles;
     std::vector<std::string> runes;
     std::vector<std::pair<t_udword, t_udword> > crypto_keys;
+    std::vector<MapFile> map_files;
+    std::vector<std::pair<t_ubyte, t_ubyte>> maps;
 private:
     void _reset();
 } toruscfg;

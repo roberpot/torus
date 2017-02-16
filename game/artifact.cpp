@@ -133,12 +133,26 @@ void Artifact::switch_flag(t_udword flag){
     _flags ^= flag;
 }
 
+t_udword Artifact::get_flags() {
+    return _flags;
+}
+
+void Artifact::set_color(t_udword color) {
+    ADDTOCALLSTACK();
+    _color = color;
+}
+
+t_udword Artifact::get_color() {
+    ADDTOCALLSTACK();
+    return _color;
+}
+
 bool Pos::can_move_to_coord(t_word destX, t_word destY){
     ADDTOCALLSTACK();
-    if (destX < 0 || destX > maplist.get_map(map).get_max_x()) {
+    if (destX < 0 || destX > maplist.get_map(map)->get_max_x()) {
         return false;
     }
-    if (destY < 0 || destY > maplist.get_map(map).get_max_y()) {
+    if (destY < 0 || destY > maplist.get_map(map)->get_max_y()) {
         return false;
     }
     /*

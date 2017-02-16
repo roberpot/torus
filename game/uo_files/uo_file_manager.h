@@ -11,3 +11,27 @@
 * You should have received a copy of the GNU Lesser General Public License
 * along with Torus. If not, see <http://www.gnu.org/licenses/>.
 */
+
+#ifndef _TORUS_GAME_UO_FILE_MANAGER_H
+#define _TORUS_GAME_UO_FILE_MANAGER_H
+
+#include "../../core/types.h"
+#include <vector>
+#include "map.h"
+#include "map_list.h"
+
+extern class UOFileManager{
+public:
+    UOFileManager();
+    ~UOFileManager();
+
+private:
+    std::map<t_ubyte, Map*> basemaps;
+    MapList maplist;
+public:
+    void read_config();
+    bool init();
+
+} uofilemgr;
+
+#endif //_TORUS_GAME_UO_FILE_MANAGER_H

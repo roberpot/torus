@@ -34,22 +34,24 @@ class Char;
 class Item;
 
 class Artifact : protected Uid, public Pos {
-private:
-    const t_byte *_name;
-    Pos _pos;
-    t_uword _flags;
 protected:
     //Uid _uid;
     virtual ~Artifact();
     Artifact(t_udword uid);
     Char *get_char();
     Item *get_item();
-public:
+
     //Name
+private:
+    const t_byte *_name;
+public:
     const t_byte *get_name();
     void set_name(const t_byte *name);
 
     //Pos
+private:
+    Pos _pos;
+public:
     void move_to(t_word destX, t_word destY);
     void set_z(t_byte destZ);
     void set_map(t_ubyte destMap);
@@ -57,10 +59,20 @@ public:
     virtual bool can_move() = 0;
 
     //Flags
+private:
+    t_uword _flags;
+public:
     bool has_flag(t_udword flag);
     void set_flag(t_udword flag);
     void unset_flag(t_udword flag);
     void switch_flag(t_udword flag);
+    t_udword get_flags();
+
+private:
+    t_udword _color;
+public:
+    void set_color(t_udword color);
+    t_udword get_color();
 };
 
 #endif //_TORUS_GAME_ARTIFACT_H

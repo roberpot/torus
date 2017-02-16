@@ -13,31 +13,16 @@
 */
 
 #include "map_list.h"
-#include <cstddef>
-#include <cstring>
 #include "../../debug/debug.h"
 #include "../../debug/callstack.h"
+#include "uo_file_manager.h"
 
+MapList maplist;
 
 MapList::~MapList() {
-    ADDTOCALLSTACK();
 }
 
-bool MapList::init() {
-    ADDTOCALLSTACK();
-    t_ubyte valid_maps = 0;
-    iterator itb = begin(), ite = end();
-    while (itb != ite) {
-        if ((*itb).second.is_valid())
-            valid_maps++;
-    }
-    if (valid_maps == 0) {
-        return false;
-    }
-    return true;
-}
-
-Map &MapList::get_map(t_ubyte id) {
+Map *MapList::get_map(t_ubyte id) {
     ADDTOCALLSTACK();
     return (*this)[id];
 }
@@ -47,10 +32,6 @@ t_ubyte MapList::get_map_count() {
     return (t_ubyte)(*this).size();
 }
 
-void MapList::add_map(t_uword x, t_uword y, t_ubyte id, t_ubyte file_id) {
-    if ((*this)[id].is_valid()) {
-        DEBUG_ERROR("Trying to add an already existing Map: " << x << ", " << y << ", " << id << ", " << file_id);
-        return;
-    }
-    (*this)[id].create(x, y, file_id);
+void MapList::add_map(std::pair<t_ubyte, t_ubyte> map){
+    ADDTOCALLSTACK();
 }

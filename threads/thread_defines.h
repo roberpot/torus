@@ -15,12 +15,11 @@
 #ifndef __TORUS_THREAD_DEFINES_H
 #define __TORUS_THREAD_DEFINES_H
 
-#ifdef _WIN32
-    #ifdef _WINDOWS
-        #define __TORUS_THREAD_WINAPI
-    #endif
+#ifdef _WINDOWS
     #ifdef __MINGW32__
         #define __TORUS_THREAD_PTHREAD
+    #else
+        #define __TORUS_THREAD_WINAPI
     #endif
 #else
 #define __TORUS_THREAD_PTHREAD

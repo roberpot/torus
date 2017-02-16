@@ -17,14 +17,26 @@
 
 #include "../../core/types.h"
 #include "map_block.h"
+#include <string>
+
+enum MAPID {
+    MAP_FELUCCA,
+    MAP_TRAMMEL,
+    MAP_ILSHENAR,
+    MAP_MALAS,
+    MAP_TOKUNO,
+    MAP_TER_MUR,
+    MAP_QTY
+};
 
 class Map {
 private:
-    t_uword _x = 0;     // max X
-    t_uword _y = 0;     // max Y
-    t_ubyte _fileid = 255;    // map file in which this map is based on (255 = bad id).
+    t_uword _x;     // max X
+    t_uword _y;     // max Y
+    t_ubyte _fileid;    // map file in which this map is based on (255 = bad id).
+    t_ubyte _sector_size;
     UOMapBlock *_blocks;
-    bool _isuop;
+    std::string _filename;
     bool _is_valid;
 public:
     Map();
@@ -35,8 +47,15 @@ public:
     * @param x Higher X tile for this map.
     * @param y Higher Y tile for this map.
     * @param file_id Map file used for this map.
+    * @return false if the given file doesn't exist or can't be opened.
     */
-    void create(t_word x, t_word y, t_ubyte file_id);
+    bool create(t_word x, t_word y, t_ubyte ss, t_ubyte file_id, std::string filename);
+    /**
+    * @brief Fills the Map with it's map file's data.
+    *
+    * @return success or fail;
+    */
+    bool init();
     /**
     * @brief Checks if this a valid map.
     *
@@ -56,6 +75,18 @@ public:
     */
     t_word get_max_y();
     /**
+    * @ brief Get the size of each sector in this map.
+    *
+    * @return size
+    */
+    t_ubyte get_sector_size();
+    /**
+    * @ brief Get the count of sectors for this map.
+    *
+    * @return count
+    */
+    t_ubyte get_sector_count();
+    /**
     * @brief Get the map file used for this Map.
     *
     * @return file_id;
@@ -66,7 +97,7 @@ public:
     *
     * @return the count;
     */
-    t_uword get_block_count();
+    t_udword get_block_count();
     /**
     * @brief Checks if the given coords are valid.
     *
@@ -75,12 +106,6 @@ public:
     * @return if coords are valid.
     */
     bool is_valid_p(t_word x, t_word y);
-    /**
-    * @brief Fills the Map with it's map file's data.
-    *
-    * @return success or fail;
-    */
-    bool read_from_file();
 };
 
 #endif //_TORUS_GAME_MAP_H

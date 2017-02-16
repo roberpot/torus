@@ -17,7 +17,6 @@
 #include "config.h"
 #include "../shell.h"
 #include "../debug/info.h"
-#include "../game/uo_files/map_list.h"
 //#include "../network/crypto.h"
 
 Config toruscfg;
@@ -131,15 +130,6 @@ void Config::_reset() {
     tick_duration_overloaded = 225;
     tick_duration_idle = 30;
     file_path = "";
-    maplist.add_map(7168, 4096, 0, 0);      // Map 0 (Felucca)
-    //maplist.add_map(7168, 4096, 1, 1);    // Map 1 (Trammel)
-    //maplist.add_map(2304, 1600, 2, 2);    // Map 2 (Ilshenar)
-    //maplist.add_map(2560, 2048, 3, 3);    // Map 3 (Malas)
-    //maplist.add_map(1448, 1448, 4, 4);    // Map 4 (Tokuno Islands)
-    //maplist.add_map(1280, 4096, 5, 5);    // Map 5 (Ter Mur)
-    //maplist.add_map(7168, 4096, 10, 0);   // Map 10 (Copy of Map 0).
-    //maplist.add_map(2560, 2048, 11, 3);   // Map 11 (Copy of Map 3).
-
 
     obscene_strings.clear();
     fame_ranges.clear();
@@ -151,4 +141,37 @@ void Config::_reset() {
     noto_titles.clear();
     runes.clear();
     crypto_keys.clear();
+
+    // Maps Section
+
+    // Map Files
+    MapFile map0new(0, 7168, 4096, 64, "map0.mul");// Map 0 (Felucca)    (New map size)
+    map_files.push_back(map0new);
+    // Example for old map style (older than ML). Don't enable both old and new, only one can be used.
+    //MapFile map0old(0, 6144, 4096, 64, "map0.mul")  // Map 0 (Felucca)  (Old map size)
+    //map_files.push_back(map0old);     
+    MapFile map1(1, 7168, 4096, 64, "map1.mul");    // Map 1 (Trammel)
+    map_files.push_back(map1);
+    MapFile map2(2, 2304, 1600, 32, "map2.mul");    // Map 2 (Ilshenar)
+    map_files.push_back(map2);
+    MapFile map3(3, 2560, 2048, 32, "map3.mul");    // Map 3 (Malas)
+    map_files.push_back(map3);
+    MapFile map4(4, 1448, 1448, 8, "map4.mul");     // Map 4 (Tokuno Islands)
+    map_files.push_back(map4);
+    //MapFile map5(5, 1280, 4096, 32, "map5.mul");    // Map 5 (Ter Mur)
+    //map_files.push_back(map5);
+
+    // Virtual (ingame) maps
+    // IngameId, FileID
+    maps.push_back(std::make_pair<t_ubyte, t_ubyte>(0, 0));
+    maps.push_back(std::make_pair<t_ubyte, t_ubyte>(1, 1));
+    maps.push_back(std::make_pair<t_ubyte, t_ubyte>(2, 2));
+    maps.push_back(std::make_pair<t_ubyte, t_ubyte>(3, 3));
+    maps.push_back(std::make_pair<t_ubyte, t_ubyte>(4, 4));
+    maps.push_back(std::make_pair<t_ubyte, t_ubyte>(5, 5));
+    //
+    maps.push_back(std::make_pair<t_ubyte, t_ubyte>(10, 0));  // Adding map 10 as copy of map0.mul / Map0LegacyMUL.uop
+    maps.push_back(std::make_pair<t_ubyte, t_ubyte>(11, 3));  // Adding map 11 as copy of map3.mul / Map3LegacyMUL.uop
+
+    // END Maps Section
 }
