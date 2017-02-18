@@ -16,10 +16,19 @@
 #include "char_props.h"
 #include "char_stats.h"
 #include "../item.h"
+#include "../char.h"
+#include "../account.h"
 
-CharProps::CharProps() {
+CharProps::CharProps(Char *whoami) {
+    _char = whoami;
     _race = RACE_QTY;
     _gender = GENDER_QTY;
+    _fame = 0;
+    _karma = 0;
+    _body = 400;    //TODO update value with any Body when they get implemented.
+    _obody = 400;
+    _ocolor = 0;
+    _dir = N;
 }
 
 CharProps::~CharProps() {
@@ -125,4 +134,47 @@ void CharProps::set_ocolor(t_udword ocolor) {
 t_udword CharProps::get_ocolor() {
     ADDTOCALLSTACK();
     return _ocolor;
+}
+
+void CharProps::set_dir(DIR dir) {
+    ADDTOCALLSTACK();
+    _dir = dir;
+}
+
+DIR CharProps::get_dir() {
+    ADDTOCALLSTACK();
+    return _dir;
+}
+
+Char * CharProps::get_char() {
+    return _char;
+}
+
+t_uword CharProps::get_status_flag(Char *viewer) {
+    ADDTOCALLSTACK();
+    t_uword flags = SF_NORMAL;
+    t_udword cflags = _char->get_flags();
+    // if (flags freezed / stoned)
+    //  _status_flags |= SF_FREEZED;
+    if (get_gender() == GENDER_FEMALE)
+        flags |= SF_FEMALE;
+    if (get_race() == RACE_GARGOYLE /* && cflags & FLAG_FLYING && (viewer->get_client()->get_version() >= CLIENT_SA || viewer->get_client()->is_enhanced())*/) { // No need to check this for viewers who cannot see gargoyles and their flying mode.
+        flags |= SF_FLYING;
+    }
+    if (cflags & CFLAG_POISONED) {  // FLYING and POISONED share the same flag.
+        flags |= SF_POISONED;
+    }
+    if (cflags & CFLAG_INVUL) {
+        flags |= SF_INVUL;
+    }
+    if (cflags & CFLAG_WAR) {
+        flags |= SF_WARMODE;
+    }
+    if (_char->get_account() && _char->get_account()->get_privlevel() > PRIV_PLAYER) {
+        flags |= SF_IGNORECHARS;
+    }
+    if (cflags & (CFLAG_INVIS | CFLAG_HIDDEN)) {
+        flags |= SF_INVIS;
+    }
+    return flags;
 }

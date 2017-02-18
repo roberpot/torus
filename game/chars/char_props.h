@@ -45,19 +45,48 @@ enum CHAR_PROP {
     PROP_INCREASESPELLDAM,
     PROP_INCREASESWINGSPEED,
     PROP_LOWERMANACOST,
-    PROP_LOWERREAGENTCOST,
+    PROP_LOWERREAGENTCOST
 };
 
+enum DIR {
+    N,
+    NE,
+    E,
+    SE,
+    S,
+    SW,
+    W,
+    NW,
+    DIR_QTY = NW
+};
+
+#define SF_NORMAL       0x00
+#define SF_FREEZED      0x01
+#define SF_FEMALE       0x02
+#define SF_POISONED     0x04
+#define SF_FLYING       0x04
+#define SF_INVUL        0x08
+#define SF_IGNORECHARS  0x10
+#define SF_UNK1         0x20
+#define SF_WARMODE      0x40
+#define SF_INVIS        0x80
+
+class Char;
 class CharStats;
 
 class CharProps {
 public:
-    CharProps();
+    CharProps(Char *whoami);
     ~CharProps();
 // Races & genders
 private:
+    Char *_char;
+public:
+    Char *get_char();
+private:
     CHAR_RACE _race;
     CHAR_GENDER _gender;
+    t_uword get_status_flag(Char *viewer);
 public:
     void set_race(CHAR_RACE race);
     CHAR_RACE get_race();
@@ -92,6 +121,11 @@ private:
 public:
     void set_ocolor(t_udword ocolor);
     t_udword get_ocolor();
+private:
+    DIR _dir;
+public:
+    void set_dir(DIR dir);
+    DIR get_dir();
 
 };
 

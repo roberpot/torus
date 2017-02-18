@@ -15,12 +15,14 @@
 #include "char.h"
 #include "../debug/callstack.h"
 
-Char::Char() : Artifact(UID_CHAR){
+Char::Char() : Artifact(UID_CHAR), CharProps(this){
     ADDTOCALLSTACK();
+    _account = NULL;
 }
 
-Char::Char(t_udword uid) : Artifact( uid) {
+Char::Char(t_udword uid) : Artifact(uid), CharProps(this) {
     ADDTOCALLSTACK();
+    _account = NULL;
 }
 
 Char::~Char(){
@@ -41,4 +43,14 @@ bool Char::can_move(){
         return false;
     }
     return true;
+}
+
+Account * Char::get_account() {
+    ADDTOCALLSTACK();
+    return _account;
+}
+
+void Char::set_account(Account * account) {
+    ADDTOCALLSTACK();
+    _account = account;
 }

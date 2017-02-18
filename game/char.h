@@ -25,6 +25,7 @@
 #define CFLAG_CAN_RUN           0x000002    // Can run.
 #define CFLAG_CAN_FLY           0x000004    // Flying NPCs / Playable Gargoyles actively flying.
 #define CFLAG_CAN_SWIN          0x000008    // Swim (move on water).
+#define CFLAG_WAR               0x000010    // War mode
 
 // Gearing flags
 #define CFLAG_CAN_USE_HANDS     0x000010    // Can use items / Equip in hands.
@@ -37,7 +38,9 @@
 //GM Flags
 #define CFLAG_GM                0x010000    // GM ON.
 #define CFLAG_INVIS             0x020000    // GM invis.
+#define CFLAG_INVUL             0x040000    // Invulnerable
 
+class Account;
 
 class Char : 
     public Artifact,
@@ -50,6 +53,13 @@ public:
     ~Char();
     CharStats &get_stat(STAT_TYPE key);
     bool can_move() override;
+
+private:
+    Account *_account;
+public:
+    Account *get_account();
+    void set_account(Account *account);
+public:
 };
 
 #endif //_TORUS_GAME_CHAR_H_

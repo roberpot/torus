@@ -21,6 +21,16 @@
 class Char;
 class Socket;
 
+enum PRIVLVL {
+    PRIV_GUEST,
+    PRIV_PLAYER,
+    PRIV_COUNSELOR,
+    PRIV_SEER,
+    PRIV_GM,
+    PRIV_DEV,
+    PRIV_ADMIN
+};
+
 // Expansion Flags
 #define EXP_LBR 0x001   ///< Default game.
 #define EXP_T2A 0x002   ///< The Second Age.
@@ -39,6 +49,7 @@ private:
     t_uword _expansion;     ///< Expansion level this account has access.
     std::string _lastip;  ///< Last IP connected to this account.
     Socket *_socket;        ///< Pointer to the socket currently connected to this account.
+    PRIVLVL _privlevel;
 public:
     Account(const t_byte *name, const t_byte *pw, t_udword flags = 0, t_uword exp = 0);
     ~Account();
@@ -82,6 +93,9 @@ public:
     * @param socket the socket connecting to the account.
     */
     void connect(Socket *socket);
+
+    PRIVLVL get_privlevel();
+    void set_privlevel(PRIVLVL lvl);
 };
 
 #endif //_TORUS_GAME_ACCOUNT_H

@@ -145,6 +145,7 @@ void Config::_reset() {
     // Maps Section
 
     // Map Files
+/*
     MapFile map0new(0, 7168, 4096, 64, "map0.mul");// Map 0 (Felucca)    (New map size)
     map_files.push_back(map0new);
     // Example for old map style (older than ML). Don't enable both old and new, only one can be used.
@@ -172,6 +173,6 @@ void Config::_reset() {
     //
     maps.push_back(std::make_pair<t_ubyte, t_ubyte>(10, 0));  // Adding map 10 as copy of map0.mul / Map0LegacyMUL.uop
     maps.push_back(std::make_pair<t_ubyte, t_ubyte>(11, 3));  // Adding map 11 as copy of map3.mul / Map3LegacyMUL.uop
-
+*/
     // END Maps Section
 }

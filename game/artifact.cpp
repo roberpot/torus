@@ -31,6 +31,7 @@ Artifact::Artifact(t_udword uid){
         set_uid(uid);
     }
     _flags = 0;
+    _color = 0;
 }
 
 Artifact::~Artifact(){

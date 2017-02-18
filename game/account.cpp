@@ -103,3 +103,11 @@ void Account::connect(Socket * socket){
     _socket = socket;
     _lastip = _socket->get_ip();
 }
+
+void Account::set_privlevel(PRIVLVL lvl) {
+    _privlevel = lvl;
+}
+
+PRIVLVL Account::get_privlevel() {
+    return _privlevel;
+}

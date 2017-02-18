@@ -9,13 +9,13 @@ set(CMAKE_C_STANDARD 11)
 
 # compiler flags
 ## Windows flags
-if(WIN32)
+if(MSVC_VERSION)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -W4 -MP -MTd -openmp")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -W4 -MP -MTd")  
     set(BOOST_ROOT "e:/boost")  #temp
     set(PostgreSQL_ROOT "e:/PostgreSQL/9.6")  #temp
     set(PQXX_ROOT  "e:/PostgreSQL/libpqxx") #temp
-endif(WIN32)
+endif(MSVC_VERSION)
 
 ## gcc flags
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_GNUCC) # additional flags for gcc, msvc doesn't support them.
