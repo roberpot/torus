@@ -29,12 +29,6 @@ Account::Account(const t_byte *name, const t_byte *pw, t_udword flags , t_uword 
 
 Account::~Account(){
     ADDTOCALLSTACK();
-    for (t_byte i = 0; i < 7; i++) {
-        if (_charlist[i]) {
-            delete _charlist[i];
-            _charlist[i] = 0;
-        }
-    }
     if (_socket)
         delete _socket;
 }
@@ -66,10 +60,11 @@ bool Account::can_add_char(){
 
 bool Account::add_char(Char *chr){
     ADDTOCALLSTACK();
-    for (t_byte i = 0; i < 7; i++) {    // run the whole character list to find an empty slot
-        if (_charlist[i])
+    for (t_byte i = 0; i < _charlist.size(); i++) {    // run the whole character list to find an empty slot
+        Char *existingchar = _charlist[i];
+        if (existingchar && existingchar == chr)
             continue;
-        _charlist[i] = chr;
+        _charlist.push_back(chr);
         return true;
     }
     return false;
@@ -77,25 +72,15 @@ bool Account::add_char(Char *chr){
 
 bool Account::delete_char(Char *chr){
     ADDTOCALLSTACK();
-    for (t_byte i = 0; i < 7; i++) {    // run the whole character list to find this character.
-        if (_charlist[i] == chr) {
-            delete _charlist[i];        // delete de Char* directly.
-            _charlist[i] = 0;           // clear this slot.
-            fix_charlist();             // reorder the whole list to avoid empty slots between characters.
+    for (t_byte i = 0; i < _charlist.size(); i++) {    // run the whole character list to find this character.
+        Char *existingchar = _charlist[i];
+        if (existingchar && existingchar == chr) {
+            _charlist.erase(_charlist.begin() + i);        // delete de Char* directly.
+            delete chr;
             return true;
         }
     }
     return false;
-}
-
-void Account::fix_charlist(){
-    ADDTOCALLSTACK();
-    for (t_byte i = 0; i < 7; i++) {
-        if (!_charlist[i] && _charlist[i+1]) {
-            _charlist[i] = _charlist[i+1];
-            _charlist[i+1] = 0;
-        }
-    }
 }
 
 void Account::connect(Socket * socket){
@@ -104,10 +89,24 @@ void Account::connect(Socket * socket){
     _lastip = _socket->get_ip();
 }
 
+PRIVLVL Account::get_privlevel() {
+    ADDTOCALLSTACK();
+    return _privlevel;
+}
+
 void Account::set_privlevel(PRIVLVL lvl) {
+    ADDTOCALLSTACK();
     _privlevel = lvl;
 }
 
-PRIVLVL Account::get_privlevel() {
-    return _privlevel;
+void Account::remove() {
+    ADDTOCALLSTACK();
+    for (t_byte i = 0; i < _charlist.size(); i++) {
+        Char *chr = _charlist[i];
+        if (chr) {
+            delete chr;
+            chr = 0;
+        }
+    }
+    delete this;
 }

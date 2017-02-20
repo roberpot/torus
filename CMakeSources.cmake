@@ -33,7 +33,10 @@ set(NETWORK_FILES
         network/networkmanager.cpp network/networkmanager.h
         network/packetlist.h
         network/packetlist_0x0.cpp
-        network/packetlist_0xe.cpp)
+        network/packetlist_0x02.cpp
+        network/packetlist_0xe.cpp
+        network/packetlist_0x21.cpp
+        network/packetlist_0x22.cpp)
 SOURCE_GROUP(network FILES ${NETWORK_FILES})
 
 set(THREAD_FILES
@@ -47,6 +50,7 @@ SOURCE_GROUP(threads FILES ${THREAD_FILES})
 set(GAME_FILES
         game/account.cpp    game/account.h
         game/artifact.cpp   game/artifact.h
+        game/client.cpp     game/client.h
         game/char.cpp       game/char.h
         game/item.cpp       game/item.h
         game/uid.cpp        game/uid.h)

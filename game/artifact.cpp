@@ -114,6 +114,10 @@ void Artifact::set_pos(t_word destX, t_word destY, t_byte destZ, t_ubyte destMap
     set_map(destMap);
 }
 
+Pos Artifact::get_pos() {
+    return _pos;
+}
+
 bool Artifact::has_flag(t_udword flag){
     ADDTOCALLSTACK();
     return _flags & flag;
@@ -146,6 +150,20 @@ void Artifact::set_color(t_udword color) {
 t_udword Artifact::get_color() {
     ADDTOCALLSTACK();
     return _color;
+}
+
+t_uqword Artifact::get_timer() {
+    ADDTOCALLSTACK();
+    t_uqword diff = 0;
+    t_uqword curtime = torus.get_serv_time();
+    if (_timer > curtime)
+        diff = _timer - curtime;
+    return diff;
+}
+
+void Artifact::set_timer(t_uqword ticks){
+    ADDTOCALLSTACK();
+    _timer = torus.get_serv_time() + ticks;
 }
 
 bool Pos::can_move_to_coord(t_word destX, t_word destY){

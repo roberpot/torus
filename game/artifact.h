@@ -56,6 +56,7 @@ public:
     void set_z(t_byte destZ);
     void set_map(t_ubyte destMap);
     void set_pos(t_word destX, t_word destY, t_byte destZ, t_ubyte destMap);
+    Pos get_pos();
     virtual bool can_move() = 0;
 
     //Flags
@@ -73,6 +74,22 @@ private:
 public:
     void set_color(t_udword color);
     t_udword get_color();
+
+private:
+    t_uqword _timer;
+public:
+    /**
+    * @brief Gets the current timer for this artifact.
+    *
+    * @return the timer.
+    */
+    t_uqword get_timer();
+    /**
+    * @brief Sets a new timer for this artifact.
+    *
+    * @param ticks The new time in ticks.
+    */
+    void set_timer(t_uqword ticks);
 };
 
 #endif //_TORUS_GAME_ARTIFACT_H

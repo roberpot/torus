@@ -19,7 +19,12 @@
 #include "packet.h"
 
 #define PACKET_CREATE_CHARACTER Packet_0x00
-#define PACKET_KR_2D_CLIENT_SEED    Packet_0xef
+#define PACKET_KR_2D_CLIENT_SEED Packet_0xef
+#define PACKET_MOVEMENT_REQUEST Packet_0x02
+#define PACKET_MOVEMENT_REJECT Packet_0x21
+#define PACKET_MOVEMENT_ACCEPT Packet_0x22
+
+class Client;
 
 class Packet_0x00 : public Packet {
 public:
@@ -29,6 +34,15 @@ public:
     void loads(Socket * s);
     ~Packet_0x00();
 private:
+};
+
+class Packet_0x02 : public Packet {
+public:
+    const t_udword length();
+    const t_byte *dumps();
+    void loads(const t_byte *);
+    void loads(Socket *s);
+    ~Packet_0x02();
 };
 
 class Packet_0xef : public Packet {
@@ -45,6 +59,26 @@ private:
     t_udword _client_minor_version;
     t_udword _client_revision_version;
     t_udword _client_prototype_version;
+};
+
+class Packet_0x21 : public Packet {
+public:
+    const t_udword length();
+    const t_byte *dumps();
+    void loads(const t_byte * b);
+    void loads(Socket * s);
+    void set_data(t_ubyte seq, Client *client);
+    ~Packet_0x21();
+};
+
+class Packet_0x22 : public Packet {
+public:
+    const t_udword length();
+    const t_byte *dumps();
+    void loads(const t_byte * b);
+    void loads(Socket * s);
+    void set_data(t_ubyte seq, Client *client);
+    ~Packet_0x22();
 };
 
 #endif //__TORUS_PACKETLIST_H

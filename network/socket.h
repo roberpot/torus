@@ -43,6 +43,8 @@ typedef SOCKET socket_t;
 typedef int socket_t;
 #endif //__linux__
 
+class Client;
+
 class Socket {
 public:
     Socket();
@@ -51,7 +53,8 @@ public:
     void bind(const t_byte * addr, t_word port);
     bool client_pending();
     bool data_ready();
-    Socket * get_client();
+    Socket * get_socket();
+    Client * get_client();
     const t_byte * get_ip();
     Packet * read_packet();
     void write_packet(Packet * p);
@@ -76,6 +79,7 @@ private:
     SocketType type;
     Crypto * crypto;
     socket_t _socket;
+    Client *_client;
 #ifdef __linux__
     socket_t _accepted_socket;
 #endif //__linux__
@@ -86,6 +90,9 @@ Socket & operator>>(Socket & s, T & d) {
     ADDTOCALLSTACK();
     s._read_bytes(sizeof(T));
     memcpy((void*)&d, s.buffer, sizeof(T));
+    if (sizeof(T) == 4) {
+        d = (((d & 0x000000ff) << 24) | ((d & 0x0000ff00) << 8) | ((d & 0x00ff0000) >> 8) | ((d & 0xff000000) >> 24));
+    }
     return s;
 }
 

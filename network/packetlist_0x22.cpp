@@ -15,36 +15,43 @@
 #include "../debug/info.h"
 #include "packetlist.h"
 #include "socket.h"
+#include "../game/client.h"
+#include "../game/char.h"
 
 
-const uint32_t Packet_0xef::length() {
+const t_udword Packet_0x22::length() {
     ADDTOCALLSTACK();
-    return 21;
+    return 8;
 }
 
-const t_byte * Packet_0xef::dumps() {
+const t_byte * Packet_0x22::dumps() {
     ADDTOCALLSTACK();
     return 0;
 }
 
-void Packet_0xef::loads(const t_byte * b) {
+void Packet_0x22::loads(const t_byte * b) {
     ADDTOCALLSTACK();
     UNREFERENCED_PARAMETER(b);
 }
 
-#define N2L(C, LL) \
-    LL = ((C&0xff000000))>>24 | ((C&0x00ff0000))>>8  | ((C&0x0000ff00))<<8 | ((C&0x000000ff)<<24)
-
-void Packet_0xef::loads(Socket * s) {
-    ADDTOCALLSTACK();
-    *s >> _seed;
-    N2L(_seed, _seed);
-    *s >> _client_major_version;
-    *s >> _client_minor_version;
-    *s >> _client_revision_version;
-    *s >> _client_prototype_version;
+void Packet_0x22::loads(Socket * s) {
+    ADDTOCALLSTACK(); 
+    UNREFERENCED_PARAMETER(s);
 }
 
-Packet_0xef::~Packet_0xef() {
+void Packet_0x22::set_data(t_ubyte seq, Client * client) {
+    ADDTOCALLSTACK();
+    Char *chr = client->get_char();
+    if (!chr) {
+        return;
+    }
+    (*this) << 0x22;
+    (*this) << seq;
+    (*this) << 7;   // View color (blue, red, yellow ...)
+    send(client->get_socket());
+}
+
+
+Packet_0x22::~Packet_0x22() {
     ADDTOCALLSTACK();
 }

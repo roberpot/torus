@@ -15,36 +15,34 @@
 #include "../debug/info.h"
 #include "packetlist.h"
 #include "socket.h"
+#include "../core/torus.h"
+#include "../game/client.h"
 
 
-const uint32_t Packet_0xef::length() {
+const t_udword Packet_0x02::length() {
     ADDTOCALLSTACK();
-    return 21;
+    return 7;
 }
 
-const t_byte * Packet_0xef::dumps() {
+const t_byte * Packet_0x02::dumps() {
     ADDTOCALLSTACK();
     return 0;
 }
 
-void Packet_0xef::loads(const t_byte * b) {
+void Packet_0x02::loads(const t_byte * b) {
     ADDTOCALLSTACK();
     UNREFERENCED_PARAMETER(b);
 }
 
-#define N2L(C, LL) \
-    LL = ((C&0xff000000))>>24 | ((C&0x00ff0000))>>8  | ((C&0x0000ff00))<<8 | ((C&0x000000ff)<<24)
-
-void Packet_0xef::loads(Socket * s) {
+void Packet_0x02::loads(Socket * s) {
     ADDTOCALLSTACK();
-    *s >> _seed;
-    N2L(_seed, _seed);
-    *s >> _client_major_version;
-    *s >> _client_minor_version;
-    *s >> _client_revision_version;
-    *s >> _client_prototype_version;
+    t_byte dir = 0;
+    t_byte sequence = 0;
+    *s >> dir;
+    *s >> sequence;
+    s->get_client()->event_walk(dir, sequence);
 }
 
-Packet_0xef::~Packet_0xef() {
+Packet_0x02::~Packet_0x02() {
     ADDTOCALLSTACK();
 }

@@ -18,6 +18,7 @@
 #include "config.h"
 
 Torus::Torus() {
+    _serv_time = 0;
 }
 
 void Torus::stop() {
@@ -45,6 +46,7 @@ void Torus::mainloop() {
             torus_thread_sleep(toruscfg.tick_duration);
             balance_control();
             _slaves_condvar.broadcast();
+            _serv_time++;
         }
         DEBUG_NOTICE("End of mainloop. Stopping slaves...");
         std::map<t_udword, SlaveThread *>::iterator it = _slaves.begin(), end = _slaves.end();
@@ -64,6 +66,11 @@ void Torus::mainloop() {
     EXC_CATCH;
     EXC_DEBUG_START;
     EXC_DEBUG_END;
+}
+
+t_uqword Torus::get_serv_time() {
+    ADDTOCALLSTACK();
+    return _serv_time;
 }
 
 void Torus::balance_control() {

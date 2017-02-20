@@ -26,7 +26,11 @@ public:
     const t_byte * dumps();
     virtual void loads(const t_byte *) = 0;
     virtual void loads(Socket * s) = 0;
+    void send(Socket * s);
     virtual ~Packet();
+    void set_packet_id(t_ubyte id);
+    template<typename T>
+    friend Packet & operator<<(Packet & p, T d);
 protected:
     t_byte * buffer;
     t_udword len;
@@ -38,5 +42,15 @@ Packet * packet_factory(Socket & s);
 Packet * packet_factory(t_byte t);
 
 Packet * packet_factory(const t_byte * buffer, t_udword len);
+
+
+template<typename T>
+Packet & operator<<(Packet & p, T d) {
+    memcpy((void*)p.buffer, (void*)&d, sizeof(T));
+    if (sizeof(T) == 4) {
+        d = (((d & 0x000000ff) << 24) | ((d & 0x0000ff00) << 8) | ((d & 0x00ff0000) >> 8) | ((d & 0xff000000) >> 24));
+    }
+    return p;
+}
 
 #endif //__TORUS_PACKET_H

@@ -26,7 +26,10 @@
 #include "../debug/callstack.h"
 #include "packet.h"
 #include "packetlist.h"
+#include "../game/client.h"
 
+#define N2L(C, LL) \
+    LL = ((C&0xff000000))>>24 | ((C&0x00ff0000))>>8  | ((C&0x0000ff00))<<8 | ((C&0x000000ff)<<24)
 
 Socket::Socket() {
     ADDTOCALLSTACK();
@@ -45,6 +48,7 @@ Socket::Socket() {
     }
 #endif //__linux__
     buffer = new char[1024];
+    _client = 0;
 }
 
 Socket::Socket(socket_t s) {
@@ -67,6 +71,7 @@ void Socket::init_client_socket() {
     crypto->detect_client_keys(buffer, buffer_len);
     _rewind(buffer, 61);
     crypto->set_mode_login();
+    _client = new Client(this);
 }
 
 
@@ -85,6 +90,7 @@ t_udword Socket::_determinate_client_seed() {
     } else {
         DEBUG_NOTICE("Detected login seed (no login seed packet).");
         (*this) >> seed;
+        //N2L(seed, seed);
     }
     return seed;
 }
@@ -138,7 +144,7 @@ bool Socket::client_pending() {
 #endif //__linux__
 }
 
-Socket * Socket::get_client() {
+Socket * Socket::get_socket() {
     ADDTOCALLSTACK();
     Socket * s;
 #ifdef _WINDOWS
@@ -148,6 +154,11 @@ Socket * Socket::get_client() {
     s = new Socket(_accepted_socket);
 #endif //__linux__
     return s;
+}
+
+Client * Socket::get_client() {
+    ADDTOCALLSTACK();
+    return _client;
 }
 
 const t_byte * Socket::get_ip() {

@@ -29,7 +29,7 @@ int main() {
     TORUSSHELLECHO("Initializing Torus...");
     toruscfg.load_config_file("torus.ini");
     if (!uofilemgr.init()) {
-        return -1;
+        //return -1;
     }
     torusnet.start();
     TORUSSHELLECHO("Initializing Torus... OK.");

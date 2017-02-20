@@ -61,6 +61,19 @@ const t_udword Packet::length() {
     return len;
 }
 
+void Packet::send(Socket * s) {
+    if (buffer) {
+        s->write_packet(this);
+    }
+    else {
+        THROW_ERROR(NetworkError, "Sending empty packet ");
+    }
+}
+
 Packet::~Packet() {
     if (buffer) delete buffer;
+}
+
+void Packet::set_packet_id(t_ubyte id) {
+    (*this) << id;
 }

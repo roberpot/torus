@@ -17,6 +17,7 @@
 
 #include "../library/types.h"
 #include <string>
+#include <vector>
 
 class Char;
 class Socket;
@@ -44,7 +45,7 @@ class Account {
 private:
     std::string _name;    ///< Account name, used mostly for login.
     std::string _password;///< Account password.
-    Char *_charlist[7];     ///< Character's list.
+    std::vector<Char *> _charlist;     ///< Character's list.
     t_udword _flags;        ///< Account flags.
     t_uword _expansion;     ///< Expansion level this account has access.
     std::string _lastip;  ///< Last IP connected to this account.
@@ -84,18 +85,29 @@ public:
     */
     bool delete_char(Char *chr);
     /**
-    * @brief Reorder charlist, mostly after deleting a character.
-    */
-    void fix_charlist();
-    /**
     * @brief Receiving a connection for this account.
     *
     * @param socket the socket connecting to the account.
     */
     void connect(Socket *socket);
-
+    /**
+    * @brief Gets the account's privilege level
+    *
+    * @return the PRIVLVL.
+    */
     PRIVLVL get_privlevel();
+    /**
+    * @brief Asign a PRIVLVL for this account.
+    *
+    * @param lvl the new PRIVLVL.
+    */
     void set_privlevel(PRIVLVL lvl);
+    /**
+    * @brief Remove this account.
+    *
+    * Remove this account and all the characters containing.
+    */
+    void remove();
 };
 
 #endif //_TORUS_GAME_ACCOUNT_H

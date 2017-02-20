@@ -83,7 +83,7 @@ void * NetworkManager::NetworkClientConector::run() {
 
     while(_run) {
         if (_s->client_pending()) {
-            Socket * s = _s->get_client();
+            Socket * s = _s->get_socket();
             TORUSSHELLECHO("Client connected: IP: " << s->get_ip());
             torusnet._add_client(s);
         }
