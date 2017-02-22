@@ -55,4 +55,8 @@ typedef unsigned long long t_uqword;
 #define TQWORD_MAX LLONG_MAX
 #define TUQWORD_MAX ULLONG_MAX
 
+namespace ttl {
+    typedef long long ptrdiff_t;
+}
+
 #endif //__TORUS_TYPES_H

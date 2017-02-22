@@ -25,7 +25,7 @@
 #include "../threads/mutex.h"
 #include "debug.h"
 #include "info.h"
-#include "../core/types.h"
+#include "../library/types.h"
 
 class StackEntry {
 public:

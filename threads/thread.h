@@ -17,7 +17,7 @@
 
 #include "thread_defines.h"
 #include "mutex.h"
-#include "../core/types.h"
+#include "../library/types.h"
 
 class Thread {
 public:

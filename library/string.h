@@ -19,7 +19,7 @@
 #include <string>
 #include <iomanip>
 #include <ostream>
-#include "../core/types.h"
+#include "types.h"
 
 #define ISWHITESPACE(X) (X == ' ' || X == '\t')
 #define LSTRIP(X) while (ISWHITESPACE(X[0])) { X++; }
@@ -42,20 +42,28 @@ std::string remove_prefix(std::string p, std::string s);
 std::string remove_prefix(const t_byte * p, std::string s);
 std::string remove_prefix(const t_byte * p, const t_byte * s);
 
-struct HexCharStruct
-{
-    unsigned char c;
-    HexCharStruct(unsigned char _c) : c(_c) { }
+template <typename T>
+struct __HexHelperStruct {
+    __HexHelperStruct(T x) { data.x = x; }
+    union {
+        T x;
+        t_ubyte raw[sizeof(T)];
+    } data;
 };
 
-inline std::ostream& operator<<(std::ostream& o, const HexCharStruct& hs)
-{
-    return (o << std::hex << (int)hs.c);
+template <typename T>
+inline std::ostream& operator<<(std::ostream& o, const __HexHelperStruct<T>& hs) {
+    for(t_udword i = 0; i < sizeof(T); i++) {
+        o << std::hex << std::setfill('0') <<  std::setw(2) << (int)hs.data.raw[i];
+}
+return o;
 }
 
-inline HexCharStruct hex(unsigned char _c)
-{
-    return HexCharStruct(_c);
+template <typename T>
+inline __HexHelperStruct<T> hex(T x) {
+    return __HexHelperStruct<T>(x);
 }
+
+std::string hex_dump_buffer(const t_byte * buffer, const t_udword size);
 
 #endif //__TORUS_STRING_H

@@ -15,7 +15,7 @@
 #ifndef _TORUS_GAME_CHAR_H_
 #define _TORUS_GAME_CHAR_H_
 
-#include "../core/types.h"
+#include "../library/types.h"
 #include "artifact.h"
 #include "chars/char_props.h"
 #include "chars/char_stats.h"

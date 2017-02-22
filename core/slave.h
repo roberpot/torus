@@ -17,7 +17,7 @@
 
 #include "../threads/thread.h"
 #include "../threads/cond.h"
-#include "types.h"
+#include "../library/types.h"
 
 class SlaveThread : public Thread {
 public:

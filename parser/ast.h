@@ -12,28 +12,11 @@
  * along with Torus. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __TORUS_ERRORS_H
-#define __TORUS_ERRORS_H
+#ifndef __TORUS_AST_H
+#define __TORUS_AST_H
 
-#include <string>
-#include <sstream>
-#include "../library/types.h"
-
-class NetworkError : public std::exception {
+class Node {
 public:
-    NetworkError(const t_byte * e);
-    NetworkError(const std::string e);
-    const t_byte * what();
-    std::ostream & operator<<(std::ostream & o);
-private:
-    std::string _error;
 };
 
-#define THROW_ERROR(CLASS, ERROR_MSG) { \
-    std::stringstream s; \
-    s << ERROR_MSG; \
-    CLASS error(s.str().c_str()); \
-    throw error; \
-}
-
-#endif //__TORUS_ERRORS_H
+#endif //__TORUS_AST_H

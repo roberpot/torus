@@ -15,7 +15,7 @@
 #ifndef _TORUS_GAME_ITEM_H
 #define _TORUS_GAME_ITEM_H
 
-#include "../core/types.h"
+#include "../library/types.h"
 #include "artifact.h"
 #define UFLAG1_FLOOR		0x00000001  ///< 0= floor (Walkable at base position)
 #define UFLAG1_EQUIP		0x00000002  ///< 1= equipable. m_layer is LAYER_TYPE

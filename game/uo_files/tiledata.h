@@ -15,7 +15,7 @@
 #ifndef _TORUS_GAME_MAP_TERRAIN_H
 #define _TORUS_GAME_MAP_TERRAIN_H
 
-#include "../../core/types.h"
+#include "../../library/types.h"
 
 
 // Enable byte packing.

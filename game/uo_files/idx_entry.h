@@ -15,7 +15,7 @@
 #ifndef _TORUS_GAME_IDX_ENTRY_H
 #define _TORUS_GAME_IDX_ENTRY_H
 
-#include "../../core/types.h"
+#include "../../library/types.h"
 
 struct IdxEntry {
     t_word lookup = 0;  ///< first byte of the required data in the .mul file

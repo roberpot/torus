@@ -238,21 +238,7 @@ void Socket::_read_bytes(t_udword len) {
         }
     }
     {
-        std::stringstream _l, _r, _s;
-        unsigned int i;
-        for (i = 1; i <= len; i++) {
-            _l << hex(buffer[i - 1]) << " ";
-            _r << std::dec << ((unsigned int) buffer[i - 1] & 0x000000FF) << " ";
-            if (!(i % 5)) {
-                _s << _l.str() << "| " << _r.str() << std::endl;
-                _l.str("");
-                _r.str("");
-            }
-        }
-        if ((i-1) % 5) {
-            _s << _l.str() << "| " << _r.str();
-        }
-        TORUSSHELLECHO("Network receive(" << len << " [ " << init << " , " << buffer_len << " ]): " << std::endl << _s.str());
+        TORUSSHELLECHO("Network receive(" << len << " [ " << init << " , " << buffer_len << " ]): " << std::endl << hex_dump_buffer(buffer, len));
     }
     buffer_len = len;
     crypto->decrypt(buffer, len);

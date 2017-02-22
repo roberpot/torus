@@ -15,7 +15,7 @@
 #ifndef _TORUS_GAME_CHAR_STATS_H_
 #define _TORUS_GAME_CHAR_STATS_H_
 
-#include "../../core/types.h"
+#include "../../library/types.h"
 
 enum STAT_TYPE {
     STAT_STR,

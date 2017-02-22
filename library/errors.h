@@ -15,25 +15,44 @@
 #ifndef __TORUS_ERRORS_H
 #define __TORUS_ERRORS_H
 
-#include <string>
-#include <sstream>
-#include "../library/types.h"
+#include "types.h"
 
-class NetworkError : public std::exception {
-public:
-    NetworkError(const t_byte * e);
-    NetworkError(const std::string e);
-    const t_byte * what();
-    std::ostream & operator<<(std::ostream & o);
-private:
-    std::string _error;
-};
+namespace ttl {
+    class Exception {
+    public:
+        Exception();
+        Exception(const t_byte * e);
+        virtual ~Exception();
+        virtual const t_byte * what() const;
+    private:
+        t_byte * _msg;
+    };
 
-#define THROW_ERROR(CLASS, ERROR_MSG) { \
-    std::stringstream s; \
-    s << ERROR_MSG; \
-    CLASS error(s.str().c_str()); \
-    throw error; \
+    class VectorError : public Exception {
+    public:
+        VectorError(const t_byte * e);
+    };
+    class StackError : public Exception {
+    public:
+        StackError(const t_byte * e);
+    };
+
+    class QueueError : public Exception {
+    public:
+        QueueError(const t_byte * e);
+    };
+
+    class ListError : public Exception {
+    public:
+        ListError(const t_byte * e);
+    };
+
+    class MapError : public Exception {
+    public:
+        MapError(const t_byte * e);
+    };
+
 }
+
 
 #endif //__TORUS_ERRORS_H

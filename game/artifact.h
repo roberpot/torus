@@ -15,9 +15,9 @@
 #ifndef _TORUS_GAME_ARTIFACT_H
 #define _TORUS_GAME_ARTIFACT_H
 
-#include "../core/types.h"
+#include "../library/types.h"
 #include "uid.h"
-#include <combaseapi.h>
+//#include <combaseapi.h>
 
 struct Pos {
     t_word x = 1;

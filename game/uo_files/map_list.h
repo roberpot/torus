@@ -15,7 +15,7 @@
 #ifndef _TORUS_GAME_MAP_LIST_H
 #define _TORUS_GAME_MAP_LIST_H
 
-#include "../../core/types.h"
+#include "../../library/types.h"
 #include <map>
 #include "map.h"
 

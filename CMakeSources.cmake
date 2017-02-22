@@ -1,6 +1,5 @@
 
 set(CORE_FILES
-        core/types.h
         core/torus.cpp core/torus.h
         core/slave.cpp core/slave.h
         core/config.cpp core/config.h
@@ -18,7 +17,13 @@ set(DEBUG_FILES
 SOURCE_GROUP(debug FILES ${DEBUG_FILES})
 
 set(LIBRARY_FILES
-        library/string.cpp library/string.h)
+        library/types.h
+        library/string.cpp library/string.h
+        library/errors.cpp library/errors.h
+        library/vector.h
+        library/stack.h
+        library/queue.h
+        library/map.h)
 SOURCE_GROUP(library FILES ${LIBRARY_FILES})
 
 set(NETWORK_FILES

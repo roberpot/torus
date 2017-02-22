@@ -18,7 +18,7 @@
 #include <set>
 #include <string>
 #include <vector>
-#include "types.h"
+#include "../library/types.h"
 
 struct MapFile {
     t_uword x;

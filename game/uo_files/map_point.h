@@ -15,7 +15,7 @@
 #ifndef _TORUS_GAME_MAP_POINT_H
 #define _TORUS_GAME_MAP_POINT_H
 
-#include "../../core/types.h"
+#include "../../library/types.h"
 
 #if defined(_WIN32) && defined(_MSC_VER)
     #pragma pack(1) // MSVC dependant pragma

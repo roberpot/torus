@@ -15,7 +15,7 @@
 #ifndef _TORUS_GAME_UID_H_
 #define _TORUS_GAME_UID_H_
 
-#include "../core/types.h"
+#include "../library/types.h"
 
 #define UID_CLEAR        0x00000000
 #define UID_CHAR        0x0

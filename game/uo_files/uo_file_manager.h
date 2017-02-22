@@ -15,7 +15,7 @@
 #ifndef _TORUS_GAME_UO_FILE_MANAGER_H
 #define _TORUS_GAME_UO_FILE_MANAGER_H
 
-#include "../../core/types.h"
+#include "../../library/types.h"
 #include <vector>
 #include "map.h"
 #include "map_list.h"

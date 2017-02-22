@@ -16,7 +16,7 @@
 #define _TORUS_GAME_CHAR_PROPS_H_
 
 #include <map>
-#include "../../core/types.h"
+#include "../../library/types.h"
 
 enum CHAR_RACE {
     RACE_HUMAN,

@@ -4,7 +4,6 @@ project(torus)
 
 set(CMAKE_CONFIGURATION_TYPES "DEBUG;RELEASE;RELWITHDEBINFO")
 
-
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_C_STANDARD 11)
 
@@ -35,7 +34,17 @@ add_definitions(-DSOURCE_PATH="${CMAKE_SOURCE_DIR}")
 
 include("CMakeSources.cmake") # Reading CMakeSources with all of the ${SOURCE_FILES}.
 
-add_executable(torus_server ${SOURCE_FILES})
+find_package(FLEX REQUIRED)
+find_package(BISON REQUIRED)
+
+BISON_TARGET(tscp_parser parser/tscp.y ${CMAKE_CURRENT_SOURCE_DIR}/parser/tscp_parser.cpp COMPILE_FLAGS "--defines=parser/tscp_parser.h --name-prefix=tscp")
+FLEX_TARGET(tscp_scanner parser/tscp.l ${CMAKE_CURRENT_SOURCE_DIR}/parser/tscp_scanner.cpp COMPILE_FLAGS "--header-file=parser/tscp_scanner.h --prefix=tscp")
+ADD_FLEX_BISON_DEPENDENCY(tscp_scanner tscp_parser)
+
+add_executable(torus_server
+        ${SOURCE_FILES}
+        ${BISON_tscp_parser_OUTPUTS}
+        ${FLEX_tscp_scanner_OUTPUTS})
 
 # additional libs for windows
 if(WIN32)
@@ -62,3 +71,4 @@ if (PostgreSQL_FOUND)
         include_directories(${PQXX_INCLUDE_DIRECTORIES})
     endif()
 endif(PostgreSQL_FOUND)
+

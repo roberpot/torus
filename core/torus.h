@@ -21,7 +21,7 @@
 #include "../threads/mutex.h"
 #include "../threads/cond.h"
 #include "slave.h"
-#include "types.h"
+#include "../library/types.h"
 
 extern class Torus {
 public:

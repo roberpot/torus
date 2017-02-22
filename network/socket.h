@@ -25,7 +25,7 @@
 #include <netinet/in.h>
 #endif
 
-#include "../core/types.h"
+#include "../library/types.h"
 #include "packet.h"
 #include "crypto.h"
 #include "../debug/callstack.h"

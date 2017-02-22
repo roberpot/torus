@@ -15,7 +15,7 @@
 #ifndef _TORUS_GAME_MAP_BLOCK_H
 #define _TORUS_GAME_MAP_BLOCK_H
 
-#include "../../core/types.h"
+#include "../../library/types.h"
 #include "map_point.h"
 
 #define UO_MAP_BLOCK_SIZE 8

@@ -1,0 +1,44 @@
+/*
+ * This file is part of Torus.
+ * Torus is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * Torus is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with Torus. If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/******************************************************************************
+* torustables.tscp
+* ----------------
+NOTE: This file is loaded 2nd after torus.ini and the order is very important,
+so be aware that the resources section is processed top down... if a file near
+the top is dependant on a file near the bottom, you may try to slide the dependent
+file up the list... but sometimes unreconcilable dependencies can happen, in which
+case the problematic file may need to be split.
+
+As a general rule:
+- DEFNAMEs come first
+- TYPEDEF and EVENTS second
+- ITEMDEF and CHARDEF
+- REGION* comes before AREADEF and ROOMDEF
+- TEMPLATE last
+******************************************************************************/
+
+[RESOURCES]
+scripts/sphere_admin.scp
+
+[OBSCENE]
+"pene"
+
+[FAME]
+0,2000,6000
+"Anonymous"
+"Known"
+"Famous"
+
+[EOF]

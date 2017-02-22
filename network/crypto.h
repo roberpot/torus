@@ -15,7 +15,7 @@
 #ifndef __TORUS_CRYPTO_H
 #define __TORUS_CRYPTO_H
 
-#include "../core/types.h"
+#include "../library/types.h"
 
 class Crypto {
 public:
