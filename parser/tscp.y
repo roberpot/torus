@@ -65,10 +65,10 @@ list_integers : INTEGER list_integers_more { std::cout << $1 << std::endl; $$ = 
 list_integers_more : ',' INTEGER list_integers_more { std::cout << $2 << std::endl; $$ = NULL; }
                    | { $$ = NULL; }
 
-list_files : PATH list_files { std::cout << "FILE PATH: " << *$1 << std::endl; $$ = NULL; }
+list_files : PATH list_files { $$ = NULL; }
            | { $$ = NULL; }
 
-list_strings : STRING list_strings { std::cout << *$1 << std::endl; $$ = NULL; }
+list_strings : STRING list_strings { $$ = NULL; }
              |  { $$ = NULL; }
 
 %%

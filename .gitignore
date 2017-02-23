@@ -1,0 +1,4 @@
+/cmake-build*
+/.idea*
+/parser/tscp_parser*
+/parser/tscp_scanner*

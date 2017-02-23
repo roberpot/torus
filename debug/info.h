@@ -23,7 +23,8 @@
 #ifdef UNREFERENCED_FUNCTION
 #undef UNREFERENCED_FUNCTION
 #endif //UNREFERENCED_FUNCTION
-#ifdef _MSVC
+#ifdef _MSC_VER
+#define UNREFERENCED_FUNCTION(x)
 #else
 #define UNREFERENCED_FUNCTION(x) \
 void __##x##_unused_function() { \

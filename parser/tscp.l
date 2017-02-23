@@ -31,6 +31,7 @@ std::string tmp;
 
 %option yylineno
 %option noyywrap
+%option never-interactive
 
 %x TSCP_BLOCK_COMMENT
 %x TSCP_BLOCK_RESOURCE_FILES
