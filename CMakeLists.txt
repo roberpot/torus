@@ -29,14 +29,14 @@ set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS
 
 add_definitions(-DSOURCE_PATH="${CMAKE_SOURCE_DIR}")
 
-include("CMakeSources.cmake") # Reading CMakeSources with all of the ${SOURCE_FILES}.
-
 find_package(FLEX REQUIRED)
 find_package(BISON REQUIRED)
 
 BISON_TARGET(tscp_parser parser/tscp.y ${CMAKE_CURRENT_SOURCE_DIR}/parser/tscp_parser.cpp COMPILE_FLAGS "--defines=parser/tscp_parser.h --name-prefix=tscp")
 FLEX_TARGET(tscp_scanner parser/tscp.l ${CMAKE_CURRENT_SOURCE_DIR}/parser/tscp_scanner.cpp COMPILE_FLAGS "--header-file=parser/tscp_scanner.h --prefix=tscp")
 ADD_FLEX_BISON_DEPENDENCY(tscp_scanner tscp_parser)
+
+include("CMakeSources.cmake") # Reading CMakeSources with all of the ${SOURCE_FILES}.
 
 add_executable(torus_server
         ${SOURCE_FILES}
