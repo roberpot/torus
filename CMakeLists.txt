@@ -38,6 +38,7 @@ FLEX_TARGET(tscp_scanner parser/tscp.l ${CMAKE_CURRENT_SOURCE_DIR}/parser/tscp_s
 ADD_FLEX_BISON_DEPENDENCY(tscp_scanner tscp_parser)
 
 include("CMakeSources.cmake") # Reading CMakeSources with all of the ${SOURCE_FILES}.
+include_directories("include")
 
 add_executable(torus_server
         ${SOURCE_FILES}
@@ -58,15 +59,9 @@ if(Boost_FOUND)
 endif(Boost_FOUND)
 
 # PostgreSQL setup
-find_package(PostgreSQL)
+find_package(PostgreSQL REQUIRED)
 if (PostgreSQL_FOUND)
     target_link_libraries(torus_server ${PostgreSQL_LIBRARIES})
     include_directories(${PostgreSQL_INCLUDE_DIRS})
-    # pqxx setup
-    find_package(PQXX REQUIRED)
-    if (PQXX_FOUND)
-        target_link_libraries(torus_server ${PQXX_LIBRARIES})
-        include_directories(${PQXX_INCLUDE_DIRECTORIES})
-    endif()
 endif(PostgreSQL_FOUND)
 

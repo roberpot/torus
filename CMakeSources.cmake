@@ -84,10 +84,12 @@ set(MAIN_FILES
         main.cpp)
 SOURCE_GROUP(main FILES ${MAIN_FILES})
 
+include("include/pqxx/LibPQXXSources.cmake")
 
 set(SOURCE_FILES
         ${CORE_FILES}
         ${DB_FILES}
+        ${LIBPQXX_SOURCES}
         ${DEBUG_FILES}
         ${LIBRARY_FILES}
         ${NETWORK_FILES}
