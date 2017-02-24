@@ -19,12 +19,13 @@
 #include "../core/config.h"
 #include "../shell.h"
 
+
 Crypto::Crypto() {
     ADDTOCALLSTACK();
-    _client_key_0 = 0;
-    _client_key_1 = 0;
-    _curr_key_0 = 0;
-    _curr_key_1 = 0;
+    _client_key_lo = 0;
+    _client_key_hi = 0;
+    _curr_key_lo = 0;
+    _curr_key_hi = 0;
     _seed = 0;
     _crypt_mode = CRYPTMODE_NONE;
 }
@@ -32,8 +33,8 @@ Crypto::Crypto() {
 void Crypto::set_client_seed(t_udword seed) {
     ADDTOCALLSTACK();
     _seed = seed;
-    _curr_key_0 = (t_udword)((((~_seed) ^ 0x00001357) << 16) | ((_seed ^ 0xFFFFAAAA) & 0x0000FFFF));
-    _curr_key_1 = (t_udword)(((_seed ^ 0x43210000) >> 16) | (((~_seed) ^ 0xABCDFFFF) & 0xFFFF0000));
+    _curr_key_lo = (((~seed) ^ 0x00001357) << 16) | (((seed) ^ 0xFFFFAAAA) & 0x0000FFFF);
+    _curr_key_hi = (((seed) ^ 0x43210000) >> 16) | (((~seed) ^ 0xABCDFFFF) & 0xFFFF0000);
 }
 
 void Crypto::set_mode_none() {
@@ -72,23 +73,23 @@ void Crypto::detect_client_keys(t_byte * buffer, t_udword l) {
                 TORUSSHELLECHO("UNENCRYPTED!!!");
                 return;
             }
-            _client_key_0 = toruscfg.crypto_keys[i].first;
-            _client_key_1 = toruscfg.crypto_keys[i].second;
+            _client_key_lo = toruscfg.crypto_keys[i].second;
+            _client_key_hi = toruscfg.crypto_keys[i].first;
             (this->*decrypt_login_methods[j])(temp_buffer, l);
             if (temp_buffer[0] == 0x80 && temp_buffer[30] == 0x00 && temp_buffer[60] == 0x00) {
-                TORUSSHELLECHO("Client keys [" << i << "][" << j << "] " << std::hex << _client_key_0 << ":" << _client_key_1);
+                TORUSSHELLECHO("Client keys [" << i << "][" << j << "] " << std::hex << _client_key_lo << ":" << _client_key_hi);
                 delete temp_buffer;
                 _decrypt_login_method = decrypt_login_methods[j];
                 _crypt_login_method = crypt_login_methods[j];
-                _client_key_0 = toruscfg.crypto_keys[i].first;
-                _client_key_1 = toruscfg.crypto_keys[i].second;
+                _client_key_lo = toruscfg.crypto_keys[i].second;
+                _client_key_hi = toruscfg.crypto_keys[i].first;
                 return;
             }
         }
     }
     TORUSSHELLECHO("ERROR! Client keys not found");
-    _client_key_0 = 0;
-    _client_key_1 = 0;
+    _client_key_lo = 0;
+    _client_key_hi = 0;
 }
 
 void Crypto::decrypt(t_byte * buffer, t_udword l) {
@@ -119,17 +120,18 @@ void Crypto::crypt(t_byte * buffer, t_udword l) {
 
 void Crypto::_decrypt_login_gt_0x125360(t_byte * buffer, t_udword l) {
     ADDTOCALLSTACK();
-    t_udword old_key_0, old_key_1;
-    for(t_udword i = 0; i < l; i++) {
+    t_udword old_key_lo, old_key_hi;
+    TORUSSHELLECHO("Searching keys, l = " << l);
+    for(t_udword i = 0; i < l +1; i++) {
         // Decrypt the byte:
-        buffer[i] = (t_byte)(_curr_key_0 ^ buffer[i]);
+        buffer[i] = (t_byte)(buffer[i] ^ _curr_key_lo);
         // Reset the keys:
-        old_key_0 = _curr_key_0;
-        old_key_1 = _curr_key_1;
+        old_key_lo = _curr_key_lo;
+        old_key_hi = _curr_key_hi;
         // Update the keys:
-        _curr_key_0 = ((old_key_0 >> 1) | (old_key_1 << 31)) ^ _client_key_0;
-        old_key_1 = ((old_key_1 >> 1) | (old_key_0  << 31)) ^ _client_key_1;
-        _curr_key_1 = ((old_key_1 >> 1) | (old_key_0 << 31)) ^ _client_key_1;
+        _curr_key_lo = ((old_key_lo >> 1) | (old_key_hi << 31)) ^ _client_key_lo;
+        //old_key_hi = ((old_key_hi >> 1) | (old_key_lo  << 31)) ^ _client_key_hi;
+        _curr_key_hi = ((old_key_hi >> 1) | (old_key_lo << 31)) ^ _client_key_hi;
     }
 }
 
@@ -138,20 +140,20 @@ void Crypto::_decrypt_login_eq_0x125360(t_byte * buffer, t_udword l) {
     t_udword old_key_0, old_key_1;
     for(t_udword i = 0; i < l; i++) {
         // Decrypt the byte:
-        buffer[i] = (t_byte)(_curr_key_0 ^ buffer[i]);
+        buffer[i] = (t_byte)(_curr_key_lo ^ buffer[i]);
         // Reset the keys:
-        old_key_0 = _curr_key_0;
-        old_key_1 = _curr_key_1;
+        old_key_0 = _curr_key_lo;
+        old_key_1 = _curr_key_hi;
         // Update the keys:
-        _curr_key_1 =
-                (_client_key_1 >> ((5 * old_key_1 * old_key_1) & 0xff))
-                + (old_key_1 * _client_key_1)
+        _curr_key_hi =
+                (_client_key_hi >> ((5 * old_key_1 * old_key_1) & 0xff))
+                + (old_key_1 * _client_key_hi)
                 + (old_key_0 * old_key_0 * 0x35ce9581)
                 + 0x07afcc37;
-        _curr_key_0 =
-                (_client_key_0 >> ((3 * old_key_0 * old_key_0) & 0xff))
+        _curr_key_lo =
+                (_client_key_lo >> ((3 * old_key_0 * old_key_0) & 0xff))
                 + (old_key_0 * old_key_0)
-                - (_curr_key_1 * _curr_key_1 * 0x4c3a1353)
+                - (_curr_key_hi * _curr_key_hi * 0x4c3a1353)
                 + 0x16ef783f;
     }
 }
@@ -161,13 +163,13 @@ void Crypto::_decrypt_login_lt_0x125360(t_byte * buffer, t_udword l) {
     t_udword old_key_0, old_key_1;
     for(t_udword i = 0; i < l; i++) {
         // Decrypt the byte:
-        buffer[i] = (t_byte)(_curr_key_0 ^ buffer[i]);
+        buffer[i] = (t_byte)(_curr_key_lo ^ buffer[i]);
         // Reset the keys:
-        old_key_0 = _curr_key_0;
-        old_key_1 = _curr_key_1;
+        old_key_0 = _curr_key_lo;
+        old_key_1 = _curr_key_hi;
         // Update the keys:
-        _curr_key_0 = ((old_key_0 >> 1) | (old_key_1 << 31)) ^ _client_key_0;
-        _curr_key_1 = ((old_key_1 >> 1) | (old_key_0 << 31)) ^ _client_key_1;
+        _curr_key_lo = ((old_key_0 >> 1) | (old_key_1 << 31)) ^ _client_key_lo;
+        _curr_key_hi = ((old_key_1 >> 1) | (old_key_0 << 31)) ^ _client_key_hi;
     }
 }
 

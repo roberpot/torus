@@ -27,7 +27,8 @@ Config::Config() {
 void Config::load_config_file(const t_byte * file) {
     UNREFERENCED_PARAMETER(file);
     _reset();
-    crypto_keys.push_back(std::make_pair(0x29cd362d, 0xa1d59e7f)); // 7.00.290
+    crypto_keys.push_back(std::make_pair(0x23F2C46D, 0xA47E3E7F)); // 7.0.570;
+    /*crypto_keys.push_back(std::make_pair(0x29cd362d, 0xa1d59e7f)); // 7.00.290
     crypto_keys.push_back(std::make_pair(0x29b5843d, 0xa1ea127f)); // 7.00.280
     crypto_keys.push_back(std::make_pair(0x2a7e164d, 0xa0081e7f)); // 7.00.270
     crypto_keys.push_back(std::make_pair(0x2a26ec5d, 0xa019a27f)); // 7.00.260
@@ -108,7 +109,7 @@ void Config::load_config_file(const t_byte * file) {
     crypto_keys.push_back(std::make_pair(0x2c9bc78d, 0xa35bfe7f)); // 2.00.70
     crypto_keys.push_back(std::make_pair(0x2c43ed9d, 0xa334227f)); // 2.00.60
     crypto_keys.push_back(std::make_pair(0x2c0b97ad, 0xa310de7f)); // 2.00.50
-    crypto_keys.push_back(std::make_pair(0x2df385bd, 0xa3ed127f)); // 2.00.40
+    crypto_keys.push_back(std::make_pair(0x2df385bd, 0xa3ed127f)); // 2.00.40*/
     /*
 0200030 02dbbb7cd 0a3c95e7f enc_btfish // 2.00.30
 0200020 02d63addd 0a3a5227f enc_btfish // 2.00.20
@@ -146,6 +147,7 @@ void Config::_reset() {
 
     // Map Files
 /*
+    //NOTE: Add limit checks to do not exceed BASE_MAP_MAX value.
     MapFile map0new(0, 7168, 4096, 64, "map0.mul");// Map 0 (Felucca)    (New map size)
     map_files.push_back(map0new);
     // Example for old map style (older than ML). Don't enable both old and new, only one can be used.
@@ -162,6 +164,7 @@ void Config::_reset() {
     //MapFile map5(5, 1280, 4096, 32, "map5.mul");    // Map 5 (Ter Mur)
     //map_files.push_back(map5);
 
+    //NOTE: Add limit checks to do not exceed VIRTUAL_MAP_MAX value.
     // Virtual (ingame) maps
     // IngameId, FileID
     maps.push_back(std::make_pair<t_ubyte, t_ubyte>(0, 0));

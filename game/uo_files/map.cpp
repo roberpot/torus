@@ -70,7 +70,7 @@ t_ubyte Map::get_sector_size() {
 
 t_ubyte Map::get_sector_count() {
     ADDTOCALLSTACK();
-    return (_x * _y) / get_sector_size();
+    return (t_ubyte)(_x * _y) / get_sector_size();
 }
 
 t_ubyte Map::get_file_id() {

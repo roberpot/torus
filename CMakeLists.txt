@@ -12,6 +12,7 @@ set(CMAKE_C_STANDARD 11)
 if(MSVC_VERSION)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -W4 -MP -MTd -openmp")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -W4 -MP -MTd")  
+    add_definitions(-D_WINSOCK_DEPRECATED_NO_WARNINGS -D_CRT_SECURE_NO_WARNINGS)
 endif(MSVC_VERSION)
 
 ## gcc flags

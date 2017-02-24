@@ -21,22 +21,67 @@ class Socket;
 
 class Packet {
 public:
+    /** @brief   Default constructor. */
     Packet();
+    /**
+     * @brief   Gets the length.
+     *
+     * @return  The lenght.
+     */
     const t_udword length();
+    /**
+     * @brief   Dumps the buffer.
+     *
+     * @return  A pointer to the buffer.
+     */
     const t_byte * dumps();
+    /**
+     * @brief   Loads the given parameter 1.
+     *
+     * @param parameter1    The first parameter.
+     */
     virtual void loads(const t_byte *) = 0;
+    /**
+     * @brief   Loads the given Socket.
+     *
+     * @param  s    If non-null, the Socket to process.
+     */
     virtual void loads(Socket * s) = 0;
+    /**
+     * @brief   Send this message.
+     *
+     * @param  s    The Socket to process.
+     */
     void send(Socket * s);
+    /** @brief   Destructor. */
     virtual ~Packet();
+    /**
+     * @brief   Sets packet identifier.
+     *
+     * @param id    The identifier.
+     */
     void set_packet_id(t_ubyte id);
     template<typename T>
+    /**
+     * @brief   Inserts data into the Packet's buffer.
+     *
+     * @param  p    The Packet to process.
+     * @param          d    The T to process.
+     *
+     * @return  The packet.
+     */
     friend Packet & operator<<(Packet & p, T d);
 protected:
-    t_byte * buffer;
-    t_udword len;
+    t_byte * buffer;    ///< Buffer of this packet.
+    t_udword len;       ///< Lenght of this packet's buffer.
 };
-
-
+/**
+ * @brief   Packets generator.
+ *
+ * @param s    The Socket with the data to process.
+ *
+ * @return  Null if it fails, else a pointer to a Packet.
+ */
 Packet * packet_factory(Socket & s);
 
 Packet * packet_factory(t_byte t);

@@ -12,9 +12,9 @@
  * along with Torus. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "../debug/info.h"
 #include "packetlist.h"
 #include "socket.h"
+#include "../debug/info.h"
 
 
 const uint32_t Packet_0xef::length() {

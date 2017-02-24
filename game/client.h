@@ -15,7 +15,7 @@
 #ifndef _TORUS_GAME_CLIENT_H_
 #define _TORUS_GAME_CLIENT_H_
 
-#include "../core/types.h"
+#include "../library/types.h"
 #include "char.h"
 
 class Socket;

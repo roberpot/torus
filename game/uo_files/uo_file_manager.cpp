@@ -60,10 +60,12 @@ bool UOFileManager::init() {
     read_config();
 
     t_ubyte mapcount = 0;
-    for (size_t i = 0; i < basemaps.size(); i++) {
+    t_ubyte totalmaps = (t_ubyte)basemaps.size();
+    for (t_ubyte i = 0; i < totalmaps; i++) {
         if (basemaps[i]) {
-            basemaps[i]->init();
-            mapcount++;
+            if (basemaps[i]->init()) {
+                mapcount++;
+            }
         }
     }
     if (mapcount == 0){

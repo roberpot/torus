@@ -92,8 +92,8 @@ void CharStats::regen() {
     ADDTOCALLSTACK();
     if (_regen_delay == 0) // 0 = disabled
         return;
-    t_word clock = 0;// TODO time control, smth like torustime.clock.get_current().
-    t_word regen_diff = _last_regen - clock;
+    t_uqword clock = 0;// TODO time control, smth like torustime.clock.get_current().
+    t_uqword regen_diff = _last_regen - clock;
     if (regen_diff <= 0) {
         _base += _regen_val;
         _last_regen = clock;

@@ -191,8 +191,8 @@ bool Socket::data_ready() {
 Packet * Socket::read_packet() {
     ADDTOCALLSTACK();
     Packet * p = 0;
-//    p = packet_factory(this);
-//    p->loads(this);
+    p = packet_factory(*this);
+    p->loads(this);
     return p;
 }
 

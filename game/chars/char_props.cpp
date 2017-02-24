@@ -60,15 +60,15 @@ bool CharProps::can_equip(t_udword iflags) {
         return true;
     if (iflags & CAN_EQUIP_NONE)
         return false;
-    if (iflags & CAN_EQUIP_MALE_ONLY && _gender != GENDER_MALE)
+    if ((iflags & CAN_EQUIP_MALE_ONLY) && _gender != GENDER_MALE)
         return false;
-    if (iflags & CAN_EQUIP_FEMALE_ONLY && _gender != GENDER_FEMALE)
+    if ((iflags & CAN_EQUIP_FEMALE_ONLY) && _gender != GENDER_FEMALE)
         return false;
-    if (_race == RACE_HUMAN && !iflags & CAN_EQUIP_HUMAN)
+    if (_race == RACE_HUMAN && !(iflags & CAN_EQUIP_HUMAN))
         return false;
-    if (_race == RACE_ELF && !iflags & CAN_EQUIP_ELF)
+    if (_race == RACE_ELF && !(iflags & CAN_EQUIP_ELF))
         return false;
-    if (_race == RACE_GARGOYLE && !iflags & CAN_EQUIP_GARGOYLE)
+    if (_race == RACE_GARGOYLE && !(iflags & CAN_EQUIP_GARGOYLE))
         return false;
     return true;
 }
@@ -121,7 +121,7 @@ void CharProps::set_obody(t_udword obody) {
     _obody = obody;
 }
 
-t_udword CharProps::get_obody(t_udword obody) {
+t_udword CharProps::get_obody() {
     ADDTOCALLSTACK();
     return _obody;
 }

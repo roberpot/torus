@@ -30,6 +30,7 @@
 #include "crypto.h"
 #include "../debug/callstack.h"
 
+/** @brief   Values that represent socket types. */
 enum SocketType {
     SOCKETTYPE_NONE = 0,
     SOCKETTYPE_CLIENT,
@@ -47,20 +48,78 @@ class Client;
 
 class Socket {
 public:
+    /** @brief   Default constructor. */
     Socket();
+    /**
+     * @brief   Constructor.
+     *
+     * @param   s   The socket_t to process.
+     */
     Socket(socket_t s);
+    /** @brief   Init client socket. */
     void init_client_socket();
+    /**
+     * @brief   Binds the given addr and the given port.
+     *
+     * @param   addr    The address to bind.
+     * @param   port    The port to bind.
+     */
     void bind(const t_byte * addr, t_word port);
+    /**
+     * @brief   Determines there is a client pending.
+     *
+     * @return  True if it succeeds, false if it fails.
+     */
     bool client_pending();
+    /**
+     * @brief   Determines if there is any data ready to be processed.
+     *
+     * @return  True if it succeeds, false if it fails.
+     */
     bool data_ready();
+    /**
+     * @brief   Gets the socket.
+     *
+     * @return  Null if it fails, else the socket.
+     */
     Socket * get_socket();
+    /**
+     * @brief   Gets the Client attached to this Socket.
+     *
+     * @return  Null if it fails, else the client.
+     */
     Client * get_client();
+    /**
+     * @brief   Gets the IP.
+     *
+     * @return  Null if it fails, else the IP.
+     */
     const t_byte * get_ip();
+    /**
+     * @brief   Reads a Packet.
+     *
+     * @return  Null if it fails, else the packet.
+     */
     Packet * read_packet();
+    /**
+     * @brief   Writes a Packet for later sending.
+     *
+     * @param p the Packet to process.
+     */
     void write_packet(Packet * p);
+    /** @brief   Shuts down this object and closes its connection. */
     void shutdown();
+    /** @brief   Destructor. */
     ~Socket();
     template<typename T>
+    /**
+     * @brief   Bitwise right shift operator, used to export the data received to a Packet's buffer.
+     *
+     * @param   s   The Socket to process.
+     * @param   d   The data to process.
+     *
+     * @return  The shifted result.
+     */
     friend Socket & operator>>(Socket & s, T & d);
 //    friend Socket & operator>>(Socket & s, t_byte d);
 //    friend Socket & operator>>(Socket & s, t_word d);
@@ -71,17 +130,36 @@ public:
 //    friend Socket & operator>>(Socket & s, t_udword d);
 //    friend Socket & operator>>(Socket & s, t_uqword d);
 private:
+    /**
+     * @brief   Determinate client seed.
+     *
+     * @return  A t_udword.
+     */
     t_udword _determinate_client_seed();
+    /**
+     * @brief   Reads the given amount of bytes and decrypts the data.
+     *
+     * @param   len (Optional) The length.
+     */
     void _read_bytes(t_udword len = 1024);
+    /**
+     * @brief   Rewinds the buffer.
+     *
+     * @param   b   If non-null, the buffer to process.
+     * @param   l   The length to process.
+     */
     void _rewind(t_byte * b, t_udword l);
-    t_byte * buffer, * rewinded;
-    t_udword buffer_len, rewinded_len;
-    SocketType type;
-    Crypto * crypto;
-    socket_t _socket;
-    Client *_client;
+
+    t_byte * buffer;        ///< Buffer for IO data.    
+    t_byte * rewinded;      ///< Copy of the buffer to handle rewinds.
+    t_udword buffer_len;    ///< Lenght of the Socket's buffer.
+    t_udword rewinded_len;  ///< Lenght of the rewinded buffer.
+    SocketType type;        ///< Type of connection.
+    Crypto * crypto;        ///< Encryption handler.
+    socket_t _socket;       ///< Pointer to the socket_t.
+    Client *_client;        ///< Pointer to the attached game Client.
 #ifdef __linux__
-    socket_t _accepted_socket;
+    socket_t _accepted_socket;  ///< Pointer to the connection socket for linux builds.
 #endif //__linux__
 };
 

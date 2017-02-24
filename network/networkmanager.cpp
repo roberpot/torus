@@ -17,8 +17,8 @@
 #include "../core/errors.h"
 #include "../shell.h"
 #include "../threads/utils.h"
-#include "../debug/info.h"
 #include "../debug/callstack.h"
+#include "../debug/info.h"
 
 class NetworkManager torusnet;
 
@@ -32,7 +32,6 @@ void * NetworkManager::run() {
         size_t l = _sockets.size();
         Socket * s;
         Packet * p;
-        UNREFERENCED_PARAMETER(p);
         for (unsigned int i = 0; i < l; i++) {
             s = _sockets[i];
             while (s->data_ready()) {

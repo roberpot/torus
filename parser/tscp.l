@@ -17,13 +17,13 @@ L			[a-zA-Z_]
 H			[a-fA-F0-9]
 
 %{
-
+#pragma warning(disable:4005)
 #include <iostream>
 #include <cstdlib>
 //#include "parser_errors.h"
-#include "../debug/info.h"
 #include "ast.h"
 #include "tscp_parser.h"
+#include "../debug/info.h"
 
 std::string tmp;
 
@@ -83,3 +83,4 @@ void tscp_init_parser(const char * buffer) {
 }
 
 UNREFERENCED_FUNCTION(yyunput);
+#pragma warning(default:4005)

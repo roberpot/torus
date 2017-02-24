@@ -20,6 +20,9 @@
 #include <vector>
 #include "../library/types.h"
 
+#define BASE_MAP_MAX 5  ///< Max amount of Base Maps we can handle.
+#define VIRTUAL_MAP_MAX TUBYTE_MAX  ///< Max amount of Virtual Maps we can handle.
+
 struct MapFile {
     t_uword x;
     t_uword y;

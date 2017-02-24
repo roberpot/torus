@@ -115,7 +115,7 @@ public:
     void set_body(t_udword body);
     t_udword get_body();
     void set_obody(t_udword obody);
-    t_udword get_obody(t_udword obody);
+    t_udword get_obody();
 private:
     t_udword _ocolor;
 public:

@@ -43,10 +43,10 @@ private:
     void _decrypt_gamemode(t_byte * buffer, t_udword l);
     void _crypt_loginmode(t_byte * buffer, t_udword l);
     void _crypt_gamemode(t_byte * buffer, t_udword l);
-    t_udword _client_key_0;
-    t_udword _client_key_1;
-    t_udword _curr_key_0;
-    t_udword _curr_key_1;
+    t_udword _client_key_lo;
+    t_udword _client_key_hi;
+    t_udword _curr_key_lo;
+    t_udword _curr_key_hi;
     t_udword _seed;
     enum {
         CRYPTMODE_NONE = 0,

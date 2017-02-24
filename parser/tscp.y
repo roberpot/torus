@@ -13,7 +13,8 @@
  */
 
  %{
-
+ 
+#pragma warning(disable:4702 4065 4244 4081)
 #include <iostream>
 #include "ast.h"
 //#include "parser_errors.h"
@@ -104,3 +105,5 @@ int tscperror(char * msj) {
 //  throw e;
   return 1;
 }
+
+#pragma warning(default:4702 4065 4244 4081)
