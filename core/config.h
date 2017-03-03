@@ -19,6 +19,7 @@
 #include <string>
 #include <vector>
 #include "../library/types.h"
+#include "../library/vector.h"
 
 #define BASE_MAP_MAX 5  ///< Max amount of Base Maps we can handle.
 #define VIRTUAL_MAP_MAX TUBYTE_MAX  ///< Max amount of Virtual Maps we can handle.
@@ -56,14 +57,14 @@ public:
     std::string file_path;
     // extra config.
     std::set<std::string> obscene_strings;
-    std::vector<t_dword> fame_ranges;
-    std::vector<std::string> fame_titles;
-    std::vector<t_dword> karma_ranges;
-    std::vector<std::string> karma_titles;
-    std::vector<t_dword> noto_karma_ranges;
-    std::vector<t_dword> noto_fame_ranges;
-    std::vector<std::string> noto_titles;
-    std::vector<std::string> runes;
+    ttl::vector<t_dword> fame_ranges;
+    ttl::vector<std::string> fame_titles;
+    ttl::vector<t_dword> karma_ranges;
+    ttl::vector<std::string> karma_titles;
+    ttl::vector<t_dword> noto_karma_ranges;
+    ttl::vector<t_dword> noto_fame_ranges;
+    ttl::vector<std::string> noto_titles;
+    ttl::vector<std::string> runes;
     std::vector<std::pair<t_udword, t_udword> > crypto_keys;
     std::vector<MapFile> map_files;
     std::vector<std::pair<t_ubyte, t_ubyte>> maps;

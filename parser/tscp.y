@@ -13,11 +13,15 @@
  */
 
  %{
- 
+
+#ifdef _MSC_VER
 #pragma warning(disable:4702 4065 4244 4081)
+#endif
 #include <iostream>
 #include "ast.h"
-//#include "parser_errors.h"
+#include "../library/stack.h"
+#include "../library/vector.h"
+#include "../library/utility.h"
 
 #define YY_(x) (char *)(x)
 
@@ -28,17 +32,27 @@ extern int tscplineno;
 %}
 
 %union {
- Node * node;
+ ast::Node * node;
  std::string * str;
  int INTEGER;
+ ttl::dynamicstack<int> * int_stack;
+ ttl::dynamicstack<std::string> * string_stack;
+ ttl::vector<int> * int_vector;
+ ttl::vector<std::string> * string_vector;
 };
 
 %type <node> file file_blocks block
 // Blocks
-%type <node> block_resources block_obscene block_fame
+%type <node> block_resources block_obscene block_fame block_karma block_nototitles
+%type <node> block_runes block_plevel
 // Resources
-%type <node> list_files list_strings list_integers list_integers_more
-%token FEOF RESOURCES OBSCENE FAME
+%type <string_stack> list_strings_more list_ids_more list_files_more
+%type <string_vector> list_strings list_ids list_files
+%type <int_stack> list_integers_more
+%type <int_vector> list_integers
+///// Keywords
+// Block class
+%token FEOF RESOURCES OBSCENE FAME KARMA NOTOTITLES RUNES PLEVEL
 %token <str> ID PATH STRING
 %token <INTEGER> INTEGER
 
@@ -46,56 +60,65 @@ extern int tscplineno;
 
 /* AST root is 'file' */
 
-file : file_blocks FEOF { $$ = NULL; }
+file : file_blocks FEOF { $$ = $1; ast::root = $1; }
 
-file_blocks : block file_blocks { $$ = NULL; }
+file_blocks : block file_blocks { $$ = new ast::BiNode($1, $2); }
             | { $$ = NULL; }
 
-block : block_resources { $$ = NULL; }
-      | block_obscene { $$ = NULL; }
-      | block_fame { $$ = NULL; }
+block : block_resources { $$ = $1; }
+      | block_obscene { $$ = $1; }
+      | block_fame { $$ = $1; }
+      | block_karma { $$ = $1; }
+      | block_nototitles { $$ = $1; }
+      | block_runes { $$ = $1; }
+      | block_plevel { $$ = $1; }
 
-block_resources : '[' RESOURCES ']' list_files { std::cout << "block_resources" << std::endl; $$ = NULL; }
+block_resources : '[' RESOURCES ']' list_files { $$ = new ast::BlockResourcesNode(*$4); delete $4; }
 
-block_obscene : '[' OBSCENE ']' list_strings { std::cout << "block_obscene" << std::endl; $$ = NULL; }
+block_obscene : '[' OBSCENE ']' list_strings { $$ = new ast::BlockObsceneNode(*$4); delete $4; }
 
-block_fame : '[' FAME ']' list_integers list_strings { std::cout << "block_fame" << std::endl; $$ = NULL; }
+block_fame : '[' FAME ']' list_integers list_strings { $$ = new ast::BlockFameNode(*$4, *$5); }
 
-list_integers : INTEGER list_integers_more { std::cout << $1 << std::endl; $$ = NULL; }
+block_karma : '[' KARMA ']' list_integers list_strings { $$ = new ast::BlockKarmaNode(*$4, *$5); }
 
-list_integers_more : ',' INTEGER list_integers_more { std::cout << $2 << std::endl; $$ = NULL; }
-                   | { $$ = NULL; }
+block_nototitles : '[' NOTOTITLES ']' list_integers list_integers list_strings { $$ = new ast::BlockNototitlesNode(*$4, *$5, *$6); }
 
-list_files : PATH list_files { $$ = NULL; }
-           | { $$ = NULL; }
+block_runes : '[' RUNES ']' list_strings { $$ = new ast::BlockRunesNode(*$4); }
 
-list_strings : STRING list_strings { $$ = NULL; }
-             |  { $$ = NULL; }
+block_plevel : '[' PLEVEL INTEGER ']' list_ids { $$ = new ast::BlockPlevelNode($3, *$5); delete $5; }
+
+list_integers : INTEGER list_integers_more { $2->push($1); $$ = new ttl::vector<int>; (*$$) = stack_to_vector(*$2); delete $2; }
+
+list_integers_more : ',' INTEGER list_integers_more { $3->push($2); $$ = $3; }
+                   | { $$ = new ttl::dynamicstack<int>(); }
+
+list_files : list_files_more { $$ = new ttl::vector<std::string>; (*$$) = stack_to_vector(*$1); delete $1; }
+
+list_files_more : PATH list_files_more { $2->push(*$1); $$ = $2; }
+                | { $$ = new ttl::dynamicstack<std::string>(); }
+
+list_strings : list_strings_more { $$ = new ttl::vector<std::string>; (*$$) = stack_to_vector(*$1); delete $1; }
+
+list_strings_more : STRING list_strings_more { $2->push(*$1); $$ = $2; }
+                  |  { $$ = new ttl::dynamicstack<std::string>(); }
+
+list_ids : list_ids_more { $$ = new ttl::vector<std::string>; (*$$) = stack_to_vector(*$1); delete $1; }
+
+list_ids_more : ID list_ids_more { $2->push(*$1); $$ = $2; }
+              | { $$ = new ttl::dynamicstack<std::string>(); }
+
 
 %%
-/*
-%type <node> body_file body_format integer_list
-%token <INTEGER> INTEGER
 
-body_file : body_format body_file { $$ = new ultimaonline::body::BodyFileNode($1, $2); }
-     | { $$ = NULL; }
-
-body_format : INTEGER '{' integer_list '}' INTEGER { $$ = new ultimaonline::body::BodyFormatNode($1, $3, $5); }
-
-integer_list : INTEGER ',' integer_list { $$ = new ultimaonline::body::IntegerListNode($1, $3); }
-             | INTEGER { $$ = new ultimaonline::body::IntegerListNode($1, NULL); }
-*/
 
 extern void tscp_init_parser(const char * buffer);
 
 
-void tscp_parse(const char * buffer)
+ast::Node * tscp_parse(const char * buffer)
 {
-    //if (ultimaonline::body::root_node) delete ultimaonline::body::root_node;
     tscp_init_parser(buffer);
     tscpparse();
-    //ultimaonline::body::root_node->generate();
-    //delete ultimaonline::body::root_node;
+    return ast::root;
 }
 
 
@@ -106,4 +129,6 @@ int tscperror(char * msj) {
   return 1;
 }
 
+#ifdef _MSC_VER
 #pragma warning(default:4702 4065 4244 4081)
+#endif

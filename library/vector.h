@@ -31,21 +31,40 @@ namespace ttl {
             _vector = new T[_capacity];
             _size = 0;
         }
+
         vector(t_udword size, T v) : vector(size) {
             for (t_udword i = 0; i < _capacity; ++i) _vector[i] = v;
             _size = _capacity;
         }
-        vector(vector & o) : vector(o._capacity) {
-            memcpy(_vector, o._vector, sizeof(T) * _capacity);
+
+        vector(vector<T> & o) : vector(o._capacity) {
             _size = o._size;
+            for (t_udword i = 0; i < _size; ++i) _vector[i] = o._vector[i];
         }
-        virtual ~vector() { delete _vector; }
-        vector & operator=(vector & o) {
-            delete _vector;
+
+        vector(const vector<T> & o) : vector(o._capacity) {
+            _size = o._size;
+            for (t_udword i = 0; i < _size; ++i) _vector[i] = o._vector[i];
+        }
+
+        virtual ~vector() { delete[] _vector; }
+
+        vector & operator=(vector<T> & o) {
+            delete[] _vector;
             _capacity = o._capacity;
             _vector = new T[_capacity];
-            memcpy(_vector, o._vector, sizeof(T) * _capacity);
             _size = o._size;
+            for (t_udword i = 0; i < _size; ++i) _vector[i] = o._vector[i];
+            return *this;
+        }
+
+        vector & operator=(const vector<T> & o) {
+            delete[] _vector;
+            _capacity = o._capacity;
+            _vector = new T[_capacity];
+            _size = o._size;
+            for (t_udword i = 0; i < _size; ++i) _vector[i] = o._vector[i];
+            return *this;
         }
 
         virtual t_udword size() { return _size; }
@@ -54,10 +73,10 @@ namespace ttl {
             T * n = new T[s];
             t_udword nsize = _size;
             if (s < _size) nsize = s;
-            memcpy(n, _vector, sizeof(T) * nsize);
+            for (t_udword i = 0; i < nsize; ++i) n[i] = _vector[i];
             _size = nsize;
             _capacity = s;
-            delete _vector;
+            delete[] _vector;
             _vector = n;
         }
         virtual void resize(t_udword s, T v) {
@@ -71,14 +90,14 @@ namespace ttl {
         virtual bool empty() { return !_size; }
         virtual void reserve(t_udword n) {
             if (_capacity < n) {
-                resize(n);
+                resize(n + _TTL_VECTOR_DEFAULT_SIZE);
             }
         }
         virtual void shrink_to_fit() {
             if (_size < _capacity) {
                 T * n = new T[_size];
-                memcpy(n, _vector, sizeof(T) * _size);
-                delete _vector;
+                for (t_udword i = 0; i < _size; ++i) n[i] = _vector[i];
+                delete[] _vector;
                 _vector = n;
                 _capacity = _size;
             }
@@ -227,22 +246,39 @@ namespace ttl {
     };
 
     template <typename T>
-    class tsvector : public vector<T> {
+    class tsvector {
     public:
-        tsvector(t_udword size=_TTL_VECTOR_DEFAULT_SIZE) : vector<T>(size) {}
-        tsvector(t_udword size, T v) : vector<T>(size, v) {}
+        tsvector(t_udword size=_TTL_VECTOR_DEFAULT_SIZE) : _v(size) {}
+
+        tsvector(t_udword size, T v) : _v(size, v) {}
+
         tsvector(tsvector<T> & o) {
             o._mutex.lock();
-            vector<T>::_vector = new T[o._capacity];
-            memcpy(vector<T>::_vector, o._vector, sizeof(T) * vector<T>::_capacity);
-            vector<T>::_size = o._size;
+            _v = o._v;
             o._mutex.unlock();
         }
+
+        tsvector(const tsvector<T> & o) {
+            o._mutex.lock();
+            _v = o._v;
+            o._mutex.unlock();
+        }
+
         virtual ~tsvector() {}
+
         tsvector & operator=(tsvector & o) {
             _mutex.lock();
             o._mutex.lock();
-            vector<T>::operator=(static_cast<vector<T> >(o));
+            _v = o._v;
+            o._mutex.unlock();
+            _mutex.unlock();
+            return *this;
+        }
+
+        tsvector & operator=(const tsvector & o) {
+            _mutex.lock();
+            o._mutex.lock();
+            _v = o._v;
             o._mutex.unlock();
             _mutex.unlock();
             return *this;
@@ -250,129 +286,129 @@ namespace ttl {
 
         t_udword size() {
             _mutex.lock();
-            t_udword s = vector<T>::size();
+            t_udword s = _v.size();
             _mutex.unlock();
             return s;
         }
         void resize(t_udword s) {
             _mutex.lock();
-            vector<T>::resize(s);
+            _v.resize(s);
             _mutex.unlock();
         }
         void resize(t_udword s, T v) {
             _mutex.lock();
-            vector<T>::resize(s, v);
+            _v.resize(s, v);
             _mutex.unlock();
         }
         t_udword capacity() {
             _mutex.lock();
-            t_udword c = vector<T>::_capacity;
+            t_udword c = _v.capacity();
             _mutex.unlock();
             return c;
         }
         bool empty() {
             _mutex.lock();
-            bool e = !vector<T>::_size;
+            bool e = !_v.empty();
             _mutex.unlock();
             return e;
         }
         void reserve(t_udword n) {
             _mutex.unlock();
-            vector<T>::reserve(n);
+            _v.reserve(n);
             _mutex.unlock();
         }
         void shrink_to_fit() {
             _mutex.lock();
-            vector<T>::shrink_to_fit();
+            _v.shrink_to_fit();
             _mutex.unlock();
         }
         T & operator[](t_udword n) {
             _mutex.lock();
-            T t = vector<T>::_vector[n];
+            T t = _v[n];
             _mutex.unlock();
             return t;
         }
         T & at(t_udword n) {
             _mutex.lock();
-            T t = vector<T>::at(n);
+            T t = _v.at(n);
             _mutex.unlock();
             return t;
         }
         T & front() {
             _mutex.lock();
-            T t = vector<T>::_vector[0];
+            T t = _v[0];
             _mutex.unlock();
             return t;
         }
         T & back() {
             _mutex.lock();
-            T t = vector<T>::_vector[vector<T>::_size - 1];
+            T t = _v[_v.size() - 1];
             _mutex.unlock();
             return t;
         }
         void assign(t_udword size, T t) {
             _mutex.lock();
-            vector<T>::assign(size, t);
+            _v.assign(size, t);
             _mutex.unlock();
         }
         void push_back(T t) {
             _mutex.lock();
-            vector<T>::push_back(t);
+            _v.push_back(t);
             _mutex.unlock();
         }
         void pop_back() {
             _mutex.lock();
-            vector<T>::pop_back();
+            _v.pop_back();
             _mutex.unlock();
         }
         t_udword insert(t_udword p, T t) {
             _mutex.lock();
-            t_udword r = vector<T>::insert(p, t);
+            t_udword r = _v.insert(p, t);
             _mutex.unlock();
             return r;
         }
         t_udword insert(t_udword p, t_udword n, T t) {
             _mutex.lock();
-            t_udword r = vector<T>::insert(p, n, t);
+            t_udword r = _v.insert(p, n, t);
             _mutex.unlock();
             return r;
         }
         t_udword insert(t_udword p, tsvector & v) {
             _mutex.lock();
             v._mutex.lock();
-            t_udword r = vector<T>::insert(p, static_cast<vector<T> >(v));
+            t_udword r = _v.insert(p, v._v);
             v._mutex.unlock();
             _mutex.unlock();
             return r;
         }
         t_udword erase(t_udword p) {
             _mutex.lock();
-            t_udword r = vector<T>::erase(p);
+            t_udword r = _v.erase(p);
             _mutex.unlock();
             return r;
         }
         t_udword erase(t_udword init, t_udword end) {
             _mutex.lock();
-            t_udword r = vector<T>::erase(init, end);
+            t_udword r = _v.erase(init, end);
             _mutex.unlock();
             return r;
         }
         void swap(tsvector & v) {
             _mutex.lock();
             v._mutex.lock();
-            vector<T>::swap(static_cast<vector<T> >(v));
+            _v.swap(v._v);
             v._mutex.unlock();
             _mutex.unlock();
         }
         void clear() {
             _mutex.lock();
-            vector<T>::clear();
+            _v.clear();
             _mutex.unlock();
         }
         bool operator==(tsvector<T> o) {
             _mutex.lock();
             o._mutex.lock();
-            bool b = vector<T>::operator==(static_cast<vector<T> >(o));
+            bool b = _v == o._v;
             o._mutex.unlock();
             _mutex.unlock();
             return b;
@@ -380,7 +416,7 @@ namespace ttl {
         bool operator!=(tsvector<T> o) {
             _mutex.lock();
             o._mutex.lock();
-            bool b = vector<T>::operator!=(static_cast<vector<T> >(o));
+            bool b = _v != o._v;
             o._mutex.unlock();
             _mutex.unlock();
             return b;
@@ -388,7 +424,7 @@ namespace ttl {
         bool operator<(tsvector<T> o) {
             _mutex.lock();
             o._mutex.lock();
-            bool b = vector<T>::operator<(static_cast<vector<T> >(o));
+            bool b = _v < o._v;
             o._mutex.unlock();
             _mutex.unlock();
             return b;
@@ -396,7 +432,7 @@ namespace ttl {
         bool operator<=(tsvector<T> o) {
             _mutex.lock();
             o._mutex.lock();
-            bool b = vector<T>::operator<=(static_cast<vector<T> >(o));
+            bool b = _v <= o._v;
             o._mutex.unlock();
             _mutex.unlock();
             return b;
@@ -404,7 +440,7 @@ namespace ttl {
         bool operator>(tsvector<T> o) {
             _mutex.lock();
             o._mutex.lock();
-            bool b = vector<T>::operator>(static_cast<vector<T> >(o));
+            bool b = _v > o._v;
             o._mutex.unlock();
             _mutex.unlock();
             return b;
@@ -412,13 +448,14 @@ namespace ttl {
         bool operator>=(tsvector<T> o) {
             _mutex.lock();
             o._mutex.lock();
-            bool b = vector<T>::operator>=(static_cast<vector<T> >(o));
+            bool b = _v >= o._v;
             o._mutex.unlock();
             _mutex.unlock();
             return b;
         }
     private:
         Mutex _mutex;
+        vector<T> _v;
     };
 }
 

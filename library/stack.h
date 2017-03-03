@@ -20,28 +20,13 @@
 #include "types.h"
 #include "../threads/mutex.h"
 #include "errors.h"
+#include "../debug/info.h"
 
 #define _TTL_STACK_DEFAULT_SIZE 10
 
 namespace ttl {
     template<typename T>
-    class stack {
-    public:
-        virtual void push(T t) = 0;
-        virtual void pop() = 0;
-        virtual T top() = 0;
-        virtual void clear() {
-            while(!empty()) {
-                pop();
-            }
-        }
-        virtual bool empty() = 0;
-        virtual t_udword size() = 0;
-        virtual ~stack() = 0;
-    };
-
-    template<typename T>
-    class fixedstack : public stack<T> {
+    class fixedstack {
     public:
         fixedstack(t_udword size=_TTL_STACK_DEFAULT_SIZE) {
             _stack = new T[size];
@@ -49,37 +34,75 @@ namespace ttl {
             _size = size;
         }
 
-        virtual void push(T t) {
+        fixedstack(fixedstack<T> & o) {
+            _stack = new T[o._size];
+            _top = o._top;
+            _size = o._size;
+            for(t_udword i = 0; i < _top; ++i) _stack[i] = o._stack[i];
+        }
+
+        fixedstack(const fixedstack<T> & o) {
+            _stack = new T[o._size];
+            _top = o._top;
+            _size = o._size;
+            for(t_udword i = 0; i < _top; ++i) _stack[i] = o._stack[i];
+        }
+
+        ~fixedstack() {
+            delete[] _stack;
+        }
+
+        fixedstack & operator=(fixedstack<T> & o) {
+            delete[] _stack;
+            _stack = new T[o._size];
+            _top = o._top;
+            _size = o._size;
+            for(t_udword i = 0; i < _top; ++i) _stack[i] = o._stack[i];
+            return *this;
+        }
+
+        fixedstack & operator=(const fixedstack<T> & o) {
+            delete[] _stack;
+            _stack = new T[o._size];
+            _top = o._top;
+            _size = o._size;
+            for(t_udword i = 0; i < _top; ++i) _stack[i] = o._stack[i];
+            return *this;
+        }
+        
+        void push(T t) {
             if (_top == _size) {
                 throw StackError("stack is full.");
             }
             _stack[_top++] = t;
         }
 
-        virtual void pop() {
+        void pop() {
             if (!_top) {
                 throw StackError("stack is empty.");
             }
             _top--;
         }
 
-        virtual T top() {
+        T top() {
             if (!_top) {
                 throw StackError("stack is empty.");
             }
             return _stack[_top - 1];
         }
 
-        virtual bool empty() {
+        void clear() {
+            while(!empty()) {
+                pop();
+            }
+        }
+
+        bool empty() {
             return _top == 0;
         }
 
-        virtual t_udword size() {
+        t_udword size() {
             return _top;
-        }
-
-        virtual ~fixedstack() {
-            delete _stack;
         }
 
     private:
@@ -88,7 +111,7 @@ namespace ttl {
     };
 
     template <typename T>
-    class fixedgrowingstack : public stack<T> {
+    class fixedgrowingstack {
     public:
         fixedgrowingstack(t_udword size=_TTL_STACK_DEFAULT_SIZE) {
             _stack = new T[size];
@@ -96,42 +119,77 @@ namespace ttl {
             _size = size;
         }
 
-        virtual void push(T t) {
+        fixedgrowingstack(fixedgrowingstack<T> & o) {
+            _stack = new T[o._size];
+            _top = o._top;
+            _size = o._size;
+            for(t_udword i = 0; i < _top; ++i) _stack[i] = o._stack[i];
+        }
+
+        fixedgrowingstack(const fixedgrowingstack<T> & o) {
+            _stack = new T[o._size];
+            _top = o._top;
+            _size = o._size;
+            for(t_udword i = 0; i < _top; ++i) _stack[i] = o._stack[i];
+        }
+
+        ~fixedgrowingstack() {
+            delete[] _stack;
+        }
+
+        fixedgrowingstack & operator=(fixedgrowingstack<T> & o) {
+            _stack = new T[o._size];
+            _top = o._top;
+            _size = o._size;
+            for(t_udword i = 0; i < _top; ++i) _stack[i] = o._stack[i];
+            return *this;
+        }
+
+        fixedgrowingstack & operator=(const fixedgrowingstack<T> & o) {
+            _stack = new T[o._size];
+            _top = o._top;
+            _size = o._size;
+            for(t_udword i = 0; i < _top; ++i) _stack[i] = o._stack[i];
+            return *this;
+        }
+
+        void push(T t) {
             if (_top == _size) {
                 T * nstack = new T[_size + _TTL_STACK_DEFAULT_SIZE];
-                memcpy(nstack, _stack, sizeof(T) * _size);
-                delete _stack;
+                for(t_udword i = 0; i < _top; ++i) nstack[i] = _stack[i];
+                delete[] _stack;
                 _stack = nstack;
                 _size += _TTL_STACK_DEFAULT_SIZE;
             }
             _stack[_top++] = t;
         }
 
-        virtual void pop() {
+        void pop() {
             if (!_top) {
                 throw StackError("stack is empty.");
             }
             _top--;
         }
 
-        virtual T top() {
+        T top() {
             if (!_top) {
                 throw StackError("stack is empty.");
             }
             return _stack[_top - 1];
         }
 
-        virtual bool empty() {
+        void clear() {
+            while(!empty()) {
+                pop();
+            }
+        }
+
+        bool empty() {
             return _top == 0;
         }
 
-        virtual t_udword size() {
+        t_udword size() {
             return _top;
-        }
-
-
-        virtual ~fixedgrowingstack() {
-            delete _stack;
         }
 
     private:
@@ -140,20 +198,93 @@ namespace ttl {
     };
 
     template<typename T>
-    class dynamicstack : public stack<T> {
+    class dynamicstack {
     public:
         dynamicstack() {
             _top = NULL;
             _size = 0;
         }
 
-        virtual void push(T t) {
+        // To allow thread secure wrapper constructor.
+        dynamicstack(t_udword _) : dynamicstack() { UNREFERENCED_PARAMETER(_); }
+
+        dynamicstack(dynamicstack<T> & o) {
+            _size = o._size;
+            _top = NULL;
+            _dynamicstackitem * next = o._top, * prev;
+            if (next) {
+                _top = new _dynamicstackitem(next->_item, NULL);
+                prev = _top;
+                next = next->_next;
+                while (next) {
+                    prev->_next = new _dynamicstackitem(next->_item, NULL);
+                    prev = prev->_next;
+                    next = next->_next;
+                }
+            }
+        }
+
+        dynamicstack(const dynamicstack<T> & o) {
+            _size = o._size;
+            _top = NULL;
+            _dynamicstackitem * next = o._top, * prev;
+            if (next) {
+                _top = new _dynamicstackitem(next->_item, NULL);
+                prev = _top;
+                next = next->_next;
+                while (next) {
+                    prev->_next = new _dynamicstackitem(next->_item, NULL);
+                    prev = prev->_next;
+                    next = next->_next;
+                }
+            }
+        }
+
+        ~dynamicstack() {
+            clear();
+        };
+
+        dynamicstack & operator=(dynamicstack<T> & o) {
+            _size = o._size;
+            _top = NULL;
+            _dynamicstackitem * next = o._top, * prev;
+            if (next) {
+                _top = new _dynamicstackitem(next->_item, NULL);
+                prev = _top;
+                next = next->_next;
+                while (next) {
+                    prev->_next = new _dynamicstackitem(next->_item, NULL);
+                    prev = prev->_next;
+                    next = next->_next;
+                }
+            }
+            return *this;
+        }
+
+        dynamicstack & operator=(const dynamicstack<T> & o) {
+            _size = o._size;
+            _top = NULL;
+            _dynamicstackitem * next = o._top, * prev;
+            if (next) {
+                _top = new _dynamicstackitem(next->_item, NULL);
+                prev = _top;
+                next = next->_next;
+                while (next) {
+                    prev->_next = new _dynamicstackitem(next->_item, NULL);
+                    prev = prev->_next;
+                    next = next->_next;
+                }
+            }
+            return *this;
+        }
+
+        void push(T t) {
             _dynamicstackitem * ntop = new _dynamicstackitem(t, _top);
             _top = ntop;
             _size++;
         }
 
-        virtual void pop() {
+        void pop() {
             if (_top == NULL) {
                 throw StackError("stack is empty.");
             }
@@ -163,24 +294,27 @@ namespace ttl {
             _size--;
         }
 
-        virtual T top() {
+        T top() {
             if (_top == NULL) {
                 throw StackError("stack is empty.");
             }
             return _top->_item;
         }
 
-        virtual bool empty() {
+        void clear() {
+            while(!empty()) {
+                pop();
+            }
+        }
+
+        bool empty() {
             return _top == NULL;
         }
 
-        virtual t_udword size(){
+        t_udword size(){
             return _size;
         }
 
-        virtual ~dynamicstack() {
-            stack<T>::clear();
-        };
     private:
         struct _dynamicstackitem {
         public:
@@ -195,143 +329,90 @@ namespace ttl {
         t_udword _size;
     };
 
-    template <typename T>
-    class tsfixedstack : public fixedstack<T> {
+    template <typename T, class S>
+    class tsstack {
     public:
-        tsfixedstack(t_udword size=_TTL_STACK_DEFAULT_SIZE) : fixedstack<T>(size) {}
-        virtual void push(T t) {
+        tsstack(t_udword size=_TTL_STACK_DEFAULT_SIZE) : _s(size) {}
+
+        tsstack(tsstack<T, S> & o) {
+            o._mutex.lock();
+            _s = o._s;
+            o._mutex.unlock();
+        }
+
+        tsstack(const tsstack<T, S> & o) {
+            o._mutex.lock();
+            _s = o._s;
+            o._mutex.unlock();
+        }
+
+        tsstack & operator=(tsstack<T, S> & o) {
             _mutex.lock();
-            fixedstack<T>::push(t);
+            o._mutex.lock();
+            _s = o._s;
+            o._mutex.unlock();
             _mutex.unlock();
         }
 
-        virtual void pop() {
+        tsstack & operator=(const tsstack<T, S> & o) {
             _mutex.lock();
-            fixedstack<T>::pop();
+            o._mutex.lock();
+            _s = o._s;
+            o._mutex.unlock();
             _mutex.unlock();
         }
 
-        virtual T top() {
+        void push(T t) {
             _mutex.lock();
-            T x = fixedstack<T>::top();
+            _s.push(t);
+            _mutex.unlock();
+        }
+
+        void pop() {
+            _mutex.lock();
+            _s.pop();
+            _mutex.unlock();
+        }
+
+        T top() {
+            _mutex.lock();
+            T x = _s.top();
             _mutex.unlock();
             return x;
         }
 
-        virtual void clear() {
+        void clear() {
             _mutex.lock();
-            fixedstack<T>::clear();
+            _s.clear();
             _mutex.unlock();
         }
 
-        virtual bool empty() {
+        bool empty() {
             _mutex.lock();
-            bool b = fixedstack<T>::empty();
+            bool b = _s.empty();
             _mutex.unlock();
             return b;
         }
 
-        virtual t_udword size() {
+        t_udword size() {
             _mutex.lock();
-            t_udword s = fixedstack<T>::size();
+            t_udword s = _s.size();
             _mutex.unlock();
             return s;
         }
     private:
         Mutex _mutex;
+        S _s;
     };
 
-    template <typename T>
-    class tsfixedgrowingstack : public fixedgrowingstack<T> {
-    public:
-        tsfixedgrowingstack(t_udword size=_TTL_STACK_DEFAULT_SIZE) : fixedgrowingstack<T>(size) {}
-        virtual void push(T t) {
-            _mutex.lock();
-            fixedgrowingstack<T>::push(t);
-            _mutex.unlock();
-        }
+    template<typename T>
+    using tsfixedstack = tsstack<T, fixedstack<T>>;
 
-        virtual void pop() {
-            _mutex.lock();
-            fixedgrowingstack<T>::pop();
-            _mutex.unlock();
-        }
+    template<typename T>
+    using tsfixedgrowingstack = tsstack<T, fixedgrowingstack<T>>;
 
-        virtual T top() {
-            _mutex.lock();
-            T x = fixedgrowingstack<T>::top();
-            _mutex.unlock();
-            return x;
-        }
-
-        virtual void clear() {
-            _mutex.lock();
-            fixedgrowingstack<T>::clear();
-            _mutex.unlock();
-        }
-
-        virtual bool empty() {
-            _mutex.lock();
-            bool b = fixedgrowingstack<T>::empty();
-            _mutex.unlock();
-            return b;
-        }
-
-        virtual t_udword size() {
-            _mutex.lock();
-            t_udword s = fixedgrowingstack<T>::size();
-            _mutex.unlock();
-            return s;
-        }
-    private:
-        Mutex _mutex;
-    };
-
-    template <typename T>
-    class tsdynamicstack : public dynamicstack<T> {
-    public:
-        tsdynamicstack(t_udword size=_TTL_STACK_DEFAULT_SIZE) : dynamicstack<T>() {}
-        virtual void push(T t) {
-            _mutex.lock();
-            dynamicstack<T>::push(t);
-            _mutex.unlock();
-        }
-
-        virtual void pop() {
-            _mutex.lock();
-            dynamicstack<T>::pop();
-            _mutex.unlock();
-        }
-
-        virtual T top() {
-            _mutex.lock();
-            T x = dynamicstack<T>::top();
-            _mutex.unlock();
-            return x;
-        }
-
-        virtual void clear() {
-            _mutex.lock();
-            dynamicstack<T>::clear();
-            _mutex.unlock();
-        }
-
-        virtual bool empty() {
-            _mutex.lock();
-            bool b = dynamicstack<T>::empty();
-            _mutex.unlock();
-            return b;
-        }
-
-        virtual t_udword size() {
-            _mutex.lock();
-            t_udword s = dynamicstack<T>::size();
-            _mutex.unlock();
-            return s;
-        }
-    private:
-        Mutex _mutex;
-    };
+    template<typename T>
+    using tsdynamicstack = tsstack<T, dynamicstack<T>>;
 }
 
 #endif //__TORUS_STACK_H

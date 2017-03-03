@@ -17,13 +17,16 @@ L			[a-zA-Z_]
 H			[a-fA-F0-9]
 
 %{
+#ifdef _MSC_VER
 #pragma warning(disable:4005)
+#endif
 #include <iostream>
 #include <cstdlib>
-//#include "parser_errors.h"
+#include "../debug/info.h"
+#include "../library/stack.h"
+#include "../library/vector.h"
 #include "ast.h"
 #include "tscp_parser.h"
-#include "../debug/info.h"
 
 std::string tmp;
 
@@ -61,6 +64,10 @@ std::string tmp;
 "RESOURCES"                 { BEGIN(TSCP_BLOCK_RESOURCE_FILES); tscplval.str = new std::string; return RESOURCES; }
 "OBSCENE"                   return OBSCENE;
 "FAME"                      return FAME;
+"KARMA"                     return KARMA;
+"NOTOTITLES"                return NOTOTITLES;
+"RUNES"                     return RUNES;
+"PLEVEL"                    return PLEVEL;
 "[EOF]"                     return FEOF;
  /*  */
 [a-zA-Z_][a-zA-Z_0-9]*      { tscplval.str = new std::string(tscptext); return ID; }
@@ -68,19 +75,14 @@ std::string tmp;
 -?[0-9]+	            	{ tscplval.INTEGER = atoi(tscptext); return INTEGER; }
 
 [{},\[\]]			return *tscptext;
-
+.			                { /*LexicalError e("Carácter no reconocido."); throw e;*/ throw 1; }
 %%
-
-/*
-
-
-.			{ LexicalError e("Carácter no reconocido."); throw e; }
-*/
-
 
 void tscp_init_parser(const char * buffer) {
  tscp_scan_string(buffer);
 }
 
 UNREFERENCED_FUNCTION(yyunput);
+#ifdef _MSC_VER
 #pragma warning(default:4005)
+#endif

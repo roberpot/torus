@@ -15,6 +15,7 @@
 #ifndef __TORUS_PACKET_H
 #define __TORUS_PACKET_H
 
+#include <cstring>
 #include "../library/types.h"
 
 class Socket;

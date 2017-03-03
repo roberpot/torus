@@ -15,8 +15,107 @@
 #ifndef __TORUS_AST_H
 #define __TORUS_AST_H
 
-class Node {
-public:
-};
+#include <string>
+
+#include "../library/vector.h"
+
+
+namespace ast {
+
+    extern class Node {
+    public:
+        Node() {}
+        virtual void generate() = 0;
+        virtual ~Node() {};
+    private:
+    } * root;
+
+    class MonoNode : public Node {
+    public:
+        MonoNode(Node * c) : _c(c) {}
+        virtual void generate();
+        virtual ~MonoNode();
+    private:
+        Node * _c;
+    };
+
+    class BiNode : public Node {
+    public:
+        BiNode(Node * l, Node * r) : _l(l), _r(r) {}
+        virtual void generate();
+        virtual ~BiNode();
+    private:
+        Node * _l, * _r;
+    };
+
+    class TriNode : public Node {
+    public:
+        TriNode(Node * l, Node * c, Node * r) : _l(l), _c(c), _r(r) {}
+        virtual void generate();
+        virtual ~TriNode();
+    private:
+        Node * _l, * _c, * _r;
+    };
+
+    class BlockResourcesNode : public Node {
+    public:
+        BlockResourcesNode(ttl::vector<std::string> strings) : _strings(strings) {}
+        void generate();
+    private:
+        ttl::vector<std::string> _strings;
+    };
+
+    class BlockObsceneNode : public Node {
+    public:
+        BlockObsceneNode(ttl::vector<std::string> strings) : _strings(strings) {}
+        void generate();
+    private:
+        ttl::vector<std::string> _strings;
+    };
+
+    class BlockFameNode : public Node {
+    public:
+        BlockFameNode(ttl::vector<int> ints, ttl::vector<std::string> strings) : _ints(ints), _strings(strings) {}
+        void generate();
+    private:
+        ttl::vector<int> _ints;
+        ttl::vector<std::string> _strings;
+    };
+
+    class BlockKarmaNode : public Node {
+    public:
+        BlockKarmaNode(ttl::vector<int> ints, ttl::vector<std::string> strings) : _ints(ints), _strings(strings) {}
+        void generate();
+    private:
+        ttl::vector<int> _ints;
+        ttl::vector<std::string> _strings;
+    };
+
+    class BlockNototitlesNode : public Node {
+    public:
+        BlockNototitlesNode(ttl::vector<int> ints1, ttl::vector<int> ints2, ttl::vector<std::string> strings) : _ints1(ints1), _ints2(ints2), _strings(strings) {}
+        void generate();
+    private:
+        ttl::vector<int> _ints1, _ints2;
+        ttl::vector<std::string> _strings;
+    };
+
+    class BlockRunesNode : public Node {
+    public:
+        BlockRunesNode(ttl::vector<std::string> strings) : _strings(strings) {}
+        void generate();
+    private:
+        ttl::vector<std::string> _strings;
+    };
+
+    class BlockPlevelNode : public Node {
+    public:
+        BlockPlevelNode(t_udword plevel, ttl::vector<std::string> strings) : _plevel(plevel), _strings(strings) {}
+        void generate();
+    private:
+        t_udword _plevel;
+        ttl::vector<std::string> _strings;
+    };
+}
 
 #endif //__TORUS_AST_H

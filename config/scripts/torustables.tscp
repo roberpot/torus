@@ -11,6 +11,10 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Torus. If not, see <http://www.gnu.org/licenses/>.
  */
+/*
+ * Based on spherescripts from the sphereserver project.
+ * https://github.com/Sphereserver/Scripts
+ */
 
 /******************************************************************************
 * torustables.tscp
@@ -40,5 +44,183 @@ scripts/sphere_admin.scp
 "Anonymous"
 "Known"
 "Famous"
+
+[KARMA]
+-10000,-6000,-2000,2001,6001
+"Wicked"
+"Belligerent"
+"Neutral"
+"Kindly"
+"Goodhearted"
+
+[NOTOTITLES] // NotoTitles
+9900,5000,1000,500,100,-100,-500,-1000,-5000,-9900    // karma levels
+500,1000,5000,9900                                    // fame levels
+
+// highest karma
+"Trustworthy"
+"Estimable"
+"Great"
+"Glorious"
+"Glorious"
+
+"Honest"
+"Commendable"
+"Famed"
+"Illustrious"
+"Illustrious"
+
+"Good"
+"Honorable"
+"Admirable"
+"Noble"
+"Noble"
+
+"Kind"
+"Respectable"
+"Proper"
+"Eminent"
+"Eminent"
+
+"Fair"
+"Upstanding"
+"Reputable"
+"Distinguished"
+"Distinguished"
+
+"<none>"
+"Notable"
+"Prominent"
+"Renowned"
+"Renowned"
+
+"Rude"
+"Disreputable"
+"Notorious"
+"Infamous"
+"Dishonored"
+
+"Unsavory"
+"Dishonorable"
+"Ignoble"
+"Sinister"
+"Sinister"
+
+"Scoundrel"
+"Malicious"
+"Vile"
+"Villainous"
+"Dark"
+
+"Despicable"
+"Dastardly"
+"Wicked"
+"Evil"
+"Evil"
+
+"Outcast"
+"Wretched"
+"Nefarious"
+"Dread"
+"Dread"
+
+[RUNES]
+"An"
+"Bet"
+"Corp"
+"Des"
+"Ex"
+"Flam"
+"Grav"
+"Hur"
+"In"
+"Jux"
+"Kal"
+"Lor"
+"Mani"
+"Nox"
+"Ort"
+"Por"
+"Quas"
+"Rel"
+"Sanct"
+"Tym"
+"Uus"
+"Vas"
+"Wis"
+"Xen"
+"Ylem"
+"Zan"
+
+[PLEVEL 1]	// extra player commands.
+AFK
+DETAIL
+WHERE
+HUNGRY
+SUICIDE
+SELF
+LAST
+PASSWORD
+EMAIL
+HELPPAGE
+
+[PLEVEL 2]	// extra counselor commands.
+//HELP
+CAST
+TELE
+ANIM
+SLEEP
+UNDERWEAR
+BARK
+FIX
+RESEND
+INFO
+ADMIN
+PAGE
+GO
+GOUID
+GOCHAR
+GOSOCK
+GOCLI
+XGO
+JAIL
+FORGIVE
+
+[PLEVEL 3]
+CHARLIST
+
+[PLEVEL 4]
+BADSPAWN
+SAVE
+LINK
+TILE
+NUKE
+GOTYPE
+GONAME
+
+[PLEVEL 6]
+ACCOUNT
+SETPRIV
+DIALOG
+BLOCKIP
+//TOME
+EXTRACT
+UNEXTRACT
+EXPORT
+IMPORT
+//SERV.CLEARVARS
+
+[PLEVEL 7]
+SRC
+OBJ
+NEW
+DB
+FILE
+TRY
+TRYP
+TRYSRC
+TRYSRV
+//PLEVEL
+//SERV.MYSQLPASSWORD
 
 [EOF]

@@ -15,32 +15,17 @@
 #ifndef __TORUS_QUEUE_H
 #define __TORUS_QUEUE_H
 
+#include <iostream>
 #include <cstring>
 #include "errors.h"
 #include "../threads/mutex.h"
+#include "../debug/info.h"
 
 #define _TTL_QUEUE_DEFAULT_SIZE 10
 
 namespace ttl {
     template <typename T>
-    class queue {
-    public:
-        virtual void push(T t) = 0;
-        virtual void pop() = 0;
-        virtual T front() = 0;
-        virtual void clear() {
-            while(!empty()) {
-                pop();
-            }
-        }
-        virtual bool empty() = 0;
-        virtual t_udword size() = 0;
-        virtual ~queue() = 0;
-    private:
-    };
-
-    template <typename T>
-    class fixedqueue : public queue<T> {
+    class fixedqueue {
     public:
         fixedqueue(t_udword size=_TTL_QUEUE_DEFAULT_SIZE) {
             _queue = new T[size];
@@ -50,7 +35,63 @@ namespace ttl {
             _empty = true;
         }
 
-        virtual void push(T t) {
+        fixedqueue(fixedqueue<T> & o) {
+            _size = o._size;
+            _front = 0;
+            _end = (o._end - o._front + o._size) % o._size;
+            _empty = o._empty;
+            _queue = new T[_size];
+            if (!_empty) {
+                _queue[0] = o._queue[o._front];
+                for(t_udword i = 1; i % _size != _end; ++i) _queue[i] = o._queue[(i + o._front) % _size];
+            }
+        }
+
+        fixedqueue(const fixedqueue<T> & o) {
+            _size = o._size;
+            _front = 0;
+            _end = (o._end - o._front + o._size) % o._size;
+            _empty = o._empty;
+            _queue = new T[_size];
+            if (!_empty) {
+                _queue[0] = o._queue[o._front];
+                for(t_udword i = 1; i % _size != _end; ++i) _queue[i] = o._queue[(i + o._front) % _size];
+            }
+        }
+
+        ~fixedqueue() {
+            delete[] _queue;
+        }
+
+        fixedqueue & operator=(fixedqueue & o) {
+            delete[] _queue;
+            _size = o._size;
+            _front = 0;
+            _end = (o._end - o._front + o._size) % o._size;
+            _empty = o._empty;
+            _queue = new T[_size];
+            if (!_empty) {
+                _queue[0] = o._queue[o._front];
+                for(t_udword i = 1; i % _size != _end; ++i) _queue[i] = o._queue[(i + o._front) % _size];
+            }
+            return *this;
+        }
+
+        fixedqueue & operator=(const fixedqueue & o) {
+            delete[] _queue;
+            _size = o._size;
+            _front = 0;
+            _end = (o._end - o._front + o._size) % o._size;
+            _empty = o._empty;
+            _queue = new T[_size];
+            if (!_empty) {
+                _queue[0] = o._queue[o._front];
+                for(t_udword i = 1; i % _size != _end; ++i) _queue[i] = o._queue[(i + o._front) % _size];
+            }
+            return *this;
+        }
+
+        void push(T t) {
             if (_end == _front && !_empty) {
                 throw QueueError("queue is full.");
             }
@@ -60,7 +101,7 @@ namespace ttl {
             _empty = false;
         }
 
-        virtual void pop() {
+        void pop() {
             if (_empty) {
                 throw QueueError("queue is empty.");
             }
@@ -71,23 +112,25 @@ namespace ttl {
             }
         }
 
-        virtual T front() {
+        T front() {
             if (_empty) {
                 throw QueueError("queue is empty.");
             }
             return _queue[_front];
         }
 
-        virtual bool empty() {
+        bool empty() {
             return _empty;
         }
 
-        virtual t_udword size() {
-            return _size;
+        void clear() {
+            while(!empty()) {
+                pop();
+            }
         }
 
-        virtual ~fixedqueue() {
-            delete _queue;
+        t_udword size() {
+            return _size;
         }
 
     private:
@@ -97,7 +140,7 @@ namespace ttl {
     };
 
     template <typename T>
-    class fixedgrowingqueue : public queue<T> {
+    class fixedgrowingqueue {
     public:
         fixedgrowingqueue(t_udword size=_TTL_QUEUE_DEFAULT_SIZE) {
             _queue = new T[size];
@@ -107,18 +150,70 @@ namespace ttl {
             _empty = true;
         }
 
-        virtual void push(T t) {
+        fixedgrowingqueue(fixedgrowingqueue<T> & o) {
+            _size = o._size;
+            _front = 0;
+            _end = (o._end - o._front + o._size) % o._size;
+            _empty = o._empty;
+            _queue = new T[_size];
+            if (!_empty) {
+                _queue[0] = o._queue[o._front];
+                for(t_udword i = 1; i % _size != _end; ++i) _queue[i] = o._queue[(i + o._front) % _size];
+            }
+        }
+
+        fixedgrowingqueue(const fixedgrowingqueue<T> & o) {
+            _size = o._size;
+            _front = 0;
+            _end = (o._end - o._front + o._size) % o._size;
+            _empty = o._empty;
+            _queue = new T[_size];
+            if (!_empty) {
+                _queue[0] = o._queue[o._front];
+                for(t_udword i = 1; i % _size != _end; ++i) _queue[i] = o._queue[(i + o._front) % _size];
+            }
+        }
+
+        ~fixedgrowingqueue() {
+            delete[] _queue;
+        }
+
+        fixedgrowingqueue & operator=(fixedgrowingqueue<T> & o) {
+            delete[] _queue;
+            _size = o._size;
+            _front = 0;
+            _end = (o._end - o._front + o._size) % o._size;
+            _empty = o._empty;
+            _queue = new T[_size];
+            if (!_empty) {
+                _queue[0] = o._queue[o._front];
+                for(t_udword i = 1; i % _size != _end; ++i) _queue[i] = o._queue[(i + o._front) % _size];
+            }
+            return *this;
+        }
+
+        fixedgrowingqueue & operator=(const fixedgrowingqueue<T> & o) {
+            delete[] _queue;
+            _size = o._size;
+            _front = 0;
+            _end = (o._end - o._front + o._size) % o._size;
+            _empty = o._empty;
+            _queue = new T[_size];
+            if (!_empty) {
+                _queue[0] = o._queue[o._front];
+                for(t_udword i = 1; i % _size != _end; ++i) _queue[i] = o._queue[(i + o._front) % _size];
+            }
+        return *this;
+        }
+
+        void push(T t) {
             if (_end == _front && !_empty) {
                 T * nqueue = new T[_size + _TTL_QUEUE_DEFAULT_SIZE];
-                if (_front == 0) {
-                    memcpy(nqueue, _queue, sizeof(T) * _size);
-                } else {
-                    memcpy(nqueue, &_queue[_front], sizeof(T) * (_size - _front));
-                    memcpy(&nqueue[_size - _front], _queue, sizeof(T) * _front);
-                    _end = _size - 1;
-                    _front = 0;
-                }
-                delete _queue;
+                nqueue[0] = _queue[_front];
+                for(t_udword i = 1; i % _size != _end; ++i) nqueue[i] = _queue[(i + _front) % _size];
+                _end = _size - 1;
+                _front = 0;
+                delete[] _queue;
                 _queue = nqueue;
                 _size += _TTL_QUEUE_DEFAULT_SIZE;
             }
@@ -128,7 +223,7 @@ namespace ttl {
             _empty = false;
         }
 
-        virtual void pop() {
+        void pop() {
             if (_empty) {
                 throw QueueError("queue is empty.");
             }
@@ -139,23 +234,25 @@ namespace ttl {
             }
         }
 
-        virtual T front() {
+        T front() {
             if (_empty) {
                 throw QueueError("queue is empty.");
             }
             return _queue[_front];
         }
 
-        virtual bool empty() {
+        bool empty() {
             return _empty;
         }
 
-        virtual t_udword size() {
-            return _size;
+        void clear() {
+            while(!empty()) {
+                pop();
+            }
         }
 
-        virtual ~fixedgrowingqueue() {
-            delete _queue;
+        t_udword size() {
+            return _size;
         }
 
     private:
@@ -165,7 +262,7 @@ namespace ttl {
     };
 
     template <typename T>
-    class dynamicqueue : public queue<T> {
+    class dynamicqueue {
     public:
         dynamicqueue() {
             _size = 0;
@@ -173,28 +270,118 @@ namespace ttl {
             _end = NULL;
         }
 
-        virtual void push(T t) {
-            _dynamicqueueitem * item = new _dynamicqueueitem(t, NULL);
-            _end->_next = item;
-            _end = item;
+        // To allow thread secure wrapper constructor.
+        dynamicqueue(t_udword _) : dynamicqueue() { UNREFERENCED_PARAMETER(_); }
+
+        dynamicqueue(dynamicqueue<T> & o) {
+            _size = o._size;
+            _end = _front = NULL;
+            _dynamicqueueitem * item = o._front;
+            if (_size) {
+                _front = new _dynamicqueueitem(item->_item);
+                _end = _front;
+                while (item->_next != NULL) {
+                    item = item->_next;
+                    _end->_next = new _dynamicqueueitem(item->_item);
+                    _end = _end->_next;
+                }
+            }
+        }
+
+        dynamicqueue(const dynamicqueue<T> & o) {
+            _size = o._size;
+            _end = _front = NULL;
+            _dynamicqueueitem * item = o._front;
+            if (_size) {
+                _front = new _dynamicqueueitem(item->_item);
+                _end = _front;
+                while (item->_next != NULL) {
+                    item = item->_next;
+                    _end->_next = new _dynamicqueueitem(item->_item);
+                    _end = _end->_next;
+                }
+            }
+        }
+
+        ~dynamicqueue() {
+            clear();
+        }
+
+        dynamicqueue & operator=(dynamicqueue<T> & o) {
+            clear();
+            _size = o._size;
+            _end = _front = NULL;
+            _dynamicqueueitem * item = o._front;
+            if (_size) {
+                _front = new _dynamicqueueitem(item->_item);
+                _end = _front;
+                while (item->_next != NULL) {
+                    item = item->_next;
+                    _end->_next = new _dynamicqueueitem(item->_item);
+                    _end = _end->_next;
+                }
+            }
+        }
+
+        dynamicqueue & operator=(const dynamicqueue<T> & o) {
+            clear();
+            _size = o._size;
+            _end = _front = NULL;
+            _dynamicqueueitem * item = o._front;
+            if (_size) {
+                _front = new _dynamicqueueitem(item->_item);
+                _end = _front;
+                while (item->_next != NULL) {
+                    item = item->_next;
+                    _end->_next = new _dynamicqueueitem(item->_item);
+                    _end = _end->_next;
+                }
+            }
+        }
+
+        void push(T t) {
+            _dynamicqueueitem * item = new _dynamicqueueitem(t);
+            if (_size) {
+                _end->_next = item;
+                _end = item;
+            } else {
+                _front = _end = item;
+            }
             _size++;
         }
-        virtual void pop() = 0;
-        virtual T front() = 0;
-        virtual void clear() {
+
+        void pop() {
+            if (!_size) throw QueueError("Queue is empty.");
+            _dynamicqueueitem * i = _front;
+            _front = i->_next;
+            delete i;
+            _size--;
+        }
+
+        T front() {
+            if (!_size) throw QueueError("Queue is empty");
+            return _front->_item;
+        }
+
+        void clear() {
             while(!empty()) {
                 pop();
             }
         }
-        virtual bool empty() = 0;
-        virtual t_udword size() = 0;
-        virtual ~dynamicqueue() = 0;
+
+        bool empty() {
+            return _size == 0;
+        }
+
+        t_udword size() {
+            return _size;
+        }
     private:
         struct _dynamicqueueitem {
         public:
-            _dynamicqueueitem(T item, _dynamicqueueitem * next) {
+            _dynamicqueueitem(T item) {
                 _item = item;
-                _next = next;
+                _next = NULL;
             }
             T _item;
             _dynamicqueueitem * _next;
@@ -203,140 +390,100 @@ namespace ttl {
         t_udword _size;
     };
 
-    template <typename T>
-    class tsfixedqueue : public fixedqueue<T> {
+    template <typename T, class Q>
+    class tsqueue {
     public:
-        virtual void push(T t) {
+        tsqueue(t_udword size=_TTL_QUEUE_DEFAULT_SIZE) : _q(size) {}
+
+        tsqueue(tsqueue<T, Q> & o) {
+            o._mutex.lock();
+            _q = o._q;
+            o._mutex.unlock();
+        }
+
+        tsqueue(const tsqueue<T, Q> & o) {
+            o._mutex.lock();
+            _q = o._q;
+            o._mutex.unlock();
+        }
+
+        tsqueue & operator=(tsqueue<T, Q> & o) {
             _mutex.lock();
-            fixedqueue<T>::push(t);
+            o._mutex.lock();
+            _q = o._q;
+            o._mutex.unlock();
+            _mutex.unlock();
+            return *this;
+        }
+
+        tsqueue & operator=(const tsqueue<T, Q> & o) {
+            _mutex.lock();
+            o._mutex.lock();
+            _q = o._q;
+            o._mutex.unlock();
+            _mutex.unlock();
+            return *this;
+        }
+
+        void push(T t) {
+            _mutex.lock();
+            _q.push(t);
             _mutex.unlock();
         }
 
-        virtual void pop() {
+        void pop() {
             _mutex.lock();
-            fixedqueue<T>::pop();
+            _q.pop();
             _mutex.unlock();
         }
 
-        virtual T front() {
+        T front() {
             _mutex.lock();
-            T x = fixedqueue<T>::front();
+            T x = _q.front();
             _mutex.unlock();
             return x;
         }
 
-        virtual void clear() {
+        T front_and_pop() {
             _mutex.lock();
-            fixedqueue<T>::clear();
+            T x = _q.front();
+            _q.pop();
+            _mutex.unlock();
+            return x;
+        }
+
+        void clear() {
+            _mutex.lock();
+            _q.clear();
             _mutex.unlock();
         }
 
-        virtual bool empty() {
+        bool empty() {
             _mutex.lock();
-            bool b = fixedqueue<T>::empty();
+            bool b = _q.empty();
             _mutex.unlock();
             return b;
         }
 
-        virtual t_udword size() {
+        t_udword size() {
             _mutex.lock();
-            t_udword s = fixedqueue<T>::size();
+            t_udword s = _q.size();
             _mutex.unlock();
             return s;
         }
     private:
         Mutex _mutex;
+        Q _q;
     };
 
-    template <typename T>
-    class tsfixedgrowingqueue : public fixedgrowingqueue<T> {
-    public:
-        virtual void push(T t) {
-            _mutex.lock();
-            fixedgrowingqueue<T>::push(t);
-            _mutex.unlock();
-        }
+    template<typename T>
+    using tsfixedqueue = tsqueue<T, fixedqueue<T>>;
 
-        virtual void pop() {
-            _mutex.unlock();
-            fixedgrowingqueue<T>::pop();
-            _mutex.lock();
-        }
+    template<typename T>
+    using tsfixedgrowingqueue = tsqueue<T, fixedgrowingqueue<T>>;
 
-        virtual T front() {
-            _mutex.unlock();
-            T x = fixedgrowingqueue<T>::front();
-            _mutex.lock();
-            return x;
-        }
-
-        virtual void clear() {
-            _mutex.unlock();
-            fixedgrowingqueue<T>::clear();
-            _mutex.lock();
-        }
-
-        virtual bool empty() {
-            _mutex.unlock();
-            bool b = fixedgrowingqueue<T>::empty();
-            _mutex.lock();
-            return b;
-        }
-
-        virtual t_udword size() {
-            _mutex.unlock();
-            t_udword s = fixedgrowingqueue<T>::size();
-            _mutex.lock();
-            return s;
-        }
-    private:
-        Mutex _mutex;
-    };
-
-    template <typename T>
-    class tsdynamicqueue : public dynamicqueue<T> {
-    public:
-        virtual void push(T t) {
-            _mutex.lock();
-            dynamicqueue<T>::push(t);
-            _mutex.unlock();
-        }
-
-        virtual void pop() {
-            _mutex.lock();
-            dynamicqueue<T>::pop();
-            _mutex.unlock();
-        }
-
-        virtual T front() {
-            _mutex.lock();
-            T x = dynamicqueue<T>::front();
-            _mutex.unlock();
-            return x;
-        }
-
-        virtual void clear() {
-            _mutex.lock();
-            dynamicqueue<T>::clear();
-            _mutex.unlock();
-        }
-
-        virtual bool empty() {
-            _mutex.lock();
-            bool b = dynamicqueue<T>::empty();
-            _mutex.unlock();
-            return b;
-        }
-
-        virtual t_udword size() {
-            _mutex.lock();
-            t_udword s = dynamicqueue<T>::size();
-            _mutex.unlock();
-            return s;
-        }
-    private:
-        Mutex _mutex;
-    };
+    template<typename T>
+    using tsdynamicqueue = tsqueue<T, dynamicqueue<T>>;
 }
 
 #endif //__TORUS_QUEUE_H

@@ -23,7 +23,8 @@ set(LIBRARY_FILES
         library/vector.h
         library/stack.h
         library/queue.h
-        library/map.h)
+        library/map.h
+        library/utility.h)
 SOURCE_GROUP(library FILES ${LIBRARY_FILES})
 
 set(NETWORK_FILES
@@ -38,6 +39,11 @@ set(NETWORK_FILES
         network/packetlist_0x21.cpp
         network/packetlist_0x22.cpp)
 SOURCE_GROUP(network FILES ${NETWORK_FILES})
+
+set(PARSER_FILES
+        parser/ast.cpp parser/ast.h
+        parser/compiler.cpp parser/compiler.h)
+SOURCE_GROUP(parser FILES ${PARSER_FILES})
 
 set(THREAD_FILES
         threads/thread_defines.h
@@ -93,6 +99,7 @@ set(SOURCE_FILES
         ${DEBUG_FILES}
         ${LIBRARY_FILES}
         ${NETWORK_FILES}
+        ${PARSER_FILES}
         ${THREAD_FILES}
         ${GAME_FILES}
             ${GAME_UOFILES_FILES}

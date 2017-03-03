@@ -19,7 +19,7 @@
 #include "debug/debug.h"
 #include "core/slave.h"
 #include "game/uo_files/uo_file_manager.h"
-
+#include "parser/compiler.h"
 
 TorusShell torus_shell;
 Torus torus;
@@ -31,6 +31,8 @@ int main() {
     if (!uofilemgr.init()) {
         //return -1;
     }
+    toruscompiler.add_file(std::string("scripts/torustables.tscp"));
+    toruscompiler.compile();
     torusnet.start();
     TORUSSHELLECHO("Initializing Torus... OK.");
     torus.mainloop();

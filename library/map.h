@@ -63,7 +63,7 @@ namespace ttl {
             memcpy(_map, o._map, sizeof(Cell) * _capacity);
         }
         virtual ~staticmap() {
-            delete _map;
+            delete[] _map;
         }
         staticmap & operator=(staticmap & o) {
             delete _map;
