@@ -38,7 +38,10 @@ FLEX_TARGET(tscp_scanner parser/tscp.l ${CMAKE_CURRENT_SOURCE_DIR}/parser/tscp_s
 ADD_FLEX_BISON_DEPENDENCY(tscp_scanner tscp_parser)
 
 include("CMakeSources.cmake") # Reading CMakeSources with all of the ${SOURCE_FILES}.
-include_directories("include")
+
+if(MSVC_VERSION)
+    include_directories("include")
+endif(MSVC_VERSION)
 
 add_executable(torus_server
         ${SOURCE_FILES}

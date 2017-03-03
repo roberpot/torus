@@ -90,7 +90,9 @@ set(MAIN_FILES
         main.cpp)
 SOURCE_GROUP(main FILES ${MAIN_FILES})
 
-include("include/pqxx/LibPQXXSources.cmake")
+if(MSVC_VERSION)
+    include("include/pqxx/LibPQXXSources.cmake")
+endif(MSVC_VERSION)
 
 set(SOURCE_FILES
         ${CORE_FILES}
