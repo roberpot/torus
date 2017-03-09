@@ -73,6 +73,7 @@ void Crypto::detect_client_keys(t_byte * buffer, t_udword l) {
                 TORUSSHELLECHO("UNENCRYPTED!!!");
                 return;
             }
+            return;
             _client_key_lo = toruscfg.crypto_keys[i].second;
             _client_key_hi = toruscfg.crypto_keys[i].first;
             (this->*decrypt_login_methods[j])(temp_buffer, l);

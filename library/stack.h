@@ -22,6 +22,10 @@
 #include "errors.h"
 #include "../debug/info.h"
 
+#ifdef _MSC_VER
+    #pragma warning(disable: 4521 4522)  // TODO: Fix warnings instead of disabling.
+#endif
+
 #define _TTL_STACK_DEFAULT_SIZE 10
 
 namespace ttl {
@@ -414,5 +418,9 @@ namespace ttl {
     template<typename T>
     using tsdynamicstack = tsstack<T, dynamicstack<T>>;
 }
+
+#ifdef _MSC_VER
+    #pragma warning(disable: 4521 4522)
+#endif
 
 #endif //__TORUS_STACK_H

@@ -21,6 +21,10 @@
 #include "../threads/mutex.h"
 #include "../debug/info.h"
 
+#ifdef _MSC_VER
+    #pragma warning(disable: 4521 4522)
+#endif
+
 #define _TTL_QUEUE_DEFAULT_SIZE 10
 
 namespace ttl {
@@ -485,5 +489,9 @@ namespace ttl {
     template<typename T>
     using tsdynamicqueue = tsqueue<T, dynamicqueue<T>>;
 }
+
+#ifdef _MSC_VER
+    #pragma warning(disable: 4521 4522)
+#endif
 
 #endif //__TORUS_QUEUE_H

@@ -7,7 +7,11 @@ set(CORE_FILES
 SOURCE_GROUP(core FILES ${CORE_FILES})
 
 set(DB_FILES
-        db/sqlite3.c db/sqlite3.h)
+        db/sqlite3.c                db/sqlite3.h
+        db/db_manager.cpp           db/db_manager.h
+        db/torus_db_table.cpp       db/torus_db_table.h
+        db/torus_db_object.cpp      db/torus_db_object.h
+        db/torus_pg_transaction.cpp db/torus_pg_transaction.h)
 SOURCE_GROUP(db FILES ${DB_FILES})
 
 set(DEBUG_FILES
@@ -24,7 +28,8 @@ set(LIBRARY_FILES
         library/stack.h
         library/queue.h
         library/map.h
-        library/utility.h)
+        library/utility.h
+        library/system_headers.h)
 SOURCE_GROUP(library FILES ${LIBRARY_FILES})
 
 set(NETWORK_FILES
@@ -54,12 +59,14 @@ set(THREAD_FILES
 SOURCE_GROUP(threads FILES ${THREAD_FILES})
 
 set(GAME_FILES
-        game/account.cpp    game/account.h
-        game/artifact.cpp   game/artifact.h
-        game/client.cpp     game/client.h
-        game/char.cpp       game/char.h
-        game/item.cpp       game/item.h
-        game/uid.cpp        game/uid.h)
+        game/account.cpp            game/account.h
+        game/accounts_manager.cpp   game/accounts_manager.h
+        game/artifact.cpp           game/artifact.h
+        game/client.cpp             game/client.h
+        game/char.cpp               game/char.h
+        game/item.cpp               game/item.h
+        game/server.cpp             game/server.h
+        game/uid.cpp                game/uid.h)
 SOURCE_GROUP(game FILES ${GAME_FILES})
 
 set(GAME_CHAR_FILES

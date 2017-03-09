@@ -12,23 +12,20 @@
 * along with Torus. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef __TORUS_GAME_MAP_BLOCK_H
-#define __TORUS_GAME_MAP_BLOCK_H
+#ifndef __TORUS_DB_OBJECT_H
+#define __TORUS_DB_OBJECT_H
 
-#include "../../library/types.h"
-#include "map_point.h"
+#include "../library/system_headers.h"
+#include "pqxx/result.hxx"
 
-#define UO_MAP_BLOCK_SIZE 8
-#define UO_MAP_BLOCK_CELLS 64
-
-/**
-* @brief Struct found on map* files containing a set of 8x8 map tiles.
-*
-* Struct's size = 196 bytes per block = 8x8 tiles * UOMapPoint(3 bytes)
-*/
-struct UOMapBlock {
-    t_uword header_lo = 0;  ///< unused
-    t_uword header_hi = 0;  ///< unused
-    UOMapPoint points[UO_MAP_BLOCK_CELLS];   ///< array of tiles
+class TDBObject {
+public:
+    TDBObject();
+    virtual ~TDBObject();
+    virtual bool db_load(pqxx::result::const_iterator r) = 0;
+    virtual bool db_save() = 0;
+    virtual void mark_db_update() = 0;
+    virtual void mark_db_delete() = 0;
+    bool db_update;    ///< True = flagged for update, don't try to add it again to it's _updatelist.
 };
-#endif //__TORUS_GAME_MAP_BLOCK_H
+#endif // __TORUS_DB_OBJECT_H

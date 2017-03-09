@@ -12,8 +12,8 @@
 * along with Torus. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef _TORUS_GAME_MAP_LIST_H
-#define _TORUS_GAME_MAP_LIST_H
+#ifndef __TORUS_GAME_MAP_LIST_H
+#define __TORUS_GAME_MAP_LIST_H
 
 #include "../../library/types.h"
 #include <map>
@@ -42,4 +42,4 @@ public:
     void add_map(std::pair<t_ubyte, t_ubyte> map);
 } maplist;
 
-#endif //_TORUS_GAME_MAP_LIST_H
+#endif // __TORUS_GAME_MAP_LIST_H

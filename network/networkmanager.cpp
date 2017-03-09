@@ -32,6 +32,7 @@ void * NetworkManager::run() {
         size_t l = _sockets.size();
         Socket * s;
         Packet * p;
+        UNREFERENCED_PARAMETER(p);
         for (unsigned int i = 0; i < l; i++) {
             s = _sockets[i];
             while (s->data_ready()) {

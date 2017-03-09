@@ -12,8 +12,8 @@
 * along with Torus. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef _TORUS_GAME_MAP_POINT_H
-#define _TORUS_GAME_MAP_POINT_H
+#ifndef __TORUS_GAME_MAP_POINT_H
+#define __TORUS_GAME_MAP_POINT_H
 
 #include "../../library/types.h"
 
@@ -41,4 +41,4 @@ struct UOMapPoint {
 #else
     #undef PACK_STRUCT
 #endif
-#endif //_TORUS_GAME_MAP_POINT_H
+#endif // __TORUS_GAME_MAP_POINT_H

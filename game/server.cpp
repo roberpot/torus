@@ -12,49 +12,42 @@
 * along with Torus. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "../library/system_headers.h"
-#include "client.h"
-#include "../network/packetlist.h"
-#include "../debug/callstack.h"
-#include "char.h"
+#include "server.h"
+#include "../db/db_manager.h"
 
-Client::Client(Socket * s) {
+Server server;
+
+Server::Server() {
     ADDTOCALLSTACK();
-    _socket = s;
-    _movement_sequence = 0;
-    _movement_last = 0;
+    _serv_time = 0;
 }
 
-Client::~Client() {
+Server::~Server() {
     ADDTOCALLSTACK();
 }
 
-Socket * Client::get_socket() {
-    return _socket;
+t_uqword Server::get_serv_time() {
+    ADDTOCALLSTACK();
+    return _serv_time;
 }
 
-void Client::event_walk(t_ubyte dir, t_ubyte seq) {
+bool Server::check() {
     ADDTOCALLSTACK();
-    if (dir > DIR_QTY) {
-        Packet_0x21 *rej = new Packet_0x21();
-        rej->set_data(seq, this);
+    std::stringstream query;
+    t_udword fails = 0;
+    query << "SELECT " << COLNAME_SERVER_TIME << " from " << TABLENAME_SERVER << " LIMIT 1";
+    if (!torusdb.exec(query.str())) {
+        fails++;
     }
-    if (get_char()->can_move_to_coord(1, 1)) {
-        _movement_sequence++;
-
-    }
-    else {
-        Packet_0x21 *rej = new Packet_0x21();
-        rej->set_data(seq, this);
-    }
+    if (fails > 0)
+        return false;
+    return true;
 }
 
-Char * Client::get_char() {
+void Server::load_all() {
     ADDTOCALLSTACK();
-    return _char;
 }
 
-void Client::attatch(Char * chr) {
+void Server::save_all() {
     ADDTOCALLSTACK();
-    _char = chr;
 }

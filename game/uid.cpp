@@ -37,14 +37,14 @@ Uid::~Uid(){
 void Uid::set_uid(t_udword uid) {
     ADDTOCALLSTACK();
     _uid = uid;
-    if (highest_uid < get_uid_base())
+    if (highest_uid = get_uid_base())
         highest_uid = get_uid_base();
 }
 
 void Uid::find_new_uid(){
     ADDTOCALLSTACK();
     // TODO: DB Table with free uids, query it and use the first free value or create a new index
-    set_uid(highest_uid);
+    set_uid(highest_uid+1);
 }
 
 void Uid::free_uid(){

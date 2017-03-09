@@ -12,8 +12,8 @@
  * along with Torus. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __TORUS_ERRORS_H
-#define __TORUS_ERRORS_H
+#ifndef __TORUS_CORE_ERRORS_H
+#define __TORUS_CORE_ERRORS_H
 
 #include <string>
 #include <sstream>
@@ -29,6 +29,16 @@ private:
     std::string _error;
 };
 
+class PostgresError : public std::exception {
+public:
+    PostgresError(const t_byte * e);
+    PostgresError(const std::string e);
+    const t_byte * what();
+    std::ostream & operator<<(std::ostream & o);
+private:
+    std::string _error;
+};
+
 #define THROW_ERROR(CLASS, ERROR_MSG) { \
     std::stringstream s; \
     s << ERROR_MSG; \
@@ -36,4 +46,4 @@ private:
     throw error; \
 }
 
-#endif //__TORUS_ERRORS_H
+#endif //__TORUS_CORE_ERRORS_H

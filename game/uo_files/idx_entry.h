@@ -12,8 +12,8 @@
 * along with Torus. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef _TORUS_GAME_IDX_ENTRY_H
-#define _TORUS_GAME_IDX_ENTRY_H
+#ifndef __TORUS_GAME_IDX_ENTRY_H
+#define __TORUS_GAME_IDX_ENTRY_H
 
 #include "../../library/types.h"
 
@@ -22,4 +22,4 @@ struct IdxEntry {
     t_word lenght = 0;  ///< lenght of the data.
     t_word extra = 0;   ///< some files use this value.
 };
-#endif //_TORUS_GAME_IDX_ENTRY_H
+#endif // __TORUS_GAME_IDX_ENTRY_H

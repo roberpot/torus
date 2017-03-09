@@ -20,6 +20,10 @@
 #include "types.h"
 #include "../threads/mutex.h"
 
+#ifdef _MSC_VER
+#pragma warning(disable: 4521 4522)
+#endif
+
 #define _TTL_VECTOR_DEFAULT_SIZE 10
 
 namespace ttl {
@@ -461,4 +465,7 @@ namespace ttl {
 
 #include <vector>
 
+#ifdef _MSC_VER
+#pragma warning(default: 4521 4522)
+#endif
 #endif //__TORUS_VECTOR_H

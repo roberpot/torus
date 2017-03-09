@@ -12,8 +12,9 @@
 * along with Torus. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "../../debug/callstack.h"
 #include "char_stats.h"
+#include "../../debug/callstack.h"
+#include "../server.h"
 
 CharStats::CharStats() {
     _base = 0;
@@ -27,25 +28,50 @@ CharStats::CharStats() {
 CharStats::~CharStats() {
 }
 
+bool CharStats::db_load(pqxx::result::const_iterator r) {
+    ADDTOCALLSTACK();
+    if (!db_update)
+        return false;
+    return true;
+}
+
+bool CharStats::db_save() {
+    ADDTOCALLSTACK();
+    return false;
+}
+
+void CharStats::mark_db_update() {
+    ADDTOCALLSTACK();
+    //server.update_obj(this);
+}
+
+void CharStats::mark_db_delete() {
+    ADDTOCALLSTACK();
+}
+
 void CharStats::set_base(t_uword val) {
     ADDTOCALLSTACK();
     _base = val;
+    mark_db_update();
 }
 
 void CharStats::set_mod(t_uword val) {
     ADDTOCALLSTACK();
     _mod = val;
+    mark_db_update();
 }
 
 void CharStats::set_max(t_uword val) {
     ADDTOCALLSTACK();
     _max = val;
+    mark_db_update();
 }
 
 void CharStats::set_val(t_uword base, t_uword mod) {
     ADDTOCALLSTACK();
     _base = base;
     _mod = mod;
+    mark_db_update();
 }
 
 t_uword CharStats::get_base() {
@@ -71,6 +97,7 @@ t_uword CharStats::get_val() {
 void CharStats::set_regen_delay(t_uword val) {
     ADDTOCALLSTACK();
     _regen_delay = val;
+    mark_db_update();
 }
 
 t_uword CharStats::get_regen_delay() {
@@ -81,6 +108,7 @@ t_uword CharStats::get_regen_delay() {
 void CharStats::set_regen_val(t_uword val) {
     ADDTOCALLSTACK();
     _regen_val = val;
+    mark_db_update();
 }
 
 t_uword CharStats::get_regen_val() {

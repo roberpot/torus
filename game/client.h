@@ -12,13 +12,13 @@
 * along with Torus. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef _TORUS_GAME_CLIENT_H_
-#define _TORUS_GAME_CLIENT_H_
+#ifndef __TORUS_GAME_CLIENT_H_
+#define __TORUS_GAME_CLIENT_H_
 
 #include "../library/types.h"
-#include "char.h"
 
 class Socket;
+class Char;
 
 class Client {
 public:
@@ -40,4 +40,4 @@ public:
     void attatch(Char *chr);
 };
 
-#endif //_TORUS_GAME_CLIENT_H_
+#endif // __TORUS_GAME_CLIENT_H_

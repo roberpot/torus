@@ -12,8 +12,8 @@
 * along with Torus. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef _TORUS_GAME_MAP_H
-#define _TORUS_GAME_MAP_H
+#ifndef __TORUS_GAME_MAP_H
+#define __TORUS_GAME_MAP_H
 
 #include "../../library/types.h"
 #include "map_block.h"
@@ -108,4 +108,4 @@ public:
     bool is_valid_p(t_word x, t_word y);
 };
 
-#endif //_TORUS_GAME_MAP_H
+#endif // __TORUS_GAME_MAP_H

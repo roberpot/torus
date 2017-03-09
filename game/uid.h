@@ -12,8 +12,8 @@
 * along with Torus. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef _TORUS_GAME_UID_H_
-#define _TORUS_GAME_UID_H_
+#ifndef __TORUS_GAME_UID_H_
+#define __TORUS_GAME_UID_H_
 
 #include "../library/types.h"
 
@@ -106,4 +106,4 @@ public:
     bool is_valid();
 };
 
-#endif //_TORUS_GAME_UID_H
+#endif // __TORUS_GAME_UID_H

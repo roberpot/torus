@@ -12,8 +12,8 @@
 * along with Torus. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef _TORUS_GAME_MAP_TERRAIN_H
-#define _TORUS_GAME_MAP_TERRAIN_H
+#ifndef __TORUS_GAME_MAP_TERRAIN_H
+#define __TORUS_GAME_MAP_TERRAIN_H
 
 #include "../../library/types.h"
 
@@ -75,4 +75,4 @@ struct UOItem {
 #else
     #undef PACK_STRUCT
 #endif
-#endif //_TORUS_GAME_MAP_TERRAIN_H
+#endif // __TORUS_GAME_MAP_TERRAIN_H

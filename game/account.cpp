@@ -12,18 +12,14 @@
 * along with Torus. If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "account.h"
+#include "accounts_manager.h"
+#include "char.h"
 #include "../network/socket.h"
 #include "../debug/callstack.h"
-#include "account.h"
-#include "char.h"
+#include <iostream>
 
-Account::Account(const t_byte *name, const t_byte *pw, t_udword flags , t_uword exp ){
-    ADDTOCALLSTACK();
-    _name = name;
-    _password = pw;
-    _flags = flags;
-    _expansion = exp;
-    _lastip = "";
+Account::Account() {
     _socket = 0;
 }
 
@@ -31,6 +27,55 @@ Account::~Account(){
     ADDTOCALLSTACK();
     if (_socket)
         delete _socket;
+
+    mark_db_update();
+}
+
+bool Account::db_load(pqxx::result::const_iterator r) {
+    ADDTOCALLSTACK();
+    try {
+        _id = r[COLNAME_ACCOUNTS_ID].as<t_uqword>();
+        _name = r[COLNAME_ACCOUNTS_NAME].as<std::string>();
+        _privlevel = static_cast<PRIVLVL>(r[COLNAME_ACCOUNTS_PRIVLEVEL].as<int>());
+        _password = r[COLNAME_ACCOUNTS_PASSWORD].as<std::string>();
+        _flags = 0;
+        _expansion = 0;
+        _lastip = "";
+    }
+    catch (const pqxx::sql_error &e) {
+        std::cout << "Exec failed with error: " << e.what() << "\n for query :" << e.query() << std::endl;
+        return false;
+    }
+    return true;
+}
+
+bool Account::db_save() {
+    ADDTOCALLSTACK();
+    std::stringstream query;
+    pqxx::result r;
+    query << "UPDATE " << TABLENAME_ACCOUNTS <<
+        " SET " << COLNAME_ACCOUNTS_NAME << " = " << _name <<
+        " SET " << COLNAME_ACCOUNTS_PRIVLEVEL << " = " << _privlevel <<
+        " WHERE " COLNAME_ACCOUNTS_ID << " = " << _id; // TODO: pw encryption.
+    bool succeed = torusdb.exec(query.str(), r);
+    return succeed;
+}
+
+void Account::mark_db_update() {
+    ADDTOCALLSTACK();
+    torusacc.update_obj(this);
+}
+
+void Account::mark_db_delete() {
+    ADDTOCALLSTACK();
+    std::stringstream query;
+    query << "DELETE FROM " << TABLENAME_ACCOUNTS << " WHERE " << COLNAME_ACCOUNTS_ID << " = " << get_id();
+    torusdb.exec(query.str());
+}
+
+t_uqword Account::get_id() {
+    ADDTOCALLSTACK();
+    return _id;
 }
 
 t_byte Account::get_char_count(){
@@ -97,6 +142,7 @@ PRIVLVL Account::get_privlevel() {
 void Account::set_privlevel(PRIVLVL lvl) {
     ADDTOCALLSTACK();
     _privlevel = lvl;
+    mark_db_update();
 }
 
 void Account::remove() {

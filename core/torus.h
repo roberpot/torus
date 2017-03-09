@@ -29,7 +29,6 @@ public:
     void stop();
     void set_thread_time(t_udword id, t_udword t);
     void mainloop();
-    t_uqword get_serv_time();
 private:
     void balance_control();
     bool _run;
@@ -39,7 +38,6 @@ private:
     std::map<t_udword, SlaveThread *> _slaves;
     std::queue<SlaveThread *> _slaves_joinable;
 
-    t_uqword _serv_time; ///< Server time in ticks.
 } torus;
 
 #endif //__TORUS_TORUS_H

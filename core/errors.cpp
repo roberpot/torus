@@ -30,3 +30,20 @@ std::ostream & NetworkError::operator<<(std::ostream & o) {
     o << "NetworkError(\"" << _error << "\")";
     return o;
 }
+
+PostgresError::PostgresError(const t_byte * e) {
+    _error = e;
+}
+
+PostgresError::PostgresError(const std::string e) {
+    _error = e;
+}
+
+const char * PostgresError::what() {
+    return _error.c_str();
+}
+
+std::ostream & PostgresError::operator<<(std::ostream & o) {
+    o << "PostgresError(\"" << _error << "\")";
+    return o;
+}

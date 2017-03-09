@@ -12,8 +12,8 @@
  * along with Torus. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __TORUS_ERRORS_H
-#define __TORUS_ERRORS_H
+#ifndef __TORUS_LIBRARY_ERRORS_H
+#define __TORUS_LIBRARY_ERRORS_H
 
 #include "types.h"
 
@@ -55,4 +55,4 @@ namespace ttl {
 }
 
 
-#endif //__TORUS_ERRORS_H
+#endif //__TORUS_LIBRARY_ERRORS_H

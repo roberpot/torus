@@ -12,12 +12,22 @@
 * along with Torus. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef _TORUS_GAME_ARTIFACT_H
-#define _TORUS_GAME_ARTIFACT_H
+#ifndef __TORUS_GAME_ARTIFACT_H
+#define __TORUS_GAME_ARTIFACT_H
 
+#include "../db/torus_db_object.h"
 #include "../library/types.h"
 #include "uid.h"
-//#include <combaseapi.h>
+
+#define TABLENAME_ARTIFACTS "artifacts"
+#define COLNAME_ARTIFACTS_UID "uid"
+#define COLNAME_ARTIFACTS_NAME "name"
+#define COLNAME_ARTIFACTS_COLOR "color"
+#define COLNAME_ARTIFACTS_FLAGS "flags"
+#define COLNAME_ARTIFACTS_POSX "pos.x"
+#define COLNAME_ARTIFACTS_POSY "pos.y"
+#define COLNAME_ARTIFACTS_POSZ "pos.z"
+#define COLNAME_ARTIFACTS_POSM "pos.m"
 
 struct Pos {
     t_word x = 1;
@@ -33,7 +43,9 @@ struct Pos {
 class Char;
 class Item;
 
-class Artifact : protected Uid, public Pos {
+class Artifact : protected Uid, protected Pos, public TDBObject {
+public:
+    t_udword get_uid();
 protected:
     //Uid _uid;
     virtual ~Artifact();
@@ -41,12 +53,17 @@ protected:
     Char *get_char();
     Item *get_item();
 
+public:
+    bool db_load(pqxx::result::const_iterator r);
+    bool db_save();
+    void mark_db_update();
+    void mark_db_delete();
     //Name
 private:
-    const t_byte *_name;
+    std::string _name;
 public:
-    const t_byte *get_name();
-    void set_name(const t_byte *name);
+    std::string get_name();
+    void set_name(std::string name);
 
     //Pos
 private:
@@ -92,4 +109,4 @@ public:
     void set_timer(t_uqword ticks);
 };
 
-#endif //_TORUS_GAME_ARTIFACT_H
+#endif // __TORUS_GAME_ARTIFACT_H

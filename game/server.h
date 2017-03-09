@@ -12,23 +12,25 @@
 * along with Torus. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef __TORUS_GAME_MAP_BLOCK_H
-#define __TORUS_GAME_MAP_BLOCK_H
+#ifndef __TORUS_GAME_SERVER_H_
+#define __TORUS_GAME_SERVER_H_
 
-#include "../../library/types.h"
-#include "map_point.h"
+#include "../db/torus_db_table.h"
+#include "../library/types.h"
 
-#define UO_MAP_BLOCK_SIZE 8
-#define UO_MAP_BLOCK_CELLS 64
+#define TABLENAME_SERVER "server"
+#define COLNAME_SERVER_TIME "time"
 
-/**
-* @brief Struct found on map* files containing a set of 8x8 map tiles.
-*
-* Struct's size = 196 bytes per block = 8x8 tiles * UOMapPoint(3 bytes)
-*/
-struct UOMapBlock {
-    t_uword header_lo = 0;  ///< unused
-    t_uword header_hi = 0;  ///< unused
-    UOMapPoint points[UO_MAP_BLOCK_CELLS];   ///< array of tiles
-};
-#endif //__TORUS_GAME_MAP_BLOCK_H
+extern class Server : public TDBTable {
+    t_uqword _serv_time; ///< Server time in ticks.
+    Server();
+    ~Server();
+public:
+    t_uqword get_serv_time();
+    bool check();
+    void load_all();
+    void save_all();
+
+} server;
+
+#endif // __TORUS_GAME_SERVER_H_

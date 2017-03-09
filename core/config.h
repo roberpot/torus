@@ -39,6 +39,14 @@ struct MapFile {
     }
 };
 
+struct DBSettings {
+    std::string _db_host;
+    std::string _db_name;
+    std::string _db_user;
+    std::string _db_password;
+    std::string _table_accounts;
+};
+
 extern class Config {
 public:
     Config();
@@ -53,7 +61,7 @@ public:
     t_uword tick_duration;
     t_uword tick_duration_overloaded;
     t_uword tick_duration_idle;
-    // file cfg
+    // file cfg.
     std::string file_path;
     // extra config.
     std::set<std::string> obscene_strings;
@@ -66,8 +74,11 @@ public:
     ttl::vector<std::string> noto_titles;
     ttl::vector<std::string> runes;
     std::vector<std::pair<t_udword, t_udword> > crypto_keys;
+    // Maps.
     std::vector<MapFile> map_files;
     std::vector<std::pair<t_ubyte, t_ubyte>> maps;
+    // DataBase.
+    DBSettings _dbsettings;
 private:
     void _reset();
 } toruscfg;

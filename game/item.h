@@ -12,8 +12,8 @@
 * along with Torus. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef _TORUS_GAME_ITEM_H
-#define _TORUS_GAME_ITEM_H
+#ifndef __TORUS_GAME_ITEM_H
+#define __TORUS_GAME_ITEM_H
 
 #include "../library/types.h"
 #include "artifact.h"
@@ -68,4 +68,4 @@ public:
     bool can_move() override;
 };
 
-#endif //_TORUS_GAME_ITEM_H
+#endif // __TORUS_GAME_ITEM_H

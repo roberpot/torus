@@ -12,23 +12,16 @@
 * along with Torus. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef __TORUS_GAME_MAP_BLOCK_H
-#define __TORUS_GAME_MAP_BLOCK_H
+#ifndef __TORUS_DB_PG_TRANSACTION_H
+#define __TORUS_DB_PG_TRANSACTION_H
 
-#include "../../library/types.h"
-#include "map_point.h"
+#include "pqxx/connection"
+#include "pqxx/transaction"
 
-#define UO_MAP_BLOCK_SIZE 8
-#define UO_MAP_BLOCK_CELLS 64
-
-/**
-* @brief Struct found on map* files containing a set of 8x8 map tiles.
-*
-* Struct's size = 196 bytes per block = 8x8 tiles * UOMapPoint(3 bytes)
-*/
-struct UOMapBlock {
-    t_uword header_lo = 0;  ///< unused
-    t_uword header_hi = 0;  ///< unused
-    UOMapPoint points[UO_MAP_BLOCK_CELLS];   ///< array of tiles
+class PGTransaction : public pqxx::work {
+    pqxx::connection *_conn;
+public:
+    PGTransaction(pqxx::connection * conn, std::string query = "");
+    ~PGTransaction();
 };
-#endif //__TORUS_GAME_MAP_BLOCK_H
+#endif // __TORUS_DB_PG_TRANSACTION_H

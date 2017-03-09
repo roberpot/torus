@@ -12,9 +12,10 @@
 * along with Torus. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef _TORUS_GAME_CHAR_STATS_H_
-#define _TORUS_GAME_CHAR_STATS_H_
+#ifndef __TORUS_GAME_CHAR_STATS_H_
+#define __TORUS_GAME_CHAR_STATS_H_
 
+#include "../db/torus_db_object.h"
 #include "../../library/types.h"
 
 enum STAT_TYPE {
@@ -40,10 +41,14 @@ enum STAT_TYPE {
     STAT_WEIGHT ///< Weight, can have _base (current weight), _max (max carryable weight), _mod (modifies _max (ModMaxWeight prop)).
 };
 
-class CharStats {
+class CharStats : virtual TDBObject {
 public:
     CharStats();
     ~CharStats();
+    bool db_load(pqxx::result::const_iterator r);
+    bool db_save();
+    void mark_db_update();
+    void mark_db_delete();
 private:
     // Common stat props
     t_uword _base;  ///< base, real val.
@@ -71,4 +76,4 @@ public:
     void regen();
 };
 
-#endif //_TORUS_GAME_CHAR_STATS_H_
+#endif // __TORUS_GAME_CHAR_STATS_H_

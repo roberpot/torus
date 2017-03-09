@@ -20,6 +20,10 @@
 #include "errors.h"
 #include "../threads/mutex.h"
 
+#ifdef _MSC_VER
+    #pragma warning(disable: 4521 4522)
+#endif
+
 #define _TTL_MAP_DEFAULT_SIZE 10
 
 namespace ttl {
@@ -564,5 +568,9 @@ namespace ttl {
     };
 
 }
+
+#ifdef _MSC_VER
+    #pragma warning(disable: 4521 4522)
+#endif
 
 #endif //__TORUS_MAP_H

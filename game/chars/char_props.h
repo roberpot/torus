@@ -12,11 +12,23 @@
 * along with Torus. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef _TORUS_GAME_CHAR_PROPS_H_
-#define _TORUS_GAME_CHAR_PROPS_H_
+#ifndef __TORUS_GAME_CHAR_PROPS_H_
+#define __TORUS_GAME_CHAR_PROPS_H_
 
-#include <map>
+#include "../db/torus_db_object.h"
 #include "../../library/types.h"
+#include <map>
+
+#define TABLENAME_CHARPROPS "charprops"
+#define COLNAME_CHARPROPS_UID "uid"
+#define COLNAME_CHARPROPS_RACE "race"
+#define COLNAME_CHARPROPS_GENDER "gender"
+#define COLNAME_CHARPROPS_FAME "fame"
+#define COLNAME_CHARPROPS_KARMA "karma"
+#define COLNAME_CHARPROPS_OCOLOR "ocolor"
+#define COLNAME_CHARPROPS_BODY "body"
+#define COLNAME_CHARPROPS_OBODY "obody"
+#define COLNAME_CHARPROPS_DIR "dir"
 
 enum CHAR_RACE {
     RACE_HUMAN,
@@ -74,10 +86,14 @@ enum DIR {
 class Char;
 class CharStats;
 
-class CharProps {
+class CharProps : public TDBObject {
 public:
     CharProps(Char *whoami);
     ~CharProps();
+    bool db_load(pqxx::result::const_iterator r);
+    bool db_save();
+    void mark_db_update();
+    void mark_db_delete();
 // Races & genders
 private:
     Char *_char;
@@ -129,4 +145,4 @@ public:
 
 };
 
-#endif //_TORUS_GAME_CHAR_PROPS_H_
+#endif //__TORUS_GAME_CHAR_PROPS_H_

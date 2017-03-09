@@ -178,4 +178,11 @@ void Config::_reset() {
     maps.push_back(std::make_pair<t_ubyte, t_ubyte>(11, 3));  // Adding map 11 as copy of map3.mul / Map3LegacyMUL.uop
 */
     // END Maps Section
+    
+    // DB Settings
+    _dbsettings._db_host = "127.0.0.1";
+    _dbsettings._db_name = "torus_db";
+    _dbsettings._db_user = "torus";
+    _dbsettings._db_password = "toruspw";
+    _dbsettings._table_accounts = "accounts";
 }

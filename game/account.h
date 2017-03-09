@@ -12,17 +12,20 @@
 * along with Torus. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef _TORUS_GAME_ACCOUNT_H
-#define _TORUS_GAME_ACCOUNT_H
+#ifndef __TORUS_GAME_ACCOUNT_H
+#define __TORUS_GAME_ACCOUNT_H
 
-#include "../library/types.h"
 #include <string>
 #include <vector>
+#include "../library/system_headers.h"
+#include "../db/db_manager.h"
+#include "../library/types.h"
+#include "../db/torus_db_object.h"
 
 class Char;
 class Socket;
 
-enum PRIVLVL {
+enum PRIVLVL : t_ubyte {
     PRIV_GUEST,
     PRIV_PLAYER,
     PRIV_COUNSELOR,
@@ -41,8 +44,9 @@ enum PRIVLVL {
 #define EXP_SA  0x020   ///< Stygian Abyss.
 #define EXP_HS  0x040   ///< High Seas.
 
-class Account {
+class Account : public TDBObject {
 private:
+    t_uqword _id;
     std::string _name;    ///< Account name, used mostly for login.
     std::string _password;///< Account password.
     std::vector<Char *> _charlist;     ///< Character's list.
@@ -52,8 +56,13 @@ private:
     Socket *_socket;        ///< Pointer to the socket currently connected to this account.
     PRIVLVL _privlevel;
 public:
-    Account(const t_byte *name, const t_byte *pw, t_udword flags = 0, t_uword exp = 0);
+    Account();
     ~Account();
+    bool db_load(pqxx::result::const_iterator r);
+    bool db_save();
+    void mark_db_update();
+    void mark_db_delete();
+    t_uqword get_id();
     /**
     * @brief get the total count of characters this account has.
     *
@@ -110,4 +119,4 @@ public:
     void remove();
 };
 
-#endif //_TORUS_GAME_ACCOUNT_H
+#endif // __TORUS_GAME_ACCOUNT_H

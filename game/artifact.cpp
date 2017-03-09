@@ -12,17 +12,19 @@
 * along with Torus. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "artifact.h"
+#include "../library/system_headers.h"
 #include "../debug/debug.h"
 #include "../debug/callstack.h"
+#include "../core/torus.h"
+#include "../db/db_manager.h"
+#include "artifact.h"
 #include "char.h"
 #include "item.h"
-#include "../core/torus.h"
 #include "uo_files/map_list.h"
+#include "server.h"
 
 Artifact::Artifact(t_udword uid){
     ADDTOCALLSTACK();
-    _name = "";
     if ((uid &~(UID_ITEM | UID_RESOURCE)) == UID_CLEAR) {
         free_uid();
         set_uid_type(uid);
@@ -34,10 +36,13 @@ Artifact::Artifact(t_udword uid){
     _color = 0;
 }
 
+t_udword Artifact::get_uid() {
+    return Uid::get_uid();
+}
+
 Artifact::~Artifact(){
     ADDTOCALLSTACK();
     free_uid();
-    delete _name;
 }
 
 Char * Artifact::get_char() {
@@ -56,15 +61,46 @@ Item * Artifact::get_item() {
     return pitem;
 }
 
-const t_byte * Artifact::get_name(){
+bool Artifact::db_load(pqxx::result::const_iterator r) {
+    _name = r[COLNAME_ARTIFACTS_NAME].as<std::string>();
+    set_uid(r[COLNAME_ARTIFACTS_UID].as<t_udword>());
+    _flags = r[COLNAME_ARTIFACTS_FLAGS].as<t_udword>();
+    _color = r[COLNAME_ARTIFACTS_COLOR].as<t_udword>();
+    x = r[COLNAME_ARTIFACTS_POSX].as<t_word>();
+    y = r[COLNAME_ARTIFACTS_POSY].as<t_word>();
+    z = r[COLNAME_ARTIFACTS_POSZ].as<t_byte>();
+    map = r[COLNAME_ARTIFACTS_POSM].as<t_ubyte>();
+    return true;
+}
+
+bool Artifact::db_save() {
+    if (!db_update)
+        return false;
+    return true;
+}
+
+void Artifact::mark_db_update() {
+    ADDTOCALLSTACK();
+    server.update_obj(this);
+}
+
+void Artifact::mark_db_delete() {
+    ADDTOCALLSTACK();
+    std::stringstream query;
+    query << "DELETE FROM " << TABLENAME_ARTIFACTS << " WHERE " << COLNAME_ARTIFACTS_UID << " = " << get_uid();
+    torusdb.exec(query.str());
+}
+
+std::string Artifact::get_name(){
     ADDTOCALLSTACK();
     return _name;
 }
 
-void Artifact::set_name(const t_byte * name){
+void Artifact::set_name(std::string name){
     ADDTOCALLSTACK();
     // TODOTRIGGER: @Rename
     _name = name;
+    mark_db_update();
 }
 
 void Artifact::move_to(t_word destX, t_word destY){
@@ -87,6 +123,7 @@ void Artifact::move_to(t_word destX, t_word destY){
     /*if (updateMapCache) {
         maplist.get_map(map).get_map_point(x, y).add_item(); // adding item to the new position.
     }*/
+    mark_db_update();
 }
 
 void Artifact::set_z(t_byte destZ) {
@@ -96,6 +133,7 @@ void Artifact::set_z(t_byte destZ) {
         return;
     }
     z = destZ;
+    mark_db_update();
 }
 
 void Artifact::set_map(t_ubyte destMap){
@@ -105,6 +143,7 @@ void Artifact::set_map(t_ubyte destMap){
         return;
     }
     map = destMap;
+    mark_db_update();
 }
 
 void Artifact::set_pos(t_word destX, t_word destY, t_byte destZ, t_ubyte destMap){
@@ -126,16 +165,19 @@ bool Artifact::has_flag(t_udword flag){
 void Artifact::set_flag(t_udword flag){
     ADDTOCALLSTACK();
     _flags |= flag;
+    mark_db_update();
 }
 
 void Artifact::unset_flag(t_udword flag){
     ADDTOCALLSTACK();
     _flags &= ~flag;
+    mark_db_update();
 }
 
 void Artifact::switch_flag(t_udword flag){
     ADDTOCALLSTACK();
     _flags ^= flag;
+    mark_db_update();
 }
 
 t_udword Artifact::get_flags() {
@@ -145,6 +187,7 @@ t_udword Artifact::get_flags() {
 void Artifact::set_color(t_udword color) {
     ADDTOCALLSTACK();
     _color = color;
+    mark_db_update();
 }
 
 t_udword Artifact::get_color() {
@@ -155,7 +198,7 @@ t_udword Artifact::get_color() {
 t_uqword Artifact::get_timer() {
     ADDTOCALLSTACK();
     t_uqword diff = 0;
-    t_uqword curtime = torus.get_serv_time();
+    t_uqword curtime = server.get_serv_time();
     if (_timer > curtime)
         diff = _timer - curtime;
     return diff;
@@ -163,7 +206,8 @@ t_uqword Artifact::get_timer() {
 
 void Artifact::set_timer(t_uqword ticks){
     ADDTOCALLSTACK();
-    _timer = torus.get_serv_time() + ticks;
+    _timer = server.get_serv_time() + ticks;
+    mark_db_update();
 }
 
 bool Pos::can_move_to_coord(t_word destX, t_word destY){

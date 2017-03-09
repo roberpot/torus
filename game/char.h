@@ -12,8 +12,8 @@
 * along with Torus. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef _TORUS_GAME_CHAR_H_
-#define _TORUS_GAME_CHAR_H_
+#ifndef __TORUS_GAME_CHAR_H_
+#define __TORUS_GAME_CHAR_H_
 
 #include "../library/types.h"
 #include "artifact.h"
@@ -62,4 +62,4 @@ public:
 public:
 };
 
-#endif //_TORUS_GAME_CHAR_H_
+#endif // __TORUS_GAME_CHAR_H_
