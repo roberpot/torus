@@ -15,21 +15,34 @@
 #ifndef __TORUS_GAME_SERVER_H_
 #define __TORUS_GAME_SERVER_H_
 
-#include "../db/torus_db_table.h"
 #include "../library/types.h"
+#include "../library/map.h"
+#include "../library/vector.h"
+#include "uid.h"
 
-#define TABLENAME_SERVER "server"
-#define COLNAME_SERVER_TIME "time"
+class Char;
+class Item;
+class Artifact;
 
-extern class Server : public TDBTable {
+extern class Server {
     t_uqword _serv_time; ///< Server time in ticks.
+    t_uword _tick_period;
+public:
     Server();
     ~Server();
-public:
     t_uqword get_serv_time();
     bool check();
     void load_all();
     void save_all();
+    ttl::tsdynamicmap<t_udword, Artifact*> _artifact_list;
+    void add_char(Char *chr);
+    void add_item(Item *item);
+    Artifact * get_artifact(t_udword uid);
+    ttl::tsvector<Artifact*> _gclist;
+    void del_char(Char *chr);
+    void del_item(Item *item);
+    void del_artifact(Artifact *art);
+    void tick();
 
 } server;
 

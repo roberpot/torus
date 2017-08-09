@@ -12,17 +12,23 @@
 * along with Torus. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "char.h"
+#include "../library/system_headers.h"
 #include "../debug/callstack.h"
+#include "char.h"
+#include "item.h"
+#include "account.h"
+#include "server.h"
 
-Char::Char() : Artifact(UID_CHAR), CharProps(this){
+Char::Char() : Artifact(UID_CHAR) {
     ADDTOCALLSTACK();
     _account = NULL;
+    server.add_char(this);
 }
 
-Char::Char(t_udword uid) : Artifact(uid), CharProps(this) {
+Char::Char(t_udword uid) : Artifact(uid) {
     ADDTOCALLSTACK();
     _account = NULL;
+    server.add_char(this);
 }
 
 Char::~Char(){
@@ -45,6 +51,39 @@ bool Char::can_move(){
     return true;
 }
 
+void Char::remove() {
+    ADDTOCALLSTACK();
+    server.del_char(this);
+}
+
+bool Char::tick() {
+    ADDTOCALLSTACK();
+    return true;
+}
+
+bool Char::can_see(Char * target) {
+    ADDTOCALLSTACK();
+    if (get_distance(target) > DISTANCE_SEE_CHARS) {
+        return false;
+    }
+    if (target->get_flags() & CFLAG_INVIS && target->get_account()->get_privlevel() > get_account()->get_privlevel()) {
+        return false;
+    }
+    if (target->get_flags() & CFLAG_HIDDEN && target->get_account()->get_privlevel() >= get_account()->get_privlevel()) {
+        // same privlevel or higher than me? return false. TODO: detecting hidden pasive checks?
+        return false;
+    }
+    return true;
+}
+
+bool Char::can_see(Item * target) {
+    ADDTOCALLSTACK();
+    if (get_distance(target) > DISTANCE_SEE_ITEMS)
+        return false;
+    // TODO: attr_invis check
+    return true;
+}
+
 Account * Char::get_account() {
     ADDTOCALLSTACK();
     return _account;
@@ -53,4 +92,55 @@ Account * Char::get_account() {
 void Char::set_account(Account * account) {
     ADDTOCALLSTACK();
     _account = account;
+}
+
+t_uword Char::get_status_flag(Char *viewer) {
+    ADDTOCALLSTACK();
+    t_uword flags = SF_NORMAL;
+    t_udword cflags = get_flags();
+    // if (flags freezed / stoned)
+    //  _status_flags |= SF_FREEZED;
+    if (get_gender() == GENDER_FEMALE)
+        flags |= SF_FEMALE;
+    if (get_race() == RACE_GARGOYLE /* && cflags & FLAG_FLYING && (viewer->get_client()->get_version() >= CLIENT_SA || viewer->get_client()->is_enhanced())*/) { // No need to check this for viewers who cannot see gargoyles and their flying mode.
+        flags |= SF_FLYING;
+    }
+    if (cflags & CFLAG_POISONED) {  // FLYING and POISONED share the same flag.
+        flags |= SF_POISONED;
+    }
+    if (cflags & CFLAG_INVUL) {
+        flags |= SF_INVUL;
+    }
+    if (cflags & CFLAG_WAR) {
+        flags |= SF_WARMODE;
+    }
+    if (get_account() && get_account()->get_privlevel() > PRIV_PLAYER) {
+        flags |= SF_IGNORECHARS;
+    }
+    if (cflags & (CFLAG_INVIS | CFLAG_HIDDEN)) {
+        flags |= SF_INVIS;
+    }
+    if (viewer->get_account()->get_privlevel() > get_account()->get_privlevel()) {
+
+    }
+    return flags;
+}
+
+bool Char::can_equip(t_udword iflags) {
+    ADDTOCALLSTACK();
+    if (iflags == CAN_EQUIP_ALL)
+        return true;
+    if (iflags & CAN_EQUIP_NONE)
+        return false;
+    if ((iflags & CAN_EQUIP_MALE_ONLY) && get_gender() != GENDER_MALE)
+        return false;
+    if ((iflags & CAN_EQUIP_FEMALE_ONLY) && get_gender() != GENDER_FEMALE)
+        return false;
+    if (get_race() == RACE_HUMAN && !(iflags & CAN_EQUIP_HUMAN))
+        return false;
+    if (get_race() == RACE_ELF && !(iflags & CAN_EQUIP_ELF))
+        return false;
+    if (get_race() == RACE_GARGOYLE && !(iflags & CAN_EQUIP_GARGOYLE))
+        return false;
+    return true;
 }

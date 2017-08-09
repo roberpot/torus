@@ -22,12 +22,6 @@
 
 
 //  OS includes START.
-#ifdef _MSC_VER
-    #pragma warning(disable: 4589)  // TODO: Fix warning instead of disabling
-    #include "pqxx/connection"
-    #include "pqxx/transaction"
-    #pragma warning(default: 4589)
-#endif
 #include "../network/socket.h"
 #include "../threads/thread.h"
 #include "../threads/mutex.h"

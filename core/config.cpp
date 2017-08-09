@@ -27,6 +27,7 @@ Config::Config() {
 void Config::load_config_file(const t_byte * file) {
     UNREFERENCED_PARAMETER(file);
     _reset();
+    crypto_keys.push_back(std::make_pair(0x2339EE5D, 0xA41FA27F)); // 7.0.580;
     crypto_keys.push_back(std::make_pair(0x23F2C46D, 0xA47E3E7F)); // 7.0.570;
     /*crypto_keys.push_back(std::make_pair(0x29cd362d, 0xa1d59e7f)); // 7.00.290
     crypto_keys.push_back(std::make_pair(0x29b5843d, 0xa1ea127f)); // 7.00.280
@@ -184,5 +185,5 @@ void Config::_reset() {
     _dbsettings._db_name = "torus_db";
     _dbsettings._db_user = "torus";
     _dbsettings._db_password = "toruspw";
-    _dbsettings._table_accounts = "accounts";
+    _dbsettings._tables_prefix = "torus";
 }

@@ -18,9 +18,8 @@
 #include <string>
 #include <vector>
 #include "../library/system_headers.h"
-#include "../db/db_manager.h"
 #include "../library/types.h"
-#include "../db/torus_db_object.h"
+#include "../db/db_manager.h"
 
 class Char;
 class Socket;
@@ -44,8 +43,11 @@ enum PRIVLVL : t_ubyte {
 #define EXP_SA  0x020   ///< Stygian Abyss.
 #define EXP_HS  0x040   ///< High Seas.
 
-class Account : public TDBObject {
+
+#pragma db object
+class Account {
 private:
+#pragma db id auto
     t_uqword _id;
     std::string _name;    ///< Account name, used mostly for login.
     std::string _password;///< Account password.
@@ -58,10 +60,6 @@ private:
 public:
     Account();
     ~Account();
-    bool db_load(pqxx::result::const_iterator r);
-    bool db_save();
-    void mark_db_update();
-    void mark_db_delete();
     t_uqword get_id();
     /**
     * @brief get the total count of characters this account has.

@@ -15,19 +15,9 @@
 #ifndef __TORUS_GAME_ARTIFACT_H
 #define __TORUS_GAME_ARTIFACT_H
 
-#include "../db/torus_db_object.h"
 #include "../library/types.h"
 #include "uid.h"
-
-#define TABLENAME_ARTIFACTS "artifacts"
-#define COLNAME_ARTIFACTS_UID "uid"
-#define COLNAME_ARTIFACTS_NAME "name"
-#define COLNAME_ARTIFACTS_COLOR "color"
-#define COLNAME_ARTIFACTS_FLAGS "flags"
-#define COLNAME_ARTIFACTS_POSX "pos.x"
-#define COLNAME_ARTIFACTS_POSY "pos.y"
-#define COLNAME_ARTIFACTS_POSZ "pos.z"
-#define COLNAME_ARTIFACTS_POSM "pos.m"
+#include "server.h"
 
 struct Pos {
     t_word x = 1;
@@ -43,21 +33,19 @@ struct Pos {
 class Char;
 class Item;
 
-class Artifact : protected Uid, protected Pos, public TDBObject {
+class Artifact : public Uid, public Pos {
 public:
     t_udword get_uid();
 protected:
-    //Uid _uid;
-    virtual ~Artifact();
     Artifact(t_udword uid);
     Char *get_char();
     Item *get_item();
+    virtual void remove() = 0;
+    virtual bool tick() = 0;
 
 public:
-    bool db_load(pqxx::result::const_iterator r);
-    bool db_save();
-    void mark_db_update();
-    void mark_db_delete();
+    friend void Server::tick();
+    virtual ~Artifact();
     //Name
 private:
     std::string _name;
@@ -74,11 +62,13 @@ public:
     void set_map(t_ubyte destMap);
     void set_pos(t_word destX, t_word destY, t_byte destZ, t_ubyte destMap);
     Pos get_pos();
+    t_uword get_distance(Artifact *target);
+    t_uword get_distance(Pos target);
     virtual bool can_move() = 0;
 
     //Flags
 private:
-    t_uword _flags;
+    t_udword _flags;
 public:
     bool has_flag(t_udword flag);
     void set_flag(t_udword flag);
@@ -87,10 +77,10 @@ public:
     t_udword get_flags();
 
 private:
-    t_udword _color;
+    t_uword _color;
 public:
-    void set_color(t_udword color);
-    t_udword get_color();
+    void set_color(t_uword color);
+    t_uword get_color();
 
 private:
     t_uqword _timer;

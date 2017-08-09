@@ -20,6 +20,8 @@
 
 class TDBTable {
     ttl::vector<TDBObject *> _updatelist;   ///< Vector storing the TDBOBjects that needs to be updated in the next save tick.
+protected:
+    std::string _table_name;
 public:
     TDBTable();
     virtual ~TDBTable();

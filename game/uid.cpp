@@ -37,7 +37,7 @@ Uid::~Uid(){
 void Uid::set_uid(t_udword uid) {
     ADDTOCALLSTACK();
     _uid = uid;
-    if (highest_uid = get_uid_base())
+    if (highest_uid == get_uid_base())
         highest_uid = get_uid_base();
 }
 

@@ -61,11 +61,13 @@
 #define CAN_EQUIP_NONE          0x020   ///< Cannot be equiped.
 
 class Item : public Artifact {
+    ~Item();
 public:
     Item();
     Item(t_udword uid);
-    ~Item();
     bool can_move() override;
+    void remove();
+    bool tick();
 };
 
 #endif // __TORUS_GAME_ITEM_H

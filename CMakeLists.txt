@@ -1,4 +1,15 @@
 
+
+set(LIBODB_DIR "E:/odb/libodb-2.4.0")
+set(ODB_DIR "E:/odb")
+set(ODB_EXECUTABLE "E:/odb/bin/odb.exe")
+set(ODB_LIBODB_INCLUDE_DIRS "E:/odb")
+set(ODB_LIBODB_LIBRARIES "E:/odb/libodb-2.4.0/lib64")
+set(ODB_LIBRARY_PATH "E:/odb/libodb-2.4.0")
+set(ODB_PGSQL_INCLUDE_DIRS "E:/odb/libodb-pgsql-2.4.0")
+set(ODB_PGSQL_LIBRARIES "E:/odb/libodb-pgsql-2.4.0/lib64")
+
+
 cmake_minimum_required(VERSION 3.0.2)
 project(torus)
 
@@ -7,10 +18,12 @@ set(CMAKE_CONFIGURATION_TYPES "DEBUG;RELEASE;RELWITHDEBINFO")
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_C_STANDARD 11)
 
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake/")
+
 # compiler flags
 ## Windows flags
 if(MSVC_VERSION)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -W4 -MP -MTd -openmp")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -W4 -MP -MTd -openmp -wd4702 -DYY_NO_UNISTD_H")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -W4 -MP -MTd")  
     add_definitions(-D_WINSOCK_DEPRECATED_NO_WARNINGS -D_CRT_SECURE_NO_WARNINGS)
 endif(MSVC_VERSION)
@@ -32,10 +45,13 @@ add_definitions(-DSOURCE_PATH="${CMAKE_SOURCE_DIR}")
 
 find_package(FLEX REQUIRED)
 find_package(BISON REQUIRED)
+find_package(ODB REQUIRED COMPONENTS PGSQL)
 
 BISON_TARGET(tscp_parser parser/tscp.y ${CMAKE_CURRENT_SOURCE_DIR}/parser/tscp_parser.cpp COMPILE_FLAGS "--defines=parser/tscp_parser.h --name-prefix=tscp")
 FLEX_TARGET(tscp_scanner parser/tscp.l ${CMAKE_CURRENT_SOURCE_DIR}/parser/tscp_scanner.cpp COMPILE_FLAGS "--header-file=parser/tscp_scanner.h --prefix=tscp")
 ADD_FLEX_BISON_DEPENDENCY(tscp_scanner tscp_parser)
+include("cmake/UseODB.cmake")
+odb_compile(SOURCE_FILES FILES SOURCE_FILES DB pgsql GENERATE_QUERY GENERATE_SESSION)
 
 include("CMakeSources.cmake") # Reading CMakeSources with all of the ${SOURCE_FILES}.
 
@@ -53,18 +69,10 @@ if(WIN32)
     target_link_libraries(torus_server wsock32 ws2_32 kernel32) #ws2_32.lib for windows
 endif()
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake/")
-
-# Boost setup
-find_package(Boost)
-if(Boost_FOUND)
-    include_directories(${Boost_INCLUDE_DIRS})
-endif(Boost_FOUND)
-
-# PostgreSQL setup
-find_package(PostgreSQL REQUIRED)
-if (PostgreSQL_FOUND)
-    target_link_libraries(torus_server ${PostgreSQL_LIBRARIES})
-    include_directories(${PostgreSQL_INCLUDE_DIRS})
-endif(PostgreSQL_FOUND)
+# ODB setup
+if (ODB_FOUND)
+    target_link_libraries(torus_server ${ODB_LIBRARIES})
+    target_include_directories(torus_server PRIVATE ${ODB_INCLUDE_DIRS} ${ODB_COMPILE_OUTPUT_DIR})
+	target_compile_definitions(torus_server	PRIVATE DATABASE_PGSQL)
+endif(ODB_FOUND)
 

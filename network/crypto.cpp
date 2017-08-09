@@ -73,7 +73,7 @@ void Crypto::detect_client_keys(t_byte * buffer, t_udword l) {
                 TORUSSHELLECHO("UNENCRYPTED!!!");
                 return;
             }
-            return;
+            return; // Bloqueo la comparación de todas las keys internas hasta que no lleguemos bien a este paso, para evitar flood en la consola.
             _client_key_lo = toruscfg.crypto_keys[i].second;
             _client_key_hi = toruscfg.crypto_keys[i].first;
             (this->*decrypt_login_methods[j])(temp_buffer, l);
@@ -122,7 +122,7 @@ void Crypto::crypt(t_byte * buffer, t_udword l) {
 void Crypto::_decrypt_login_gt_0x125360(t_byte * buffer, t_udword l) {
     ADDTOCALLSTACK();
     t_udword old_key_lo, old_key_hi;
-    TORUSSHELLECHO("Searching keys, l = " << l);
+    TORUSSHELLECHO("Searching keys, lenght = " << l);
     for(t_udword i = 0; i < l +1; i++) {
         // Decrypt the byte:
         buffer[i] = (t_byte)(buffer[i] ^ _curr_key_lo);
@@ -192,10 +192,12 @@ void Crypto::_crypt_login_lt_0x125360(t_byte * buffer, t_udword l) {
 
 void Crypto::_decrypt_gamemode(t_byte * buffer, t_udword l) {
     ADDTOCALLSTACK();
-
+    UNREFERENCED_PARAMETER(buffer);
+    UNREFERENCED_PARAMETER(l);
 }
 
 void Crypto::_crypt_gamemode(t_byte * buffer, t_udword l) {
     ADDTOCALLSTACK();
-
+    UNREFERENCED_PARAMETER(buffer);
+    UNREFERENCED_PARAMETER(l);
 }

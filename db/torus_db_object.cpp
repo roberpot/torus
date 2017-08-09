@@ -14,7 +14,7 @@
 */
 
 TDBObject::TDBObject() {
-    db_update = false;
+    _db_update_flags = 0;
 }
 
 TDBObject::~TDBObject() {

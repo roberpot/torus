@@ -27,7 +27,7 @@ void TDBTable::save_all() {
 
 void TDBTable::update_obj(TDBObject * obj) {
     ADDTOCALLSTACK();
-    if (!obj->db_update) {
+    if (!obj->_db_update_flags) {
         _updatelist.push_back(obj); // Add the obj to the _updatelist if it was not added before in this tick, the bool is cleared in TDBObject::db_save()
     }
 }
@@ -38,7 +38,7 @@ void TDBTable::update() {
         for (size_t i = 0; i < _updatelist.size(); i++) {
             TDBObject * obj = _updatelist[(t_udword)i];
             if (obj->db_save()) {
-                obj->db_update = false;
+                obj->_db_update_flags = 0;
             }
             else {
                 // Something went wrong updating the database,

@@ -184,7 +184,7 @@ namespace ttl {
                 return count;
             }
             void replace_by_child() {
-                if (r != NULL and l != NULL) {
+                if (r != NULL && l != NULL) {
                     throw MapError("Tree inconsistency.");
                 }
                 Node * replacement;
@@ -473,6 +473,7 @@ namespace ttl {
             V operator=(V x) {
                 dynamicmap<K,V>::CellPosition::operator=(x);
                 map->_mutex.unlock();
+                return x;
             }
             operator V () {
                 try {
@@ -480,7 +481,7 @@ namespace ttl {
                     map->_mutex.unlock();
                     return x;
                 }
-                catch (MapError & e) {
+                catch (MapError) {
                     map->_mutex.unlock();
                     throw;
                 }

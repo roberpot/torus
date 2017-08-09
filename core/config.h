@@ -44,7 +44,7 @@ struct DBSettings {
     std::string _db_name;
     std::string _db_user;
     std::string _db_password;
-    std::string _table_accounts;
+    std::string _tables_prefix;
 };
 
 extern class Config {

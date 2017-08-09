@@ -163,6 +163,10 @@ private:
 #endif //__linux__
 };
 
+#ifdef _MSC_VER
+#pragma warning(disable:4127)
+#endif
+
 template<typename T>
 Socket & operator>>(Socket & s, T & d) {
     ADDTOCALLSTACK();
@@ -173,6 +177,8 @@ Socket & operator>>(Socket & s, T & d) {
     }
     return s;
 }
-
+#ifdef _MSC_VER
+#pragma warning(default:4127)
+#endif
 
 #endif //__TORUS_SOCKET_H

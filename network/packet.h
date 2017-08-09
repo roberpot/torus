@@ -17,6 +17,9 @@
 
 #include <cstring>
 #include "../library/types.h"
+#ifdef _MSC_VER
+#pragma warning(disable:4127)
+#endif
 
 class Socket;
 
@@ -99,4 +102,7 @@ Packet & operator<<(Packet & p, T d) {
     return p;
 }
 
+#ifdef _MSC_VER
+#pragma warning(default:4127)
+#endif
 #endif //__TORUS_PACKET_H

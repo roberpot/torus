@@ -136,7 +136,7 @@ bool Socket::client_pending() {
     timeval timeout;
     timeout.tv_sec = 0;  // Zero timeout (poll)
     timeout.tv_usec = 0;
-    return (select(_socket, &readSet, NULL, NULL, &timeout) == 1);
+    return (select((int)_socket, &readSet, NULL, NULL, &timeout) == 1);
 #endif //_WINDOWS
 #ifdef __linux__
     _accepted_socket = accept(_socket, 0, 0);
@@ -185,7 +185,7 @@ bool Socket::data_ready() {
     timeval timeout;
     timeout.tv_sec = 0;  // Zero timeout (poll)
     timeout.tv_usec = 0;
-    return (select(_socket, &readSet, NULL, NULL, &timeout) == 1);
+    return (select((int)_socket, &readSet, NULL, NULL, &timeout) == 1);
 }
 
 Packet * Socket::read_packet() {

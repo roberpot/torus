@@ -15,13 +15,4 @@
 #ifndef __TORUS_DB_PG_TRANSACTION_H
 #define __TORUS_DB_PG_TRANSACTION_H
 
-#include "pqxx/connection"
-#include "pqxx/transaction"
-
-class PGTransaction : public pqxx::work {
-    pqxx::connection *_conn;
-public:
-    PGTransaction(pqxx::connection * conn, std::string query = "");
-    ~PGTransaction();
-};
 #endif // __TORUS_DB_PG_TRANSACTION_H

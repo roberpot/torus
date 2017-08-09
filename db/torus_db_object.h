@@ -15,17 +15,4 @@
 #ifndef __TORUS_DB_OBJECT_H
 #define __TORUS_DB_OBJECT_H
 
-#include "../library/system_headers.h"
-#include "pqxx/result.hxx"
-
-class TDBObject {
-public:
-    TDBObject();
-    virtual ~TDBObject();
-    virtual bool db_load(pqxx::result::const_iterator r) = 0;
-    virtual bool db_save() = 0;
-    virtual void mark_db_update() = 0;
-    virtual void mark_db_delete() = 0;
-    bool db_update;    ///< True = flagged for update, don't try to add it again to it's _updatelist.
-};
 #endif // __TORUS_DB_OBJECT_H

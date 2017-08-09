@@ -13,7 +13,6 @@
  */
 
 #include "library/system_headers.h"
-#include "db/db_manager.h"
 #include "parser/compiler.h"
 #include "network/networkmanager.h"
 #include "core/torus.h"
@@ -22,7 +21,6 @@
 #include "debug/debug.h"
 #include "core/slave.h"
 #include "game/uo_files/uo_file_manager.h"
-#include "game/accounts_manager.h"
 
 TorusShell torus_shell;
 Torus torus;
@@ -32,10 +30,6 @@ int main() {
     TORUSSHELLECHO("Initializing Torus...");
     toruscfg.load_config_file("torus.ini");
     if (!uofilemgr.init()) {
-        //return -1;
-    }
-
-    if (!torusdb.init()) {
         //return -1;
     }
     //torusacc.init();

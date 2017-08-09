@@ -15,20 +15,9 @@
 #ifndef __TORUS_GAME_CHAR_PROPS_H_
 #define __TORUS_GAME_CHAR_PROPS_H_
 
-#include "../db/torus_db_object.h"
 #include "../../library/types.h"
+#include "../db/db_manager.h"
 #include <map>
-
-#define TABLENAME_CHARPROPS "charprops"
-#define COLNAME_CHARPROPS_UID "uid"
-#define COLNAME_CHARPROPS_RACE "race"
-#define COLNAME_CHARPROPS_GENDER "gender"
-#define COLNAME_CHARPROPS_FAME "fame"
-#define COLNAME_CHARPROPS_KARMA "karma"
-#define COLNAME_CHARPROPS_OCOLOR "ocolor"
-#define COLNAME_CHARPROPS_BODY "body"
-#define COLNAME_CHARPROPS_OBODY "obody"
-#define COLNAME_CHARPROPS_DIR "dir"
 
 enum CHAR_RACE {
     RACE_HUMAN,
@@ -69,7 +58,7 @@ enum DIR {
     SW,
     W,
     NW,
-    DIR_QTY = NW
+    DIR_QTY
 };
 
 #define SF_NORMAL       0x00
@@ -86,29 +75,20 @@ enum DIR {
 class Char;
 class CharStats;
 
-class CharProps : public TDBObject {
+class CharProps {
 public:
-    CharProps(Char *whoami);
+    CharProps();
     ~CharProps();
-    bool db_load(pqxx::result::const_iterator r);
-    bool db_save();
-    void mark_db_update();
-    void mark_db_delete();
+
 // Races & genders
-private:
-    Char *_char;
-public:
-    Char *get_char();
 private:
     CHAR_RACE _race;
     CHAR_GENDER _gender;
-    t_uword get_status_flag(Char *viewer);
 public:
     void set_race(CHAR_RACE race);
     CHAR_RACE get_race();
     void set_gender(CHAR_GENDER gender);
     CHAR_GENDER get_gender();
-    bool can_equip(t_udword iflags);
 
 // Props
 private:
@@ -116,6 +96,8 @@ private:
 public:
     void set_prop(CHAR_PROP prop, t_dword val);
     t_qword get_prop(CHAR_PROP prop);
+
+// Misc
 private:
     t_word _fame;
     t_word _karma;

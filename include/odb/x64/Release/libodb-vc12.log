@@ -1,0 +1,97 @@
+﻿  callback.cxx
+  exceptions.cxx
+E:\odb\libodb-2.4.0\odb/exception.hxx(19): warning C4275: non dll-interface class 'std::exception' used as base for dll-interface struct 'odb::exception'
+  C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Tools\MSVC\14.10.24930\include\vcruntime_exception.h(43): note: see declaration of 'std::exception'
+  E:\odb\libodb-2.4.0\odb/exception.hxx(19): note: see declaration of 'odb::exception'
+  database.cxx
+E:\odb\libodb-2.4.0\odb/exception.hxx(19): warning C4275: non dll-interface class 'std::exception' used as base for dll-interface struct 'odb::exception'
+  C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Tools\MSVC\14.10.24930\include\vcruntime_exception.h(43): note: see declaration of 'std::exception'
+  E:\odb\libodb-2.4.0\odb/exception.hxx(19): note: see declaration of 'odb::exception'
+  vector-impl.cxx
+E:\odb\libodb-2.4.0\odb/exception.hxx(19): warning C4275: non dll-interface class 'std::exception' used as base for dll-interface struct 'odb::exception'
+  C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Tools\MSVC\14.10.24930\include\vcruntime_exception.h(43): note: see declaration of 'std::exception'
+  E:\odb\libodb-2.4.0\odb/exception.hxx(19): note: see declaration of 'odb::exception'
+  connection.cxx
+E:\odb\libodb-2.4.0\odb/exception.hxx(19): warning C4275: non dll-interface class 'std::exception' used as base for dll-interface struct 'odb::exception'
+  C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Tools\MSVC\14.10.24930\include\vcruntime_exception.h(43): note: see declaration of 'std::exception'
+  E:\odb\libodb-2.4.0\odb/exception.hxx(19): note: see declaration of 'odb::exception'
+  lazy-ptr-impl.cxx
+E:\odb\libodb-2.4.0\odb/exception.hxx(19): warning C4275: non dll-interface class 'std::exception' used as base for dll-interface struct 'odb::exception'
+  C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Tools\MSVC\14.10.24930\include\vcruntime_exception.h(43): note: see declaration of 'std::exception'
+  E:\odb\libodb-2.4.0\odb/exception.hxx(19): note: see declaration of 'odb::exception'
+  prepared-query.cxx
+E:\odb\libodb-2.4.0\odb/exception.hxx(19): warning C4275: non dll-interface class 'std::exception' used as base for dll-interface struct 'odb::exception'
+  C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Tools\MSVC\14.10.24930\include\vcruntime_exception.h(43): note: see declaration of 'std::exception'
+  E:\odb\libodb-2.4.0\odb/exception.hxx(19): note: see declaration of 'odb::exception'
+  query-dynamic.cxx
+E:\odb\libodb-2.4.0\odb/exception.hxx(19): warning C4275: non dll-interface class 'std::exception' used as base for dll-interface struct 'odb::exception'
+  C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Tools\MSVC\14.10.24930\include\vcruntime_exception.h(43): note: see declaration of 'std::exception'
+  E:\odb\libodb-2.4.0\odb/exception.hxx(19): note: see declaration of 'odb::exception'
+  result.cxx
+E:\odb\libodb-2.4.0\odb/exception.hxx(19): warning C4275: non dll-interface class 'std::exception' used as base for dll-interface struct 'odb::exception'
+  C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Tools\MSVC\14.10.24930\include\vcruntime_exception.h(43): note: see declaration of 'std::exception'
+  E:\odb\libodb-2.4.0\odb/exception.hxx(19): note: see declaration of 'odb::exception'
+  schema-catalog.cxx
+E:\odb\libodb-2.4.0\odb/exception.hxx(19): warning C4275: non dll-interface class 'std::exception' used as base for dll-interface struct 'odb::exception'
+  C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Tools\MSVC\14.10.24930\include\vcruntime_exception.h(43): note: see declaration of 'std::exception'
+  E:\odb\libodb-2.4.0\odb/exception.hxx(19): note: see declaration of 'odb::exception'
+  section.cxx
+E:\odb\libodb-2.4.0\odb/exception.hxx(19): warning C4275: non dll-interface class 'std::exception' used as base for dll-interface struct 'odb::exception'
+  C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Tools\MSVC\14.10.24930\include\vcruntime_exception.h(43): note: see declaration of 'std::exception'
+  E:\odb\libodb-2.4.0\odb/exception.hxx(19): note: see declaration of 'odb::exception'
+  session.cxx
+E:\odb\libodb-2.4.0\odb/exception.hxx(19): warning C4275: non dll-interface class 'std::exception' used as base for dll-interface struct 'odb::exception'
+  C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Tools\MSVC\14.10.24930\include\vcruntime_exception.h(43): note: see declaration of 'std::exception'
+  E:\odb\libodb-2.4.0\odb/exception.hxx(19): note: see declaration of 'odb::exception'
+  statement.cxx
+E:\odb\libodb-2.4.0\odb/exception.hxx(19): warning C4275: non dll-interface class 'std::exception' used as base for dll-interface struct 'odb::exception'
+  C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Tools\MSVC\14.10.24930\include\vcruntime_exception.h(43): note: see declaration of 'std::exception'
+  E:\odb\libodb-2.4.0\odb/exception.hxx(19): note: see declaration of 'odb::exception'
+  statement-processing.cxx
+E:\odb\libodb-2.4.0\odb/exception.hxx(19): warning C4275: non dll-interface class 'std::exception' used as base for dll-interface struct 'odb::exception'
+  C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Tools\MSVC\14.10.24930\include\vcruntime_exception.h(43): note: see declaration of 'std::exception'
+  E:\odb\libodb-2.4.0\odb/exception.hxx(19): note: see declaration of 'odb::exception'
+  tracer.cxx
+E:\odb\libodb-2.4.0\odb/exception.hxx(19): warning C4275: non dll-interface class 'std::exception' used as base for dll-interface struct 'odb::exception'
+  C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Tools\MSVC\14.10.24930\include\vcruntime_exception.h(43): note: see declaration of 'std::exception'
+  E:\odb\libodb-2.4.0\odb/exception.hxx(19): note: see declaration of 'odb::exception'
+  transaction.cxx
+E:\odb\libodb-2.4.0\odb/exception.hxx(19): warning C4275: non dll-interface class 'std::exception' used as base for dll-interface struct 'odb::exception'
+  C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Tools\MSVC\14.10.24930\include\vcruntime_exception.h(43): note: see declaration of 'std::exception'
+  E:\odb\libodb-2.4.0\odb/exception.hxx(19): note: see declaration of 'odb::exception'
+  buffer.cxx
+  condition.cxx
+E:\odb\libodb-2.4.0\odb/exception.hxx(19): warning C4275: non dll-interface class 'std::exception' used as base for dll-interface struct 'odb::exception'
+  C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Tools\MSVC\14.10.24930\include\vcruntime_exception.h(43): note: see declaration of 'std::exception'
+  E:\odb\libodb-2.4.0\odb/exception.hxx(19): note: see declaration of 'odb::exception'
+  lock.cxx
+  mutex.cxx
+  base.cxx
+E:\odb\libodb-2.4.0\odb/exception.hxx(19): warning C4275: non dll-interface class 'std::exception' used as base for dll-interface struct 'odb::exception'
+  C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Tools\MSVC\14.10.24930\include\vcruntime_exception.h(43): note: see declaration of 'std::exception'
+  E:\odb\libodb-2.4.0\odb/exception.hxx(19): note: see declaration of 'odb::exception'
+  init.cxx
+  once.cxx
+  tls.cxx
+E:\odb\libodb-2.4.0\odb/exception.hxx(19): warning C4275: non dll-interface class 'std::exception' used as base for dll-interface struct 'odb::exception'
+  C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Tools\MSVC\14.10.24930\include\vcruntime_exception.h(43): note: see declaration of 'std::exception'
+  E:\odb\libodb-2.4.0\odb/exception.hxx(19): note: see declaration of 'odb::exception'
+  condition.cxx
+E:\odb\libodb-2.4.0\odb/exception.hxx(19): warning C4275: non dll-interface class 'std::exception' used as base for dll-interface struct 'odb::exception'
+  C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Tools\MSVC\14.10.24930\include\vcruntime_exception.h(43): note: see declaration of 'std::exception'
+  E:\odb\libodb-2.4.0\odb/exception.hxx(19): note: see declaration of 'odb::exception'
+  thread.cxx
+E:\odb\libodb-2.4.0\odb/exception.hxx(19): warning C4275: non dll-interface class 'std::exception' used as base for dll-interface struct 'odb::exception'
+  C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Tools\MSVC\14.10.24930\include\vcruntime_exception.h(43): note: see declaration of 'std::exception'
+  E:\odb\libodb-2.4.0\odb/exception.hxx(19): note: see declaration of 'odb::exception'
+  exceptions.cxx
+E:\odb\libodb-2.4.0\odb/exception.hxx(19): warning C4275: non dll-interface class 'std::exception' used as base for dll-interface struct 'odb::exception'
+  C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Tools\MSVC\14.10.24930\include\vcruntime_exception.h(43): note: see declaration of 'std::exception'
+  E:\odb\libodb-2.4.0\odb/exception.hxx(19): note: see declaration of 'odb::exception'
+  dll.cxx
+     Creating library ..\lib64\odb.lib and object ..\lib64\odb.exp
+  Generating code
+  All 2516 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Finished generating code
+  libodb-vc12.vcxproj -> E:\odb\libodb-2.4.0\odb\..\bin64\odb-2.4-vc12.dll
+  libodb-vc12.vcxproj -> ..\bin64\odb-2.4-vc12.pdb (Full PDB)

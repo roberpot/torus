@@ -328,7 +328,7 @@ namespace ttl {
         }
         T & operator[](t_udword n) {
             _mutex.lock();
-            T t = _v[n];
+            T & t = _v[n];
             _mutex.unlock();
             return t;
         }

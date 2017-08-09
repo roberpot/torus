@@ -15,21 +15,14 @@
 #ifndef __TORUS_GAME_ACCOUNTS_MANAGER_H
 #define __TORUS_GAME_ACCOUNTS_MANAGER_H
 
-#include "../db/torus_db_table.h"
 #include <string>
 #include <map>
 #include "../library/types.h"
 #include "account.h"
 
-#define TABLENAME_ACCOUNTS "accounts"
-#define COLNAME_ACCOUNTS_ID "id"
-#define COLNAME_ACCOUNTS_NAME "name"
-#define COLNAME_ACCOUNTS_PASSWORD "password"
-#define COLNAME_ACCOUNTS_PRIVLEVEL "privlevel"
-
 class Account;
 
-extern class AccountsManager : public TDBTable {
+extern class AccountsManager{
 public:
     AccountsManager();
     ~AccountsManager();
