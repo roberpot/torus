@@ -31,6 +31,7 @@ enum MAPID {
 
 class Map {
 private:
+    t_uword _index; // Ingame Virtual ID
     t_uword _x;     // max X
     t_uword _y;     // max Y
     t_ubyte _fileid;    // map file in which this map is based on (255 = bad id).
@@ -49,7 +50,7 @@ public:
     * @param file_id Map file used for this map.
     * @return false if the given file doesn't exist or can't be opened.
     */
-    bool create(t_word x, t_word y, t_ubyte ss, t_ubyte file_id, std::string filename);
+    bool create(t_uword index, t_uword x, t_uword y, t_ubyte ss, t_ubyte file_id, std::string filename);
     /**
     * @brief Fills the Map with it's map file's data.
     *

@@ -21,40 +21,43 @@
 
 AccountsManager torusacc;
 
-AccountsManager::AccountsManager() {
+AccountsManager::AccountsManager()
+{
 }
 
-AccountsManager::~AccountsManager() {
+AccountsManager::~AccountsManager()
+{
 }
 
-void AccountsManager::init() {
+void AccountsManager::init()
+{
     ADDTOCALLSTACK();
 }
 
-bool AccountsManager::exists(std::string name, std::string pw) {
+bool AccountsManager::exists(std::string name, std::string pw)
+{
     ADDTOCALLSTACK();
     return false;
 }
 
-void AccountsManager::load_all() {
+void AccountsManager::load_all()
+{
     ADDTOCALLSTACK();
 }
 
-void AccountsManager::save_all() {
+void AccountsManager::save_all()
+{
     ADDTOCALLSTACK();
 }
 
-bool AccountsManager::check() {
+bool AccountsManager::check()
+{
     ADDTOCALLSTACK();
     return true;
 }
 
-Account * AccountsManager::get_account(std::string name) {
-    ADDTOCALLSTACK();
-    return get_account(get_account_id(name));
-}
-
-Account * AccountsManager::get_account(t_uqword id) {
+Account * AccountsManager::get_account(size_t id)
+{
     ADDTOCALLSTACK();
     if (id > 0) {
         return _list[id];
@@ -62,16 +65,13 @@ Account * AccountsManager::get_account(t_uqword id) {
     return NULL;
 }
 
-t_uqword AccountsManager::get_account_id(std::string name) {
-    ADDTOCALLSTACK();
-    return 0;
-}
-
-bool AccountsManager::create(std::string name, std::string pw, t_ubyte privlevel) {
+bool AccountsManager::create(std::string name, std::string pw, t_ubyte privlevel)
+{
     ADDTOCALLSTACK();
     if (exists(name, pw)) {
         DEBUG_ERROR("Error creating account '" << name << "', reason: Account already exists.");
         return false;
     }
+    _list.push_back(new Account(name, pw, (PRIVLVL)privlevel));
     return false;
 }

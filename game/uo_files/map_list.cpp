@@ -32,6 +32,14 @@ t_ubyte MapList::get_map_count() {
     return (t_ubyte)(*this).size();
 }
 
-void MapList::add_map(std::pair<t_ubyte, t_ubyte> map){
+void MapList::add_map(t_ubyte index, Map* map){
     ADDTOCALLSTACK();
+    if (get_map(index))
+    {
+        DEBUG_ERROR("MapList:: Trying to add already existing map" << index << ".\n");
+    }
+    else
+    {
+        (*this)[index] = map;
+    }
 }

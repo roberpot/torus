@@ -34,7 +34,7 @@ void UOFileManager::read_config() {
         Map *map = new Map();
         std::stringstream file;
         file << toruscfg.file_path << mapfile.filename;
-        if (map->create(mapfile.x, mapfile.y, mapfile.sector_size, mapfile.id, file.str().c_str())) {
+        if (map->create((t_uword)i, mapfile.x, mapfile.y, mapfile.sector_size, mapfile.id, file.str().c_str())) {
             basemaps[mapfile.id] = map;
         }
         else {
@@ -44,10 +44,15 @@ void UOFileManager::read_config() {
     }
     // Create virtual maps
     for (size_t i = 0; i < toruscfg.maps.size(); i++) {
+        if (i >= TUBYTE_MAX)
+        {
+            DEBUG_ERROR("Exceeding the Virtual Maps limit of  "<< (int)TUBYTE_MAX <<".");
+            break;
+        }
         std::pair<t_ubyte, t_ubyte> virtualmap = toruscfg.maps[i];
         Map *filemap = basemaps[virtualmap.second];
         if (filemap && filemap->get_file_id() == virtualmap.second) {  // Checking if there is
-            maplist.add_map(virtualmap);
+            maplist.add_map(virtualmap.first, filemap);
         }
         else {
             DEBUG_ERROR("Adding to virtual map '" << (int)virtualmap.first << "' the undefined base map '" << (int)virtualmap.second << "'.");

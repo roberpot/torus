@@ -2,3 +2,5 @@
 /.idea*
 /parser/tscp_parser*
 /parser/tscp_scanner*
+/include/odb/build
+/include/odb/x64

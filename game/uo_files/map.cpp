@@ -29,7 +29,7 @@ Map::Map(){
 Map::~Map(){
 }
 
-bool Map::create(t_word x, t_word y, t_ubyte ss, t_ubyte file_id, std::string filename)
+bool Map::create(t_uword index, t_uword x, t_uword y, t_ubyte ss, t_ubyte file_id, std::string filename)
 {
     ADDTOCALLSTACK();
     /*std::ifstream filetest(filename.c_str());
@@ -37,6 +37,7 @@ bool Map::create(t_word x, t_word y, t_ubyte ss, t_ubyte file_id, std::string fi
         return false;
     }
     filetest.close();*/
+    _index = index;
     _x = x;
     _y = y;
     _fileid = file_id;
@@ -93,8 +94,8 @@ bool Map::is_valid_p(t_word x, t_word y){
 
 bool Map::init(){
     ADDTOCALLSTACK();
-    std::streamsize bytes_to_read = sizeof(UOMapBlock) * get_block_count();
-
+    /*std::streamsize bytes_to_read = sizeof(UOMapBlock) * get_block_count();
+    
     // File opening & checks
     std::ifstream mapfile(_filename.c_str(), std::ios_base::in | std::ios_base::binary);
     if (!mapfile.is_open()){
@@ -113,6 +114,6 @@ bool Map::init(){
     if (!_is_valid) {
         DEBUG_ERROR("Error reading map " << (int)get_file_id() << ", readed " << mapfile.gcount() << " bytes out of " << bytes_to_read << ".");
         return false;
-    }
+    }*/
     return true;
 }

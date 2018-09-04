@@ -15,8 +15,6 @@
 #ifndef __TORUS_DB_DBMANAGER_H
 #define __TORUS_DB_DBMANAGER_H
 
-#include <odb/core.hxx>
-
 extern class DBManager {
 } torusdb;
 #endif // __TORUS_DB_DBMANAGER_H

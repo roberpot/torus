@@ -27,9 +27,10 @@ Config::Config() {
 void Config::load_config_file(const t_byte * file) {
     UNREFERENCED_PARAMETER(file);
     _reset();
-    crypto_keys.push_back(std::make_pair(0x2339EE5D, 0xA41FA27F)); // 7.0.580;
+    crypto_keys.push_back(std::make_pair(0x21C1A9DD, 0xA521227F)); // 7.0.66;
+    /*crypto_keys.push_back(std::make_pair(0x2339EE5D, 0xA41FA27F)); // 7.0.580;
     crypto_keys.push_back(std::make_pair(0x23F2C46D, 0xA47E3E7F)); // 7.0.570;
-    /*crypto_keys.push_back(std::make_pair(0x29cd362d, 0xa1d59e7f)); // 7.00.290
+    crypto_keys.push_back(std::make_pair(0x29cd362d, 0xa1d59e7f)); // 7.00.290
     crypto_keys.push_back(std::make_pair(0x29b5843d, 0xa1ea127f)); // 7.00.280
     crypto_keys.push_back(std::make_pair(0x2a7e164d, 0xa0081e7f)); // 7.00.270
     crypto_keys.push_back(std::make_pair(0x2a26ec5d, 0xa019a27f)); // 7.00.260
@@ -127,7 +128,7 @@ void Config::_reset() {
     torustable_file = "scripts/torustable.tscp";
     net_addr = new char[10];
     strcpy(net_addr, "127.0.0.1");
-    net_port = 2597;
+    net_port = 2595;
     tick_duration = 250;
     tick_duration_overloaded = 225;
     tick_duration_idle = 30;

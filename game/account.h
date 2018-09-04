@@ -24,14 +24,16 @@
 class Char;
 class Socket;
 
-enum PRIVLVL : t_ubyte {
+enum PRIVLVL
+{
     PRIV_GUEST,
     PRIV_PLAYER,
     PRIV_COUNSELOR,
     PRIV_SEER,
     PRIV_GM,
     PRIV_DEV,
-    PRIV_ADMIN
+    PRIV_ADMIN,
+    PRIV_QTY
 };
 
 // Expansion Flags
@@ -44,11 +46,8 @@ enum PRIVLVL : t_ubyte {
 #define EXP_HS  0x040   ///< High Seas.
 
 
-#pragma db object
 class Account {
 private:
-#pragma db id auto
-    t_uqword _id;
     std::string _name;    ///< Account name, used mostly for login.
     std::string _password;///< Account password.
     std::vector<Char *> _charlist;     ///< Character's list.
@@ -60,7 +59,7 @@ private:
 public:
     Account();
     ~Account();
-    t_uqword get_id();
+    Account(std::string accname, std::string accpw, PRIVLVL accpriv);
     /**
     * @brief get the total count of characters this account has.
     *

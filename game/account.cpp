@@ -29,9 +29,12 @@ Account::~Account(){
         delete _socket;
 }
 
-t_uqword Account::get_id() {
+Account::Account(std::string accname, std::string accpw, PRIVLVL accpriv)
+{
     ADDTOCALLSTACK();
-    return _id;
+    _name = accname;
+    _password = accpw;
+    _privlevel = accpriv;
 }
 
 t_byte Account::get_char_count(){

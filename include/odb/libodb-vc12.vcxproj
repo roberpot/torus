@@ -69,23 +69,23 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>..\bin\</OutDir>
-    <TargetName>odb-d-2.4-vc12</TargetName>
+    <OutDir>build\bin\debug\</OutDir>
+    <TargetName>odb-d-2.4</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>..\bin64\</OutDir>
-    <TargetName>odb-d-2.4-vc12</TargetName>
+    <OutDir>build\bin64\debug\</OutDir>
+    <TargetName>odb-d</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>..\bin\</OutDir>
+    <OutDir>build\bin\release\</OutDir>
     <TargetName>odb-2.4-vc12</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>..\bin64\</OutDir>
-    <TargetName>odb-2.4-vc12</TargetName>
+    <OutDir>build\bin64\release</OutDir>
+    <TargetName>odb-2.4</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -102,7 +102,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <OutputFile>$(TargetPath)</OutputFile>
-      <ImportLibrary>..\lib\odb-d.lib</ImportLibrary>
+      <ImportLibrary>build\lib\odb-d.lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -120,7 +120,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <OutputFile>$(TargetPath)</OutputFile>
-      <ImportLibrary>..\lib64\odb-d.lib</ImportLibrary>
+      <ImportLibrary>build\lib64.lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -142,7 +142,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <OutputFile>$(TargetPath)</OutputFile>
-      <ImportLibrary>..\lib\odb.lib</ImportLibrary>
+      <ImportLibrary>build\lib\odb.lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -164,7 +164,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <OutputFile>$(TargetPath)</OutputFile>
-      <ImportLibrary>..\lib64\odb.lib</ImportLibrary>
+      <ImportLibrary>build\lib64.lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

@@ -39,7 +39,7 @@ public:
     */
     t_ubyte get_map_count();
 
-    void add_map(std::pair<t_ubyte, t_ubyte> map);
+    void add_map(t_ubyte index, Map* map);
 } maplist;
 
 #endif // __TORUS_GAME_MAP_LIST_H
