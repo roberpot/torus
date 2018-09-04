@@ -27,6 +27,7 @@
 #include "packet.h"
 #include "packetlist.h"
 #include "../game/client.h"
+#include "../shell.h"
 
 #define N2L(C, LL) \
     LL = ((C&0xff000000))>>24 | ((C&0x00ff0000))>>8  | ((C&0x0000ff00))<<8 | ((C&0x000000ff)<<24)

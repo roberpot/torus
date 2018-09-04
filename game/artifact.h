@@ -15,6 +15,8 @@
 #ifndef __TORUS_GAME_ARTIFACT_H
 #define __TORUS_GAME_ARTIFACT_H
 
+#include <string>
+
 #include "../library/types.h"
 #include "uid.h"
 #include "server.h"

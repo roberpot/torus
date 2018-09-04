@@ -12,6 +12,8 @@
 * along with Torus. If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <cstring>
+
 #include "map.h"
 #include "../../debug/callstack.h"
 #include "../../debug/debug.h"
