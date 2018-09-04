@@ -19,7 +19,6 @@
 #include <vector>
 #include "../library/system_headers.h"
 #include "../library/types.h"
-#include "../db/db_manager.h"
 
 class Char;
 class Socket;

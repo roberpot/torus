@@ -41,11 +41,6 @@
 #define CFLAG_INVIS             0x020000    // GM invis.
 #define CFLAG_INVUL             0x040000    // Invulnerable
 
-#define DB_UPDATE_NONE      0
-#define DB_UPDATE_ALL       0x01
-#define DB_UPDATE_STATS     0x02
-#define DB_UPDATE_PROPS     0x04
-
 #define DISTANCE_SEE_CHARS 14
 #define DISTANCE_SEE_ITEMS 14
 #define DISTANCE_SEE_MULTIS 18

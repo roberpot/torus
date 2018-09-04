@@ -17,7 +17,6 @@
 #include "../debug/debug.h"
 #include "../debug/callstack.h"
 #include "../core/torus.h"
-#include "../db/db_manager.h"
 #include "artifact.h"
 #include "char.h"
 #include "item.h"

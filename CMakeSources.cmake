@@ -7,8 +7,7 @@ set(CORE_FILES
 SOURCE_GROUP(core FILES ${CORE_FILES})
 
 set(DB_FILES
-        db/sqlite3.c                db/sqlite3.h
-        db/db_manager.cpp           db/db_manager.h)
+        db/sqlite3.c                db/sqlite3.h)
 SOURCE_GROUP(db FILES ${DB_FILES})
 
 set(DEBUG_FILES

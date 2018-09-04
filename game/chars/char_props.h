@@ -16,7 +16,6 @@
 #define __TORUS_GAME_CHAR_PROPS_H_
 
 #include "../../library/types.h"
-//#include "../db/db_manager.h"
 #include <map>
 
 enum CHAR_RACE {

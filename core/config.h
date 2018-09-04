@@ -39,14 +39,6 @@ struct MapFile {
     }
 };
 
-struct DBSettings {
-    std::string _db_host;
-    std::string _db_name;
-    std::string _db_user;
-    std::string _db_password;
-    std::string _tables_prefix;
-};
-
 extern class Config {
 public:
     Config();
@@ -76,9 +68,7 @@ public:
     std::vector<std::pair<t_udword, t_udword> > crypto_keys;
     // Maps.
     std::vector<MapFile> map_files;
-    std::vector<std::pair<t_ubyte, t_ubyte>> maps;
-    // DataBase.
-    DBSettings _dbsettings;
+    std::vector<std::pair<t_ubyte, t_ubyte>> maps;;
 private:
     void _reset();
 } toruscfg;
