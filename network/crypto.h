@@ -21,23 +21,24 @@ class Crypto {
 public:
     Crypto();
     void set_client_seed(t_udword seed);
+    void set_crypt_key(t_udword maskHi, t_udword masLo);
     void set_mode_none();
     void set_mode_login();
     void set_mode_game();
     void detect_client_keys(t_byte * buffer, t_udword l);
     void decrypt(t_byte * buffer, t_udword l);
-    void crypt(t_byte * buffer, t_udword l);
+    void crypt(t_ubyte * buffer, t_udword l);
 private:
-    void _decrypt_login_gt_0x125360(t_byte * buffer, t_udword l);
-    void _decrypt_login_eq_0x125360(t_byte * buffer, t_udword l);
-    void _decrypt_login_lt_0x125360(t_byte * buffer, t_udword l);
-    void _crypt_login_gt_0x125360(t_byte * buffer, t_udword l);
-    void _crypt_login_eq_0x125360(t_byte * buffer, t_udword l);
-    void _crypt_login_lt_0x125360(t_byte * buffer, t_udword l);
-    void (Crypto::*_decrypt_login_method)(t_byte *, t_udword);
-    void (Crypto::*_crypt_login_method)(t_byte *, t_udword);
-    void (Crypto::*_decrypt_game_method)(t_byte *, t_udword);
-    void (Crypto::*_crypt_game_method)(t_byte *, t_udword);
+    void _decrypt_login_gt_0x125360(t_ubyte * buffer, t_udword l);
+    void _decrypt_login_eq_0x125360(t_ubyte * buffer, t_udword l);
+    void _decrypt_login_lt_0x125360(t_ubyte * buffer, t_udword l);
+    void _crypt_login_gt_0x125360(t_ubyte * buffer, t_udword l);
+    void _crypt_login_eq_0x125360(t_ubyte * buffer, t_udword l);
+    void _crypt_login_lt_0x125360(t_ubyte * buffer, t_udword l);
+    void (Crypto::*_decrypt_login_method)(t_ubyte *, t_udword);
+    void (Crypto::*_crypt_login_method)(t_ubyte *, t_udword);
+    void (Crypto::*_decrypt_game_method)(t_ubyte *, t_udword);
+    void (Crypto::*_crypt_game_method)(t_ubyte *, t_udword);
 
     void _decrypt_loginmode(t_byte * buffer, t_udword l);
     void _decrypt_gamemode(t_byte * buffer, t_udword l);

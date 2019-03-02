@@ -32,13 +32,9 @@ void Packet_0xef::loads(const t_byte * b) {
     UNREFERENCED_PARAMETER(b);
 }
 
-#define N2L(C, LL) \
-    LL = ((C&0xff000000))>>24 | ((C&0x00ff0000))>>8  | ((C&0x0000ff00))<<8 | ((C&0x000000ff)<<24)
-
 void Packet_0xef::loads(Socket * s) {
     ADDTOCALLSTACK();
-    *s >> _seed;
-    N2L(_seed, _seed);
+    *s >> _seed; 
     *s >> _client_major_version;
     *s >> _client_minor_version;
     *s >> _client_revision_version;

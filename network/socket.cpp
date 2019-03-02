@@ -68,9 +68,9 @@ void Socket::init_client_socket() {
     crypto->set_mode_none();
     t_udword seed = _determinate_client_seed();
     crypto->set_client_seed(seed);
-    _read_bytes(61);
+    _read_bytes(62);
     crypto->detect_client_keys(buffer, buffer_len);
-    _rewind(buffer, 61);
+    _rewind(buffer, 62);
     crypto->set_mode_login();
     _client = new Client(this);
 }
@@ -191,9 +191,9 @@ bool Socket::data_ready() {
 
 Packet * Socket::read_packet() {
     ADDTOCALLSTACK();
-    Packet * p = 0;
-//    p = packet_factory(*this);
-//    p->loads(this);
+    Packet * p = nullptr;
+    p = packet_factory(*this);
+    p->loads(this);
     return p;
 }
 

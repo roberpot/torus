@@ -68,7 +68,7 @@ public:
     std::vector<std::pair<t_udword, t_udword> > crypto_keys;
     // Maps.
     std::vector<MapFile> map_files;
-    std::vector<std::pair<t_ubyte, t_ubyte>> maps;;
+    std::vector<std::pair<t_ubyte, t_ubyte>> maps;
 private:
     void _reset();
 } toruscfg;

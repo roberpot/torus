@@ -27,7 +27,8 @@ Packet * packet_factory(Socket & s) {
     s >> t;
     Packet * p = NULL;
     switch(t) {
-        case 0xef: p = new Packet_0xef; break;
+        case 0xef: p = new Packet_0xef();
+            break;
         default: THROW_ERROR(NetworkError, "Unknown packet code 0x" << std::hex << (t_udword)t << std::dec << ".");
     }
     p->loads(&s);

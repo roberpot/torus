@@ -27,8 +27,12 @@ Config::Config() {
 void Config::load_config_file(const t_byte * file) {
     UNREFERENCED_PARAMETER(file);
     _reset();
+    crypto_keys.push_back(std::make_pair(0x2042036D, 0xA5D1BE7F)); // 7.0.73;
+    crypto_keys.push_back(std::make_pair(0x207B217D, 0xA5C7527F)); // 7.0.72;
+    crypto_keys.push_back(std::make_pair(0x203CC38D, 0xA5FDFE7F)); // 7.0.71;
+    crypto_keys.push_back(std::make_pair(0x20E5E99D, 0xA598227F)); // 7.0.70;
     crypto_keys.push_back(std::make_pair(0x21C1A9DD, 0xA521227F)); // 7.0.66;
-    /*crypto_keys.push_back(std::make_pair(0x2339EE5D, 0xA41FA27F)); // 7.0.580;
+    crypto_keys.push_back(std::make_pair(0x2339EE5D, 0xA41FA27F)); // 7.0.580;
     crypto_keys.push_back(std::make_pair(0x23F2C46D, 0xA47E3E7F)); // 7.0.570;
     crypto_keys.push_back(std::make_pair(0x29cd362d, 0xa1d59e7f)); // 7.00.290
     crypto_keys.push_back(std::make_pair(0x29b5843d, 0xa1ea127f)); // 7.00.280
@@ -111,7 +115,7 @@ void Config::load_config_file(const t_byte * file) {
     crypto_keys.push_back(std::make_pair(0x2c9bc78d, 0xa35bfe7f)); // 2.00.70
     crypto_keys.push_back(std::make_pair(0x2c43ed9d, 0xa334227f)); // 2.00.60
     crypto_keys.push_back(std::make_pair(0x2c0b97ad, 0xa310de7f)); // 2.00.50
-    crypto_keys.push_back(std::make_pair(0x2df385bd, 0xa3ed127f)); // 2.00.40*/
+    crypto_keys.push_back(std::make_pair(0x2df385bd, 0xa3ed127f)); // 2.00.40
     /*
 0200030 02dbbb7cd 0a3c95e7f enc_btfish // 2.00.30
 0200020 02d63addd 0a3a5227f enc_btfish // 2.00.20
@@ -128,7 +132,7 @@ void Config::_reset() {
     torustable_file = "scripts/torustable.tscp";
     net_addr = new char[10];
     strcpy(net_addr, "127.0.0.1");
-    net_port = 2595;
+    net_port = 2593;
     tick_duration = 250;
     tick_duration_overloaded = 225;
     tick_duration_idle = 30;
