@@ -14,7 +14,7 @@
 
 #include "../library/system_headers.h"
 #include "client.h"
-#include "../network/packetlist.h"
+#include "../network/packets/packetlist.h"
 #include "../debug/callstack.h"
 #include "char.h"
 

@@ -12,47 +12,37 @@
  * along with Torus. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "../library/system_headers.h"
 #include "packetlist.h"
-#include "socket.h"
+#include "../socket.h"
 #include "../debug/info.h"
+#include "../core/torus.h"
 #include "../game/client.h"
-#include "../game/char.h"
 
 
-const t_udword Packet_0x22::length() {
+const t_udword Packet_0x02::length() {
     ADDTOCALLSTACK();
-    return 8;
+    return 7;
 }
 
-const t_byte * Packet_0x22::dumps() {
+const t_byte * Packet_0x02::dumps() {
     ADDTOCALLSTACK();
     return 0;
 }
 
-void Packet_0x22::loads(const t_byte * b) {
+void Packet_0x02::loads(const t_byte * b) {
     ADDTOCALLSTACK();
     UNREFERENCED_PARAMETER(b);
 }
 
-void Packet_0x22::loads(Socket * s) {
-    ADDTOCALLSTACK(); 
-    UNREFERENCED_PARAMETER(s);
-}
-
-void Packet_0x22::set_data(t_ubyte seq, Client * client) {
+void Packet_0x02::loads(Socket * s) {
     ADDTOCALLSTACK();
-    Char *chr = client->get_char();
-    if (!chr) {
-        return;
-    }
-    (*this) << 0x22;
-    (*this) << seq;
-    (*this) << 7;   // View color (blue, red, yellow ...)
-    send(client->get_socket());
+    t_byte dir = 0;
+    t_byte sequence = 0;
+    *s >> dir;
+    *s >> sequence;
+    s->get_client()->event_walk(dir, sequence);
 }
 
-
-Packet_0x22::~Packet_0x22() {
+Packet_0x02::~Packet_0x02() {
     ADDTOCALLSTACK();
 }

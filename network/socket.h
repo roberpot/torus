@@ -107,6 +107,15 @@ public:
      * @param p the Packet to process.
      */
     void write_packet(Packet * p);
+
+    /**
+     * @brief forced reader for strings
+     *
+     * @param s The socket to read from.
+     * @param str The string to write on.
+     * @param len The length of the string.
+    */
+    void read_string(Socket& s, std::string& str, int len);
     /** @brief   Shuts down this object and closes its connection. */
     void shutdown();
     /** @brief   Destructor. */
@@ -172,9 +181,9 @@ Socket & operator>>(Socket & s, T & d) {
     ADDTOCALLSTACK();
     s._read_bytes(sizeof(T));
     memcpy((void*)&d, s.buffer, sizeof(T));
-    if (sizeof(T) == 4) {
+    /*if (sizeof(T) == 4) {
         d = (((d & 0x000000ff) << 24) | ((d & 0x0000ff00) << 8) | ((d & 0x00ff0000) >> 8) | ((d & 0xff000000) >> 24));
-    }
+    }*/
     return s;
 }
 #ifdef _MSC_VER

@@ -14,7 +14,7 @@
 
 #include "../library/system_headers.h"
 #include "packetlist.h"
-#include "socket.h"
+#include "../socket.h"
 #include "../debug/info.h"
 #include "../game/client.h"
 #include "../game/char.h"

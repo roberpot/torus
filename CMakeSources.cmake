@@ -32,14 +32,23 @@ set(NETWORK_FILES
         network/crypto.cpp network/crypto.h
         network/packet.cpp network/packet.h
         network/socket.cpp network/socket.h
-        network/networkmanager.cpp network/networkmanager.h
-        network/packetlist.h
-        network/packetlist_0x0.cpp
-        network/packetlist_0x02.cpp
-        network/packetlist_0xe.cpp
-        network/packetlist_0x21.cpp
-        network/packetlist_0x22.cpp)
+        network/networkmanager.cpp network/networkmanager.h)
 SOURCE_GROUP(network FILES ${NETWORK_FILES})
+
+set(PACKET_FILES
+        network/packets/packetlist.h
+        network/packets/packetlist_0x0.cpp
+        network/packets/packetlist_0x02.cpp
+        network/packets/packetlist_0xe.cpp
+        network/packets/packetlist_0x21.cpp
+        network/packets/packetlist_0x22.cpp
+        network/packets/packetlist_0x55.cpp
+        network/packets/packetlist_0x73.cpp
+        network/packets/packetlist_0x80.cpp
+        network/packets/packetlist_0x91.cpp
+        network/packets/packetlist_0xa0.cpp
+        network/packets/packetlist_0xa8.cpp)
+SOURCE_GROUP(network\\packets FILES ${PACKET_FILES})
 
 set(PARSER_FILES
         parser/ast.cpp parser/ast.h
@@ -100,6 +109,7 @@ set(SOURCE_FILES
         ${DEBUG_FILES}
         ${LIBRARY_FILES}
         ${NETWORK_FILES}
+        ${PACKET_FILES}
         ${PARSER_FILES}
         ${THREAD_FILES}
         ${GAME_FILES}

@@ -55,6 +55,20 @@ public:
     ~CallStackControl();
 };
 
+#ifndef _DEBUG
+    #define EXC_NOTIFY_DEBUGGER (void)0
+#else	// we want the debugger to notice of this exception
+    #ifdef _WIN32
+        #ifdef _MSC_VER
+            #define EXC_NOTIFY_DEBUGGER if (IsDebuggerPresent()) __debugbreak()
+        #else
+            #define EXC_NOTIFY_DEBUGGER if (IsDebuggerPresent()) abort()
+        #endif
+    #else
+        #define EXC_NOTIFY_DEBUGGER if (IsDebuggerPresent()) std::raise(SIGINT)
+    #endif
+#endif
+
 #if DEBUG_MODE > 0
 #define ADDTOCALLSTACK() CallStackControl ___callstackcontrol(__FILE__, __func__, __LINE__)
 #define EXC_TRY(a) \
@@ -74,6 +88,7 @@ ___block_count++;
 #define EXC_CATCH_EXCEPTION(a) \
     ___catch_except = true; \
     _classtack.print(get_current_thread_id());\
+    EXC_NOTIFY_DEBUGGER; \
     if ( ___current_block != "" && ___block_count > 0 ) {\
         TORUSSHELLECHO(((a != 0) ? a : "...") << " " << typeid(*this).name() << "::" << __func__ << "() " << ___local_args << " #" << ___block_count << " " << ___current_block); \
     } else {\

@@ -25,7 +25,7 @@
 #include "../library/string.h"
 #include "../debug/callstack.h"
 #include "packet.h"
-#include "packetlist.h"
+#include "packets/packetlist.h"
 #include "../game/client.h"
 #include "../shell.h"
 
@@ -73,6 +73,10 @@ void Socket::init_client_socket() {
     _rewind(buffer, 62);
     crypto->set_mode_login();
     _client = new Client(this);
+
+    Packet_0xa8*packetlogin = new Packet_0xa8();
+    write_packet(packetlogin);
+    delete packetlogin;
 }
 
 
@@ -189,11 +193,10 @@ bool Socket::data_ready() {
     return (select((int)_socket, &readSet, NULL, NULL, &timeout) == 1);
 }
 
-Packet * Socket::read_packet() {
+Packet* Socket::read_packet() {
     ADDTOCALLSTACK();
-    Packet * p = nullptr;
+    Packet* p = nullptr;
     p = packet_factory(*this);
-    p->loads(this);
     return p;
 }
 
@@ -215,6 +218,16 @@ void Socket::write_packet(Packet * p) {
         THROW_ERROR(NetworkError, "Send " << data_sended << " bytes, instead of " << p->length() << " bytes.");
     }
 #endif //__linux__
+}
+
+void Socket::read_string(Socket& s, std::string& str, int len)
+{
+    ADDTOCALLSTACK();
+    s._read_bytes(len);
+    str.append(s.buffer);
+    /*if (sizeof(T) == 4) {
+        d = (((d & 0x000000ff) << 24) | ((d & 0x0000ff00) << 8) | ((d & 0x00ff0000) >> 8) | ((d & 0xff000000) >> 24));
+    }*/
 }
 
 void Socket::_read_bytes(t_udword len) {
@@ -253,14 +266,17 @@ void Socket::_read_bytes(t_udword len) {
         TORUSSHELLECHO("Network receive(" << len << " [ " << init << " , " << buffer_len << " ]): " << std::endl << hex_dump_buffer(buffer, len));
     }
     buffer_len = len;
-    crypto->decrypt(buffer, len);
+    if (crypto && crypto->has_encryption())
+    {
+        crypto->decrypt(buffer, len);
+    }
 }
 
 void Socket::_rewind(t_byte * b, t_udword l) {
     ADDTOCALLSTACK();
     if (rewinded_len > 0) {
         t_byte * new_rewind_buffer = new t_byte[rewinded_len + l];
-        memcpy(&new_rewind_buffer[l], rewinded, sizeof(t_byte) * rewinded_len);
+        memcpy(&new_rewind_buffer[l], rewinded, sizeof(t_byte)  * rewinded_len);
         delete rewinded;
         rewinded = new_rewind_buffer;
     } else {

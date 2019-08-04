@@ -16,6 +16,7 @@
 #define __TORUS_PACKET_H
 
 #include <cstring>
+#include <string>
 #include "../library/types.h"
 #ifdef _MSC_VER
 #pragma warning(disable:4127)
@@ -24,6 +25,9 @@
 class Socket;
 
 class Packet {
+protected:
+    int count;  // count of 'pos'
+    int pos;    // possition of cursor
 public:
     /** @brief   Default constructor. */
     Packet();
@@ -65,6 +69,13 @@ public:
      * @param id    The identifier.
      */
     void set_packet_id(t_ubyte id);
+
+    int get_count();
+
+    void set_pos(int pos);
+    int get_pos();
+
+    void write_string(std::string &str, int len);
     template<typename T>
     /**
      * @brief   Inserts data into the Packet's buffer.
@@ -74,7 +85,7 @@ public:
      *
      * @return  The packet.
      */
-    friend Packet & operator<<(Packet & p, T d);
+    friend Packet& operator<<(Packet& p, T d);
 protected:
     t_byte * buffer;    ///< Buffer of this packet.
     t_udword len;       ///< Lenght of this packet's buffer.
@@ -94,11 +105,18 @@ Packet * packet_factory(const t_byte * buffer, t_udword len);
 
 
 template<typename T>
-Packet & operator<<(Packet & p, T d) {
-    memcpy((void*)p.buffer, (void*)&d, sizeof(T));
-    if (sizeof(T) == 4) {
+Packet& operator<<(Packet& p, T d) {
+    /*if (sizeof(T) == 4) {
         d = (((d & 0x000000ff) << 24) | ((d & 0x0000ff00) << 8) | ((d & 0x00ff0000) >> 8) | ((d & 0xff000000) >> 24));
+    }*/
+    p.buffer[p.pos] = d;
+    ++p.pos;
+    if (p.count < p.pos)    //if the count of writes is lower than the pos, increase it. This won't happen if pos was moved and we are rewriting a value.
+    {
+        ++p.count;
+        p.len += sizeof(T);
     }
+    //memcpy((void*)p.buffer, (void*)& d, sizeof(T));
     return p;
 }
 

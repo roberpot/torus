@@ -13,36 +13,40 @@
  */
 
 #include "packetlist.h"
-#include "socket.h"
-#include "../debug/info.h"
-#include "../core/torus.h"
-#include "../game/client.h"
+#include "../socket.h"
+#include "../../debug/info.h"
 
 
-const t_udword Packet_0x02::length() {
+const t_udword Packet_0x55::length() {
     ADDTOCALLSTACK();
-    return 7;
+    return 21;
 }
 
-const t_byte * Packet_0x02::dumps() {
+const t_byte * Packet_0x55::dumps() {
     ADDTOCALLSTACK();
-    return 0;
+    return buffer;
 }
 
-void Packet_0x02::loads(const t_byte * b) {
+void Packet_0x55::loads(const t_byte * b) {
     ADDTOCALLSTACK();
     UNREFERENCED_PARAMETER(b);
 }
 
-void Packet_0x02::loads(Socket * s) {
+void Packet_0x55::loads(Socket * s) {
     ADDTOCALLSTACK();
-    t_byte dir = 0;
-    t_byte sequence = 0;
-    *s >> dir;
-    *s >> sequence;
-    s->get_client()->event_walk(dir, sequence);
+    UNREFERENCED_PARAMETER(s);
 }
 
-Packet_0x02::~Packet_0x02() {
+void Packet_0x55::set_data(t_ubyte seq, Client* client)
+{
+}
+
+Packet_0x55::Packet_0x55() {
+    ADDTOCALLSTACK();
+    buffer = new t_byte[1];
+    set_packet_id(0x55);
+}
+
+Packet_0x55::~Packet_0x55() {
     ADDTOCALLSTACK();
 }

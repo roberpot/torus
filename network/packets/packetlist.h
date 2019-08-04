@@ -16,7 +16,8 @@
 #ifndef __TORUS_PACKETLIST_H
 #define __TORUS_PACKETLIST_H
 
-#include "packet.h"
+#include "../packet.h"
+#include <string>
 
 #define PACKET_CREATE_CHARACTER Packet_0x00
 #define PACKET_KR_2D_CLIENT_SEED Packet_0xef
@@ -79,6 +80,72 @@ public:
     void loads(Socket * s);
     void set_data(t_ubyte seq, Client *client);
     ~Packet_0x22();
+};
+
+class Packet_0x55 : public Packet { //PacketLoginComplete (game character finished loading)
+public:
+    const t_udword length();
+    const t_byte* dumps();
+    void loads(const t_byte* b);
+    void loads(Socket* s);
+    void set_data(t_ubyte seq, Client* client);
+    Packet_0x55();
+    ~Packet_0x55();
+};
+
+class Packet_0x73 : public Packet { //PacketPing
+public:
+    const t_udword length();
+    const t_byte* dumps();
+    void loads(const t_byte* b);
+    void loads(Socket* s);
+    void set_data(t_ubyte seq, Client* client);
+    Packet_0x73();
+    ~Packet_0x73();
+};
+
+class Packet_0x80 : public Packet {  //LoginCredentials & ServerListRequest
+    std::string accName[30];
+    std::string accPassword[30];
+public:
+    const t_udword length();
+    const t_byte* dumps();
+    void loads(const t_byte* b);
+    void loads(Socket* s);
+    ~Packet_0x80();
+};
+
+
+
+class Packet_0x91 : public Packet {  //LoginCredentials & ServerListRequest
+    std::string accName[30];
+    std::string accPassword[30];
+public:
+    const t_udword length();
+    const t_byte* dumps();
+    void loads(const t_byte* b);
+    void loads(Socket* s);
+    ~Packet_0x91();
+};
+
+class Packet_0xa0 : public Packet {  //ServerSelect -> disconnects from login server, connects to game server and requests character's list and client's flags
+public:
+    const t_udword length();
+    const t_byte* dumps();
+    void loads(const t_byte* b) {}
+    void loads(Socket* s) {}
+    Packet_0xa0();
+    ~Packet_0xa0();
+};
+
+class Packet_0xa8 : public Packet {  //ServerList
+public:
+    const t_udword length();
+    const t_byte* dumps();
+    void loads(const t_byte* b) {}
+    void loads(Socket* s) {}
+    Packet_0xa8();
+    ~Packet_0xa8();
 };
 
 #endif //__TORUS_PACKETLIST_H

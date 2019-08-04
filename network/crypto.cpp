@@ -29,6 +29,7 @@ Crypto::Crypto() {
     _curr_key_hi = 0;
     _seed = 0;
     _crypt_mode = CRYPTMODE_NONE;
+    _crypt_type = CRYPTTYPE_NONE;
 }
 
 void Crypto::set_client_seed(t_udword seed) {

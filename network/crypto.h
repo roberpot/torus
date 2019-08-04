@@ -54,6 +54,20 @@ private:
         CRYPTMODE_LOGIN,
         CRYPTMODE_GAME
     } _crypt_mode;
+
+    enum {
+        CRYPTTYPE_NONE,
+        CRYPTTYPE_BLOWFISH,
+        CRYPTTYPE_BLOWTWOFISH,
+        CRYPTTYPE_TWOFISH,
+        CRYPTTYPE_CLASSIC   //
+    } _crypt_type;
+
+public:
+    inline bool has_encryption()
+    {
+        return _crypt_type != CRYPTTYPE_NONE;
+    }
 };
 
 #endif //__TORUS_CRYPTO_H

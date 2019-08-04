@@ -13,11 +13,11 @@
  */
 
 #include "packetlist.h"
-#include "socket.h"
-#include "../debug/info.h"
+#include "../socket.h"
+#include "../../debug/info.h"
 
 
-const uint32_t Packet_0xef::length() {
+const t_udword Packet_0xef::length() {
     ADDTOCALLSTACK();
     return 21;
 }

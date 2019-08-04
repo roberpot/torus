@@ -13,7 +13,7 @@
  */
 
 #include "packet.h"
-#include "packetlist.h"
+#include "packets/packetlist.h"
 
 #include "../library/string.h"
 #include "../core/errors.h"
@@ -27,11 +27,21 @@ Packet * packet_factory(Socket & s) {
     s >> t;
     Packet * p = NULL;
     switch(t) {
-        case 0xef: p = new Packet_0xef();
+        case 0xef: 
+            p = new Packet_0xef();
             break;
-        default: THROW_ERROR(NetworkError, "Unknown packet code 0x" << std::hex << (t_udword)t << std::dec << ".");
+        case 0x80:
+            p = new Packet_0x80();
+            break;
+        default:
+
+            TORUSSHELLECHO("Unknown packet code 0x" << std::hex << (t_udword)t << std::dec << ".");
+            //THROW_ERROR(NetworkError, "Unknown packet code 0x" << std::hex << (t_udword)t << std::dec << ".");
     }
-    p->loads(&s);
+    if (p != nullptr)
+    {
+        p->loads(&s);
+    }
     return p;
 }
 
@@ -52,6 +62,9 @@ Packet * packet_factory(const t_byte * buffer, t_udword len) {
 
 Packet::Packet() {
     buffer = 0;
+    len = 0;
+    pos = 0;
+    count = 0;
 }
 
 const t_byte * Packet::dumps() {
@@ -78,3 +91,28 @@ Packet::~Packet() {
 void Packet::set_packet_id(t_ubyte id) {
     (*this) << id;
 }
+
+int Packet::get_count()
+{
+    return count;
+}
+
+void Packet::set_pos(int ipos)
+{
+    pos = ipos;
+}
+
+int Packet::get_pos()
+{
+    return pos;
+}
+
+void Packet::write_string(std::string& str, int len)
+{
+    memcpy((void*)buffer, (void*)str.c_str(), len);
+    /*if (sizeof(T) == 4) {
+        d = (((d & 0x000000ff) << 24) | ((d & 0x0000ff00) << 8) | ((d & 0x00ff0000) >> 8) | ((d & 0xff000000) >> 24));
+    }*/
+    len += str.length();
+}
+
