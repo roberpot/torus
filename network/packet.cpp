@@ -27,6 +27,9 @@ Packet * packet_factory(Socket & s) {
     s >> t;
     Packet * p = NULL;
     switch(t) {
+        case 0xa0:
+            p = new Packet_0xa0();
+            break;
         case 0xef: 
             p = new Packet_0xef();
             break;
