@@ -30,7 +30,6 @@ class Client;
 class Packet_0x00 : public Packet {
 public:
     const t_udword length();
-    const t_byte * dumps();
     void loads(const t_byte *);
     void loads(Socket * s);
     ~Packet_0x00();
@@ -40,7 +39,6 @@ private:
 class Packet_0x02 : public Packet {
 public:
     const t_udword length();
-    const t_byte *dumps();
     void loads(const t_byte *);
     void loads(Socket *s);
     ~Packet_0x02();
@@ -49,9 +47,9 @@ public:
 class Packet_0xef : public Packet {
 public:
     const t_udword length();
-    const t_byte * dumps();
-    void loads(const t_byte * b);
+    void loads(const t_byte*) {}
     void loads(Socket * s);
+    Packet_0xef();
     ~Packet_0xef();
     t_udword seed() { return _seed; }
 private:
@@ -65,9 +63,8 @@ private:
 class Packet_0x21 : public Packet {
 public:
     const t_udword length();
-    const t_byte *dumps();
-    void loads(const t_byte * b);
-    void loads(Socket * s);
+    void loads(const t_byte*) {}
+    void loads(Socket*) {}
     void set_data(t_ubyte seq, Client *client);
     ~Packet_0x21();
 };
@@ -75,9 +72,8 @@ public:
 class Packet_0x22 : public Packet {
 public:
     const t_udword length();
-    const t_byte *dumps();
-    void loads(const t_byte * b);
-    void loads(Socket * s);
+    void loads(const t_byte*) {}
+    void loads(Socket*) {}
     void set_data(t_ubyte seq, Client *client);
     ~Packet_0x22();
 };
@@ -85,19 +81,17 @@ public:
 class Packet_0x55 : public Packet { //PacketLoginComplete (game character finished loading)
 public:
     const t_udword length();
-    const t_byte* dumps();
-    void loads(const t_byte* b);
-    void loads(Socket* s);
-    void set_data(t_ubyte seq, Client* client);
+    void loads(const t_byte*) {}
+    void loads(Socket*) {}
+    void set_data(t_ubyte, Client*) {}
     Packet_0x55();
-    ~Packet_0x55();
+    ~Packet_0x55() {}
 };
 
 class Packet_0x73 : public Packet { //PacketPing
 public:
     const t_udword length();
-    const t_byte* dumps();
-    void loads(const t_byte* b);
+    void loads(const t_byte*) {}
     void loads(Socket* s);
     void set_data(t_ubyte seq, Client* client);
     Packet_0x73();
@@ -109,21 +103,55 @@ class Packet_0x80 : public Packet {  //LoginCredentials & ServerListRequest
     std::string accPassword[30];
 public:
     const t_udword length();
-    const t_byte* dumps();
-    void loads(const t_byte* b);
+    void loads(const t_byte*) {}
     void loads(Socket* s);
     ~Packet_0x80();
 };
 
+class Packet_0x82 : public Packet {  //PacketLoginResponse
+public:
+    enum ResponseCode { //Response codes, copied from SphereX
+        Invalid = 0x00, // no account
+        InUse = 0x01, // already in use
+        Blocked = 0x02, // client blocked
+        BadPass = 0x03, // incorrect password
+        Other = 0x04, // other (e.g. timeout)
 
+        // the error codes below are not sent to or understood by the client,
+        // and should be translated into one of the codes above
+        BadVersion,     // version not permitted
+        BadCharacter,   // invalid character selected
+        BadAuthID,      // incorrect auth id
+        BadAccount,     // bad account name (length, characters)
+        BadPassword,    // bad password (length, characters)
+        BadEncLength,   // bad message length
+        EncUnknown,     // unknown encryption
+        EncCrypt,       // crypted client not allowed
+        EncNoCrypt,     // non-crypted client not allowed
+        CharIdle,       // character is already ingame
+        TooManyChars,   // account has too many characters
+        CreationBlocked,// character creation is blocked in this moments.
+        BlockedIP,      // ip is blocked
+        MaxClients,     // max clients reached
+        MaxGuests,      // max guests reached
+        MaxPassTries,   // max password tries reached
+
+
+        Success = 0xFF  // no error
+    };
+    const t_udword length();
+    void loads(const t_byte*) {}
+    void loads(Socket*) {}
+    void set_data(ResponseCode code);
+    ~Packet_0x82();
+};
 
 class Packet_0x91 : public Packet {  //LoginCredentials & ServerListRequest
     std::string accName[30];
     std::string accPassword[30];
 public:
     const t_udword length();
-    const t_byte* dumps();
-    void loads(const t_byte* b);
+    void loads(const t_byte*) {}
     void loads(Socket* s);
     ~Packet_0x91();
 };
@@ -131,9 +159,8 @@ public:
 class Packet_0xa0 : public Packet {  //ServerSelect -> disconnects from login server, connects to game server and requests character's list and client's flags
 public:
     const t_udword length();
-    const t_byte* dumps();
-    void loads(const t_byte* b) {}
-    void loads(Socket* s) {}
+    void loads(const t_byte*) {}
+    void loads(Socket* s);
     Packet_0xa0();
     ~Packet_0xa0();
 };
@@ -141,9 +168,8 @@ public:
 class Packet_0xa8 : public Packet {  //ServerList
 public:
     const t_udword length();
-    const t_byte* dumps();
-    void loads(const t_byte* b) {}
-    void loads(Socket* s) {}
+    void loads(const t_byte*) {}
+    void loads(Socket*) {}
     Packet_0xa8();
     ~Packet_0xa8();
 };

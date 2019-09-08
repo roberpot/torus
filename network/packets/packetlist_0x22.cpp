@@ -25,30 +25,15 @@ const t_udword Packet_0x22::length() {
     return 8;
 }
 
-const t_byte * Packet_0x22::dumps() {
-    ADDTOCALLSTACK();
-    return 0;
-}
-
-void Packet_0x22::loads(const t_byte * b) {
-    ADDTOCALLSTACK();
-    UNREFERENCED_PARAMETER(b);
-}
-
-void Packet_0x22::loads(Socket * s) {
-    ADDTOCALLSTACK(); 
-    UNREFERENCED_PARAMETER(s);
-}
-
 void Packet_0x22::set_data(t_ubyte seq, Client * client) {
     ADDTOCALLSTACK();
     Char *chr = client->get_char();
     if (!chr) {
         return;
     }
-    (*this) << 0x22;
-    (*this) << seq;
-    (*this) << 7;   // View color (blue, red, yellow ...)
+    write_byte(0x22);
+    write_ubyte(seq);
+    write_ubyte(7); // View color (blue, red, yellow ...)
     send(client->get_socket());
 }
 

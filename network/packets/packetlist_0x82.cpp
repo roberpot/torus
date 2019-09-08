@@ -14,29 +14,22 @@
 
 #include "packetlist.h"
 #include "../socket.h"
-#include "../debug/info.h"
-#include "../core/torus.h"
-#include "../game/client.h"
+#include "../../debug/info.h"
 
 
-const t_udword Packet_0x73::length() {
-    ADDTOCALLSTACK();
-    return 0;
-}
-
-void Packet_0x73::loads(Socket * s) {
-    ADDTOCALLSTACK();
-    s->write_packet(this);
-}
-
-void Packet_0x73::set_data(t_ubyte , Client* )
+const t_udword Packet_0x82::length()
 {
-}
-
-Packet_0x73::Packet_0x73()
-{
-}
-
-Packet_0x73::~Packet_0x73() {
     ADDTOCALLSTACK();
+    return 2;
+}
+
+void Packet_0x82::set_data(ResponseCode code)
+{
+    ADDTOCALLSTACK();
+    set_packet_id(0x82);
+    write_byte((t_byte)code);
+}
+
+Packet_0x82::~Packet_0x82()
+{
 }

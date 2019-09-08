@@ -23,67 +23,51 @@ const t_udword Packet_0xa8::length() {
     return 0;
 }
 
-const t_byte * Packet_0xa8::dumps() {
-    ADDTOCALLSTACK();
-    return 0;
-}
-
 Packet_0xa8::Packet_0xa8()
 {
     std::stringstream ss;
-    buffer = new t_byte[255];
-    memset((void*)buffer, 0, 255);
-    int iLen;
     t_uword serversCount = 1;
     t_uword serverIndex = 1;
     std::stringstream serverName;
-    serverName << "TestServer";
+    serverName << "TestServer"; //TODO: Send real Server's name
     t_ubyte serverPercentFull = 0;
     t_ubyte serverTimeZone = 0;
-    (*this) << 0xa8; //packet_id
-    (*this) << 0x00;
-    (*this) << 45;
-    (*this) << 0xFF;
-    (*this) << 0x00;
-    (*this) << serversCount;
+    set_packet_id(0xa8); //packet_id
+    //write_word(46);
+    write_byte(0x0);
+    //write_word(0);    //Skip packet's size since it's being inserted at the end
+    write_word(serversCount);   // TODO: Write later, after filling all the servers
 
-    (*this) << 0x00;
+    //TODO: Send all servers in a loop
+    write_word(serverIndex);
 
-    (*this) << serverIndex;
-    //write_string(*serverName, 32);
-
-    int i = serverName.str().size();
+    int i = (int)serverName.str().size();
 
     for (int out = 0; out < i; ++out)
     {
         t_ubyte chr = serverName.str().at(out);
-        (*this) << chr;
+        write_byte(chr);
     }
     for (; i < 32; ++i)
     {
-        (*this) << '\0';
+        write_byte('\0');
     }
-    (*this) << serverPercentFull;
-    (*this) << serverTimeZone;
+    write_byte(serverPercentFull);
+    write_byte(serverTimeZone);
 
     //t_byte *ip = toruscfg.net_addr;
-    t_udword ip = 16777343;  //127.0.0.1
-    t_ubyte ip_1 = ((ip >> 24) & 0xFF);
-    t_ubyte ip_2 = ((ip >> 16) & 0xFF);
-    t_ubyte ip_3 = ((ip >> 8) & 0xFF);
-    t_ubyte ip_4 = (ip & 0xFF);
-    (*this) << ip_1;
-    (*this) << ip_2;
-    (*this) << ip_3;
-    (*this) << ip_4;
+    t_udword ip = 16777343;  //127.0.0.1    //TODO: send real IP
+    write_byte((ip >> 24) & 0xFF);
+    write_byte((ip >> 16) & 0xFF);
+    write_byte((ip >> 8) & 0xFF);
+    write_byte(ip & 0xFF);
+    //Clients older than 4.0.0 must receive IP in reversed order.
     
-    for (int i = 0; i < count; ++i)
+    for (int o = 0; o < buffer.size(); ++o)
     {
-        TORUSSHELLECHO("byte[" << i << "] = " << (int)buffer[i]);
+        TORUSSHELLECHO("byte[" << o << "] = " << (int)buffer[o]);
     }
-    set_pos(2);
-    (*this) << (t_word)count -1;
-    //tmp_buffer << ss.str().size();
+    write_word((t_ubyte)buffer.size() +2, 2);
 }
 
 Packet_0xa8::~Packet_0xa8() {

@@ -22,16 +22,6 @@ const t_udword Packet_0xa0::length() {
     return 3;
 }
 
-const t_byte * Packet_0xa0::dumps() {
-    ADDTOCALLSTACK();
-    return 0;
-}
-
-void Packet_0xa0::loads(const t_byte * b) {
-    ADDTOCALLSTACK();
-    UNREFERENCED_PARAMETER(b);
-}
-
 void Packet_0xa0::loads(Socket * s) {
     ADDTOCALLSTACK();
     t_word serverIndex;

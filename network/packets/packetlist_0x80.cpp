@@ -15,23 +15,12 @@
 #include "packetlist.h"
 #include "../socket.h"
 #include "../../debug/info.h"
+#include "../game/client.h"
 
 
 const t_udword Packet_0x80::length()
 {
     return 62;
-}
-
-const t_byte* Packet_0x80::dumps()
-{
-    ADDTOCALLSTACK();
-    return 0;
-}
-
-void Packet_0x80::loads(const t_byte* b)
-{
-    ADDTOCALLSTACK();
-    UNREFERENCED_PARAMETER(b);
 }
 
 void Packet_0x80::loads(Socket* s)
@@ -45,9 +34,13 @@ void Packet_0x80::loads(Socket* s)
     str << accName->c_str();
     TORUSSHELLECHO(str.str());
 
+    if (s == nullptr) { //Sometimes happens at clients' closure.
+        return;
+    }
     Packet_0xa8* packet = new Packet_0xa8();
     s->write_packet(packet);
-    delete packet;
+
+    s->get_client()->add_response_code(Packet_0x82::ResponseCode::Success);
 }
 
 Packet_0x80::~Packet_0x80()

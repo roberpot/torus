@@ -22,18 +22,6 @@ const t_udword Packet_0x91::length()
     return 62;
 }
 
-const t_byte* Packet_0x91::dumps()
-{
-    ADDTOCALLSTACK();
-    return 0;
-}
-
-void Packet_0x91::loads(const t_byte* b)
-{
-    ADDTOCALLSTACK();
-    UNREFERENCED_PARAMETER(b);
-}
-
 void Packet_0x91::loads(Socket* s)
 {
     s->read_string(*s, *accName, 30);
@@ -47,7 +35,6 @@ void Packet_0x91::loads(Socket* s)
 
     Packet_0xa8 *packet = new Packet_0xa8();
     s->write_packet(packet);
-    delete packet;
 }
 
 Packet_0x91::~Packet_0x91()

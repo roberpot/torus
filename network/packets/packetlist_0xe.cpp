@@ -22,16 +22,6 @@ const t_udword Packet_0xef::length() {
     return 21;
 }
 
-const t_byte * Packet_0xef::dumps() {
-    ADDTOCALLSTACK();
-    return 0;
-}
-
-void Packet_0xef::loads(const t_byte * b) {
-    ADDTOCALLSTACK();
-    UNREFERENCED_PARAMETER(b);
-}
-
 void Packet_0xef::loads(Socket * s) {
     ADDTOCALLSTACK();
     *s >> _seed; 
@@ -39,6 +29,15 @@ void Packet_0xef::loads(Socket * s) {
     *s >> _client_minor_version;
     *s >> _client_revision_version;
     *s >> _client_prototype_version;
+}
+
+Packet_0xef::Packet_0xef()
+{
+    _seed = 0;
+    _client_major_version = 0;
+    _client_minor_version = 0;
+    _client_revision_version = 0;
+    _client_prototype_version = 0;
 }
 
 Packet_0xef::~Packet_0xef() {

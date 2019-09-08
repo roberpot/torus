@@ -24,11 +24,6 @@ const t_udword Packet_0x02::length() {
     return 7;
 }
 
-const t_byte * Packet_0x02::dumps() {
-    ADDTOCALLSTACK();
-    return 0;
-}
-
 void Packet_0x02::loads(const t_byte * b) {
     ADDTOCALLSTACK();
     UNREFERENCED_PARAMETER(b);

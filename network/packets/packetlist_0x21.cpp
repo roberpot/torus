@@ -25,33 +25,18 @@ const t_udword Packet_0x21::length() {
     return 8;
 }
 
-const t_byte * Packet_0x21::dumps() {
-    ADDTOCALLSTACK();
-    return 0;
-}
-
-void Packet_0x21::loads(const t_byte * b) {
-    ADDTOCALLSTACK();
-    UNREFERENCED_PARAMETER(b);
-}
-
-void Packet_0x21::loads(Socket * s) {
-    ADDTOCALLSTACK(); 
-    UNREFERENCED_PARAMETER(s);
-}
-
 void Packet_0x21::set_data(t_ubyte seq, Client * client) {
     ADDTOCALLSTACK();
     Char *chr = client->get_char();
     if (!chr) {
         return;
     }
-    (*this) << 0x21;
-    (*this) << seq;
-    (*this) << chr->get_pos().x;
-    (*this) << chr->get_pos().y;
-    (*this) << (t_ubyte)chr->get_dir();
-    (*this) << chr->get_pos().z;
+    set_packet_id(0x21);
+    write_ubyte(seq);
+    write_word(chr->get_pos().x);
+    write_word(chr->get_pos().y);
+    write_ubyte((t_ubyte)chr->get_dir());
+    write_byte(chr->get_pos().z);
 }
 
 

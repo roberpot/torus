@@ -23,6 +23,7 @@ Client::Client(Socket * s) {
     _socket = s;
     _movement_sequence = 0;
     _movement_last = 0;
+    _char = nullptr;
 }
 
 Client::~Client() {
@@ -31,6 +32,12 @@ Client::~Client() {
 
 Socket * Client::get_socket() {
     return _socket;
+}
+
+void Client::send(Packet* packet)
+{
+    ADDTOCALLSTACK();
+    _socket->write_packet(packet);
 }
 
 void Client::event_walk(t_ubyte dir, t_ubyte seq) {
@@ -47,6 +54,14 @@ void Client::event_walk(t_ubyte dir, t_ubyte seq) {
         Packet_0x21 *rej = new Packet_0x21();
         rej->set_data(seq, this);
     }
+}
+
+void Client::add_response_code(Packet_0x82::ResponseCode code)
+{
+    ADDTOCALLSTACK();
+    Packet_0x82* packet = new Packet_0x82();
+    packet->set_data(code);
+    send(packet);
 }
 
 Char * Client::get_char() {

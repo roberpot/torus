@@ -74,9 +74,9 @@ void Socket::init_client_socket() {
     crypto->set_mode_login();
     _client = new Client(this);
 
-    Packet_0xa8*packetlogin = new Packet_0xa8();
-    write_packet(packetlogin);
-    delete packetlogin;
+    Packet_0xa8 * packet = new Packet_0xa8();
+    write_packet(packet);
+    
 }
 
 
@@ -202,6 +202,7 @@ Packet* Socket::read_packet() {
 
 void Socket::write_packet(Packet * p) {
     ADDTOCALLSTACK();
+    p->print();
 #ifdef _WINDOWS
     t_udword data_sended = send(_socket, p->dumps(), p->length(), 0);
     if (data_sended == SOCKET_ERROR) {
@@ -218,6 +219,7 @@ void Socket::write_packet(Packet * p) {
         THROW_ERROR(NetworkError, "Send " << data_sended << " bytes, instead of " << p->length() << " bytes.");
     }
 #endif //__linux__
+    delete p;
 }
 
 void Socket::read_string(Socket& s, std::string& str, int len)

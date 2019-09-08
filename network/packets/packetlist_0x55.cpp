@@ -22,31 +22,7 @@ const t_udword Packet_0x55::length() {
     return 21;
 }
 
-const t_byte * Packet_0x55::dumps() {
-    ADDTOCALLSTACK();
-    return buffer;
-}
-
-void Packet_0x55::loads(const t_byte * b) {
-    ADDTOCALLSTACK();
-    UNREFERENCED_PARAMETER(b);
-}
-
-void Packet_0x55::loads(Socket * s) {
-    ADDTOCALLSTACK();
-    UNREFERENCED_PARAMETER(s);
-}
-
-void Packet_0x55::set_data(t_ubyte seq, Client* client)
-{
-}
-
 Packet_0x55::Packet_0x55() {
     ADDTOCALLSTACK();
-    buffer = new t_byte[1];
     set_packet_id(0x55);
-}
-
-Packet_0x55::~Packet_0x55() {
-    ADDTOCALLSTACK();
 }

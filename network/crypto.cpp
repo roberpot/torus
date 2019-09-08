@@ -30,6 +30,10 @@ Crypto::Crypto() {
     _seed = 0;
     _crypt_mode = CRYPTMODE_NONE;
     _crypt_type = CRYPTTYPE_NONE;
+    _crypt_login_method = nullptr;
+    _crypt_game_method = nullptr;
+    _decrypt_login_method = nullptr;
+    _decrypt_game_method = nullptr;
 }
 
 void Crypto::set_client_seed(t_udword seed) {
@@ -113,7 +117,7 @@ void Crypto::detect_client_keys(t_byte * buffer, t_udword l) {
                 #ifdef CRYPTO_LOGIN_DEBUG
                     TORUSSHELLECHO("Client keys found [" << i << "][" << 0 << "] " << std::hex << _client_key_lo << ":" << _client_key_hi);
                 #endif
-                delete temp_buffer;
+                delete[] temp_buffer;
                 _decrypt_login_method = decrypt_login_methods[j];
                 _crypt_login_method = crypt_login_methods[j];
                 _client_key_lo = toruscfg.crypto_keys[i].second;
@@ -167,7 +171,7 @@ void Crypto::_decrypt_login_gt_0x125360(t_ubyte * buffer, t_udword l) {
             std::stringstream ss;
             ss << "buffer[" << i << "] == " << std::to_string((t_ubyte)buffer[i]) << " ^ 0x" << std::hex << _curr_key_lo << "[";
         #endif
-            buffer[i] = (int)buffer[i] ^ _curr_key_lo;
+            buffer[i] = (t_ubyte)((int)buffer[i] ^ _curr_key_lo);
         #ifdef CRYPTO_LOGIN_DEBUG
             ss << std::dec << (unsigned int)buffer[i] << "]";
             TORUSSHELLECHO(ss.str());
