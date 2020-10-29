@@ -4,7 +4,7 @@ project(torus)
 set(CMAKE_CONFIGURATION_TYPES "DEBUG;RELEASE;RELWITHDEBINFO")
 
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_C_STANDARD 17)
+set(CMAKE_C_STANDARD 11)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake/")
 
@@ -40,6 +40,8 @@ ADD_FLEX_BISON_DEPENDENCY(tscp_scanner tscp_parser)
 
 include("CMakeSources.cmake") # Reading CMakeSources with all of the ${SOURCE_FILES}.
 
+include_directories(${CMAKE_SOURCE_DIR})
+
 if(MSVC_VERSION)
     include_directories("include")
 endif(MSVC_VERSION)
@@ -52,5 +54,7 @@ add_executable(torus_server
 # additional libs for windows
 if(WIN32)
     target_link_libraries(torus_server wsock32 ws2_32 kernel32) #ws2_32.lib for windows
+    elseif(UNIX)
+    target_link_libraries(torus_server pthread dl)
 endif()
 

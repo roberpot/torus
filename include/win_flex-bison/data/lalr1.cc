@@ -118,14 +118,14 @@ b4_user_stype
     virtual std::string yysyntax_error_ (int yystate, int tok);
 
 #if ]b4_api_PREFIX[DEBUG
-    /// \brief Report a symbol value on the debug stream.
+    /// \brief Report a symbol value on the debug_support stream.
     /// \param yytype       The token type.
     /// \param yyvaluep     Its semantic value.
     /// \param yylocationp  Its location.
     virtual void yy_symbol_value_print_ (int yytype,
 					 const semantic_type* yyvaluep,
 					 const location_type* yylocationp);
-    /// \brief Report a symbol on the debug stream.
+    /// \brief Report a symbol on the debug_support stream.
     /// \param yytype       The token type.
     /// \param yyvaluep     Its semantic value.
     /// \param yylocationp  Its location.
@@ -209,9 +209,9 @@ b4_user_stype
     static const ]b4_int_type_for([b4_rline])[ yyrline_[];
     /// For each scanner token number, its symbol number.
     static const ]b4_int_type_for([b4_toknum])[ yytoken_number_[];
-    /// Report on the debug stream that the rule \a r is going to be reduced.
+    /// Report on the debug_support stream that the rule \a r is going to be reduced.
     virtual void yy_reduce_print_ (int r);
-    /// Print the state stack on the debug stream.
+    /// Print the state stack on the debug_support stream.
     virtual void yystack_print_ ();
 
     /* Debugging.  */
@@ -1081,7 +1081,7 @@ b4_error_verbose_if([int yystate, int yytoken],
     ]b4_rline[
   };
 
-  // Print the state stack on the debug stream.
+  // Print the state stack on the debug_support stream.
   void
   ]b4_parser_class_name[::yystack_print_ ()
   {
@@ -1092,7 +1092,7 @@ b4_error_verbose_if([int yystate, int yytoken],
     *yycdebug_ << std::endl;
   }
 
-  // Report on the debug stream that the rule \a yyrule is going to be reduced.
+  // Report on the debug_support stream that the rule \a yyrule is going to be reduced.
   void
   ]b4_parser_class_name[::yy_reduce_print_ (int yyrule)
   {

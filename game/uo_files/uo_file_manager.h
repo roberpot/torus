@@ -15,10 +15,10 @@
 #ifndef __TORUS_GAME_UO_FILE_MANAGER_H
 #define __TORUS_GAME_UO_FILE_MANAGER_H
 
-#include "../../library/types.h"
 #include <vector>
-#include "map.h"
-#include "map_list.h"
+#include <library/types.h>
+#include <game/uo_files/map.h>
+#include <game/uo_files/map_list.h>
 
 extern class UOFileManager{
 public:

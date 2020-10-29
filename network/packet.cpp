@@ -12,12 +12,13 @@
  * along with Torus. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "packet.h"
-#include "packets/packetlist.h"
+#include <network/packet.h>
+#include <network/packets/packetlist.h>
 
-#include "../library/string.h"
-#include "../core/errors.h"
-#include "socket.h"
+#include <library/string.h>
+#include <core/errors.h>
+#include <network/socket.h>
+#include <shell.h>
 
 
 
@@ -25,7 +26,7 @@ Packet * packet_factory(Socket & s) {
     ADDTOCALLSTACK();
     t_ubyte t = 0;
     s >> t;
-    Packet * p = NULL;
+    Packet * p = nullptr;
     switch(t) {
         case 0xa0:
             p = new Packet_0xa0();
@@ -37,9 +38,8 @@ Packet * packet_factory(Socket & s) {
             p = new Packet_0x80();
             break;
         default:
-
-            TORUSSHELLECHO("Unknown packet code 0x" << std::hex << (t_udword)t << std::dec << ".");
-            //THROW_ERROR(NetworkError, "Unknown packet code 0x" << std::hex << (t_udword)t << std::dec << ".");
+            TORUSSHELLECHO("Unknown packet code 0x" << std::hex << (udword_t)t << std::dec << ".");
+            //THROW_ERROR(NetworkError, "Unknown packet code 0x" << std::hex << (udword_t)t << std::dec << ".");
     }
     if (p != nullptr)
     {
@@ -51,12 +51,12 @@ Packet * packet_factory(Socket & s) {
 /*Packet * packet_factory(t_byte t) {
     ADDTOCALLSTACK();
     switch(t) {
-        default: THROW_ERROR(NetworkError, "Unknown packet code 0x" << std::hex << (t_udword)t << std::dec << ".");
+        default: THROW_ERROR(NetworkError, "Unknown packet code 0x" << std::hex << (udword_t)t << std::dec << ".");
     }
     //return 0;
 }*/
 
-/*Packet * packet_factory(const t_byte * buffer, t_udword len) {
+/*Packet * packet_factory(const t_byte * buffer, udword_t len) {
     ADDTOCALLSTACK();
     switch(buffer[0]) {
         default: THROW_ERROR(NetworkError, "Unknown packet [" << len << "] " << std::hex << print_hex_buffer(buffer, len) << std::dec << ".");
@@ -74,8 +74,8 @@ const t_byte * Packet::dumps() {
     return buffer.data();
 }
 
-const t_udword Packet::length() {
-    return (t_udword)buffer.size();// len;
+const udword_t Packet::length() {
+    return (udword_t)buffer.size();// len;
 }
 
 void Packet::send(Socket * socket) {
@@ -154,7 +154,7 @@ void Packet::write_ubyte(t_ubyte val, int pos)
     }
 }
 
-void Packet::write_word(t_word val, int pos)
+void Packet::write_word(word_t val, int pos)
 {
     ADDTOCALLSTACK();
     buffer.reserve(buffer.size() + sizeof(val));
@@ -170,7 +170,7 @@ void Packet::write_word(t_word val, int pos)
     }
 }
 
-void Packet::write_uword(t_uword val, int pos)
+void Packet::write_uword(uword_t val, int pos)
 {
     ADDTOCALLSTACK();
     buffer.reserve(buffer.size() + sizeof(val));
@@ -186,7 +186,7 @@ void Packet::write_uword(t_uword val, int pos)
     }
 }
 
-void Packet::write_dword(t_dword val, int pos)
+void Packet::write_dword(dword_t val, int pos)
 {
     ADDTOCALLSTACK();
     buffer.reserve(buffer.size() + sizeof(val));
@@ -206,7 +206,7 @@ void Packet::write_dword(t_dword val, int pos)
     }
 }
 
-void Packet::write_udword(t_udword val, int pos)
+void Packet::write_udword(udword_t val, int pos)
 {
     ADDTOCALLSTACK();
     if (pos >= 0)
@@ -225,7 +225,7 @@ void Packet::write_udword(t_udword val, int pos)
     }
 }
 
-void Packet::write_qword(t_qword val, int pos)
+void Packet::write_qword(qword_t val, int pos)
 {
     ADDTOCALLSTACK();
     if (pos >= 0)
@@ -252,7 +252,7 @@ void Packet::write_qword(t_qword val, int pos)
     }
 }
 
-void Packet::write_uqword(t_uqword val, int pos)
+void Packet::write_uqword(uqword_t val, int pos)
 {
     ADDTOCALLSTACK();
     if (pos >= 0)
@@ -285,7 +285,7 @@ void Packet::print()
     ss << "Sending ";
     ss << length();
     ss << " bytes in raw data:";
-    for (int i = 0; i < length(); ++i) {
+    for (udword_t i = 0; i < length(); ++i) {
         if (i % 10 == 0)
             ss << "\n";
         else

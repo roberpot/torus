@@ -12,18 +12,18 @@
 * along with Torus. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "../library/system_headers.h"
 #include <string>
-#include "../debug/debug.h"
-#include "../debug/callstack.h"
-#include "../core/torus.h"
-#include "artifact.h"
-#include "char.h"
-#include "item.h"
-#include "uo_files/map_list.h"
-#include "server.h"
+#include <library/system_headers.h>
+#include <debug_support/debug.h>
+#include <debug_support/callstack.h>
+#include <core/torus.h>
+#include <game/artifact.h>
+#include <game/char.h>
+#include <game/item.h>
+#include <game/uo_files/map_list.h>
+#include <game/server.h>
 
-Artifact::Artifact(t_udword uid){
+Artifact::Artifact(udword_t uid){
     ADDTOCALLSTACK();
     if ((uid &~(UID_ITEM | UID_RESOURCE)) == UID_CLEAR) {
         free_uid();
@@ -36,7 +36,7 @@ Artifact::Artifact(t_udword uid){
     _color = 0;
 }
 
-t_udword Artifact::get_uid() {
+udword_t Artifact::get_uid() {
     return Uid::get_uid();
 }
 
@@ -72,7 +72,7 @@ void Artifact::set_name(std::string name){
     _name = name;
 }
 
-void Artifact::move_to(t_word destX, t_word destY){
+void Artifact::move_to(word_t destX, word_t destY){
     ADDTOCALLSTACK();
     if (!can_move_to_coord(destX, destY)) {
         DEBUG_ERROR("Trying to move 0x" << std::hex << get_uid() << "to a non-valid dest '" << destX << ", " << destY << ".");
@@ -112,7 +112,7 @@ void Artifact::set_map(t_ubyte destMap){
     map = destMap;
 }
 
-void Artifact::set_pos(t_word destX, t_word destY, t_byte destZ, t_ubyte destMap){
+void Artifact::set_pos(word_t destX, word_t destY, t_byte destZ, t_ubyte destMap){
     ADDTOCALLSTACK();
     move_to(destX, destY);
     set_z(destZ);
@@ -123,65 +123,65 @@ Pos Artifact::get_pos() {
     return _pos;
 }
 
-t_uword Artifact::get_distance(Artifact * target) {
+uword_t Artifact::get_distance(Artifact * target) {
     ADDTOCALLSTACK();
     return get_distance(target->get_pos());
 }
 
-t_uword Artifact::get_distance(Pos target) {
+uword_t Artifact::get_distance(Pos target) {
     ADDTOCALLSTACK();
     return (_pos.x > target.x ? _pos.x - target.x : target.x - _pos.x) + (_pos.y > target.y ? _pos.y - target.y : target.y - _pos.y);
 }
 
-bool Artifact::has_flag(t_udword flag){
+bool Artifact::has_flag(udword_t flag){
     ADDTOCALLSTACK();
     return _flags & flag;
 }
 
-void Artifact::set_flag(t_udword flag){
+void Artifact::set_flag(udword_t flag){
     ADDTOCALLSTACK();
     _flags |= flag;
 }
 
-void Artifact::unset_flag(t_udword flag){
+void Artifact::unset_flag(udword_t flag){
     ADDTOCALLSTACK();
     _flags &= ~flag;
 }
 
-void Artifact::switch_flag(t_udword flag){
+void Artifact::switch_flag(udword_t flag){
     ADDTOCALLSTACK();
     _flags ^= flag;
 }
 
-t_udword Artifact::get_flags() {
+udword_t Artifact::get_flags() {
     return _flags;
 }
 
-void Artifact::set_color(t_uword color) {
+void Artifact::set_color(uword_t color) {
     ADDTOCALLSTACK();
     _color = color;
 }
 
-t_uword Artifact::get_color() {
+uword_t Artifact::get_color() {
     ADDTOCALLSTACK();
     return _color;
 }
 
-t_uqword Artifact::get_timer() {
+uqword_t Artifact::get_timer() {
     ADDTOCALLSTACK();
-    t_uqword diff = 0;
-    t_uqword curtime = server.get_serv_time();
+    uqword_t diff = 0;
+    uqword_t curtime = server.get_serv_time();
     if (_timer > curtime)
         diff = _timer - curtime;
     return diff;
 }
 
-void Artifact::set_timer(t_uqword ticks){
+void Artifact::set_timer(uqword_t ticks){
     ADDTOCALLSTACK();
     _timer = server.get_serv_time() + ticks;
 }
 
-bool Pos::can_move_to_coord(t_word destX, t_word destY){
+bool Pos::can_move_to_coord(word_t destX, word_t destY){
     ADDTOCALLSTACK();
     if (destX < 0 || destX > maplist.get_map(map)->get_max_x()) {
         return false;
@@ -213,6 +213,6 @@ bool Pos::can_move_to_map(t_ubyte destMap){
     return true;
 }
 
-bool Pos::can_move_to(t_word destX, t_word destY, t_byte destZ, t_ubyte destMap) {
+bool Pos::can_move_to(word_t destX, word_t destY, t_byte destZ, t_ubyte destMap) {
     return can_move_to_coord(destX, destY) && can_move_to_z(destZ) && can_move_to_map(destMap);
 }

@@ -13,11 +13,11 @@
 */
 
 #include <iostream>
-#include "accounts_manager.h"
-#include "../shell.h"
-#include "../debug/debug.h"
-#include "account.h"
-#include "../debug/callstack.h"
+#include <game/accounts_manager.h>
+#include <shell.h>
+#include <debug_support/debug.h>
+#include <game/account.h>
+#include <debug_support/callstack.h>
 
 AccountsManager torusacc;
 

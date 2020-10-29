@@ -15,7 +15,7 @@
 #ifndef __TORUS_LIBRARY_ERRORS_H
 #define __TORUS_LIBRARY_ERRORS_H
 
-#include "types.h"
+#include <library/types.h>
 
 namespace ttl {
     class Exception {

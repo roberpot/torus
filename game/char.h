@@ -15,11 +15,11 @@
 #ifndef __TORUS_GAME_CHAR_H_
 #define __TORUS_GAME_CHAR_H_
 
-#include "../library/types.h"
-#include "artifact.h"
-#include "chars/char_props.h"
-#include "chars/char_stats.h"
-#include "server.h"
+#include <library/types.h>
+#include <game/artifact.h>
+#include <game/chars/char_props.h>
+#include <game/chars/char_stats.h>
+#include <game/server.h>
 
 // Movement flags
 #define CFLAG_CAN_MOVE          0x000001    // Can walk.
@@ -56,7 +56,7 @@ private:
     ~Char();
 public:
     Char();
-    Char(t_udword uid);
+    Char(udword_t uid);
     CharStats &get_stat(STAT_TYPE key);
     bool can_move() override;
     void remove();
@@ -70,8 +70,8 @@ public:
     Account *get_account();
     void set_account(Account *account);
 public:
-    t_uword get_status_flag(Char *viewer);
-    bool can_equip(t_udword iflags);
+    uword_t get_status_flag(Char *viewer);
+    bool can_equip(udword_t iflags);
 };
 
 #endif // __TORUS_GAME_CHAR_H_

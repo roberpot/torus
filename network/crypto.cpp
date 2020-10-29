@@ -15,10 +15,10 @@
 #include <cstring>
 #include <cstddef>
 
-#include "crypto.h"
-#include "../debug/callstack.h"
-#include "../core/config.h"
-#include "../shell.h"
+#include <network/crypto.h>
+#include <debug_support/callstack.h>
+#include <core/config.h>
+#include <shell.h>
 
 
 Crypto::Crypto() {
@@ -36,12 +36,12 @@ Crypto::Crypto() {
     _decrypt_game_method = nullptr;
 }
 
-void Crypto::set_client_seed(t_udword seed) {
+void Crypto::set_client_seed(udword_t seed) {
     ADDTOCALLSTACK();
     _seed = seed;
 }
 
-void Crypto::set_crypt_key(t_udword keyHi, t_udword keyLo)
+void Crypto::set_crypt_key(udword_t keyHi, udword_t keyLo)
 {
     _curr_key_hi = keyHi;
     _curr_key_lo = keyLo;
@@ -62,15 +62,15 @@ void Crypto::set_mode_game() {
     _crypt_mode = CRYPTMODE_GAME;
 }
 
-void Crypto::detect_client_keys(t_byte * buffer, t_udword l) {
+void Crypto::detect_client_keys(t_byte * buffer, udword_t l) {
     ADDTOCALLSTACK();
-    t_udword length = (t_udword)toruscfg.crypto_keys.size();
+    udword_t length = (udword_t)toruscfg.crypto_keys.size();
     t_ubyte * temp_buffer = new t_ubyte[l];  // Login packet needs the buffer to be unsigned.
-    t_udword key = _seed;
+    udword_t key = _seed;
 
     // Decrypting functors for each encryption type (lower than client 125360, equal or greater).
-    void (Crypto::*decrypt_login_methods[3])(t_ubyte *, t_udword);
-    void (Crypto::*crypt_login_methods[3])(t_ubyte *, t_udword);
+    void (Crypto::*decrypt_login_methods[3])(t_ubyte *, udword_t);
+    void (Crypto::*crypt_login_methods[3])(t_ubyte *, udword_t);
     decrypt_login_methods[0] = &Crypto::_decrypt_login_gt_0x125360;
     decrypt_login_methods[1] = &Crypto::_decrypt_login_eq_0x125360;
     decrypt_login_methods[2] = &Crypto::_decrypt_login_lt_0x125360;
@@ -80,8 +80,8 @@ void Crypto::detect_client_keys(t_byte * buffer, t_udword l) {
     //
 
     // Converting the seed to the crypted key values
-    t_udword m_tmp_CryptKeyLo = (((~_seed) ^ 0x00001357) << 16) | (((_seed) ^ 0xffffaaaa) & 0x0000ffff);
-    t_udword m_tmp_CryptKeyHi = (((_seed) ^ 0x43210000) >> 16) | (((~_seed) ^ 0xabcdffff) & 0xffff0000);
+    udword_t m_tmp_CryptKeyLo = (((~_seed) ^ 0x00001357) << 16) | (((_seed) ^ 0xffffaaaa) & 0x0000ffff);
+    udword_t m_tmp_CryptKeyHi = (((_seed) ^ 0x43210000) >> 16) | (((~_seed) ^ 0xabcdffff) & 0xffff0000);
     set_crypt_key(m_tmp_CryptKeyHi, m_tmp_CryptKeyLo);
 
     #ifdef CRYPTO_LOGIN_DEBUG
@@ -89,7 +89,7 @@ void Crypto::detect_client_keys(t_byte * buffer, t_udword l) {
     #endif
 
     // Looping through the client crypt keys to detect the one matching the connecting client.
-    for (t_udword i = 0; i < length; i++)
+    for (udword_t i = 0; i < length; i++)
     {
         for (unsigned int j = 0; j < 3; j++) // Looping through the three decrypting functors to detect the one we need.
         {
@@ -131,7 +131,7 @@ void Crypto::detect_client_keys(t_byte * buffer, t_udword l) {
     _client_key_hi = 0;
 }
 
-void Crypto::decrypt(t_byte * buffer, t_udword l) {
+void Crypto::decrypt(t_byte * buffer, udword_t l) {
     ADDTOCALLSTACK();
     t_ubyte *transictionBuffer = new t_ubyte[255];  // Login packet needs the buffer to be unsigned.
     memcpy(transictionBuffer, buffer, l);
@@ -146,7 +146,7 @@ void Crypto::decrypt(t_byte * buffer, t_udword l) {
     }
 }
 
-void Crypto::crypt(t_ubyte * buffer, t_udword l) {
+void Crypto::crypt(t_ubyte * buffer, udword_t l) {
     ADDTOCALLSTACK();
     switch(_crypt_mode) {
         case CRYPTMODE_NONE: return;
@@ -159,13 +159,13 @@ void Crypto::crypt(t_ubyte * buffer, t_udword l) {
     }
 }
 
-void Crypto::_decrypt_login_gt_0x125360(t_ubyte * buffer, t_udword l) {
+void Crypto::_decrypt_login_gt_0x125360(t_ubyte * buffer, udword_t l) {
     ADDTOCALLSTACK();
-    t_udword old_key_lo, old_key_hi; 
+    udword_t old_key_lo, old_key_hi;
     #ifdef CRYPTO_LOGIN_DEBUG
         TORUSSHELLECHO("Searching keys, lenght = " << l);
     #endif
-    for(t_udword i = 0; i < l; ++i) {
+    for(udword_t i = 0; i < l; ++i) {
         // Decrypt the byte:
         #ifdef CRYPTO_LOGIN_DEBUG
             std::stringstream ss;
@@ -186,10 +186,10 @@ void Crypto::_decrypt_login_gt_0x125360(t_ubyte * buffer, t_udword l) {
     }
 }
 
-void Crypto::_decrypt_login_eq_0x125360(t_ubyte * buffer, t_udword l) {
+void Crypto::_decrypt_login_eq_0x125360(t_ubyte * buffer, udword_t l) {
     ADDTOCALLSTACK();
-    t_udword old_key_0, old_key_1;
-    for(t_udword i = 0; i < l; i++) {
+    udword_t old_key_0, old_key_1;
+    for(udword_t i = 0; i < l; i++) {
         // Decrypt the byte:
         buffer[i] = (t_byte)(_curr_key_lo ^ buffer[i]);
         // Reset the keys:
@@ -209,10 +209,10 @@ void Crypto::_decrypt_login_eq_0x125360(t_ubyte * buffer, t_udword l) {
     }
 }
 
-void Crypto::_decrypt_login_lt_0x125360(t_ubyte * buffer, t_udword l) {
+void Crypto::_decrypt_login_lt_0x125360(t_ubyte * buffer, udword_t l) {
     ADDTOCALLSTACK();
-    t_udword old_key_0, old_key_1;
-    for(t_udword i = 0; i < l; i++) {
+    udword_t old_key_0, old_key_1;
+    for(udword_t i = 0; i < l; i++) {
         // Decrypt the byte:
         buffer[i] = (t_byte)(_curr_key_lo ^ buffer[i]);
         // Reset the keys:
@@ -225,28 +225,28 @@ void Crypto::_decrypt_login_lt_0x125360(t_ubyte * buffer, t_udword l) {
 }
 
 
-void Crypto::_crypt_login_gt_0x125360(t_ubyte * buffer, t_udword l) {
+void Crypto::_crypt_login_gt_0x125360(t_ubyte * buffer, udword_t l) {
     ADDTOCALLSTACK();
     _decrypt_login_gt_0x125360(buffer, l);
 }
 
-void Crypto::_crypt_login_eq_0x125360(t_ubyte * buffer, t_udword l) {
+void Crypto::_crypt_login_eq_0x125360(t_ubyte * buffer, udword_t l) {
     ADDTOCALLSTACK();
     _decrypt_login_eq_0x125360(buffer, l);
 }
 
-void Crypto::_crypt_login_lt_0x125360(t_ubyte * buffer, t_udword l) {
+void Crypto::_crypt_login_lt_0x125360(t_ubyte * buffer, udword_t l) {
     ADDTOCALLSTACK();
     _decrypt_login_lt_0x125360(buffer, l);
 }
 
-void Crypto::_decrypt_gamemode(t_byte * buffer, t_udword l) {
+void Crypto::_decrypt_gamemode(t_byte * buffer, udword_t l) {
     ADDTOCALLSTACK();
     UNREFERENCED_PARAMETER(buffer);
     UNREFERENCED_PARAMETER(l);
 }
 
-void Crypto::_crypt_gamemode(t_byte * buffer, t_udword l) {
+void Crypto::_crypt_gamemode(t_byte * buffer, udword_t l) {
     ADDTOCALLSTACK();
     UNREFERENCED_PARAMETER(buffer);
     UNREFERENCED_PARAMETER(l);

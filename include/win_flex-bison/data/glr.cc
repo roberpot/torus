@@ -307,14 +307,14 @@ b4_user_stype
 
 # if ]b4_api_PREFIX[DEBUG
   public:
-    /// \brief Report a symbol value on the debug stream.
+    /// \brief Report a symbol value on the debug_support stream.
     /// \param yytype       The token type.
     /// \param yyvaluep     Its semantic value.
     /// \param yylocationp  Its location.
     virtual void yy_symbol_value_print_ (int yytype,
                                          const semantic_type* yyvaluep,
                                          const location_type* yylocationp);
-    /// \brief Report a symbol on the debug stream.
+    /// \brief Report a symbol on the debug_support stream.
     /// \param yytype       The token type.
     /// \param yyvaluep     Its semantic value.
     /// \param yylocationp  Its location.

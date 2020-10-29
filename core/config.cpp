@@ -14,10 +14,9 @@
 
 #include <cstring>
 
-#include "config.h"
-#include "../shell.h"
-#include "../debug/info.h"
-//#include "../network/crypto.h"
+#include <core/config.h>
+#include <shell.h>
+#include <debug_support/info.h>
 
 Config toruscfg;
 

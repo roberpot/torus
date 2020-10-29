@@ -15,7 +15,7 @@
 #ifndef __TORUS_GAME_MAP_POINT_H
 #define __TORUS_GAME_MAP_POINT_H
 
-#include "../../library/types.h"
+#include <library/types.h>
 
 #if defined(_WIN32) && defined(_MSC_VER)
     #pragma pack(1) // MSVC dependant pragma
@@ -30,7 +30,7 @@
 * Struct's size: 3 bytes (Must be packed by compiler).
 */
 struct UOMapPoint {
-    t_word terrain = 0;
+    word_t terrain = 0;
     t_byte z = 0;
 } PACK_STRUCT;
 

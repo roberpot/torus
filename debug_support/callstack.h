@@ -22,17 +22,17 @@
 #include <typeinfo>
 
 //#include "../library/system_headers.h"
-#include "../threads/utils.h"
-#include "../threads/mutex.h"
-#include "debug.h"
-#include "../library/types.h"
-#include "info.h"
+#include <threads/utils.h>
+#include <threads/mutex.h>
+#include <debug_support/debug.h>
+#include <library/types.h>
+#include <debug_support/info.h>
 
 class StackEntry {
 public:
-    StackEntry(const t_byte * file, const t_byte * function, t_udword line);
+    StackEntry(const t_byte * file, const t_byte * function, udword_t line);
     std::string _file, _function;
-    t_udword _line;
+    udword_t _line;
 };
 
 extern class CallStack {
@@ -51,7 +51,7 @@ private:
 
 class CallStackControl {
 public:
-    CallStackControl(const t_byte * file, const t_byte * function, t_udword line);
+    CallStackControl(const t_byte * file, const t_byte * function, udword_t line);
     ~CallStackControl();
 };
 
@@ -74,7 +74,7 @@ public:
 #define EXC_TRY(a) \
     std::string ___current_block = ""; \
     std::string ___local_args = a; \
-    t_udword ___block_count = 0; \
+    udword_t ___block_count = 0; \
     bool ___catch_except = false; \
     UNREFERENCED_PARAMETER(___catch_except); \
     try \
@@ -98,7 +98,7 @@ ___block_count++;
     if (___catch_except) { try {
 #define EXC_DEBUG_END \
 	} \
-    catch ( ... ) { DEBUG_ERROR("Exception adding debug message on the exception."); \
+    catch ( ... ) { DEBUG_ERROR("Exception adding debug_support message on the exception."); \
     } \
     }
 #else //DEBUG_MODE > 0

@@ -17,8 +17,8 @@
 
 #include <string>
 #include <vector>
-#include "../library/system_headers.h"
-#include "../library/types.h"
+#include <library/system_headers.h>
+#include <library/types.h>
 
 class Char;
 class Socket;
@@ -50,8 +50,8 @@ private:
     std::string _name;    ///< Account name, used mostly for login.
     std::string _password;///< Account password.
     std::vector<Char *> _charlist;     ///< Character's list.
-    t_udword _flags;        ///< Account flags.
-    t_uword _expansion;     ///< Expansion level this account has access.
+    udword_t _flags;        ///< Account flags.
+    uword_t _expansion;     ///< Expansion level this account has access.
     std::string _lastip;  ///< Last IP connected to this account.
     Socket *_socket;        ///< Pointer to the socket currently connected to this account.
     PRIVLVL _privlevel;

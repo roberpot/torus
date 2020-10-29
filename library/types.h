@@ -15,6 +15,7 @@
 #ifndef __TORUS_TYPES_H
 #define __TORUS_TYPES_H
 #include <climits>
+#include <cstdint>
 
 // -- typedefs --
 // byte / ubyte
@@ -23,16 +24,16 @@ typedef char t_byte;
 typedef unsigned char t_ubyte;
 // int / uint
 
-typedef short int t_word;
-typedef unsigned short int t_uword;
+typedef std::int16_t word_t;
+typedef std::uint16_t uword_t;
 // dword / udword
 
-typedef int t_dword;
-typedef unsigned int t_udword;
+typedef std::int32_t dword_t;
+typedef std::uint32_t udword_t;
 // qword / uqword 
 
-typedef long long t_qword;
-typedef unsigned long long t_uqword;
+typedef std::int64_t qword_t;
+typedef std::uint64_t uqword_t;
 // -- limits --
 // byte / ubyte
 

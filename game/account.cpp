@@ -12,15 +12,15 @@
 * along with Torus. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "account.h"
-#include "accounts_manager.h"
-#include "char.h"
-#include "../network/socket.h"
-#include "../debug/callstack.h"
 #include <iostream>
+#include <game/account.h>
+#include <game/accounts_manager.h>
+#include <game/char.h>
+#include <network/socket.h>
+#include <debug_support/callstack.h>
 
 Account::Account() {
-    _socket = 0;
+    _socket = nullptr;
 }
 
 Account::~Account(){
@@ -37,7 +37,7 @@ Account::Account(std::string accname, std::string accpw, PRIVLVL accpriv)
     _privlevel = accpriv;
 }
 
-t_byte Account::get_char_count(){
+t_byte Account::get_char_count() {
     ADDTOCALLSTACK();
     t_byte count = 0;
     for (t_byte i = 0; i < 7; i++) {    // run the whole character's list.
@@ -64,8 +64,8 @@ bool Account::can_add_char(){
 
 bool Account::add_char(Char *chr){
     ADDTOCALLSTACK();
-    for (t_byte i = 0; i < _charlist.size(); i++) {    // run the whole character list to find an empty slot
-        Char *existingchar = _charlist[i];
+    for (udword_t i = 0; i < _charlist.size(); i++) {    // run the whole character list to find an empty slot
+        Char* existingchar = _charlist[i];
         if (existingchar && existingchar == chr)
             continue;
         _charlist.push_back(chr);
@@ -76,7 +76,7 @@ bool Account::add_char(Char *chr){
 
 bool Account::delete_char(Char *chr){
     ADDTOCALLSTACK();
-    for (t_byte i = 0; i < _charlist.size(); i++) {    // run the whole character list to find this character.
+    for (udword_t i = 0; i < _charlist.size(); i++) {    // run the whole character list to find this character.
         Char *existingchar = _charlist[i];
         if (existingchar && existingchar == chr) {
             _charlist.erase(_charlist.begin() + i);        // delete de Char* directly.
@@ -105,11 +105,11 @@ void Account::set_privlevel(PRIVLVL lvl) {
 
 void Account::remove() {
     ADDTOCALLSTACK();
-    for (t_byte i = 0; i < _charlist.size(); i++) {
+    for (udword_t i = 0; i < _charlist.size(); i++) {
         Char *chr = _charlist[i];
         if (chr) {
             chr->remove();
-            chr = 0;
+            chr = nullptr;
         }
     }
     delete this;

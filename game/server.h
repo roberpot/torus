@@ -15,29 +15,29 @@
 #ifndef __TORUS_GAME_SERVER_H_
 #define __TORUS_GAME_SERVER_H_
 
-#include "../library/types.h"
-#include "../library/map.h"
-#include "../library/vector.h"
-#include "uid.h"
+#include <library/types.h>
+#include <library/map.h>
+#include <library/vector.h>
+#include <game/uid.h>
 
 class Char;
 class Item;
 class Artifact;
 
 extern class Server {
-    t_uqword _serv_time; ///< Server time in ticks.
-    t_uword _tick_period;
+    uqword_t _serv_time; ///< Server time in ticks.
+    uword_t _tick_period;
 public:
     Server();
     ~Server();
-    t_uqword get_serv_time();
+    uqword_t get_serv_time();
     bool check();
     void load_all();
     void save_all();
-    ttl::tsdynamicmap<t_udword, Artifact*> _artifact_list;
+    ttl::tsdynamicmap<udword_t, Artifact*> _artifact_list;
     void add_char(Char *chr);
     void add_item(Item *item);
-    Artifact * get_artifact(t_udword uid);
+    Artifact * get_artifact(udword_t uid);
     ttl::tsvector<Artifact*> _gclist;
     void del_char(Char *chr);
     void del_item(Item *item);

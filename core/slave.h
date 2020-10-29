@@ -15,21 +15,21 @@
 #ifndef __TORUS_SLAVE_H
 #define __TORUS_SLAVE_H
 
-#include "../threads/thread.h"
-#include "../threads/cond.h"
-#include "../library/types.h"
+#include <library/types.h>
+#include <threads/thread.h>
+#include <threads/cond.h>
 
 class SlaveThread : public Thread {
 public:
     SlaveThread(ConditionVariable * cv);
-    t_udword id();
+    udword_t id();
     void * run();
     void halt();
     void delegate(SlaveThread * o);
     void delegate_all(SlaveThread * o);
 private:
-    static t_udword slave_id;
-    t_udword _id;
+    static udword_t slave_id;
+    udword_t _id;
     bool _run;
     ConditionVariable * _condvar;
 };

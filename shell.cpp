@@ -16,11 +16,11 @@
 #include <iostream>
 #include <string>
 
-#include "core/config.h"
-#include "library/string.h"
-#include "core/torus.h"
-#include "shell.h"
-#include "debug/callstack.h"
+#include <core/config.h>
+#include <library/string.h>
+#include <core/torus.h>
+#include <shell.h>
+#include <debug_support/callstack.h>
 
 std::string _get_curr_datetime() {
     std::string r;
@@ -39,7 +39,7 @@ void * TorusShell::run() {
     t_byte c;
     t_byte buffer[256];
     t_byte * stripped_buffer;
-    t_udword counter = 0;
+    udword_t counter = 0;
     _log_file.open(toruscfg.log_filename, std::ios_base::out | std::ios_base::app);
     //DBG_MSG_INF("Starting User Interface Thread.");
     do {

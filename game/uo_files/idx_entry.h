@@ -15,11 +15,11 @@
 #ifndef __TORUS_GAME_IDX_ENTRY_H
 #define __TORUS_GAME_IDX_ENTRY_H
 
-#include "../../library/types.h"
+#include <library/types.h>
 
 struct IdxEntry {
-    t_word lookup = 0;  ///< first byte of the required data in the .mul file
-    t_word lenght = 0;  ///< lenght of the data.
-    t_word extra = 0;   ///< some files use this value.
+    word_t lookup = 0;  ///< first byte of the required data in the .mul file
+    word_t lenght = 0;  ///< lenght of the data.
+    word_t extra = 0;   ///< some files use this value.
 };
 #endif // __TORUS_GAME_IDX_ENTRY_H

@@ -17,406 +17,668 @@
 
 #include <cstring>
 
-#include "types.h"
-#include "../threads/mutex.h"
-#include "errors.h"
-#include "../debug/info.h"
+#include <memory>
+
+#include <library/types.h>
+#include <threads/mutex.h>
+#include <library/errors.h>
+#include <library/memory.h>
+#include <debug_support/info.h>
 
 #ifdef _MSC_VER
     #pragma warning(disable: 4521 4522)  // TODO: Fix warnings instead of disabling.
 #endif
 
-#define _TTL_STACK_DEFAULT_SIZE 10
+#define _TTL_STACK_DEFAULT_SIZE 1
 
 namespace ttl {
-    template<typename T>
+    template<typename T, class Allocator = std::allocator<T>>
     class fixedstack {
     public:
-        fixedstack(t_udword size=_TTL_STACK_DEFAULT_SIZE) {
-            _stack = new T[size];
-            _top = 0;
-            _size = size;
-        }
+        fixedstack(udword_t size=_TTL_STACK_DEFAULT_SIZE);
+        fixedstack(const fixedstack& o);
+        fixedstack(fixedstack&& o);
+        ~fixedstack();
+        fixedstack & operator=(const fixedstack& o);
+        fixedstack & operator=(fixedstack&& o);
 
-        fixedstack(fixedstack<T> & o) {
-            _stack = new T[o._size];
-            _top = o._top;
-            _size = o._size;
-            for(t_udword i = 0; i < _top; ++i) _stack[i] = o._stack[i];
-        }
+        // Element access.
+        T& top();
 
-        fixedstack(const fixedstack<T> & o) {
-            _stack = new T[o._size];
-            _top = o._top;
-            _size = o._size;
-            for(t_udword i = 0; i < _top; ++i) _stack[i] = o._stack[i];
-        }
+        // Capacity.
+        bool empty() const;
+        udword_t size() const;
 
-        ~fixedstack() {
-            delete[] _stack;
-        }
-
-        fixedstack & operator=(fixedstack<T> & o) {
-            delete[] _stack;
-            _stack = new T[o._size];
-            _top = o._top;
-            _size = o._size;
-            for(t_udword i = 0; i < _top; ++i) _stack[i] = o._stack[i];
-            return *this;
-        }
-
-        fixedstack & operator=(const fixedstack<T> & o) {
-            delete[] _stack;
-            _stack = new T[o._size];
-            _top = o._top;
-            _size = o._size;
-            for(t_udword i = 0; i < _top; ++i) _stack[i] = o._stack[i];
-            return *this;
-        }
-        
-        void push(T t) {
-            if (_top == _size) {
-                throw StackError("stack is full.");
-            }
-            _stack[_top++] = t;
-        }
-
-        void pop() {
-            if (!_top) {
-                throw StackError("stack is empty.");
-            }
-            _top--;
-        }
-
-        T top() {
-            if (!_top) {
-                throw StackError("stack is empty.");
-            }
-            return _stack[_top - 1];
-        }
-
-        void clear() {
-            while(!empty()) {
-                pop();
-            }
-        }
-
-        bool empty() {
-            return _top == 0;
-        }
-
-        t_udword size() {
-            return _top;
-        }
+        // Modifiers.
+        void push(const T& t);
+        void push(T&& t);
+        void pop();
+        void clear();
+        void swap(fixedstack& o);
 
     private:
-        T * _stack;
-        t_udword _top, _size;
+        T* _stack;
+        udword_t _top;
+        udword_t _capacity;
+        Allocator _allocator;
     };
 
-    template <typename T>
+    template <typename T, class Allocator = std::allocator<T>>
     class fixedgrowingstack {
     public:
-        fixedgrowingstack(t_udword size=_TTL_STACK_DEFAULT_SIZE) {
-            _stack = new T[size];
-            _top = 0;
-            _size = size;
-        }
+        fixedgrowingstack(udword_t size=_TTL_STACK_DEFAULT_SIZE);
+        fixedgrowingstack(const fixedgrowingstack& o);
+        fixedgrowingstack(fixedgrowingstack&& o);
+        ~fixedgrowingstack();
+        fixedgrowingstack& operator=(const fixedgrowingstack& o);
+        fixedgrowingstack& operator=(fixedgrowingstack&& o);
 
-        fixedgrowingstack(fixedgrowingstack<T> & o) {
-            _stack = new T[o._size];
-            _top = o._top;
-            _size = o._size;
-            for(t_udword i = 0; i < _top; ++i) _stack[i] = o._stack[i];
-        }
+        // Element access.
+        T& top();
 
-        fixedgrowingstack(const fixedgrowingstack<T> & o) {
-            _stack = new T[o._size];
-            _top = o._top;
-            _size = o._size;
-            for(t_udword i = 0; i < _top; ++i) _stack[i] = o._stack[i];
-        }
+        // Capacity.
+        bool empty() const;
+        udword_t size() const;
 
-        ~fixedgrowingstack() {
-            delete[] _stack;
-        }
-
-        fixedgrowingstack & operator=(fixedgrowingstack<T> & o) {
-            _stack = new T[o._size];
-            _top = o._top;
-            _size = o._size;
-            for(t_udword i = 0; i < _top; ++i) _stack[i] = o._stack[i];
-            return *this;
-        }
-
-        fixedgrowingstack & operator=(const fixedgrowingstack<T> & o) {
-            _stack = new T[o._size];
-            _top = o._top;
-            _size = o._size;
-            for(t_udword i = 0; i < _top; ++i) _stack[i] = o._stack[i];
-            return *this;
-        }
-
-        void push(T t) {
-            if (_top == _size) {
-                T * nstack = new T[_size + _TTL_STACK_DEFAULT_SIZE];
-                for(t_udword i = 0; i < _top; ++i) nstack[i] = _stack[i];
-                delete[] _stack;
-                _stack = nstack;
-                _size += _TTL_STACK_DEFAULT_SIZE;
-            }
-            _stack[_top++] = t;
-        }
-
-        void pop() {
-            if (!_top) {
-                throw StackError("stack is empty.");
-            }
-            _top--;
-        }
-
-        T top() {
-            if (!_top) {
-                throw StackError("stack is empty.");
-            }
-            return _stack[_top - 1];
-        }
-
-        void clear() {
-            while(!empty()) {
-                pop();
-            }
-        }
-
-        bool empty() {
-            return _top == 0;
-        }
-
-        t_udword size() {
-            return _top;
-        }
+        // Modifiers.
+        void push(const T& t);
+        void push(T&& t);
+        void pop();
+        void clear();
+        void swap(fixedgrowingstack& o);
 
     private:
-        T * _stack;
-        t_udword _top, _size;
+        T* _stack;
+        udword_t _top;
+        udword_t _capacity;
+        Allocator _allocator;
     };
 
-    template<typename T>
+    template<typename T, class Allocator = std::allocator<T>>
     class dynamicstack {
     public:
-        dynamicstack() {
-            _top = NULL;
-            _size = 0;
-        }
-
+        dynamicstack();
         // To allow thread secure wrapper constructor.
-        dynamicstack(t_udword _) : dynamicstack() { UNREFERENCED_PARAMETER(_); }
+        dynamicstack(udword_t _);
+        dynamicstack(const dynamicstack& o);
+        dynamicstack(dynamicstack&& o);
+        ~dynamicstack();
+        dynamicstack& operator=(const dynamicstack& o);
+        dynamicstack& operator=(dynamicstack&& o);
 
-        dynamicstack(dynamicstack<T> & o) {
-            _size = o._size;
-            _top = NULL;
-            _dynamicstackitem * next = o._top, * prev;
-            if (next) {
-                _top = new _dynamicstackitem(next->_item, NULL);
-                prev = _top;
-                next = next->_next;
-                while (next) {
-                    prev->_next = new _dynamicstackitem(next->_item, NULL);
-                    prev = prev->_next;
-                    next = next->_next;
-                }
-            }
-        }
+        // Element access.
+        T& top();
 
-        dynamicstack(const dynamicstack<T> & o) {
-            _size = o._size;
-            _top = NULL;
-            _dynamicstackitem * next = o._top, * prev;
-            if (next) {
-                _top = new _dynamicstackitem(next->_item, NULL);
-                prev = _top;
-                next = next->_next;
-                while (next) {
-                    prev->_next = new _dynamicstackitem(next->_item, NULL);
-                    prev = prev->_next;
-                    next = next->_next;
-                }
-            }
-        }
+        // Capacity.
+        bool empty() const;
+        udword_t size() const;
 
-        ~dynamicstack() {
-            clear();
-        };
-
-        dynamicstack & operator=(dynamicstack<T> & o) {
-            _size = o._size;
-            _top = NULL;
-            _dynamicstackitem * next = o._top, * prev;
-            if (next) {
-                _top = new _dynamicstackitem(next->_item, NULL);
-                prev = _top;
-                next = next->_next;
-                while (next) {
-                    prev->_next = new _dynamicstackitem(next->_item, NULL);
-                    prev = prev->_next;
-                    next = next->_next;
-                }
-            }
-            return *this;
-        }
-
-        dynamicstack & operator=(const dynamicstack<T> & o) {
-            _size = o._size;
-            _top = NULL;
-            _dynamicstackitem * next = o._top, * prev;
-            if (next) {
-                _top = new _dynamicstackitem(next->_item, NULL);
-                prev = _top;
-                next = next->_next;
-                while (next) {
-                    prev->_next = new _dynamicstackitem(next->_item, NULL);
-                    prev = prev->_next;
-                    next = next->_next;
-                }
-            }
-            return *this;
-        }
-
-        void push(T t) {
-            _dynamicstackitem * ntop = new _dynamicstackitem(t, _top);
-            _top = ntop;
-            _size++;
-        }
-
-        void pop() {
-            if (_top == NULL) {
-                throw StackError("stack is empty.");
-            }
-            _dynamicstackitem * oldtop = _top;
-            _top = oldtop->_next;
-            delete oldtop;
-            _size--;
-        }
-
-        T top() {
-            if (_top == NULL) {
-                throw StackError("stack is empty.");
-            }
-            return _top->_item;
-        }
-
-        void clear() {
-            while(!empty()) {
-                pop();
-            }
-        }
-
-        bool empty() {
-            return _top == NULL;
-        }
-
-        t_udword size(){
-            return _size;
-        }
+        // Modifiers.
+        void push(const T& t);
+        void push(T&& t);
+        void pop();
+        void clear();
+        void swap(dynamicstack& o);
 
     private:
-        struct _dynamicstackitem {
+        struct _dynamicstacknode {
         public:
-            _dynamicstackitem(T item, _dynamicstackitem * next) {
-                _item = item;
-                _next = next;
-            }
-            T _item;
-            _dynamicstackitem * _next;
+            _dynamicstacknode(const T& i, _dynamicstacknode * n = nullptr);
+            _dynamicstacknode(T&& i, _dynamicstacknode * n = nullptr);
+            T item;
+            _dynamicstacknode * next;
         };
-        _dynamicstackitem * _top;
-        t_udword _size;
+        _dynamicstacknode * _top;
+        udword_t _size;
     };
 
     template <typename T, class S>
-    class tsstack {
+    class __T_tsstack {
     public:
-        tsstack(t_udword size=_TTL_STACK_DEFAULT_SIZE) : _s(size) {}
+        __T_tsstack(udword_t size=_TTL_STACK_DEFAULT_SIZE);
+        __T_tsstack(__T_tsstack& o);
+        __T_tsstack(__T_tsstack&& o);
+        ~__T_tsstack();
+        __T_tsstack & operator=(__T_tsstack& o);
+        __T_tsstack & operator=(__T_tsstack&& o);
 
-        tsstack(tsstack<T, S> & o) {
-            o._mutex.lock();
-            _s = o._s;
-            o._mutex.unlock();
-        }
+        // Element access.
+        T top();
 
-        tsstack(const tsstack<T, S> & o) {
-            o._mutex.lock();
-            _s = o._s;
-            o._mutex.unlock();
-        }
+        // Capacity.
+        bool empty();
+        udword_t size();
 
-        tsstack & operator=(tsstack<T, S> & o) {
-            _mutex.lock();
-            o._mutex.lock();
-            _s = o._s;
-            o._mutex.unlock();
-            _mutex.unlock();
-        }
-
-        tsstack & operator=(const tsstack<T, S> & o) {
-            _mutex.lock();
-            o._mutex.lock();
-            _s = o._s;
-            o._mutex.unlock();
-            _mutex.unlock();
-        }
-
-        void push(T t) {
-            _mutex.lock();
-            _s.push(t);
-            _mutex.unlock();
-        }
-
-        void pop() {
-            _mutex.lock();
-            _s.pop();
-            _mutex.unlock();
-        }
-
-        T top() {
-            _mutex.lock();
-            T x = _s.top();
-            _mutex.unlock();
-            return x;
-        }
-
-        void clear() {
-            _mutex.lock();
-            _s.clear();
-            _mutex.unlock();
-        }
-
-        bool empty() {
-            _mutex.lock();
-            bool b = _s.empty();
-            _mutex.unlock();
-            return b;
-        }
-
-        t_udword size() {
-            _mutex.lock();
-            t_udword s = _s.size();
-            _mutex.unlock();
-            return s;
-        }
+        // Modifiers.
+        void push(const T& t);
+        void push(T&& t);
+        void pop();
+        void clear();
+        void swap(__T_tsstack& o);
     private:
         Mutex _mutex;
         S _s;
     };
 
-    template<typename T>
-    using tsfixedstack = tsstack<T, fixedstack<T>>;
+    template<typename T, class Allocator = std::allocator<T>>
+    using tsfixedstack = __T_tsstack<T, fixedstack<T,Allocator>>;
 
-    template<typename T>
-    using tsfixedgrowingstack = tsstack<T, fixedgrowingstack<T>>;
+    template<typename T, class Allocator = std::allocator<T>>
+    using tsfixedgrowingstack = __T_tsstack<T, fixedgrowingstack<T,Allocator>>;
 
-    template<typename T>
-    using tsdynamicstack = tsstack<T, dynamicstack<T>>;
+    template<typename T, class Allocator = std::allocator<T>>
+    using tsdynamicstack = __T_tsstack<T, dynamicstack<T,Allocator>>;
+
+    /**
+     * Implementations
+     */
+
+
+    template<typename T, class Allocator>
+    fixedstack<T,Allocator>::fixedstack(udword_t size) {
+        _stack = _allocator.allocate(size);
+        _top = 0;
+        _capacity = size;
+    }
+
+    template<typename T, class Allocator>
+    fixedstack<T,Allocator>::fixedstack(const fixedstack& o) {
+        _stack = _allocator.allocate(o._capacity);
+        _top = o._top;
+        _capacity = o._capacity;
+        for(udword_t i = 0; i < _top; ++i) {
+            _allocator.construct(&(_stack[i]), o._stack[i]);
+        }
+    }
+
+    template<typename T, class Allocator>
+    fixedstack<T,Allocator>::fixedstack(fixedstack&& o) {
+        _stack = o._stack;
+        _top = o._top;
+        _capacity = o._capacity;
+        o._stack = nullptr;
+        o._top = 0;
+        o._capacity = 0;
+    }
+
+    template<typename T, class Allocator>
+    fixedstack<T,Allocator>::~fixedstack() {
+        if (nullptr != _stack) {
+            for (udword_t i = 0; i < _top; ++i) {
+                _allocator.destroy(&(_stack[i]));
+            }
+            _allocator.deallocate(_stack, _capacity);
+        }
+    }
+
+    template<typename T, class Allocator>
+    fixedstack<T,Allocator>& fixedstack<T,Allocator>::operator=(const fixedstack& o) {
+        if (this != &o) {
+            clear();
+            _allocator.deallocate(_stack, _capacity);
+            _stack = _allocator.allocate(o._capacity);
+            _top = o._top;
+            _capacity = o._capacity;
+            for(udword_t i = 0; i < _top; ++i) {
+                _allocator.construct(&(_stack[i]), o._stack[i]);
+            }
+        }
+        return *this;
+    }
+
+    template<typename T, class Allocator>
+    fixedstack<T,Allocator>& fixedstack<T,Allocator>::operator=(fixedstack&& o) {
+        if (this != &o) {
+            swap(o);
+        }
+        return *this;
+    }
+
+    template<typename T, class Allocator>
+    T & fixedstack<T,Allocator>::top()  {
+        if (!_top) {
+            throw StackError("stack is empty.");
+        }
+        return _stack[_top - 1];
+    }
+
+    template<typename T, class Allocator>
+    bool fixedstack<T,Allocator>::empty() const {
+        return _top == 0;
+    }
+
+    template<typename T, class Allocator>
+    udword_t fixedstack<T,Allocator>::size() const {
+        return _top;
+    }
+
+    template<typename T, class Allocator>
+    void fixedstack<T,Allocator>::push(const T& t) {
+        if (_top == _capacity) {
+            throw StackError("stack is full.");
+        }
+        _stack[_top++] = t;
+    }
+
+    template<typename T, class Allocator>
+    void fixedstack<T,Allocator>::push(T&& t) {
+        if (_top == _capacity) {
+            throw StackError("stack is full.");
+        }
+        _stack[_top++] = t;
+    }
+
+    template<typename T, class Allocator>
+    void fixedstack<T,Allocator>::pop() {
+        if (!_top) {
+            throw StackError("stack is empty.");
+        }
+        _allocator.destroy(&(_stack[--_top]));
+    }
+
+    template<typename T, class Allocator>
+    void fixedstack<T,Allocator>::clear() {
+        while(!empty()) {
+            pop();
+        }
+    }
+
+    template<typename T, class Allocator>
+    void fixedstack<T,Allocator>::swap(fixedstack & o) {
+        if (this != &o) {
+            T * aux = _stack;
+            udword_t aux_capacity = _capacity;
+            udword_t aux_top = _top;
+            _stack = o._stack;
+            _capacity = o._capacity;
+            _top = o._top;
+            o._stack = aux;
+            o._capacity = aux_capacity;
+            o._top = aux_top;
+        }
+    }
+
+    template<typename T, class Allocator>
+    fixedgrowingstack<T,Allocator>::fixedgrowingstack(udword_t size) {
+        _stack = _allocator.allocate(size);
+        _top = 0;
+        _capacity = size;
+    }
+
+    template<typename T, class Allocator>
+    fixedgrowingstack<T,Allocator>::fixedgrowingstack(const fixedgrowingstack& o) {
+        _stack = _allocator.allocate(o._capacity);
+        _top = o._top;
+        _capacity = o._capacity;
+        for(udword_t i = 0; i < _top; ++i) {
+            _allocator.construct(&(_stack[i]), o._stack[i]);
+        }
+    }
+
+    template<typename T, class Allocator>
+    fixedgrowingstack<T,Allocator>::fixedgrowingstack(fixedgrowingstack&& o) {
+        _stack = o._stack;
+        _top = o._top;
+        _capacity = o._capacity;
+        o._stack = nullptr;
+        o._top = 0;
+        o._capacity = 0;
+    }
+
+    template<typename T, class Allocator>
+    fixedgrowingstack<T,Allocator>::~fixedgrowingstack() {
+        if (nullptr != _stack) {
+            clear();
+            _allocator.deallocate(_stack, _capacity);
+        }
+    }
+
+    template<typename T, class Allocator>
+    fixedgrowingstack<T,Allocator>& fixedgrowingstack<T,Allocator>::operator=(const fixedgrowingstack& o) {
+        if (this != &o) {
+            clear();
+            _allocator.deallocate(_stack, _capacity);
+            _stack = _allocator.allocate(o._capacity);
+            _top = o._top;
+            _capacity = o._capacity;
+            for(udword_t i = 0; i < _top; ++i) {
+                _allocator.construct(&(_stack[i]), o._stack[i]);
+            }
+        }
+        return *this;
+    }
+
+    template<typename T, class Allocator>
+    fixedgrowingstack<T,Allocator>& fixedgrowingstack<T,Allocator>::operator=(fixedgrowingstack&& o) {
+        if (this != &o) {
+            swap(o);
+        }
+        return *this;
+    }
+
+    template<typename T, class Allocator>
+    T& fixedgrowingstack<T,Allocator>::top() {
+        if (!_top) {
+            throw StackError("stack is empty.");
+        }
+        return _stack[_top - 1];
+    }
+
+    template<typename T, class Allocator>
+    bool fixedgrowingstack<T,Allocator>::empty() const {
+        return _top == 0;
+    }
+
+    template<typename T, class Allocator>
+    udword_t fixedgrowingstack<T,Allocator>::size() const {
+        return _top;
+    }
+
+    template<typename T, class Allocator>
+    void fixedgrowingstack<T,Allocator>::push(const T& t) {
+        if (_top == _capacity) {
+            udword_t  newcapacity = _capacity << 1;
+            T * aux = _allocator.allocate(newcapacity);
+            internal::memcpy(aux, _stack, sizeof(T) * _capacity);
+            _allocator.deallocate(_stack, _capacity);
+            _stack = aux;
+            _capacity = newcapacity;
+        }
+        _allocator.construct(&(_stack[_top++]), t);
+    }
+
+    template<typename T, class Allocator>
+    void fixedgrowingstack<T,Allocator>::push(T&& t) {
+        if (_top == _capacity) {
+            udword_t  newcapacity = _capacity << 1;
+            T * aux = _allocator.allocate(newcapacity);
+            internal::memcpy(aux, _stack, sizeof(T) * _capacity);
+            _allocator.deallocate(_stack, _capacity);
+            _stack = aux;
+            _capacity = newcapacity;
+        }
+        _allocator.construct(&(_stack[_top++]), t);
+    }
+
+    template<typename T, class Allocator>
+    void fixedgrowingstack<T,Allocator>::pop() {
+        if (!_top) {
+            throw StackError("stack is empty.");
+        }
+        _allocator.destroy(&(_stack[--_top]));
+    }
+
+    template<typename T, class Allocator>
+    void fixedgrowingstack<T,Allocator>::clear() {
+        while(!empty()) {
+            pop();
+        }
+    }
+
+    template<typename T, class Allocator>
+    void fixedgrowingstack<T,Allocator>::swap(fixedgrowingstack& o) {
+        if (this != &o) {
+            T * aux = _stack;
+            udword_t aux_capacity = _capacity;
+            udword_t aux_top = _top;
+            _stack = o._stack;
+            _capacity = o._capacity;
+            _top = o._top;
+            o._stack = aux;
+            o._capacity = aux_capacity;
+            o._top = aux_top;
+        }
+    }
+
+    template<typename T, class Allocator>
+    dynamicstack<T,Allocator>::dynamicstack() : _top(nullptr), _size(0) {
+    }
+
+    template<typename T, class Allocator>
+    dynamicstack<T,Allocator>::dynamicstack(udword_t _) : dynamicstack() {
+        UNREFERENCED_PARAMETER(_);
+    }
+
+    template<typename T, class Allocator>
+    dynamicstack<T,Allocator>::dynamicstack(const dynamicstack& o) : _top(nullptr), _size(o._size) {
+        _dynamicstacknode* source = o._top;
+        _dynamicstacknode* prev = nullptr;
+        _dynamicstacknode* aux;
+        while (nullptr != source) {
+            aux = new _dynamicstacknode(source->item);
+            if (nullptr == _top) {
+                _top = aux;
+            } else {
+                prev->next = aux;
+            }
+            prev = aux;
+            source = source->next;
+        }
+    }
+
+    template<typename T, class Allocator>
+    dynamicstack<T,Allocator>::dynamicstack(dynamicstack&& o) : _top(o._top), _size(o._size) {
+        o._top = nullptr;
+        o._size = 0;
+    }
+
+    template<typename T, class Allocator>
+    dynamicstack<T,Allocator>::~dynamicstack() {
+        clear();
+    }
+
+    template<typename T, class Allocator>
+    dynamicstack<T,Allocator>& dynamicstack<T,Allocator>::operator=(const dynamicstack& o) {
+        if (this != &o) {
+            clear();
+            _size = o._size;
+            _dynamicstacknode* source = o._top;
+            _dynamicstacknode* prev = nullptr;
+            _dynamicstacknode* aux;
+            while (nullptr != source) {
+                aux = new _dynamicstacknode(source->item);
+                if (nullptr == _top) {
+                    _top = aux;
+                } else {
+                    prev->next = aux;
+                }
+                prev = aux;
+                source = source->next;
+            }
+        }
+        return *this;
+    }
+
+    template<typename T, class Allocator>
+    dynamicstack<T,Allocator>& dynamicstack<T,Allocator>::operator=(dynamicstack&& o) {
+        if (this != &o) {
+            swap(o);
+        }
+        return *this;
+    }
+
+    template<typename T, class Allocator>
+    T& dynamicstack<T,Allocator>::top() {
+        if (nullptr == _top) {
+            throw StackError("stack is empty.");
+        }
+        return _top->item;
+    }
+
+    template<typename T, class Allocator>
+    bool dynamicstack<T,Allocator>::empty() const {
+        return nullptr == _top;
+    }
+
+    template<typename T, class Allocator>
+    udword_t dynamicstack<T,Allocator>::size() const {
+        return _size;
+    }
+
+    template<typename T, class Allocator>
+    void dynamicstack<T,Allocator>::push(const T& t) {
+        _top = new _dynamicstacknode(t, _top);
+        _size++;
+    }
+
+    template<typename T, class Allocator>
+    void dynamicstack<T,Allocator>::push(T&& t) {
+        _top = new _dynamicstacknode(t, _top);
+        _size++;
+    }
+
+    template<typename T, class Allocator>
+    void dynamicstack<T,Allocator>::pop() {
+        if (nullptr == _top) {
+            throw StackError("stack is empty.");
+        }
+        _dynamicstacknode* top = _top;
+        _top = top->next;
+        delete top;
+        _size--;
+    }
+
+    template<typename T, class Allocator>
+    void dynamicstack<T,Allocator>::clear() {
+        while(!empty()) {
+            pop();
+        }
+    }
+
+    template<typename T, class Allocator>
+    void dynamicstack<T,Allocator>::swap(dynamicstack& o) {
+        if (this != &o) {
+            _dynamicstacknode* aux = _top;
+            udword_t aux_size = _size;
+            _top = o._top;
+            _size = o._size;
+            o._top = aux;
+            o._size = aux_size;
+        }
+
+    }
+
+    template<typename T, class Allocator>
+    dynamicstack<T,Allocator>::_dynamicstacknode::_dynamicstacknode(const T& i, _dynamicstacknode * n) : item(i), next(n) {
+    }
+
+    template<typename T, class Allocator>
+    dynamicstack<T,Allocator>::_dynamicstacknode::_dynamicstacknode(T&& i, _dynamicstacknode * n) : item(i), next(n) {
+    }
+
+    template <typename T, class S>
+    __T_tsstack<T,S>::__T_tsstack(udword_t size) : _s(size) {}
+
+    template <typename T, class S>
+    __T_tsstack<T,S>::__T_tsstack(__T_tsstack& o) {
+        if (this != &o) {
+            o._mutex.lock();
+            _s = o._s;
+            o._mutex.unlock();
+        }
+    }
+
+    template <typename T, class S>
+    __T_tsstack<T,S>::__T_tsstack(__T_tsstack&& o) {
+        if (this != &o) {
+            o._mutex.lock();
+            _s.swap(o._s);
+            o._mutex.unlock();
+        }
+    }
+
+    template <typename T, class S>
+    __T_tsstack<T,S>::~__T_tsstack() {
+        _mutex.lock();
+    }
+
+    template <typename T, class S>
+    __T_tsstack<T,S>& __T_tsstack<T,S>::operator=(__T_tsstack& o) {
+        if (this != &o) {
+            _mutex.lock();
+            o._mutex.lock();
+            _s = o._s;
+            o._mutex.unlock();
+            _mutex.unlock();
+        }
+        return this;
+    }
+
+    template <typename T, class S>
+    __T_tsstack<T,S>& __T_tsstack<T,S>::operator=(__T_tsstack&& o) {
+        if (this != &o) {
+            _mutex.lock();
+            o._mutex.lock();
+            _s.swap(o._s);
+            o._mutex.unlock();
+            _mutex.unlock();
+        }
+        return this;
+    }
+
+    template <typename T, class S>
+    T __T_tsstack<T,S>::top() {
+        _mutex.lock();
+        T x = _s.top();
+        _mutex.unlock();
+        return x;
+    }
+
+    template <typename T, class S>
+    bool __T_tsstack<T,S>::empty() {
+        _mutex.lock();
+        bool b = _s.empty();
+        _mutex.unlock();
+        return b;
+    }
+
+    template <typename T, class S>
+    udword_t __T_tsstack<T,S>::size() {
+        _mutex.lock();
+        udword_t s = _s.size();
+        _mutex.unlock();
+        return s;
+    }
+
+    template <typename T, class S>
+    void __T_tsstack<T,S>::push(const T& t) {
+        _mutex.lock();
+        _s.push(t);
+        _mutex.unlock();
+    }
+
+    template <typename T, class S>
+    void __T_tsstack<T,S>::push(T&& t) {
+        _mutex.lock();
+        _s.push(t);
+        _mutex.unlock();
+    }
+
+    template <typename T, class S>
+    void __T_tsstack<T,S>::pop() {
+        _mutex.lock();
+        _s.pop();
+        _mutex.unlock();
+    }
+
+    template <typename T, class S>
+    void __T_tsstack<T,S>::clear() {
+        _mutex.lock();
+        _s.clear();
+        _mutex.unlock();
+    }
+
+    template <typename T, class S>
+    void __T_tsstack<T,S>::swap(__T_tsstack& o) {
+        if (this != &o) {
+            _mutex.lock();
+            o._mutex.lock();
+            _s.swap(o._s);
+            o._mutex.unlock();
+            _mutex.unlock();
+        }
+    }
+
 }
 
 #ifdef _MSC_VER

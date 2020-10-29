@@ -15,7 +15,7 @@
 #ifndef __TORUS_GAME_MAP_TERRAIN_H
 #define __TORUS_GAME_MAP_TERRAIN_H
 
-#include "../../library/types.h"
+#include <library/types.h>
 
 
 // Enable byte packing.
@@ -33,8 +33,8 @@
  * size = 26 bytes
 */
 struct UOMapTerrain {
-    t_udword flags = 0;
-    t_uword id = 0;
+    udword_t flags = 0;
+    uword_t id = 0;
     t_byte name[20];
 } PACK_STRUCT;
 
@@ -44,9 +44,9 @@ struct UOMapTerrain {
  * size = 30 bytes
 */
 struct UOMapTerrainHS {
-    t_udword flags = 0;
-    t_udword unk;
-    t_uword id = 0;
+    udword_t flags = 0;
+    udword_t unk;
+    uword_t id = 0;
     t_byte name[20];
 } PACK_STRUCT;
 
@@ -54,16 +54,16 @@ struct UOMapTerrainHS {
  * @brief Item's struct on tiledata.mul -> art.mul
 */
 struct UOItem {
-    t_dword flags = 0;
+    dword_t flags = 0;
     t_byte weight = 0;
     t_byte quality = 0; // Layer for equipable items, Light ID for light sources
-    t_uword unk = 0;
+    uword_t unk = 0;
     t_byte unk1 = 0;
     t_byte quantity = 0;
-    t_uword animid = 0; // animation related to this item, add 50000 / 60000 to get the gumps for the equipable item.
+    uword_t animid = 0; // animation related to this item, add 50000 / 60000 to get the gumps for the equipable item.
     t_byte unk2 = 0;
     t_byte hue = 0;
-    t_uword unk3 = 0;
+    uword_t unk3 = 0;
     t_byte height = 0;  // for containers this means their max storage.
     t_byte name[20];
 } PACK_STRUCT;

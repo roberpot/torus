@@ -25,10 +25,10 @@
 #include <netinet/in.h>
 #endif
 
-#include "../library/types.h"
-#include "packet.h"
-#include "crypto.h"
-#include "../debug/callstack.h"
+#include <library/types.h>
+#include <network/packet.h>
+#include <network/crypto.h>
+#include <debug_support/callstack.h>
 
 /** @brief   Values that represent socket types. */
 enum SocketType {
@@ -64,7 +64,7 @@ public:
      * @param   addr    The address to bind.
      * @param   port    The port to bind.
      */
-    void bind(const t_byte * addr, t_word port);
+    void bind(const t_byte * addr, word_t port);
     /**
      * @brief   Determines there is a client pending.
      *
@@ -131,38 +131,38 @@ public:
      */
     friend Socket & operator>>(Socket & s, T & d);
 //    friend Socket & operator>>(Socket & s, t_byte d);
-//    friend Socket & operator>>(Socket & s, t_word d);
-//    friend Socket & operator>>(Socket & s, t_dword d);
-//    friend Socket & operator>>(Socket & s, t_qword d);
+//    friend Socket & operator>>(Socket & s, word_t d);
+//    friend Socket & operator>>(Socket & s, dword_t d);
+//    friend Socket & operator>>(Socket & s, qword_t d);
 //    friend Socket & operator>>(Socket & s, t_ubyte d);
-//    friend Socket & operator>>(Socket & s, t_uword d);
-//    friend Socket & operator>>(Socket & s, t_udword d);
-//    friend Socket & operator>>(Socket & s, t_uqword d);
+//    friend Socket & operator>>(Socket & s, uword_t d);
+//    friend Socket & operator>>(Socket & s, udword_t d);
+//    friend Socket & operator>>(Socket & s, uqword_t d);
 private:
     /**
      * @brief   Determinate client seed.
      *
-     * @return  A t_udword.
+     * @return  A udword_t.
      */
-    t_udword _determinate_client_seed();
+    udword_t _determinate_client_seed();
     /**
      * @brief   Reads the given amount of bytes and decrypts the data.
      *
      * @param   len (Optional) The length.
      */
-    void _read_bytes(t_udword len = 1024);
+    void _read_bytes(udword_t len = 1024);
     /**
      * @brief   Rewinds the buffer.
      *
      * @param   b   If non-null, the buffer to process.
      * @param   l   The length to process.
      */
-    void _rewind(t_byte * b, t_udword l);
+    void _rewind(t_byte * b, udword_t l);
 
     t_byte * buffer;        ///< Buffer for IO data.    
     t_byte * rewinded;      ///< Copy of the buffer to handle rewinds.
-    t_udword buffer_len;    ///< Lenght of the Socket's buffer.
-    t_udword rewinded_len;  ///< Lenght of the rewinded buffer.
+    udword_t buffer_len;    ///< Lenght of the Socket's buffer.
+    udword_t rewinded_len;  ///< Lenght of the rewinded buffer.
     SocketType type;        ///< Type of connection.
     Crypto * crypto;        ///< Encryption handler.
     socket_t _socket;       ///< Pointer to the socket_t.

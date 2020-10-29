@@ -22,9 +22,9 @@
 
 
 //  OS includes START.
-#include "../network/socket.h"
-#include "../threads/thread.h"
-#include "../threads/mutex.h"
+#include <network/socket.h>
+#include <threads/thread.h>
+#include <threads/mutex.h>
 // OS includes END.
 
 

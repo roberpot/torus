@@ -12,11 +12,11 @@
 * along with Torus. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "uid.h"
-#include "../shell.h"
-#include "../debug/callstack.h"
+#include <game/uid.h>
+#include <shell.h>
+#include <debug_support/callstack.h>
 
-t_udword Uid::highest_uid = 0;
+udword_t Uid::highest_uid = 0;
 
 Uid::Uid(){
     ADDTOCALLSTACK();
@@ -24,7 +24,7 @@ Uid::Uid(){
     find_new_uid();
 }
 
-Uid::Uid(t_udword uid){
+Uid::Uid(udword_t uid){
     ADDTOCALLSTACK();
     set_uid(uid);
 }
@@ -34,7 +34,7 @@ Uid::~Uid(){
     free_uid();
 }
 
-void Uid::set_uid(t_udword uid) {
+void Uid::set_uid(udword_t uid) {
     ADDTOCALLSTACK();
     _uid = uid;
     if (highest_uid == get_uid_base())
@@ -52,17 +52,17 @@ void Uid::free_uid(){
     // TODO: DB Table to store free uids.
 }
 
-t_udword Uid::get_uid(){
+udword_t Uid::get_uid(){
     ADDTOCALLSTACK();
     return _uid;
 }
 
-t_udword Uid::get_uid_base(){
+udword_t Uid::get_uid_base(){
     ADDTOCALLSTACK();
     return _uid &~(UID_ITEM | UID_RESOURCE);
 }
 
-void Uid::set_uid_type(t_udword mask) {
+void Uid::set_uid_type(udword_t mask) {
     ADDTOCALLSTACK();
     _uid |= mask;
 }

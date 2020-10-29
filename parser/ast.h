@@ -110,10 +110,10 @@ namespace ast {
 
     class BlockPlevelNode : public Node {
     public:
-        BlockPlevelNode(t_udword plevel, ttl::vector<std::string> strings) : _plevel(plevel), _strings(strings) {}
+        BlockPlevelNode(udword_t plevel, ttl::vector<std::string> strings) : _plevel(plevel), _strings(strings) {}
         void generate();
     private:
-        t_udword _plevel;
+        udword_t _plevel;
         ttl::vector<std::string> _strings;
     };
 }

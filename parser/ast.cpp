@@ -12,16 +12,16 @@
  * along with Torus. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "ast.h"
-#include "../shell.h"
-#include "../core/config.h"
-#include "../debug/debug.h"
-#include "compiler.h"
+#include <parser/ast.h>
+#include <core/config.h>
+#include <debug_support/debug.h>
+#include <parser/compiler.h>
+#include <shell.h>
 
 
 namespace ast {
 
-    Node * root = NULL;
+    Node * root = nullptr;
 
     void MonoNode::generate() {
         if (_c) _c->generate();
@@ -54,13 +54,13 @@ namespace ast {
     }
 
     void BlockResourcesNode::generate() {
-        for(t_udword i = 0; i < _strings.size(); ++i) {
+        for(udword_t i = 0; i < _strings.size(); ++i) {
             toruscompiler.add_file(_strings[i]);
         }
     }
 
     void BlockObsceneNode::generate() {
-        for(t_udword i = 0; i < _strings.size(); ++i) {
+        for(udword_t i = 0; i < _strings.size(); ++i) {
             toruscfg.obscene_strings.insert(_strings[i]);
         }
     }

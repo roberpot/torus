@@ -16,8 +16,8 @@
 #ifndef __TORUS_PACKETLIST_H
 #define __TORUS_PACKETLIST_H
 
-#include "../packet.h"
 #include <string>
+#include <network/packet.h>
 
 #define PACKET_CREATE_CHARACTER Packet_0x00
 #define PACKET_KR_2D_CLIENT_SEED Packet_0xef
@@ -29,7 +29,7 @@ class Client;
 
 class Packet_0x00 : public Packet {
 public:
-    const t_udword length();
+    const udword_t length();
     void loads(const t_byte *);
     void loads(Socket * s);
     ~Packet_0x00();
@@ -38,7 +38,7 @@ private:
 
 class Packet_0x02 : public Packet {
 public:
-    const t_udword length();
+    const udword_t length();
     void loads(const t_byte *);
     void loads(Socket *s);
     ~Packet_0x02();
@@ -46,23 +46,23 @@ public:
 
 class Packet_0xef : public Packet {
 public:
-    const t_udword length();
+    const udword_t length();
     void loads(const t_byte*) {}
     void loads(Socket * s);
     Packet_0xef();
     ~Packet_0xef();
-    t_udword seed() { return _seed; }
+    udword_t seed() { return _seed; }
 private:
-    t_udword _seed;
-    t_udword _client_major_version;
-    t_udword _client_minor_version;
-    t_udword _client_revision_version;
-    t_udword _client_prototype_version;
+    udword_t _seed;
+    udword_t _client_major_version;
+    udword_t _client_minor_version;
+    udword_t _client_revision_version;
+    udword_t _client_prototype_version;
 };
 
 class Packet_0x21 : public Packet {
 public:
-    const t_udword length();
+    const udword_t length();
     void loads(const t_byte*) {}
     void loads(Socket*) {}
     void set_data(t_ubyte seq, Client *client);
@@ -71,7 +71,7 @@ public:
 
 class Packet_0x22 : public Packet {
 public:
-    const t_udword length();
+    const udword_t length();
     void loads(const t_byte*) {}
     void loads(Socket*) {}
     void set_data(t_ubyte seq, Client *client);
@@ -80,7 +80,7 @@ public:
 
 class Packet_0x55 : public Packet { //PacketLoginComplete (game character finished loading)
 public:
-    const t_udword length();
+    const udword_t length();
     void loads(const t_byte*) {}
     void loads(Socket*) {}
     void set_data(t_ubyte, Client*) {}
@@ -90,7 +90,7 @@ public:
 
 class Packet_0x73 : public Packet { //PacketPing
 public:
-    const t_udword length();
+    const udword_t length();
     void loads(const t_byte*) {}
     void loads(Socket* s);
     void set_data(t_ubyte seq, Client* client);
@@ -102,7 +102,7 @@ class Packet_0x80 : public Packet {  //LoginCredentials & ServerListRequest
     std::string accName[30];
     std::string accPassword[30];
 public:
-    const t_udword length();
+    const udword_t length();
     void loads(const t_byte*) {}
     void loads(Socket* s);
     ~Packet_0x80();
@@ -139,7 +139,7 @@ public:
 
         Success = 0xFF  // no error
     };
-    const t_udword length();
+    const udword_t length();
     void loads(const t_byte*) {}
     void loads(Socket*) {}
     void set_data(ResponseCode code);
@@ -150,7 +150,7 @@ class Packet_0x91 : public Packet {  //LoginCredentials & ServerListRequest
     std::string accName[30];
     std::string accPassword[30];
 public:
-    const t_udword length();
+    const udword_t length();
     void loads(const t_byte*) {}
     void loads(Socket* s);
     ~Packet_0x91();
@@ -158,7 +158,7 @@ public:
 
 class Packet_0xa0 : public Packet {  //ServerSelect -> disconnects from login server, connects to game server and requests character's list and client's flags
 public:
-    const t_udword length();
+    const udword_t length();
     void loads(const t_byte*) {}
     void loads(Socket* s);
     Packet_0xa0();
@@ -167,7 +167,7 @@ public:
 
 class Packet_0xa8 : public Packet {  //ServerList
 public:
-    const t_udword length();
+    const udword_t length();
     void loads(const t_byte*) {}
     void loads(Socket*) {}
     Packet_0xa8();

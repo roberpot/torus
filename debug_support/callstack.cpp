@@ -14,14 +14,15 @@
 
 #include <iomanip>
 
-#include "callstack.h"
-#include "../shell.h"
-#include "../library/types.h"
+#include <debug_support/callstack.h>
+#include <shell.h>
+#include <library/types.h>
+
 
 CallStack _classtack;
 std::string prefix = SOURCE_PATH;
 
-StackEntry::StackEntry(const t_byte * file, const t_byte * function, t_udword line) {
+StackEntry::StackEntry(const t_byte * file, const t_byte * function, udword_t line) {
     _file = file;
     _file.erase(0, prefix.length());
     _function = function;
@@ -66,7 +67,7 @@ void CallStack::print(torus_thread_id tid) {
         s2.push(s->top());
         s->pop();
     }
-    for (t_udword i = 0; s2.size(); i++) {
+    for (udword_t i = 0; s2.size(); i++) {
         StackEntry e = s2.top();
         TORUSSHELLECHO(">> 0x" << std::hex << tid << " | " << std::setw(2) << std::right << i  << " | " << std::setw(30) << std::left << e._file << " | "<< std::setw(6) << std::dec << std::right << e._line << " | " << std::setw(20) << std::left << e._function << " | ??  " << (( i == (count - 1) ) ? "<-- exception catch point" : ""));
         s2.pop();
@@ -75,7 +76,7 @@ void CallStack::print(torus_thread_id tid) {
     _m.unlock();
 }
 
-CallStackControl::CallStackControl(const t_byte * file, const t_byte * function, t_udword line) {
+CallStackControl::CallStackControl(const t_byte * file, const t_byte * function, udword_t line) {
     StackEntry e(file, function, line);
     _classtack.push(get_current_thread_id(), e);
 }

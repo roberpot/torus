@@ -17,25 +17,26 @@
 
 #include <map>
 #include <queue>
-#include "../threads/utils.h"
-#include "../threads/mutex.h"
-#include "../threads/cond.h"
-#include "slave.h"
-#include "../library/types.h"
+
+#include <core/slave.h>
+#include <library/types.h>
+#include <threads/utils.h>
+#include <threads/mutex.h>
+#include <threads/cond.h>
 
 extern class Torus {
 public:
     Torus();
     void stop();
-    void set_thread_time(t_udword id, t_udword t);
+    void set_thread_time(udword_t id, udword_t t);
     void mainloop();
 private:
     void balance_control();
     bool _run;
     Mutex _time_map_mutex;
     ConditionVariable _slaves_condvar;
-    std::map<t_udword, t_udword> _time_map;
-    std::map<t_udword, SlaveThread *> _slaves;
+    std::map<udword_t, udword_t> _time_map;
+    std::map<udword_t, SlaveThread *> _slaves;
     std::queue<SlaveThread *> _slaves_joinable;
 
 } torus;

@@ -16,454 +16,896 @@
 #define __TORUS_VECTOR_H
 
 #include <cstring>
-#include "errors.h"
-#include "types.h"
-#include "../threads/mutex.h"
+
+#include <memory>
+
+#include <library/errors.h>
+#include <library/memory.h>
+#include <library/types.h>
+#include <threads/mutex.h>
 
 #ifdef _MSC_VER
 #pragma warning(disable: 4521 4522)
 #endif
 
-#define _TTL_VECTOR_DEFAULT_SIZE 10
+#define _TTL_VECTOR_DEFAULT_SIZE 1
 
 namespace ttl {
-    template <typename T>
+    template <class T, class Allocator = std::allocator<T>>
     class vector {
     public:
-        vector(t_udword size=_TTL_VECTOR_DEFAULT_SIZE) {
-            _capacity = size;
-            _vector = new T[_capacity];
-            _size = 0;
+        // Constructors
+        /**
+         * @brief
+         * @param size
+         */
+        vector(udword_t size = _TTL_VECTOR_DEFAULT_SIZE);
+        vector(udword_t size, const T& v);
+        vector(const vector& o);
+        vector(vector&& o);
+        ~vector();
+        vector& operator=(const vector& o);
+        vector& operator=(vector&& o);
+        void assign(udword_t size, const T& t);
+
+        // Element access
+        T& at(udword_t n);
+        T& operator[](udword_t n);
+        T& front();
+        T& back();
+        T* data();
+
+        // Capacity
+        bool empty() const;
+        udword_t size() const;
+        udword_t max_size() const;
+        void reserve(udword_t n);
+        udword_t capacity() const;
+        void shrink_to_fit();
+
+        // Modifiers
+        void clear();
+        udword_t insert(udword_t p, const T& t);
+        udword_t insert(udword_t p, T&& t);
+        udword_t insert(udword_t p, udword_t n, const T& t);
+        udword_t insert(udword_t p, const vector& v);
+        udword_t erase(udword_t p);
+        udword_t erase(udword_t init, udword_t end);
+        void push_back(const T& t);
+        void push_back(T&& t);
+        void pop_back();
+        void resize(udword_t s);
+        void resize(udword_t s, const T& v);
+        void swap(vector & v);
+
+        // Operators.
+        bool operator==(const vector& o) const;
+        bool operator!=(const vector& o) const;
+        bool operator<(const vector& o) const;
+        bool operator<=(const vector& o) const;
+        bool operator>(const vector& o) const;
+        bool operator>=(const vector& o) const;
+    protected:
+        T* _vector;
+        udword_t _capacity;
+        udword_t _size;
+        Allocator _allocator;
+    };
+
+    template <typename T, class V>
+    class __T_tsvector {
+    public:
+        __T_tsvector(udword_t size=_TTL_VECTOR_DEFAULT_SIZE);
+        __T_tsvector(udword_t size, const T& v);
+        __T_tsvector(__T_tsvector& o);
+        __T_tsvector(__T_tsvector&& o);
+        ~__T_tsvector();
+        __T_tsvector& operator=(__T_tsvector& o);
+        __T_tsvector& operator=(__T_tsvector&& o);
+        void assign(udword_t size, const T& t);
+
+        // Element access
+        T at(udword_t n);
+        T operator[](udword_t n);
+        T front();
+        T back();
+
+        // Capacity
+        bool empty();
+        udword_t size();
+        udword_t max_size();
+        void reserve(udword_t n);
+        udword_t capacity();
+        void shrink_to_fit();
+
+        // Modifiers
+        void clear();
+        udword_t insert(udword_t p, const T& t);
+        udword_t insert(udword_t p, T&& t);
+        udword_t insert(udword_t p, udword_t n, const T& t);
+        udword_t insert(udword_t p, __T_tsvector& v);
+        udword_t erase(udword_t p);
+        udword_t erase(udword_t init, udword_t end);
+        void push_back(const T& t);
+        void push_back(T&& t);
+        void pop_back();
+        void resize(udword_t s);
+        void resize(udword_t s, const T& v);
+        void swap(__T_tsvector& v);
+
+        // Operators.
+        bool operator==(__T_tsvector& o);
+        bool operator!=(__T_tsvector& o);
+        bool operator<(__T_tsvector& o);
+        bool operator<=(__T_tsvector& o);
+        bool operator>(__T_tsvector& o);
+        bool operator>=(__T_tsvector& o);
+    private:
+        Mutex _mutex;
+        V _v;
+    };
+
+
+    template<typename T, class Allocator = std::allocator<T>>
+    using tsvector = __T_tsvector<T, vector<T, Allocator>>;
+
+    /**
+     * Implementation.
+     */
+
+    template <class T, class Allocator>
+    vector<T, Allocator>::vector(udword_t size) {
+        _capacity = size;
+        _vector = _allocator.allocate(_capacity);
+        _size = 0;
+    }
+
+    template <class T, class Allocator>
+    vector<T, Allocator>::vector(udword_t size, const T & v) {
+        _capacity = size;
+        _vector = _allocator.allocate(_capacity);
+        _size = _capacity;
+        for (udword_t i = 0; i < _capacity; ++i) {
+            _allocator.construct(&(_vector[i]), v);
         }
+    }
 
-        vector(t_udword size, T v) : vector(size) {
-            for (t_udword i = 0; i < _capacity; ++i) _vector[i] = v;
-            _size = _capacity;
+    template <class T, class Allocator>
+    vector<T, Allocator>::vector(const vector& o) {
+        _capacity = o._capacity;
+        _vector = _allocator.allocate(_capacity);
+        _size = o._size;
+        for (udword_t i = 0; i < _size; ++i) {
+            _allocator.construct(&(_vector[i]), o._vector[i]);
         }
+    }
 
-        vector(vector<T> & o) : vector(o._capacity) {
-            _size = o._size;
-            for (t_udword i = 0; i < _size; ++i) _vector[i] = o._vector[i];
+    template <class T, class Allocator>
+    vector<T, Allocator>::vector(vector&& o) {
+        _capacity = o._capacity;
+        _vector = o._vector;
+        _size = o._size;
+        o._capacity = 0;
+        o._vector = nullptr;
+        o._size = 0;
+    }
+
+    template <class T, class Allocator>
+    vector<T, Allocator>::~vector() {
+        if (nullptr != _vector) {
+            for (udword_t i = 0; i < _size; ++i) {
+                _allocator.destroy(&(_vector[i]));
+            }
+            _allocator.deallocate(_vector, _capacity);
         }
+    }
 
-        vector(const vector<T> & o) : vector(o._capacity) {
-            _size = o._size;
-            for (t_udword i = 0; i < _size; ++i) _vector[i] = o._vector[i];
-        }
-
-        virtual ~vector() { delete[] _vector; }
-
-        vector & operator=(vector<T> & o) {
-            delete[] _vector;
+    template <class T, class Allocator>
+    vector<T, Allocator> & vector<T, Allocator>::operator=(const vector & o) {
+        if (this != &o) {
+            clear();
+            _allocator.deallocate(_vector, _capacity);
             _capacity = o._capacity;
-            _vector = new T[_capacity];
+            _vector = _allocator.allocate(_capacity);
             _size = o._size;
-            for (t_udword i = 0; i < _size; ++i) _vector[i] = o._vector[i];
-            return *this;
+            for (udword_t i = 0; i < _size; ++i) {
+                _allocator.construct(&(_vector[i]), o._vector[i]);
+            }
         }
+        return *this;
+    }
 
-        vector & operator=(const vector<T> & o) {
-            delete[] _vector;
-            _capacity = o._capacity;
-            _vector = new T[_capacity];
-            _size = o._size;
-            for (t_udword i = 0; i < _size; ++i) _vector[i] = o._vector[i];
-            return *this;
+    template <class T, class Allocator>
+    vector<T, Allocator> & vector<T, Allocator>::operator=(vector&& o) {
+        if (this != &o) {
+            swap(o);
         }
+        return *this;
+    }
 
-        virtual t_udword size() { return _size; }
-        virtual t_udword max_size() { return TDWORD_MAX; }
-        virtual void resize(t_udword s) {
-            T * n = new T[s];
-            t_udword nsize = _size;
-            if (s < _size) nsize = s;
-            for (t_udword i = 0; i < nsize; ++i) n[i] = _vector[i];
-            _size = nsize;
-            _capacity = s;
-            delete[] _vector;
+    template <class T, class Allocator>
+    void vector<T, Allocator>::assign(udword_t size, const T & t) {
+        reserve(size);
+        for (udword_t i = 0; i < _size; ++i) {
+            _allocator.destroy(&(_vector[i]));
+        }
+        for(udword_t i = 0; i < size; ++i) {
+            _allocator.construct(&(_vector[i]), t);
+        }
+        _size = size;
+    }
+
+    template <class T, class Allocator>
+    T & vector<T, Allocator>::at(udword_t n) {
+        if (n >= _size) {
+            throw VectorError("Out of range.");
+        }
+        return _vector[n];
+    }
+
+    template <class T, class Allocator>
+    T & vector<T, Allocator>::operator[](udword_t n) {
+        return _vector[n];
+    }
+
+    template <class T, class Allocator>
+    T & vector<T, Allocator>::front() {
+        return _vector[0];
+    }
+
+    template <class T, class Allocator>
+    T & vector<T, Allocator>::back() {
+        return _vector[_size - 1];
+    }
+
+    template <class T, class Allocator>
+    T * vector<T, Allocator>::data() {
+        return _vector;
+    }
+
+    template <class T, class Allocator>
+    bool vector<T, Allocator>::empty() const {
+        return _size == 0;
+    }
+
+    template <class T, class Allocator>
+    udword_t vector<T, Allocator>::size() const {
+        return _size;
+    }
+
+    template <class T, class Allocator>
+    udword_t vector<T, Allocator>::max_size() const {
+        return TDWORD_MAX;
+    }
+
+    template <class T, class Allocator>
+    void vector<T, Allocator>::reserve(udword_t n) {
+        if (_capacity < n) {
+            udword_t new_capacity = 1;
+            while (new_capacity < n) {
+                new_capacity = new_capacity << 1;
+            }
+            T * aux = _allocator.allocate(new_capacity);
+            internal::memcpy(aux, _vector, sizeof(T) * _size);
+            _allocator.deallocate(_vector, _capacity);
+            _vector = aux;
+            _capacity = new_capacity;
+        }
+    }
+
+    template <class T, class Allocator>
+    udword_t vector<T, Allocator>::capacity() const {
+        return _capacity;
+    }
+
+    template <class T, class Allocator>
+    void vector<T, Allocator>::shrink_to_fit() {
+        if (_size < _capacity) {
+            T * n = _allocator.allocate(_size);
+            internal::memcpy(n, _vector, sizeof(T) * _size);
+            _allocator.deallocate(_vector, _capacity);
             _vector = n;
+            _capacity = _size;
         }
-        virtual void resize(t_udword s, T v) {
-            resize(s);
-            for (t_udword i = _size; i < _capacity; ++i) {
-                _vector[i] = v;
+    }
+
+    template <class T, class Allocator>
+    void vector<T, Allocator>::clear() {
+        for(udword_t i = 0; i < _size; ++i) {
+            _allocator.destroy(&(_vector[i]));
+        }
+        _size = 0;
+    }
+
+    template <class T, class Allocator>
+    udword_t vector<T, Allocator>::insert(udword_t p, const T& t) {
+        udword_t new_size = _size + 1;
+        if (p >= _size) {
+            new_size = p + 1;
+        }
+        reserve(new_size);
+        if (p < _size) {
+            udword_t length = _size - p;
+            T * aux = _allocator.allocate(length);
+            internal::memcpy(aux, &(_vector[p]), sizeof(T) * length);
+            internal::memcpy(&(_vector[p + 1]), aux, sizeof(T) * length);
+            _allocator.deallocate(aux, length);
+        }
+        _allocator.construct(&(_vector[p]), t);
+        _size = new_size;
+        return p;
+    }
+
+    template <class T, class Allocator>
+    udword_t vector<T, Allocator>::insert(udword_t p, T&& t) {
+        udword_t new_size = _size + 1;
+        if (p >= _size) {
+            new_size = p + 1;
+        }
+        reserve(new_size);
+        if (p < _size) {
+            udword_t length = _size - p;
+            T * aux = _allocator.allocate(length);
+            internal::memcpy(aux, &(_vector[p]), sizeof(T) * length);
+            internal::memcpy(&(_vector[p + 1]), aux, sizeof(T) * length);
+            _allocator.deallocate(aux, length);
+        }
+        _allocator.construct(&(_vector[p]), t);
+        _size = new_size;
+        return p;
+    }
+
+    template <class T, class Allocator>
+    udword_t vector<T, Allocator>::insert(udword_t p, udword_t n, const T& t) {
+        udword_t new_size = _size + n;
+        if (p >= _size) {
+            new_size = p + n;
+        }
+        reserve(new_size);
+        if (p < _size) {
+            udword_t length = _size - p;
+            T * aux = _allocator.allocate(length);
+            internal::memcpy(aux, &(_vector[p]), sizeof(T) * length);
+            internal::memcpy(&(_vector[p + n]), aux, sizeof(T) * length);
+            _allocator.deallocate(aux, length);
+        }
+        for(udword_t i = 0; i < n; ++i) {
+            _allocator.construct(&(_vector[i + p]), t);
+        }
+        _size = new_size;
+        return p;
+    }
+
+    template <class T, class Allocator>
+    udword_t vector<T, Allocator>::insert(udword_t p, const vector& v) {
+        udword_t n = v._size;
+        udword_t new_size = _size + n;
+        if (p >= _size) {
+            new_size = p + n;
+        }
+        reserve(new_size);
+        if (p < _size) {
+            udword_t length = _size - p;
+            T * aux = _allocator.allocate(length);
+            internal::memcpy(aux, &(_vector[p]), sizeof(T) * length);
+            internal::memcpy(&(_vector[p + n]), aux, sizeof(T) * length);
+            _allocator.deallocate(aux, length);
+        }
+        for(udword_t i = 0; i < n; ++i) {
+            _allocator.construct(&(_vector[i + p]), v._vector[i]);
+        }
+        _size = new_size;
+        return p;
+    }
+
+    template <class T, class Allocator>
+    udword_t vector<T, Allocator>::erase(udword_t p) {
+        if (p >= _size) {
+            throw VectorError("Out of range.");
+        }
+        _allocator.destroy(&(_vector));
+        if (p < _size - 1) {
+            udword_t length = _size - p - 1;
+            T * aux = _allocator.allocate(length);
+            internal::memcpy(aux, &(_vector[p + 1]), sizeof(T) * length);
+            internal::memcpy(&(_vector[p]), aux, sizeof(T) * length);
+            _allocator.deallocate(aux, length);
+        }
+        _size--;
+        return p;
+    }
+
+    template <class T, class Allocator>
+    udword_t vector<T, Allocator>::erase(udword_t init, udword_t end) {
+        if (init >= _size) {
+            throw VectorError("Out of range.");
+        }
+        if (end >= _size) {
+            throw VectorError("Out of range.");
+        }
+        if (end < init) {
+            throw VectorError("Invalid range.");
+        }
+        if (end < (_size - 1)) {
+            udword_t length = _size - end - 1;
+            T * aux = _allocator.allocate(length);
+            internal::memcpy(aux, &(_vector[end + 1]), sizeof(T) * length);
+            for (udword_t i = init; i <= end; ++i) {
+                _allocator.destroy(&(_vector[i]));
             }
-            _size = _capacity;
+            internal::memcpy(&(_vector[init]), aux, length);
+            _allocator.deallocate(aux, length);
         }
-        virtual t_udword capacity() { return _capacity; }
-        virtual bool empty() { return !_size; }
-        virtual void reserve(t_udword n) {
-            if (_capacity < n) {
-                resize(n + _TTL_VECTOR_DEFAULT_SIZE);
-            }
-        }
-        virtual void shrink_to_fit() {
-            if (_size < _capacity) {
-                T * n = new T[_size];
-                for (t_udword i = 0; i < _size; ++i) n[i] = _vector[i];
-                delete[] _vector;
-                _vector = n;
-                _capacity = _size;
-            }
-        }
-        virtual T & operator[](t_udword n) { return _vector[n]; }
-        virtual T & at(t_udword n) {
-            if (n >= _size) {
-                throw VectorError("Out of range.");
-            }
-            return _vector[n];
-        }
-        virtual T & front() { return _vector[0]; }
-        virtual T & back() { return _vector[_size - 1]; }
-        virtual T * data() { return _vector; }
-        virtual void assign(t_udword size, T t) {
-            reserve(size);
-            for(t_udword i = 0; i < size; ++i) {
-                _vector[i] = t;
-            }
-            _size = size;
-        }
-        virtual void push_back(T t) {
-            reserve(_size + 1);
-            _vector[_size] = t;
-            _size++;
-        }
-        virtual void pop_back() {
-            if (_size) {
-                _size--;
-            }
-        }
-        virtual t_udword insert(t_udword p, T t) {
-            t_udword new_size = _size + 1;
-            if (p >= _size) new_size = p + 1;
-            reserve(new_size);
-            if (p < _size) {
-                memmove(&_vector[p + 1], &_vector[p], sizeof(T) * (_size - p));
-            }
-            _vector[p] = t;
-            _size = new_size;
-            return p;
-        }
-        virtual t_udword insert(t_udword p, t_udword n, T t) {
-            t_udword new_size = _size + n;
-            if (p >= _size) new_size = p + n;
-            reserve(new_size);
-            if (p < _size) {
-                memmove(&_vector[p + n], &_vector[p], sizeof(T) * (_size - p));
-            }
-            for(t_udword i = 0; i < n; ++i) _vector[i + p] = t;
-            _size = new_size;
-            return p;
-        }
-        virtual t_udword insert(t_udword p, vector & v) {
-            t_udword n = v._size;
-            t_udword new_size = _size + n;
-            if (p >= _size) new_size = p + n;
-            reserve(new_size);
-            if (p < _size) {
-                memmove(&_vector[p + n], &_vector[p], sizeof(T) * (_size - p));
-            }
-            for(t_udword i = 0; i < n; ++i) _vector[i + p] = v._vector[i];
-            _size = new_size;
-            return p;
-        }
-        virtual t_udword erase(t_udword p) {
-            if (p >= _size) throw VectorError("Out of range.");
-            if (p < _size - 1) {
-                memmove(&_vector[p], &_vector[p + 1], _size - p - 1);
-            }
+        _size -= (end - init + 1);
+        return init;
+    }
+
+    template <class T, class Allocator>
+    void vector<T, Allocator>::push_back(const T& t) {
+        reserve(_size + 1);
+        _allocator.construct(&(_vector[_size]), t);
+        _size++;
+    }
+
+    template <class T, class Allocator>
+    void vector<T, Allocator>::push_back(T&& t) {
+        reserve(_size + 1);
+        _allocator.construct(&(_vector[_size]), t);
+        _size++;
+    }
+
+    template <class T, class Allocator>
+    void vector<T, Allocator>::pop_back() {
+        if (_size) {
+            _allocator.destroy(&(_vector[_size - 1]));
             _size--;
-            return p;
         }
-        virtual t_udword erase(t_udword init, t_udword end) {
-            if (init >= _size) throw VectorError("Out of range.");
-            if (end >= _size) throw VectorError("Out of range.");
-            if (end < _size - 1) {
-                memmove(&_vector[init], &_vector[end + 1], _size - end - 1);
+    }
+
+    template <class T, class Allocator>
+    void vector<T, Allocator>::resize(udword_t s) {
+        reserve(s);
+        if (s < _size) {
+            for (udword_t i = s; i < _size; ++i) {
+                _allocator.destroy(&(_vector[i]));
             }
-            _size -= (end - init + 1);
-            return init;
+        } else if (s > _size) {
+            for (udword_t i = _size; i < s; ++i) {
+                _allocator.construct(&(_vector[i]));
+            }
         }
-        virtual void swap(vector & v) {
-            T * tmp_vector = _vector;
-            t_udword tmp_size = _size;
-            t_udword tmp_capacity = _capacity;
+        _size = s;
+    }
+
+    template <class T, class Allocator>
+    void vector<T, Allocator>::resize(udword_t s, const T & v) {
+        reserve(s);
+        if (s < _size) {
+            for (udword_t i = s; i < _size; ++i) {
+                _allocator.destroy(&(_vector[i]));
+            }
+        } else if (s > _size) {
+            for (udword_t i = _size; i < s; ++i) {
+                _allocator.construct(&(_vector[i]), v);
+            }
+        }
+        _size = s;
+    }
+
+    template <class T, class Allocator>
+    void vector<T, Allocator>::swap(vector & v) {
+        if (this != &v) {
+            T * aux = _vector;
+            udword_t aux_size = _size;
+            udword_t aux_capacity = _capacity;
             _vector = v._vector;
             _size = v._size;
             _capacity = v._capacity;
-            v._vector = tmp_vector;
-            v._size = tmp_size;
-            v._capacity = tmp_capacity;
+            v._vector = aux;
+            v._size = aux_size;
+            v._capacity = aux_capacity;
         }
-        virtual void clear() {
-            _size = 0;
-        }
-        bool operator==(vector<T> o) {
-            if (_size != o._size) { return false; }
-            for(t_udword i = 0; i < _size; ++i) {
-                if (_vector[i] != o._vector[i]) { return false; }
-            }
+    }
+
+    template <class T, class Allocator>
+    bool vector<T, Allocator>::operator==(const vector& o) const {
+        if (this == &o) {
             return true;
         }
-        bool operator!=(vector<T> o) {
-            if (_size != o._size) { return true; }
-            for(t_udword i = 0; i < _size; ++i) {
-                if (_vector[i] != o._vector[i]) { return true; }
-            }
+        if (_size != o._size) { return false; }
+        for(udword_t i = 0; i < _size; ++i) {
+            if (_vector[i] != o._vector[i]) { return false; }
+        }
+        return true;
+    }
+
+    template <class T, class Allocator>
+    bool vector<T, Allocator>::operator!=(const vector& o) const {
+        if (this == &o) {
             return false;
         }
-        bool operator<(vector<T> o) {
-            t_udword size = _size;
-            if (o._size < size) { size = o._size; }
-            for(t_udword i = 0; i < size; ++i) {
-                if (_vector[i] >= o._vector[i]) { return false; }
-            }
-            return true;
+        if (_size != o._size) { return true; }
+        for(udword_t i = 0; i < _size; ++i) {
+            if (_vector[i] != o._vector[i]) { return true; }
         }
-        bool operator<=(vector<T> o) {
-            t_udword size = _size;
-            if (o._size < size) { size = o._size; }
-            for(t_udword i = 0; i < size; ++i) {
-                if (_vector[i] > o._vector[i]) { return false; }
-            }
-            return true;
-        }
-        bool operator>(vector<T> o) {
-            t_udword size = _size;
-            if (o._size < size) { size = o._size; }
-            for(t_udword i = 0; i < size; ++i) {
-                if (_vector[i] <= o._vector[i]) { return false; }
-            }
-            return true;
-        }
-        bool operator>=(vector<T> o) {
-            t_udword size = _size;
-            if (o._size < size) { size = o._size; }
-            for(t_udword i = 0; i < size; ++i) {
-                if (_vector[i] < o._vector[i]) { return false; }
-            }
-            return true;
-        }
-    protected:
-        T * _vector;
-        t_udword _capacity, _size;
-    };
+        return false;
+    }
 
-    template <typename T>
-    class tsvector {
-    public:
-        tsvector(t_udword size=_TTL_VECTOR_DEFAULT_SIZE) : _v(size) {}
+    template <class T, class Allocator>
+    bool vector<T, Allocator>::operator<(const vector& o) const {
+        if (this == &o) {
+            return false;
+        }
+        udword_t size = _size;
+        if (o._size < size) { size = o._size; }
+        for(udword_t i = 0; i < size; ++i) {
+            if (_vector[i] >= o._vector[i]) { return false; }
+        }
+        return true;
+    }
 
-        tsvector(t_udword size, T v) : _v(size, v) {}
+    template <class T, class Allocator>
+    bool vector<T, Allocator>::operator<=(const vector& o) const {
+        if (this == &o) {
+            return true;
+        }
+        udword_t size = _size;
+        if (o._size < size) { size = o._size; }
+        for(udword_t i = 0; i < size; ++i) {
+            if (_vector[i] > o._vector[i]) { return false; }
+        }
+        return true;
+    }
 
-        tsvector(tsvector<T> & o) {
+    template <class T, class Allocator>
+    bool vector<T, Allocator>::operator>(const vector& o) const {
+        if (this == &o) {
+            return false;
+        }
+        udword_t size = _size;
+        if (o._size < size) { size = o._size; }
+        for(udword_t i = 0; i < size; ++i) {
+            if (_vector[i] <= o._vector[i]) { return false; }
+        }
+        return true;
+    }
+
+    template <class T, class Allocator>
+    bool vector<T, Allocator>::operator>=(const vector& o) const {
+        if (this == &o) {
+            return true;
+        }
+        udword_t size = _size;
+        if (o._size < size) { size = o._size; }
+        for(udword_t i = 0; i < size; ++i) {
+            if (_vector[i] < o._vector[i]) { return false; }
+        }
+        return true;
+    }
+
+    // __T_tsvector implementation.
+
+    template <typename T, class V>
+    __T_tsvector<T, V>::__T_tsvector(udword_t size) : _v(size) {
+
+    }
+
+    template <typename T, class V>
+    __T_tsvector<T, V>::__T_tsvector(udword_t size, const T& v) : _v(size, v) {
+
+    }
+
+    template <typename T, class V>
+    __T_tsvector<T, V>::__T_tsvector(__T_tsvector& o) {
+        o._mutex.lock();
+        _v = o._v;
+        o._mutex.unlock();
+    }
+
+    template <typename T, class V>
+    __T_tsvector<T, V>::__T_tsvector(__T_tsvector&& o) {
+        o._mutex.lock();
+        _v.swap(o._v);
+        o._mutex.unlock();
+    }
+
+    template <typename T, class V>
+    __T_tsvector<T, V>::~__T_tsvector() {
+        _mutex.lock();
+    }
+
+    template <typename T, class V>
+    __T_tsvector<T, V>& __T_tsvector<T, V>::operator=(__T_tsvector& o) {
+        if (this != &o) {
+            _mutex.lock();
             o._mutex.lock();
             _v = o._v;
             o._mutex.unlock();
+            _mutex.unlock();
         }
+        return *this;
+    }
 
-        tsvector(const tsvector<T> & o) {
-            o._mutex.lock();
-            _v = o._v;
-            o._mutex.unlock();
-        }
-
-        virtual ~tsvector() {}
-
-        tsvector & operator=(tsvector & o) {
+    template <typename T, class V>
+    __T_tsvector<T, V>& __T_tsvector<T, V>::operator=(__T_tsvector&& o) {
+        if (this != &o) {
             _mutex.lock();
             o._mutex.lock();
-            _v = o._v;
+            _v.swap(o._v);
             o._mutex.unlock();
             _mutex.unlock();
-            return *this;
         }
+        return *this;
+    }
 
-        tsvector & operator=(const tsvector & o) {
-            _mutex.lock();
-            o._mutex.lock();
-            _v = o._v;
-            o._mutex.unlock();
-            _mutex.unlock();
-            return *this;
-        }
+    template <typename T, class V>
+    void __T_tsvector<T, V>::assign(udword_t size, const T& t) {
+        _mutex.lock();
+        _v.assign(size, t);
+        _mutex.unlock();
+    }
 
-        t_udword size() {
-            _mutex.lock();
-            t_udword s = _v.size();
-            _mutex.unlock();
-            return s;
-        }
-        void resize(t_udword s) {
-            _mutex.lock();
-            _v.resize(s);
-            _mutex.unlock();
-        }
-        void resize(t_udword s, T v) {
-            _mutex.lock();
-            _v.resize(s, v);
-            _mutex.unlock();
-        }
-        t_udword capacity() {
-            _mutex.lock();
-            t_udword c = _v.capacity();
-            _mutex.unlock();
-            return c;
-        }
-        bool empty() {
-            _mutex.lock();
-            bool e = !_v.empty();
-            _mutex.unlock();
-            return e;
-        }
-        void reserve(t_udword n) {
-            _mutex.unlock();
-            _v.reserve(n);
-            _mutex.unlock();
-        }
-        void shrink_to_fit() {
-            _mutex.lock();
-            _v.shrink_to_fit();
-            _mutex.unlock();
-        }
-        T & operator[](t_udword n) {
-            _mutex.lock();
-            T & t = _v[n];
-            _mutex.unlock();
-            return t;
-        }
-        T & at(t_udword n) {
-            _mutex.lock();
-            T t = _v.at(n);
-            _mutex.unlock();
-            return t;
-        }
-        T & front() {
-            _mutex.lock();
-            T t = _v[0];
-            _mutex.unlock();
-            return t;
-        }
-        T & back() {
-            _mutex.lock();
-            T t = _v[_v.size() - 1];
-            _mutex.unlock();
-            return t;
-        }
-        void assign(t_udword size, T t) {
-            _mutex.lock();
-            _v.assign(size, t);
-            _mutex.unlock();
-        }
-        void push_back(T t) {
-            _mutex.lock();
-            _v.push_back(t);
-            _mutex.unlock();
-        }
-        void pop_back() {
-            _mutex.lock();
-            _v.pop_back();
-            _mutex.unlock();
-        }
-        t_udword insert(t_udword p, T t) {
-            _mutex.lock();
-            t_udword r = _v.insert(p, t);
-            _mutex.unlock();
-            return r;
-        }
-        t_udword insert(t_udword p, t_udword n, T t) {
-            _mutex.lock();
-            t_udword r = _v.insert(p, n, t);
-            _mutex.unlock();
-            return r;
-        }
-        t_udword insert(t_udword p, tsvector & v) {
-            _mutex.lock();
-            v._mutex.lock();
-            t_udword r = _v.insert(p, v._v);
-            v._mutex.unlock();
-            _mutex.unlock();
-            return r;
-        }
-        t_udword erase(t_udword p) {
-            _mutex.lock();
-            t_udword r = _v.erase(p);
-            _mutex.unlock();
-            return r;
-        }
-        t_udword erase(t_udword init, t_udword end) {
-            _mutex.lock();
-            t_udword r = _v.erase(init, end);
-            _mutex.unlock();
-            return r;
-        }
-        void swap(tsvector & v) {
+    template <typename T, class V>
+    T __T_tsvector<T, V>::at(udword_t n) {
+        _mutex.lock();
+        T t = _v.at(n);
+        _mutex.unlock();
+        return t;
+    }
+
+    template <typename T, class V>
+    T __T_tsvector<T, V>::operator[](udword_t n) {
+        _mutex.lock();
+        T & t = _v[n];
+        _mutex.unlock();
+        return t;
+    }
+
+    template <typename T, class V>
+    T __T_tsvector<T, V>::front() {
+        _mutex.lock();
+        T t = _v[0];
+        _mutex.unlock();
+        return t;
+    }
+
+    template <typename T, class V>
+    T __T_tsvector<T, V>::back() {
+        _mutex.lock();
+        T t = _v[_v.size() - 1];
+        _mutex.unlock();
+        return t;
+    }
+
+    template <typename T, class V>
+    bool __T_tsvector<T, V>::empty() {
+        _mutex.lock();
+        bool e = !_v.empty();
+        _mutex.unlock();
+        return e;
+    }
+
+    template <typename T, class V>
+    udword_t __T_tsvector<T, V>::size() {
+        _mutex.lock();
+        udword_t s = _v.size();
+        _mutex.unlock();
+        return s;
+    }
+
+    template <typename T, class V>
+    udword_t __T_tsvector<T, V>::max_size() {
+        _mutex.lock();
+        udword_t s = _v.max_size();
+        _mutex.unlock();
+        return s;
+    }
+
+    template <typename T, class V>
+    void __T_tsvector<T, V>::reserve(udword_t n) {
+        _mutex.unlock();
+        _v.reserve(n);
+        _mutex.unlock();
+    }
+
+    template <typename T, class V>
+    udword_t __T_tsvector<T, V>::capacity() {
+        _mutex.lock();
+        udword_t c = _v.capacity();
+        _mutex.unlock();
+        return c;
+    }
+
+    template <typename T, class V>
+    void __T_tsvector<T, V>::shrink_to_fit() {
+        _mutex.lock();
+        _v.shrink_to_fit();
+        _mutex.unlock();
+    }
+
+    template <typename T, class V>
+    void __T_tsvector<T, V>::clear() {
+        _mutex.lock();
+        _v.clear();
+        _mutex.unlock();
+    }
+
+    template <typename T, class V>
+    udword_t __T_tsvector<T, V>::insert(udword_t p, const T& t) {
+        _mutex.lock();
+        udword_t r = _v.insert(p, t);
+        _mutex.unlock();
+        return r;
+    }
+
+    template <typename T, class V>
+    udword_t __T_tsvector<T, V>::insert(udword_t p, T&& t) {
+        _mutex.lock();
+        udword_t r = _v.insert(p, t);
+        _mutex.unlock();
+        return r;
+    }
+
+    template <typename T, class V>
+    udword_t __T_tsvector<T, V>::insert(udword_t p, udword_t n, const T& t) {
+        _mutex.lock();
+        udword_t r = _v.insert(p, n, t);
+        _mutex.unlock();
+        return r;
+    }
+
+    template <typename T, class V>
+    udword_t __T_tsvector<T, V>::insert(udword_t p, __T_tsvector& v) {
+        _mutex.lock();
+        v._mutex.lock();
+        udword_t r = _v.insert(p, v._v);
+        v._mutex.unlock();
+        _mutex.unlock();
+        return r;
+    }
+
+    template <typename T, class V>
+    udword_t __T_tsvector<T, V>::erase(udword_t p) {
+        _mutex.lock();
+        udword_t r = _v.erase(p);
+        _mutex.unlock();
+        return r;
+    }
+
+    template <typename T, class V>
+    udword_t __T_tsvector<T, V>::erase(udword_t init, udword_t end) {
+        _mutex.lock();
+        udword_t r = _v.erase(init, end);
+        _mutex.unlock();
+        return r;
+    }
+
+    template <typename T, class V>
+    void __T_tsvector<T, V>::push_back(const T& t) {
+        _mutex.lock();
+        _v.push_back(t);
+        _mutex.unlock();
+    }
+
+    template <typename T, class V>
+    void __T_tsvector<T, V>::push_back(T&& t) {
+        _mutex.lock();
+        _v.push_back(t);
+        _mutex.unlock();
+    }
+
+    template <typename T, class V>
+    void __T_tsvector<T, V>::pop_back() {
+        _mutex.lock();
+        _v.pop_back();
+        _mutex.unlock();
+    }
+
+    template <typename T, class V>
+    void __T_tsvector<T, V>::resize(udword_t s) {
+        _mutex.lock();
+        _v.resize(s);
+        _mutex.unlock();
+    }
+
+    template <typename T, class V>
+    void __T_tsvector<T, V>::resize(udword_t s, const T& v) {
+        _mutex.lock();
+        _v.resize(s, v);
+        _mutex.unlock();
+    }
+
+    template <typename T, class V>
+    void __T_tsvector<T, V>::swap(__T_tsvector& v) {
+        if (this != &v) {
             _mutex.lock();
             v._mutex.lock();
             _v.swap(v._v);
             v._mutex.unlock();
             _mutex.unlock();
         }
-        void clear() {
-            _mutex.lock();
-            _v.clear();
-            _mutex.unlock();
-        }
-        bool operator==(tsvector<T> o) {
-            _mutex.lock();
-            o._mutex.lock();
-            bool b = _v == o._v;
-            o._mutex.unlock();
-            _mutex.unlock();
-            return b;
-        }
-        bool operator!=(tsvector<T> o) {
-            _mutex.lock();
-            o._mutex.lock();
-            bool b = _v != o._v;
-            o._mutex.unlock();
-            _mutex.unlock();
-            return b;
-        }
-        bool operator<(tsvector<T> o) {
-            _mutex.lock();
-            o._mutex.lock();
-            bool b = _v < o._v;
-            o._mutex.unlock();
-            _mutex.unlock();
-            return b;
-        }
-        bool operator<=(tsvector<T> o) {
-            _mutex.lock();
-            o._mutex.lock();
-            bool b = _v <= o._v;
-            o._mutex.unlock();
-            _mutex.unlock();
-            return b;
-        }
-        bool operator>(tsvector<T> o) {
-            _mutex.lock();
-            o._mutex.lock();
-            bool b = _v > o._v;
-            o._mutex.unlock();
-            _mutex.unlock();
-            return b;
-        }
-        bool operator>=(tsvector<T> o) {
-            _mutex.lock();
-            o._mutex.lock();
-            bool b = _v >= o._v;
-            o._mutex.unlock();
-            _mutex.unlock();
-            return b;
-        }
-    private:
-        Mutex _mutex;
-        vector<T> _v;
-    };
-}
+    }
 
-#include <vector>
+    template <typename T, class V>
+    bool __T_tsvector<T, V>::operator==(__T_tsvector& o) {
+        if (this == &o) {
+            return true;
+        }
+        _mutex.lock();
+        o._mutex.lock();
+        bool b = _v == o._v;
+        o._mutex.unlock();
+        _mutex.unlock();
+        return b;
+    }
+
+    template <typename T, class V>
+    bool __T_tsvector<T, V>::operator!=(__T_tsvector& o) {
+        if (this == &o) {
+            return false;
+        }
+        _mutex.lock();
+        o._mutex.lock();
+        bool b = _v != o._v;
+        o._mutex.unlock();
+        _mutex.unlock();
+        return b;
+    }
+
+    template <typename T, class V>
+    bool __T_tsvector<T, V>::operator<(__T_tsvector& o) {
+        if (this == &o) {
+            return false;
+        }
+        _mutex.lock();
+        o._mutex.lock();
+        bool b = _v < o._v;
+        o._mutex.unlock();
+        _mutex.unlock();
+        return b;
+    }
+
+    template <typename T, class V>
+    bool __T_tsvector<T, V>::operator<=(__T_tsvector& o) {
+        if (this == &o) {
+            return true;
+        }
+        _mutex.lock();
+        o._mutex.lock();
+        bool b = _v <= o._v;
+        o._mutex.unlock();
+        _mutex.unlock();
+        return b;
+    }
+
+    template <typename T, class V>
+    bool __T_tsvector<T, V>::operator>(__T_tsvector& o) {
+        if (this == &o) {
+            return false;
+        }
+        _mutex.lock();
+        o._mutex.lock();
+        bool b = _v > o._v;
+        o._mutex.unlock();
+        _mutex.unlock();
+        return b;
+    }
+
+    template <typename T, class V>
+    bool __T_tsvector<T, V>::operator>=(__T_tsvector& o) {
+        if (this == &o) {
+            return true;
+        }
+        _mutex.lock();
+        o._mutex.lock();
+        bool b = _v >= o._v;
+        o._mutex.unlock();
+        _mutex.unlock();
+        return b;
+    }
+
+
+}
 
 #ifdef _MSC_VER
 #pragma warning(default: 4521 4522)

@@ -13,18 +13,18 @@
  */
 
 #include <ctime>
-#include "slave.h"
-#include "torus.h"
-#include "../debug/callstack.h"
+#include <core/slave.h>
+#include <core/torus.h>
+#include <debug_support/callstack.h>
 
-t_udword SlaveThread::slave_id = 0;
+udword_t SlaveThread::slave_id = 0;
 
 SlaveThread::SlaveThread(ConditionVariable * cv) {
     _condvar = cv;
     _id = ++slave_id;
 }
 
-t_udword SlaveThread::id() {
+udword_t SlaveThread::id() {
     return _id;
 }
 
@@ -34,7 +34,7 @@ void * SlaveThread::run() {
         _run = true;
         while (_run) {
             clock_t init_ticks = clock();
-            torus.set_thread_time(_id, (t_udword)((float)(clock() - init_ticks) / CLOCKS_PER_SEC * 1000));
+            torus.set_thread_time(_id, (udword_t)((float)(clock() - init_ticks) / CLOCKS_PER_SEC * 1000));
             _condvar->lock();
             _condvar->wait();
             _condvar->unlock();

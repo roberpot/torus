@@ -12,12 +12,12 @@
 * along with Torus. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "../library/system_headers.h"
-#include "../debug/callstack.h"
-#include "char.h"
-#include "item.h"
-#include "account.h"
-#include "server.h"
+#include <library/system_headers.h>
+#include <debug_support/callstack.h>
+#include <game/char.h>
+#include <game/item.h>
+#include <game/account.h>
+#include <game/server.h>
 
 Char::Char() : Artifact(UID_CHAR) {
     ADDTOCALLSTACK();
@@ -25,7 +25,7 @@ Char::Char() : Artifact(UID_CHAR) {
     server.add_char(this);
 }
 
-Char::Char(t_udword uid) : Artifact(uid) {
+Char::Char(udword_t uid) : Artifact(uid) {
     ADDTOCALLSTACK();
     _account = NULL;
     server.add_char(this);
@@ -94,10 +94,10 @@ void Char::set_account(Account * account) {
     _account = account;
 }
 
-t_uword Char::get_status_flag(Char *viewer) {
+uword_t Char::get_status_flag(Char *viewer) {
     ADDTOCALLSTACK();
-    t_uword flags = SF_NORMAL;
-    t_udword cflags = get_flags();
+    uword_t flags = SF_NORMAL;
+    udword_t cflags = get_flags();
     // if (flags freezed / stoned)
     //  _status_flags |= SF_FREEZED;
     if (get_gender() == GENDER_FEMALE)
@@ -126,7 +126,7 @@ t_uword Char::get_status_flag(Char *viewer) {
     return flags;
 }
 
-bool Char::can_equip(t_udword iflags) {
+bool Char::can_equip(udword_t iflags) {
     ADDTOCALLSTACK();
     if (iflags == CAN_EQUIP_ALL)
         return true;

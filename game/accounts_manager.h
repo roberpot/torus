@@ -17,8 +17,8 @@
 
 #include <string>
 #include <map>
-#include "../library/types.h"
-#include "account.h"
+#include <library/types.h>
+#include <game/account.h>
 
 class Account;
 

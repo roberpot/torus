@@ -12,34 +12,4 @@
  * along with Torus. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <network/packets/packetlist.h>
-#include <network/socket.h>
-#include <debug_support/info.h>
-
-
-const udword_t Packet_0xef::length() {
-    ADDTOCALLSTACK();
-    return 21;
-}
-
-void Packet_0xef::loads(Socket * s) {
-    ADDTOCALLSTACK();
-    *s >> _seed; 
-    *s >> _client_major_version;
-    *s >> _client_minor_version;
-    *s >> _client_revision_version;
-    *s >> _client_prototype_version;
-}
-
-Packet_0xef::Packet_0xef()
-{
-    _seed = 0;
-    _client_major_version = 0;
-    _client_minor_version = 0;
-    _client_revision_version = 0;
-    _client_prototype_version = 0;
-}
-
-Packet_0xef::~Packet_0xef() {
-    ADDTOCALLSTACK();
-}
+#include <debug_support/debug.h>

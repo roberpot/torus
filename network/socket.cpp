@@ -18,16 +18,16 @@
 #include <arpa/inet.h>
 #endif //__linux__
 #include <cstring>
-#include "socket.h"
+#include <network/socket.h>
 
-#include "../core/errors.h"
-#include "../debug/debug.h"
-#include "../library/string.h"
-#include "../debug/callstack.h"
-#include "packet.h"
-#include "packets/packetlist.h"
-#include "../game/client.h"
-#include "../shell.h"
+#include <core/errors.h>
+#include <debug_support/debug.h>
+#include <library/string.h>
+#include <debug_support/callstack.h>
+#include <network/packet.h>
+#include <network/packets/packetlist.h>
+#include <game/client.h>
+#include <shell.h>
 
 #define N2L(C, LL) \
     LL = ((C&0xff000000))>>24 | ((C&0x00ff0000))>>8  | ((C&0x0000ff00))<<8 | ((C&0x000000ff)<<24)
@@ -66,7 +66,7 @@ void Socket::init_client_socket() {
     buffer = new t_byte[1024];
     crypto = new Crypto();
     crypto->set_mode_none();
-    t_udword seed = _determinate_client_seed();
+    udword_t seed = _determinate_client_seed();
     crypto->set_client_seed(seed);
     _read_bytes(62);
     crypto->detect_client_keys(buffer, buffer_len);
@@ -80,12 +80,12 @@ void Socket::init_client_socket() {
 }
 
 
-t_udword Socket::_determinate_client_seed() {
+udword_t Socket::_determinate_client_seed() {
     ADDTOCALLSTACK();
     t_ubyte _cmd;
     (*this) >> _cmd;
     _rewind((t_byte*)&_cmd, sizeof(t_ubyte));
-    t_udword seed;
+    udword_t seed;
     if (_cmd == 0xef) {
         DEBUG_NOTICE("Detected login seed packet.");
         PACKET_KR_2D_CLIENT_SEED * p = static_cast<PACKET_KR_2D_CLIENT_SEED *>(packet_factory(*this));
@@ -100,10 +100,10 @@ t_udword Socket::_determinate_client_seed() {
     return seed;
 }
 
-void Socket::bind(const t_byte * addr, t_word port) {
+void Socket::bind(const t_byte * addr, word_t port) {
     ADDTOCALLSTACK();
     DEBUG_INFO("Binding " << addr << ":" << port);
-    t_dword status;
+    dword_t status;
     sockaddr_in _serv_addr;
     memset(&_serv_addr, 0, sizeof(sockaddr_in));
     _serv_addr.sin_family = AF_INET;
@@ -170,7 +170,7 @@ const t_byte * Socket::get_ip() {
     ADDTOCALLSTACK();
 #ifdef _WINDOWS
     sockaddr_in client_info;
-    t_dword addrsize = sizeof(client_info);
+    dword_t addrsize = sizeof(client_info);
     getpeername(_socket, (sockaddr *)&client_info, &addrsize);
     return inet_ntoa(client_info.sin_addr);
 #endif // _WINDOWS
@@ -204,7 +204,7 @@ void Socket::write_packet(Packet * p) {
     ADDTOCALLSTACK();
     p->print();
 #ifdef _WINDOWS
-    t_udword data_sended = send(_socket, p->dumps(), p->length(), 0);
+    udword_t data_sended = send(_socket, p->dumps(), p->length(), 0);
     if (data_sended == SOCKET_ERROR) {
         THROW_ERROR(NetworkError, "Send failed with error: " << WSAGetLastError());
     } else if (data_sended != p->length()) {
@@ -232,11 +232,11 @@ void Socket::read_string(Socket& s, std::string& str, int len)
     }*/
 }
 
-void Socket::_read_bytes(t_udword len) {
+void Socket::_read_bytes(udword_t len) {
     ADDTOCALLSTACK();
     // First check if we rewinded.
-    t_udword init = 0;
-    t_udword len_remaining = len;
+    udword_t init = 0;
+    udword_t len_remaining = len;
     buffer_len = 0;
     if (rewinded_len > 0) {
         if (len_remaining < rewinded_len) {
@@ -258,7 +258,7 @@ void Socket::_read_bytes(t_udword len) {
         buffer_len = recv(_socket, &buffer[init], len_remaining, 0);
 #endif // _WINDOWS
 #ifdef __linux__
-        buffer_len = (t_udword)recv(_socket, &buffer[init], len_remaining, 0);
+        buffer_len = (udword_t)recv(_socket, &buffer[init], len_remaining, 0);
 #endif //__linux__
         if (buffer_len != len_remaining) {
             THROW_ERROR(NetworkError, "Error reading socket: Expected len: " << len_remaining << ", readed: " << buffer_len);
@@ -274,7 +274,7 @@ void Socket::_read_bytes(t_udword len) {
     }
 }
 
-void Socket::_rewind(t_byte * b, t_udword l) {
+void Socket::_rewind(t_byte * b, udword_t l) {
     ADDTOCALLSTACK();
     if (rewinded_len > 0) {
         t_byte * new_rewind_buffer = new t_byte[rewinded_len + l];
@@ -291,14 +291,14 @@ void Socket::_rewind(t_byte * b, t_udword l) {
 void Socket::shutdown() {
     ADDTOCALLSTACK();
 #ifdef _WINDOWS
-    t_dword status = ::shutdown(_socket, SD_SEND);
+    dword_t status = ::shutdown(_socket, SD_SEND);
     if (status == SOCKET_ERROR) {
         closesocket(_socket);
         THROW_ERROR(NetworkError, "shutdown failed with error: " << WSAGetLastError());
     }
 #endif // _WINDOWS
 #ifdef __linux__
-    t_dword status = ::shutdown(_socket, SHUT_WR);
+    dword_t status = ::shutdown(_socket, SHUT_WR);
     if (status == -1) {
         close(_socket);
         THROW_ERROR(NetworkError, "shutdown failed with error: " << strerror(errno));

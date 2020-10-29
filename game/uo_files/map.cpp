@@ -14,9 +14,9 @@
 
 #include <cstring>
 
-#include "map.h"
-#include "../../debug/callstack.h"
-#include "../../debug/debug.h"
+#include <game/uo_files/map.h>
+#include <debug_support/callstack.h>
+#include <debug_support/debug.h>
 
 Map::Map(){
     ADDTOCALLSTACK();
@@ -31,7 +31,7 @@ Map::Map(){
 Map::~Map(){
 }
 
-bool Map::create(t_uword index, t_uword x, t_uword y, t_ubyte ss, t_ubyte file_id, std::string filename)
+bool Map::create(uword_t index, uword_t x, uword_t y, t_ubyte ss, t_ubyte file_id, std::string filename)
 {
     ADDTOCALLSTACK();
     /*std::ifstream filetest(filename.c_str());
@@ -56,12 +56,12 @@ bool Map::is_valid() {
     return _is_valid;
 }
 
-t_word Map::get_max_x(){
+word_t Map::get_max_x(){
     ADDTOCALLSTACK();
     return _x;
 }
 
-t_word Map::get_max_y(){
+word_t Map::get_max_y(){
     ADDTOCALLSTACK();
     return _y;
 }
@@ -81,12 +81,12 @@ t_ubyte Map::get_file_id() {
     return _fileid;
 }
 
-t_udword Map::get_block_count() {
+udword_t Map::get_block_count() {
     ADDTOCALLSTACK();
     return (_x * _y) / UO_MAP_BLOCK_CELLS;
 }
 
-bool Map::is_valid_p(t_word x, t_word y){
+bool Map::is_valid_p(word_t x, word_t y){
     ADDTOCALLSTACK();
     if (x <= 0 || y <= 0
         || x > _x || y > _y)

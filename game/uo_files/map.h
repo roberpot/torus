@@ -15,9 +15,10 @@
 #ifndef __TORUS_GAME_MAP_H
 #define __TORUS_GAME_MAP_H
 
-#include "../../library/types.h"
-#include "map_block.h"
 #include <string>
+
+#include <library/types.h>
+#include <game/uo_files/map_block.h>
 
 enum MAPID {
     MAP_FELUCCA,
@@ -31,9 +32,9 @@ enum MAPID {
 
 class Map {
 private:
-    t_uword _index; // Ingame Virtual ID
-    t_uword _x;     // max X
-    t_uword _y;     // max Y
+    uword_t _index; // Ingame Virtual ID
+    uword_t _x;     // max X
+    uword_t _y;     // max Y
     t_ubyte _fileid;    // map file in which this map is based on (255 = bad id).
     t_ubyte _sector_size;
     UOMapBlock *_blocks;
@@ -50,7 +51,7 @@ public:
     * @param file_id Map file used for this map.
     * @return false if the given file doesn't exist or can't be opened.
     */
-    bool create(t_uword index, t_uword x, t_uword y, t_ubyte ss, t_ubyte file_id, std::string filename);
+    bool create(uword_t index, uword_t x, uword_t y, t_ubyte ss, t_ubyte file_id, std::string filename);
     /**
     * @brief Fills the Map with it's map file's data.
     *
@@ -68,13 +69,13 @@ public:
     *
     * @return max X.
     */
-    t_word get_max_x();
+    word_t get_max_x();
     /**
     * @brief Get the max Y tile of this map.
     *
     * @return max Y.
     */
-    t_word get_max_y();
+    word_t get_max_y();
     /**
     * @ brief Get the size of each sector in this map.
     *
@@ -98,7 +99,7 @@ public:
     *
     * @return the count;
     */
-    t_udword get_block_count();
+    udword_t get_block_count();
     /**
     * @brief Checks if the given coords are valid.
     *
@@ -106,7 +107,7 @@ public:
     * @param y coord Y
     * @return if coords are valid.
     */
-    bool is_valid_p(t_word x, t_word y);
+    bool is_valid_p(word_t x, word_t y);
 };
 
 #endif // __TORUS_GAME_MAP_H

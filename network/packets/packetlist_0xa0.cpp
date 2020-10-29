@@ -12,19 +12,19 @@
  * along with Torus. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "packetlist.h"
-#include "../socket.h"
-#include "../../debug/info.h"
+#include <network/packets/packetlist.h>
+#include <network/socket.h>
+#include <debug_support/info.h>
 
 
-const t_udword Packet_0xa0::length() {
+const udword_t Packet_0xa0::length() {
     ADDTOCALLSTACK();
     return 3;
 }
 
 void Packet_0xa0::loads(Socket * s) {
     ADDTOCALLSTACK();
-    t_word serverIndex;
+    word_t serverIndex;
     *s >> serverIndex;
 
     //TODO: Receive and handle disconnect from loginserver, send character list and send client' flags.

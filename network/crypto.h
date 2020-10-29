@@ -15,40 +15,40 @@
 #ifndef __TORUS_CRYPTO_H
 #define __TORUS_CRYPTO_H
 
-#include "../library/types.h"
+#include <library/types.h>
 
 class Crypto {
 public:
     Crypto();
-    void set_client_seed(t_udword seed);
-    void set_crypt_key(t_udword maskHi, t_udword masLo);
+    void set_client_seed(udword_t seed);
+    void set_crypt_key(udword_t maskHi, udword_t masLo);
     void set_mode_none();
     void set_mode_login();
     void set_mode_game();
-    void detect_client_keys(t_byte * buffer, t_udword l);
-    void decrypt(t_byte * buffer, t_udword l);
-    void crypt(t_ubyte * buffer, t_udword l);
+    void detect_client_keys(t_byte * buffer, udword_t l);
+    void decrypt(t_byte * buffer, udword_t l);
+    void crypt(t_ubyte * buffer, udword_t l);
 private:
-    void _decrypt_login_gt_0x125360(t_ubyte * buffer, t_udword l);
-    void _decrypt_login_eq_0x125360(t_ubyte * buffer, t_udword l);
-    void _decrypt_login_lt_0x125360(t_ubyte * buffer, t_udword l);
-    void _crypt_login_gt_0x125360(t_ubyte * buffer, t_udword l);
-    void _crypt_login_eq_0x125360(t_ubyte * buffer, t_udword l);
-    void _crypt_login_lt_0x125360(t_ubyte * buffer, t_udword l);
-    void (Crypto::*_decrypt_login_method)(t_ubyte *, t_udword);
-    void (Crypto::*_crypt_login_method)(t_ubyte *, t_udword);
-    void (Crypto::*_decrypt_game_method)(t_ubyte *, t_udword);
-    void (Crypto::*_crypt_game_method)(t_ubyte *, t_udword);
+    void _decrypt_login_gt_0x125360(t_ubyte * buffer, udword_t l);
+    void _decrypt_login_eq_0x125360(t_ubyte * buffer, udword_t l);
+    void _decrypt_login_lt_0x125360(t_ubyte * buffer, udword_t l);
+    void _crypt_login_gt_0x125360(t_ubyte * buffer, udword_t l);
+    void _crypt_login_eq_0x125360(t_ubyte * buffer, udword_t l);
+    void _crypt_login_lt_0x125360(t_ubyte * buffer, udword_t l);
+    void (Crypto::*_decrypt_login_method)(t_ubyte *, udword_t);
+    void (Crypto::*_crypt_login_method)(t_ubyte *, udword_t);
+    void (Crypto::*_decrypt_game_method)(t_ubyte *, udword_t);
+    void (Crypto::*_crypt_game_method)(t_ubyte *, udword_t);
 
-    void _decrypt_loginmode(t_byte * buffer, t_udword l);
-    void _decrypt_gamemode(t_byte * buffer, t_udword l);
-    void _crypt_loginmode(t_byte * buffer, t_udword l);
-    void _crypt_gamemode(t_byte * buffer, t_udword l);
-    t_udword _client_key_lo;
-    t_udword _client_key_hi;
-    t_udword _curr_key_lo;
-    t_udword _curr_key_hi;
-    t_udword _seed;
+    void _decrypt_loginmode(t_byte * buffer, udword_t l);
+    void _decrypt_gamemode(t_byte * buffer, udword_t l);
+    void _crypt_loginmode(t_byte * buffer, udword_t l);
+    void _crypt_gamemode(t_byte * buffer, udword_t l);
+    udword_t _client_key_lo;
+    udword_t _client_key_hi;
+    udword_t _curr_key_lo;
+    udword_t _curr_key_hi;
+    udword_t _seed;
     enum {
         CRYPTMODE_NONE = 0,
         CRYPTMODE_LOGIN,

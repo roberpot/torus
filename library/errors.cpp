@@ -13,11 +13,11 @@
  */
 
 #include <cstring>
-#include "errors.h"
+#include <library/errors.h>
 
 namespace ttl {
     Exception::Exception() {
-        _msg = 0;
+        _msg = nullptr;
     }
 
     Exception::Exception(const t_byte * e) {
@@ -26,13 +26,13 @@ namespace ttl {
     }
 
     Exception::~Exception() {
-        if (_msg != 0) {
+        if (_msg != nullptr) {
             delete _msg;
         }
     }
 
     const t_byte * Exception::what() const {
-        if (_msg == 0) {
+        if (_msg == nullptr) {
             return "No message supplied.";
         }
         return _msg;

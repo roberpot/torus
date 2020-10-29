@@ -12,9 +12,9 @@
 * along with Torus. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "char_stats.h"
-#include "../../debug/callstack.h"
-#include "../server.h"
+#include <game/chars/char_stats.h>
+#include <debug_support/callstack.h>
+#include <game/server.h>
 
 CharStats::CharStats() {
     _base = 0;
@@ -28,63 +28,63 @@ CharStats::CharStats() {
 CharStats::~CharStats() {
 }
 
-void CharStats::set_base(t_uword val) {
+void CharStats::set_base(uword_t val) {
     ADDTOCALLSTACK();
     _base = val;
 }
 
-void CharStats::set_mod(t_uword val) {
+void CharStats::set_mod(uword_t val) {
     ADDTOCALLSTACK();
     _mod = val;
 }
 
-void CharStats::set_max(t_uword val) {
+void CharStats::set_max(uword_t val) {
     ADDTOCALLSTACK();
     _max = val;
 }
 
-void CharStats::set_val(t_uword base, t_uword mod) {
+void CharStats::set_val(uword_t base, uword_t mod) {
     ADDTOCALLSTACK();
     _base = base;
     _mod = mod;
 }
 
-t_uword CharStats::get_base() {
+uword_t CharStats::get_base() {
     ADDTOCALLSTACK();
     return _base;
 }
 
-t_uword CharStats::get_mod() {
+uword_t CharStats::get_mod() {
     ADDTOCALLSTACK();
     return _mod;
 }
 
-t_uword CharStats::get_max() {
+uword_t CharStats::get_max() {
     ADDTOCALLSTACK();
     return _max;
 }
 
-t_uword CharStats::get_val() {
+uword_t CharStats::get_val() {
     ADDTOCALLSTACK();
     return _base + _mod;
 }
 
-void CharStats::set_regen_delay(t_uword val) {
+void CharStats::set_regen_delay(uword_t val) {
     ADDTOCALLSTACK();
     _regen_delay = val;
 }
 
-t_uword CharStats::get_regen_delay() {
+uword_t CharStats::get_regen_delay() {
     ADDTOCALLSTACK();
     return _regen_delay;
 }
 
-void CharStats::set_regen_val(t_uword val) {
+void CharStats::set_regen_val(uword_t val) {
     ADDTOCALLSTACK();
     _regen_val = val;
 }
 
-t_uword CharStats::get_regen_val() {
+uword_t CharStats::get_regen_val() {
     ADDTOCALLSTACK();
     return _regen_val;
 }
@@ -93,8 +93,8 @@ void CharStats::regen() {
     ADDTOCALLSTACK();
     if (_regen_delay == 0) // 0 = disabled
         return;
-    t_uqword clock = 0;// TODO time control, smth like torustime.clock.get_current().
-    t_uqword regen_diff = _last_regen - clock;
+    uqword_t clock = 0;// TODO time control, smth like torustime.clock.get_current().
+    uqword_t regen_diff = _last_regen - clock;
     if (regen_diff <= 0) {
         _base += _regen_val;
         _last_regen = clock;

@@ -18,7 +18,7 @@
 #include <cstring>
 #include <string>
 #include <vector>
-#include "../library/types.h"
+#include <library/types.h>
 #ifdef _MSC_VER
 #pragma warning(disable:4127)
 #endif
@@ -36,7 +36,7 @@ public:
      *
      * @return  The lenght.
      */
-    const t_udword length();
+    const udword_t length();
     /**
      * @brief   Dumps the buffer.
      *
@@ -74,12 +74,12 @@ public:
     void write_bool(bool val, int pos = -1);
     void write_byte(t_byte val, int pos = -1);
     void write_ubyte(t_ubyte val, int pos = -1);
-    void write_word(t_word val, int pos = -1);
-    void write_uword(t_uword val, int pos = -1);
-    void write_dword(t_dword val, int pos = -1);
-    void write_udword(t_udword val, int pos = -1);
-    void write_qword(t_qword val, int pos = -1);
-    void write_uqword(t_uqword val, int pos = -1);
+    void write_word(word_t val, int pos = -1);
+    void write_uword(uword_t val, int pos = -1);
+    void write_dword(dword_t val, int pos = -1);
+    void write_udword(udword_t val, int pos = -1);
+    void write_qword(qword_t val, int pos = -1);
+    void write_uqword(uqword_t val, int pos = -1);
 
     void print();
 
@@ -96,7 +96,7 @@ Packet * packet_factory(Socket & s);
 
 //Packet * packet_factory(t_byte t);
 
-//Packet * packet_factory(const t_byte * buffer, t_udword len);
+//Packet * packet_factory(const t_byte * buffer, udword_t len);
 
 #ifdef _MSC_VER
 #pragma warning(default:4127)

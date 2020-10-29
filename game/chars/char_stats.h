@@ -15,7 +15,7 @@
 #ifndef __TORUS_GAME_CHAR_STATS_H_
 #define __TORUS_GAME_CHAR_STATS_H_
 
-#include "../../library/types.h"
+#include <library/types.h>
 
 enum STAT_TYPE {
     STAT_STR,
@@ -46,28 +46,28 @@ public:
     ~CharStats();
 private:
     // Common stat props
-    t_uword _base;  ///< base, real val.
-    t_uword _mod;   ///< modification over base.
-    t_uword _max;   ///< max value.
+    uword_t _base;  ///< base, real val.
+    uword_t _mod;   ///< modification over base.
+    uword_t _max;   ///< max value.
 // Regen props (only for hits, mana and stam).
-    t_uword _regen_delay;   ///< ticks between regens.
-    t_uword _regen_val;     ///< amount to regen.
-    t_uqword _last_regen;   ///< tick in which last regen was done.
+    uword_t _regen_delay;   ///< ticks between regens.
+    uword_t _regen_val;     ///< amount to regen.
+    uqword_t _last_regen;   ///< tick in which last regen was done.
 public:
 // Common
-    void set_base(t_uword val);
-    t_uword get_base();
-    void set_mod(t_uword val);
-    t_uword get_mod();
-    void set_max(t_uword val);
-    t_uword get_max();
-    void set_val(t_uword base, t_uword mod);
-    t_uword get_val();
+    void set_base(uword_t val);
+    uword_t get_base();
+    void set_mod(uword_t val);
+    uword_t get_mod();
+    void set_max(uword_t val);
+    uword_t get_max();
+    void set_val(uword_t base, uword_t mod);
+    uword_t get_val();
 // Regens
-    void set_regen_delay(t_uword val);
-    t_uword get_regen_delay();
-    void set_regen_val(t_uword val);
-    t_uword get_regen_val();
+    void set_regen_delay(uword_t val);
+    uword_t get_regen_delay();
+    void set_regen_val(uword_t val);
+    uword_t get_regen_val();
     void regen();
 };
 

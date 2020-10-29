@@ -12,13 +12,14 @@
  * along with Torus. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "packetlist.h"
-#include "../socket.h"
-#include "../../debug/info.h"
-#include "../../core/config.h"
+#include <network/packets/packetlist.h>
+#include <network/socket.h>
+#include <debug_support/info.h>
+#include <core/config.h>
+#include <shell.h>
 
 
-const t_udword Packet_0xa8::length() {
+const udword_t Packet_0xa8::length() {
     ADDTOCALLSTACK();
     return 0;
 }
@@ -26,8 +27,8 @@ const t_udword Packet_0xa8::length() {
 Packet_0xa8::Packet_0xa8()
 {
     std::stringstream ss;
-    t_uword serversCount = 1;
-    t_uword serverIndex = 1;
+    uword_t serversCount = 1;
+    uword_t serverIndex = 1;
     std::stringstream serverName;
     serverName << "TestServer"; //TODO: Send real Server's name
     t_ubyte serverPercentFull = 0;
@@ -56,14 +57,14 @@ Packet_0xa8::Packet_0xa8()
     write_byte(serverTimeZone);
 
     //t_byte *ip = toruscfg.net_addr;
-    t_udword ip = 16777343;  //127.0.0.1    //TODO: send real IP
+    udword_t ip = 16777343;  //127.0.0.1    //TODO: send real IP
     write_byte((ip >> 24) & 0xFF);
     write_byte((ip >> 16) & 0xFF);
     write_byte((ip >> 8) & 0xFF);
     write_byte(ip & 0xFF);
     //Clients older than 4.0.0 must receive IP in reversed order.
     
-    for (int o = 0; o < buffer.size(); ++o)
+    for (udword_t o = 0; o < buffer.size(); ++o)
     {
         TORUSSHELLECHO("byte[" << o << "] = " << (int)buffer[o]);
     }

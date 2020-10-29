@@ -15,8 +15,8 @@
 #ifndef __TORUS_GAME_ITEM_H
 #define __TORUS_GAME_ITEM_H
 
-#include "../library/types.h"
-#include "artifact.h"
+#include <library/types.h>
+#include <game/artifact.h>
 #define UFLAG1_FLOOR		0x00000001  ///< 0= floor (Walkable at base position)
 #define UFLAG1_EQUIP		0x00000002  ///< 1= equipable. m_layer is LAYER_TYPE
 #define UFLAG1_NONBLOCKING	0x00000004  ///< 2= Signs and railings that do not block.
@@ -64,7 +64,7 @@ class Item : public Artifact {
     ~Item();
 public:
     Item();
-    Item(t_udword uid);
+    Item(udword_t uid);
     bool can_move() override;
     void remove();
     bool tick();

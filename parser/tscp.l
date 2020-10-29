@@ -22,11 +22,11 @@ H			[a-fA-F0-9]
 #endif
 #include <iostream>
 #include <cstdlib>
-#include "../debug/info.h"
-#include "../library/stack.h"
-#include "../library/vector.h"
-#include "ast.h"
-#include "tscp_parser.h"
+#include <debug_support/info.h>
+#include <library/stack.h>
+#include <library/vector.h>
+#include <parser/ast.h>
+#include <parser/tscp_parser.h>
 
 std::string tmp;
 

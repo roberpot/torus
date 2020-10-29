@@ -38,7 +38,7 @@ Thread::~Thread() {
 #endif
 }
 
-t_dword Thread::start() {
+dword_t Thread::start() {
     _mutex.lock();
     if (_running) {
         _mutex.unlock();
@@ -52,7 +52,7 @@ t_dword Thread::start() {
     }
 #endif
 #ifdef __TORUS_THREAD_PTHREAD
-    t_dword rc;
+    dword_t rc;
     rc = pthread_create(&_thread, &_attr, &Thread::_run, this);
     if (rc) {
         _mutex.unlock();
@@ -64,7 +64,7 @@ t_dword Thread::start() {
     return 0;
 }
 
-t_dword Thread::stop() {
+dword_t Thread::stop() {
     _mutex.lock();
     if (!_running) {
         _mutex.unlock();
@@ -74,7 +74,7 @@ t_dword Thread::stop() {
     TerminateThread(_thread, 0);
 #endif
 #ifdef __TORUS_THREAD_PTHREAD
-    t_dword rc = pthread_cancel(_thread);
+    dword_t rc = pthread_cancel(_thread);
     if (rc) {
         _mutex.unlock();
         return 2;
@@ -84,7 +84,7 @@ t_dword Thread::stop() {
     return 0;
 }
 
-t_dword Thread::join() {
+dword_t Thread::join() {
     _mutex.lock();
     if (!_running) {
         _mutex.unlock();
@@ -95,7 +95,7 @@ t_dword Thread::join() {
 #endif
 #ifdef __TORUS_THREAD_PTHREAD
     void * status;
-    t_dword rc;
+    dword_t rc;
     rc = pthread_join(_thread, &status);
     if (rc) {
         _mutex.unlock();

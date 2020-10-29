@@ -15,8 +15,9 @@
 #ifndef __TORUS_GAME_CHAR_PROPS_H_
 #define __TORUS_GAME_CHAR_PROPS_H_
 
-#include "../../library/types.h"
 #include <map>
+
+#include <library/types.h>
 
 enum CHAR_RACE {
     RACE_HUMAN,
@@ -91,33 +92,33 @@ public:
 
 // Props
 private:
-    std::map<CHAR_PROP, t_qword> _props;
+    std::map<CHAR_PROP, qword_t> _props;
 public:
-    void set_prop(CHAR_PROP prop, t_dword val);
-    t_qword get_prop(CHAR_PROP prop);
+    void set_prop(CHAR_PROP prop, dword_t val);
+    qword_t get_prop(CHAR_PROP prop);
 
 // Misc
 private:
-    t_word _fame;
-    t_word _karma;
+    word_t _fame;
+    word_t _karma;
 public:
-    void set_fame(t_word val);
-    t_word get_fame();
-    void set_karma(t_word val);
-    t_word get_karma();
+    void set_fame(word_t val);
+    word_t get_fame();
+    void set_karma(word_t val);
+    word_t get_karma();
 private:
-    t_udword _body;  //TODO CHAR_TYPES read from scripts.
-    t_udword _obody;
+    udword_t _body;  //TODO CHAR_TYPES read from scripts.
+    udword_t _obody;
 public:
-    void set_body(t_udword body);
-    t_udword get_body();
-    void set_obody(t_udword obody);
-    t_udword get_obody();
+    void set_body(udword_t body);
+    udword_t get_body();
+    void set_obody(udword_t obody);
+    udword_t get_obody();
 private:
-    t_udword _ocolor;
+    udword_t _ocolor;
 public:
-    void set_ocolor(t_udword ocolor);
-    t_udword get_ocolor();
+    void set_ocolor(udword_t ocolor);
+    udword_t get_ocolor();
 private:
     DIR _dir;
 public:

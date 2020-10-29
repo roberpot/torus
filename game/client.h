@@ -15,8 +15,8 @@
 #ifndef __TORUS_GAME_CLIENT_H_
 #define __TORUS_GAME_CLIENT_H_
 
-#include "../library/types.h"
-#include "../network/packets/packetlist.h"
+#include <library/types.h>
+#include <network/packets/packetlist.h>
 
 class Socket;
 class Char;
@@ -32,7 +32,7 @@ public:
     void send(Packet* packet);
 private:
     t_ubyte _movement_sequence;  ///< Walking sequence.
-    t_uqword _movement_last;    ///< Last walk packet received.
+    uqword_t _movement_last;    ///< Last walk packet received.
 public:
     void event_walk(t_ubyte dir, t_ubyte seq);
     void add_response_code(Packet_0x82::ResponseCode code);

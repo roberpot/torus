@@ -12,10 +12,10 @@ set(DB_FILES
 SOURCE_GROUP(db FILES ${DB_FILES})
 
 set(DEBUG_FILES
-        debug/info.h
-        debug/debug.cpp     debug/debug.h
-        debug/callstack.cpp debug/callstack.h)
-SOURCE_GROUP(debug FILES ${DEBUG_FILES})
+        debug_support/info.h
+        debug_support/debug.cpp debug_support/debug.h
+        debug_support/callstack.cpp debug_support/callstack.h)
+SOURCE_GROUP(debug_support FILES ${DEBUG_FILES})
 
 set(LIBRARY_FILES
         library/types.h

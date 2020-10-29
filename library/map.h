@@ -16,9 +16,9 @@
 #define __TORUS_MAP_H
 
 #include <cstring>
-#include "types.h"
-#include "errors.h"
-#include "../threads/mutex.h"
+#include <library/types.h>
+#include <library/errors.h>
+#include <threads/mutex.h>
 
 #ifdef _MSC_VER
     #pragma warning(disable: 4521 4522)
@@ -36,7 +36,7 @@ namespace ttl {
             staticmap * map;
             bool exists;
             K key;
-            t_udword position;
+            udword_t position;
             virtual V operator=(V x) {
                 if (!exists) {
                     map->_reserve(map->_size + 1);
@@ -55,7 +55,7 @@ namespace ttl {
             }
         };
 
-        staticmap(t_udword size=_TTL_MAP_DEFAULT_SIZE) {
+        staticmap(udword_t size=_TTL_MAP_DEFAULT_SIZE) {
             _capacity = size;
             _size = 0;
             _map = new Cell[_capacity];
@@ -78,11 +78,11 @@ namespace ttl {
             return *this;
         }
         virtual bool empty() { return _size == 0; }
-        virtual t_udword size() { return _size; }
-        virtual t_udword max_size() { return TDWORD_MAX; }
+        virtual udword_t size() { return _size; }
+        virtual udword_t max_size() { return TDWORD_MAX; }
         CellPosition operator[](K key) {
             CellPosition p;
-            t_udword init = 0, end = _size - 1, pivot = 0;
+            udword_t init = 0, end = _size - 1, pivot = 0;
             K pivot_key;
             bool stop = false;
             while ( init > end && !stop) {
@@ -112,8 +112,8 @@ namespace ttl {
         }
         void swap(staticmap & o) {
             Cell * map = _map;
-            t_udword size = _size;
-            t_udword capacity = _capacity;
+            udword_t size = _size;
+            udword_t capacity = _capacity;
             _map = o._map;
             _size = o._size;
             _capacity = o._capacity;
@@ -124,7 +124,7 @@ namespace ttl {
         virtual void clear() {
             _size = 0;
         }
-        virtual t_udword count(K key) {
+        virtual udword_t count(K key) {
             CellPosition p = (*this)[key];
             if (p.exists) { return 1; }
             return 0;
@@ -135,14 +135,14 @@ namespace ttl {
             K key;
             V value;
         };
-        virtual void _reserve(t_udword n) {
+        virtual void _reserve(udword_t n) {
             if (_capacity < n) {
                 _resize(n + _TTL_MAP_DEFAULT_SIZE);
             }
         }
-        virtual void _resize(t_udword s) {
+        virtual void _resize(udword_t s) {
             Cell * n = new Cell[s];
-            t_udword nsize = _size;
+            udword_t nsize = _size;
             if (s < _size) nsize = s;
             memcpy(n, _map, sizeof(Cell) * nsize);
             _size = nsize;
@@ -151,8 +151,8 @@ namespace ttl {
             _map = n;
         }
         Cell * _map;
-        t_udword _capacity;
-        t_udword _size;
+        udword_t _capacity;
+        udword_t _size;
     };
 
     template<typename K, typename V>
@@ -177,8 +177,8 @@ namespace ttl {
                 if (l) { delete l; }
                 if (r) { delete r; }
             }
-            t_udword child_count() {
-                t_udword count = 0;
+            udword_t child_count() {
+                udword_t count = 0;
                 if (l != NULL) count++;
                 if (r != NULL) count++;
                 return count;
@@ -218,7 +218,7 @@ namespace ttl {
             }
         };
         Node * _root;
-        t_udword _size;
+        udword_t _size;
     public:
         class CellPosition {
         public:
@@ -265,7 +265,7 @@ namespace ttl {
             _size = o._size;
         }
         virtual bool empty() { return _size == 0; }
-        virtual t_udword size() { return _size; }
+        virtual udword_t size() { return _size; }
         CellPosition operator[](K key) {
             CellPosition p;
             Node * n = _root, * n_ant = NULL;
@@ -288,7 +288,7 @@ namespace ttl {
             }
             Node * n = p.n;
             // Case leaf:
-            t_udword childs = n->child_count();
+            udword_t childs = n->child_count();
             if (childs == 0) {
                 n->p->remove_child(n);
                 delete n;
@@ -314,7 +314,7 @@ namespace ttl {
         }
         void swap(dynamicmap & o) {
             Node * tmproot = _root;
-            t_udword tmpsize = _size;
+            udword_t tmpsize = _size;
             _root = o._root;
             _size = o._size;
             o._root = tmproot;
@@ -324,7 +324,7 @@ namespace ttl {
             delete _root;
             _size = 0;
         }
-        virtual t_udword count(K key) {
+        virtual udword_t count(K key) {
             CellPosition p = (*this)[key];
             if (p.exists) { return 1; }
             return 0;
@@ -339,7 +339,7 @@ namespace ttl {
             tsstaticmap * map;
             bool exists;
             K key;
-            t_udword position;
+            udword_t position;
             V operator=(V x) {
                 tsCellPosition::operator=(x);
                 map->_mutex.unlock();
@@ -358,7 +358,7 @@ namespace ttl {
             }
         };
 
-        tsstaticmap(t_udword size=_TTL_MAP_DEFAULT_SIZE) {
+        tsstaticmap(udword_t size=_TTL_MAP_DEFAULT_SIZE) {
             staticmap<K,V>::_capacity = size;
             staticmap<K,V>::_size = 0;
             staticmap<K,V>::_map = new typename staticmap<K,V>::Cell[staticmap<K,V>::_capacity];
@@ -392,17 +392,17 @@ namespace ttl {
             _mutex.unlock();
             return b;
         }
-        t_udword size() {
+        udword_t size() {
             _mutex.lock();
-            t_udword s = staticmap<K,V>::_size;
+            udword_t s = staticmap<K,V>::_size;
             _mutex.unlock();
             return s;
         }
-        t_udword max_size() { return TDWORD_MAX; }
+        udword_t max_size() { return TDWORD_MAX; }
         tsCellPosition operator[](K key) {
             _mutex.lock();
             tsCellPosition p;
-            t_udword init = 0, end = staticmap<K,V>::_size - 1, pivot = 0;
+            udword_t init = 0, end = staticmap<K,V>::_size - 1, pivot = 0;
             K pivot_key;
             bool stop = false;
             while ( init > end && !stop) {
@@ -436,8 +436,8 @@ namespace ttl {
             _mutex.lock();
             o._mutex.lock();
             typename staticmap<K,V>::Cell * map = staticmap<K,V>::_map;
-            t_udword size = staticmap<K,V>::_size;
-            t_udword capacity = staticmap<K,V>::_capacity;
+            udword_t size = staticmap<K,V>::_size;
+            udword_t capacity = staticmap<K,V>::_capacity;
             staticmap<K,V>::_map = o._map;
             staticmap<K,V>::_size = o._size;
             staticmap<K,V>::_capacity = o._capacity;
@@ -452,9 +452,9 @@ namespace ttl {
             staticmap<K,V>::_size = 0;
             _mutex.unlock();
         }
-        t_udword count(K key) {
+        udword_t count(K key) {
             _mutex.lock();
-            t_udword c = staticmap<K, V>::count(key);
+            udword_t c = staticmap<K, V>::count(key);
             _mutex.unlock();
             return c;
         }
@@ -481,7 +481,7 @@ namespace ttl {
                     map->_mutex.unlock();
                     return x;
                 }
-                catch (MapError) {
+                catch (MapError&) {
                     map->_mutex.unlock();
                     throw;
                 }
@@ -510,9 +510,9 @@ namespace ttl {
             _mutex.unlock();
             return b;
         }
-        t_udword size() {
+        udword_t size() {
             _mutex.lock();
-            t_udword s = dynamicmap<K,V>::_size;
+            udword_t s = dynamicmap<K,V>::_size;
             _mutex.unlock();
             return s;
         }
@@ -538,7 +538,7 @@ namespace ttl {
                 dynamicmap<K,V>::erase(key);
                 _mutex.unlock();
             }
-            catch (MapError(e)) {
+            catch (MapError &e) {
                 _mutex.unlock();
                 throw;
             }
@@ -547,7 +547,7 @@ namespace ttl {
             _mutex.lock();
             o._mutex.lock();
             typename dynamicmap<K,V>::Node * tmproot = dynamicmap<K,V>::_root;
-            t_udword tmpsize = dynamicmap<K,V>::_size;
+            udword_t tmpsize = dynamicmap<K,V>::_size;
             dynamicmap<K,V>::_root = o._root;
             dynamicmap<K,V>::_size = o._size;
             o._root = tmproot;
@@ -560,9 +560,9 @@ namespace ttl {
             dynamicmap<K,V>::clear();
             _mutex.unlock();
         }
-        t_udword count(K key) {
+        udword_t count(K key) {
             _mutex.lock();
-            t_udword c = dynamicmap<K,V>::count(key);
+            udword_t c = dynamicmap<K,V>::count(key);
             _mutex.unlock();
             return c;
         }

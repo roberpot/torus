@@ -12,12 +12,12 @@
  * along with Torus. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "../library/system_headers.h"
-#include "torus.h"
-#include "../debug/callstack.h"
-#include "../threads/utils.h"
-#include "config.h"
-#include "../game/server.h"
+#include <library/system_headers.h>
+#include <core/torus.h>
+#include <debug_support/callstack.h>
+#include <threads/utils.h>
+#include <core/config.h>
+#include <game/server.h>
 
 Torus::Torus() {
 }
@@ -27,7 +27,7 @@ void Torus::stop() {
     _run = false;
 }
 
-void Torus::set_thread_time(t_udword id, t_udword t) {
+void Torus::set_thread_time(udword_t id, udword_t t) {
     ADDTOCALLSTACK();
     _time_map_mutex.lock();
     _time_map[id] = t;
@@ -50,7 +50,7 @@ void Torus::mainloop() {
             //server._serv_time++;
         }
         DEBUG_NOTICE("End of mainloop. Stopping slaves...");
-        std::map<t_udword, SlaveThread *>::iterator it = _slaves.begin(), end = _slaves.end();
+        std::map<udword_t, SlaveThread *>::iterator it = _slaves.begin(), end = _slaves.end();
         while(it != end) {
             it->second->halt();
             it++;

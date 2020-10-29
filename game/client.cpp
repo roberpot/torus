@@ -12,11 +12,11 @@
 * along with Torus. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "../library/system_headers.h"
-#include "client.h"
-#include "../network/packets/packetlist.h"
-#include "../debug/callstack.h"
-#include "char.h"
+#include <library/system_headers.h>
+#include <game/client.h>
+#include <network/packets/packetlist.h>
+#include <debug_support/callstack.h>
+#include <game/char.h>
 
 Client::Client(Socket * s) {
     ADDTOCALLSTACK();

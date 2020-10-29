@@ -12,12 +12,12 @@
 * along with Torus. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "../library/system_headers.h"
-#include "server.h"
-#include "char.h"
-#include "item.h"
-#include "artifact.h"
-#include "../core/config.h"
+#include <library/system_headers.h>
+#include <game/server.h>
+#include <game/char.h>
+#include <game/item.h>
+#include <game/artifact.h>
+#include <core/config.h>
 
 Server server;
 
@@ -31,7 +31,7 @@ Server::~Server() {
     ADDTOCALLSTACK();
 }
 
-t_uqword Server::get_serv_time() {
+uqword_t Server::get_serv_time() {
     ADDTOCALLSTACK();
     return _serv_time;
 }
@@ -71,7 +71,7 @@ void Server::add_item(Item * item) {
     }
 }
 
-Artifact * Server::get_artifact(t_udword uid) {
+Artifact * Server::get_artifact(udword_t uid) {
     ADDTOCALLSTACK();
     Artifact * art = _artifact_list[uid];
     if (art)
@@ -91,9 +91,9 @@ void Server::del_item(Item * item) {
 
 void Server::del_artifact(Artifact * art) {
     ADDTOCALLSTACK();
-    t_udword total = (t_udword)_artifact_list.size();
+    udword_t total = (udword_t)_artifact_list.size();
     if (total) {
-        for (t_udword i = 0; i < total; ++i) {
+        for (udword_t i = 0; i < total; ++i) {
             Artifact *tmp = _artifact_list[i];
             if (tmp == art) {
                 delete tmp;

@@ -12,15 +12,16 @@
  * along with Torus. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "../library/system_headers.h"
-#include "packetlist.h"
-#include "../socket.h"
-#include "../debug/info.h"
-#include "../game/client.h"
-#include "../game/char.h"
+
+#include <debug_support/info.h>
+#include <game/client.h>
+#include <game/char.h>
+#include <library/system_headers.h>
+#include <network/packets/packetlist.h>
+#include <network/socket.h>
 
 
-const t_udword Packet_0x22::length() {
+const udword_t Packet_0x22::length() {
     ADDTOCALLSTACK();
     return 8;
 }

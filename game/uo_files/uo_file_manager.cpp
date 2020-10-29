@@ -12,11 +12,11 @@
 * along with Torus. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "uo_file_manager.h"
 #include <sstream>
-#include "../../debug/debug.h"
-#include "../../debug/callstack.h"
-#include "../../core/config.h"
+#include <game/uo_files/uo_file_manager.h>
+#include <debug_support/debug.h>
+#include <debug_support/callstack.h>
+#include <core/config.h>
 
 UOFileManager uofilemgr;
 
@@ -34,7 +34,7 @@ void UOFileManager::read_config() {
         Map *map = new Map();
         std::stringstream file;
         file << toruscfg.file_path << mapfile.filename;
-        if (map->create((t_uword)i, mapfile.x, mapfile.y, mapfile.sector_size, mapfile.id, file.str().c_str())) {
+        if (map->create((uword_t)i, mapfile.x, mapfile.y, mapfile.sector_size, mapfile.id, file.str().c_str())) {
             basemaps[mapfile.id] = map;
         }
         else {

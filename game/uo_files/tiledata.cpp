@@ -12,5 +12,5 @@
 * along with Torus. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "tiledata.h"
+#include <game/uo_files/tiledata.h>
 

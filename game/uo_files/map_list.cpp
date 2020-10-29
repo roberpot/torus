@@ -12,10 +12,10 @@
 * along with Torus. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "map_list.h"
-#include "../../debug/debug.h"
-#include "../../debug/callstack.h"
-#include "uo_file_manager.h"
+#include <game/uo_files/map_list.h>
+#include <debug_support/debug.h>
+#include <debug_support/callstack.h>
+#include <game/uo_files/uo_file_manager.h>
 
 MapList maplist;
 

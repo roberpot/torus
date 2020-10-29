@@ -17,7 +17,8 @@
 
 #include <string>
 #include <sstream>
-#include "../library/types.h"
+
+#include <library/types.h>
 
 class NetworkError : public std::exception {
 public:

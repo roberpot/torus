@@ -15,9 +15,10 @@
 #ifndef __TORUS_GAME_MAP_LIST_H
 #define __TORUS_GAME_MAP_LIST_H
 
-#include "../../library/types.h"
 #include <map>
-#include "map.h"
+
+#include <library/types.h>
+#include <game/uo_files/map.h>
 
 extern class MapList : private std::map < t_ubyte, Map*>{
 public:

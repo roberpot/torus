@@ -18,19 +18,19 @@
 #include <set>
 #include <string>
 #include <vector>
-#include "../library/types.h"
-#include "../library/vector.h"
+#include <library/types.h>
+#include <library/vector.h>
 
 #define BASE_MAP_MAX 5  ///< Max amount of Base Maps we can handle.
 #define VIRTUAL_MAP_MAX TUBYTE_MAX  ///< Max amount of Virtual Maps we can handle.
 
 struct MapFile {
-    t_uword x;
-    t_uword y;
+    uword_t x;
+    uword_t y;
     t_ubyte sector_size;
     t_ubyte id;
     std::string filename;
-    MapFile(t_ubyte mid, t_uword mx, t_uword my, t_ubyte ss, std::string mfn) {
+    MapFile(t_ubyte mid, uword_t mx, uword_t my, t_ubyte ss, std::string mfn) {
         id = mid;
         x = mx;
         y = my;
@@ -49,23 +49,23 @@ public:
     std::string server_desc;
     std::string torustable_file;
     t_byte * net_addr;
-    t_word net_port;
-    t_uword tick_duration;
-    t_uword tick_duration_overloaded;
-    t_uword tick_duration_idle;
+    word_t net_port;
+    uword_t tick_duration;
+    uword_t tick_duration_overloaded;
+    uword_t tick_duration_idle;
     // file cfg.
     std::string file_path;
     // extra config.
     std::set<std::string> obscene_strings;
-    ttl::vector<t_dword> fame_ranges;
+    ttl::vector<dword_t> fame_ranges;
     ttl::vector<std::string> fame_titles;
-    ttl::vector<t_dword> karma_ranges;
+    ttl::vector<dword_t> karma_ranges;
     ttl::vector<std::string> karma_titles;
-    ttl::vector<t_dword> noto_karma_ranges;
-    ttl::vector<t_dword> noto_fame_ranges;
+    ttl::vector<dword_t> noto_karma_ranges;
+    ttl::vector<dword_t> noto_fame_ranges;
     ttl::vector<std::string> noto_titles;
     ttl::vector<std::string> runes;
-    std::vector<std::pair<t_udword, t_udword> > crypto_keys;
+    std::vector<std::pair<udword_t, udword_t> > crypto_keys;
     // Maps.
     std::vector<MapFile> map_files;
     std::vector<std::pair<t_ubyte, t_ubyte>> maps;

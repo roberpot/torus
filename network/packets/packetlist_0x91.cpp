@@ -12,12 +12,13 @@
  * along with Torus. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "packetlist.h"
-#include "../socket.h"
-#include "../../debug/info.h"
+#include <network/packets/packetlist.h>
+#include <network/socket.h>
+#include <debug_support/info.h>
+#include <shell.h>
 
 
-const t_udword Packet_0x91::length()
+const udword_t Packet_0x91::length()
 {
     return 62;
 }
@@ -26,7 +27,7 @@ void Packet_0x91::loads(Socket* s)
 {
     s->read_string(*s, *accName, 30);
     s->read_string(*s, *accPassword, 30);
-    byte command;
+    t_byte command;
     *s >> command;
     std::stringstream str;
     str << "Account connection request from ";

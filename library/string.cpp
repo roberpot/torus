@@ -14,13 +14,13 @@
 
 #include <iomanip>
 #include <sstream>
-#include "string.h"
+#include <library/string.h>
 
-std::string print_hex_buffer(const t_byte * buffer, t_udword len) {
+std::string print_hex_buffer(const t_byte * buffer, udword_t len) {
     std::stringstream s;
     s << std::hex;
-    for (t_udword i = 0; i < len; i++) {
-        s << ":"  << std::setfill('0') << std::setw(2) << (t_dword)(t_udword)buffer[i];
+    for (udword_t i = 0; i < len; i++) {
+        s << ":"  << std::setfill('0') << std::setw(2) << (dword_t)(udword_t)buffer[i];
     }
     return s.str();
 }
@@ -46,31 +46,31 @@ std::string remove_prefix(const t_byte * p, const t_byte * s) {
     return remove_prefix(p, ss);
 }
 
-std::string hex_dump_buffer(const t_byte * buffer, const t_udword size) {
+std::string hex_dump_buffer(const t_byte * buffer, const udword_t size) {
     std::stringstream s;
-    t_udword lines = size / 10;
-    t_udword current_line_size;
+    udword_t lines = size / 10;
+    udword_t current_line_size;
     if (size % 10) lines++;
     s << " ## | 00 01 02 03 04 05 06 07 08 09 | *RAW**RAW* |" << std::endl;
     s << "----|-------------------------------|------------|" << std::endl;
-    for(t_udword current_line = 0; current_line < lines; ++current_line) {
+    for(udword_t current_line = 0; current_line < lines; ++current_line) {
         s << " " << std::setfill(' ') << std::setw(2) << current_line << " | ";
         current_line_size = 10;
         if (current_line == (lines - 1) && size % 10) current_line_size = size % 10;
-        for(t_udword curr_byte = 0; curr_byte < current_line_size; ++curr_byte) {
+        for(udword_t curr_byte = 0; curr_byte < current_line_size; ++curr_byte) {
             s << hex(buffer[10 * current_line + curr_byte]) << " ";
         }
         if (current_line == (lines - 1) && size % 10) {
-            for (t_udword extra = size % 10; extra < 10; ++extra) {
+            for (udword_t extra = size % 10; extra < 10; ++extra) {
                 s << "   ";
             }
         }
         s << "| ";
-        for(t_udword curr_byte = 0; curr_byte < current_line_size; ++curr_byte) {
+        for(udword_t curr_byte = 0; curr_byte < current_line_size; ++curr_byte) {
             s << buffer[10 * current_line + curr_byte];
         }
         if (current_line == (lines - 1) && size % 10) {
-            for (t_udword extra = size % 10; extra < 10; ++extra) {
+            for (udword_t extra = size % 10; extra < 10; ++extra) {
                 s << " ";
             }
         }

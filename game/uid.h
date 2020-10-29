@@ -15,7 +15,7 @@
 #ifndef __TORUS_GAME_UID_H_
 #define __TORUS_GAME_UID_H_
 
-#include "../library/types.h"
+#include <library/types.h>
 
 #define UID_CLEAR        0x00000000
 #define UID_CHAR        0x0
@@ -25,7 +25,7 @@
 
 class Uid {
 private:
-    t_udword _uid;    ///< numeric value.
+    udword_t _uid;    ///< numeric value.
 protected:
     /**
     * @brief Sets the Uid for this obj.
@@ -33,8 +33,8 @@ protected:
     * Creates a new Uid, also checks the current higher value to keep track of the last used value.
     * @param uid the Uid.
     */
-    void set_uid(t_udword uid);
-    static t_udword highest_uid;
+    void set_uid(udword_t uid);
+    static udword_t highest_uid;
     /**
     * @brief New Uid constructor.
     *
@@ -47,7 +47,7 @@ protected:
     * Receives a already existing Uid (loading from save?) and sets it.
     * @param uid the Uid.
     */
-    Uid(t_udword uid);
+    Uid(udword_t uid);
     ~Uid();
     /**
     * @brief Find and set a new Uid for this object.
@@ -66,20 +66,20 @@ protected:
     *
     * @param mask The mask type (UID_ITEM, UID_RESOURCE...).
     */
-    void set_uid_type(t_udword mask);
+    void set_uid_type(udword_t mask);
 public:
     /**
     * @brief Returns this uid.
     *
     * @return this Uid.
     */
-    t_udword get_uid();
+    udword_t get_uid();
     /**
     * @brief Returns the real uid.
     *
     * @return the real uid (without type masks).
     */
-    t_udword get_uid_base();
+    udword_t get_uid_base();
     /**
     * @brief Checks if this Uid corresponds to a item.
     *

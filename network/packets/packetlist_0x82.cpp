@@ -12,12 +12,12 @@
  * along with Torus. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "packetlist.h"
-#include "../socket.h"
-#include "../../debug/info.h"
+#include <network/packets/packetlist.h>
+#include <network/socket.h>
+#include <debug_support/info.h>
 
 
-const t_udword Packet_0x82::length()
+const udword_t Packet_0x82::length()
 {
     ADDTOCALLSTACK();
     return 2;

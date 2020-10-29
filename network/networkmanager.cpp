@@ -12,13 +12,13 @@
  * along with Torus. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "networkmanager.h"
-#include "../core/config.h"
-#include "../core/errors.h"
-#include "../shell.h"
-#include "../threads/utils.h"
-#include "../debug/callstack.h"
-#include "../debug/info.h"
+#include <network/networkmanager.h>
+#include <core/config.h>
+#include <core/errors.h>
+#include <shell.h>
+#include <threads/utils.h>
+#include <debug_support/callstack.h>
+#include <debug_support/info.h>
 
 class NetworkManager torusnet;
 
@@ -72,7 +72,7 @@ void * NetworkManager::NetworkClientConector::run() {
     _run = true;
 #ifdef _WINDOWS
     WSADATA wsadata;
-    t_dword status;
+    dword_t status;
     status = WSAStartup(MAKEWORD(2,2), &wsadata);
     if (status != 0) {
         THROW_ERROR(NetworkError, "WSAStartup failed with error: " << status);

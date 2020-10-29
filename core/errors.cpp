@@ -12,7 +12,7 @@
  * along with Torus. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "errors.h"
+#include <core/errors.h>
 
 NetworkError::NetworkError(const t_byte * e) {
     _error = e;

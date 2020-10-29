@@ -12,4 +12,13 @@
  * along with Torus. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "debug.h"
+#ifndef __TORUS_MEMORY_H
+#define __TORUS_MEMORY_H
+
+namespace ttl {
+    namespace internal {
+        void* memcpy(void* __dest, const void* __src, size_t __n);
+    }
+}
+
+#endif //TORUS_MEMORY_H

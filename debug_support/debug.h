@@ -20,10 +20,10 @@
 #endif //DEBUG_MODE
 
 #if DEBUG_MODE > 0
-#include "../shell.h"
-#include "../library/string.h"
 #include <string>
 #include <sstream>
+#include <shell.h>
+#include <library/string.h>
 #define _DBG_MSG(x, y) TORUSSHELLECHO(x << "::" << remove_prefix(SOURCE_PATH, __FILE__) << "(" << __LINE__ << ")::" << __func__ << ": " << y);
 #else //DEBUG_MODE > 0
 #define _DBG_MSG(x, y)
@@ -60,3 +60,4 @@
 #endif
 
 #endif //__TORUS_DEBUG_H
+

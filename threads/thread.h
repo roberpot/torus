@@ -34,10 +34,10 @@ public:
     /** @name Interaction:
     */
     ///@{
-    t_dword start();
+    dword_t start();
     virtual void * run() = 0;
-    t_dword stop();
-    t_dword join();
+    dword_t stop();
+    dword_t join();
     ///@}
 private:
     static void * _run(void * c);

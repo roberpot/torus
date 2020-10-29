@@ -12,15 +12,15 @@
 * along with Torus. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "item.h"
-#include "../debug/callstack.h"
-#include "server.h"
+#include <game/item.h>
+#include <debug_support/callstack.h>
+#include <game/server.h>
 
 Item::Item() : Artifact(UID_ITEM) {
     ADDTOCALLSTACK();
 }
 
-Item::Item(t_udword uid) : Artifact(uid) {
+Item::Item(udword_t uid) : Artifact(uid) {
     ADDTOCALLSTACK();
 }
 
