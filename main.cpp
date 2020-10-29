@@ -18,7 +18,7 @@
 #include "core/torus.h"
 #include "core/config.h"
 #include "shell.h"
-#include "debug/debug.h"
+#include "debug_support/debug.h"
 #include "core/slave.h"
 #include "game/uo_files/uo_file_manager.h"
 

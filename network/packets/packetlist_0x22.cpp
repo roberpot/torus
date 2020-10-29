@@ -13,10 +13,10 @@
  */
 
 
+#include <library/system_headers.h>
 #include <debug_support/info.h>
 #include <game/client.h>
 #include <game/char.h>
-#include <library/system_headers.h>
 #include <network/packets/packetlist.h>
 #include <network/socket.h>
 
