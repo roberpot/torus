@@ -64,6 +64,14 @@ void Client::add_response_code(Packet_0x82::ResponseCode code)
     send(packet);
 }
 
+void Client::event_disconnect()
+{
+    if (_char != nullptr) {
+        _char = nullptr;
+        //
+    }
+}
+
 Char * Client::get_char() {
     ADDTOCALLSTACK();
     return _char;

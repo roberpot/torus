@@ -47,12 +47,14 @@
 
 class Account;
 class Item;
+class Client;
 
 class Char : 
     public Artifact,
     public CharProps {
 private:
     CharStats _stats[STATS_QTY];
+    Client* _client;         ///< Client attached to this char.
     ~Char();
 public:
     Char();
@@ -69,6 +71,9 @@ private:
 public:
     Account *get_account();
     void set_account(Account *account);
+    void attach_client(Client* client);
+    void detatch_client();
+    Client* get_client();
 public:
     uword_t get_status_flag(Char *viewer);
     bool can_equip(udword_t iflags);

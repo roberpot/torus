@@ -18,16 +18,19 @@
 #include <game/item.h>
 #include <game/account.h>
 #include <game/server.h>
+#include "client.h"
 
 Char::Char() : Artifact(UID_CHAR) {
     ADDTOCALLSTACK();
-    _account = NULL;
+    _account = nullptr;
+    _client = nullptr;
     server.add_char(this);
 }
 
 Char::Char(udword_t uid) : Artifact(uid) {
     ADDTOCALLSTACK();
-    _account = NULL;
+    _account = nullptr;
+    _client = nullptr;
     server.add_char(this);
 }
 
@@ -92,6 +95,21 @@ Account * Char::get_account() {
 void Char::set_account(Account * account) {
     ADDTOCALLSTACK();
     _account = account;
+}
+
+void Char::attach_client(Client* client)
+{
+    _client = client;
+}
+
+void Char::detatch_client()
+{
+    _client = nullptr;
+}
+
+Client* Char::get_client()
+{
+    return _client;
 }
 
 uword_t Char::get_status_flag(Char *viewer) {

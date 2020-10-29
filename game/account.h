@@ -47,12 +47,12 @@ enum PRIVLVL
 
 class Account {
 private:
-    std::string _name;    ///< Account name, used mostly for login.
-    std::string _password;///< Account password.
-    std::vector<Char *> _charlist;     ///< Character's list.
+    std::string _name;      ///< Account name, used mostly for login.
+    std::string _password;  ///< Account password.
+    std::vector<Char *> _charlist;  ///< Character's list.
     udword_t _flags;        ///< Account flags.
     uword_t _expansion;     ///< Expansion level this account has access.
-    std::string _lastip;  ///< Last IP connected to this account.
+    std::string _lastip;    ///< Last IP connected to this account.
     Socket *_socket;        ///< Pointer to the socket currently connected to this account.
     PRIVLVL _privlevel;
 public:

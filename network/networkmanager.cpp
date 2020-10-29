@@ -35,7 +35,7 @@ void * NetworkManager::run() {
         UNREFERENCED_PARAMETER(p);
         for (unsigned int i = 0; i < l; i++) {
             s = _sockets[i];
-            while (s->data_ready()) {
+            while ((s->is_closing() == false) && s->data_ready()) {
                 p = s->read_packet();
             }
         }

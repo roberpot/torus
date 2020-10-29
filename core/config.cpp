@@ -132,7 +132,7 @@ void Config::_reset() {
     torustable_file = "scripts/torustable.tscp";
     net_addr = new char[10];
     strcpy(net_addr, "127.0.0.1");
-    net_port = 2593;
+    net_port = 2595;
     tick_duration = 250;
     tick_duration_overloaded = 225;
     tick_duration_idle = 30;

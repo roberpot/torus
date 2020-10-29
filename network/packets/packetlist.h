@@ -146,6 +146,15 @@ public:
     ~Packet_0x82();
 };
 
+class Packet_0x8c : public Packet {
+public:
+    const udword_t length();
+    void loads(const t_byte*) {}
+    void loads(Socket*) {}
+    void set_data(Socket *s);
+    ~Packet_0x8c();
+};
+
 class Packet_0x91 : public Packet {  //LoginCredentials & ServerListRequest
     std::string accName[30];
     std::string accPassword[30];

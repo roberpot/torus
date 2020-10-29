@@ -28,6 +28,9 @@ Packet * packet_factory(Socket & s) {
     s >> t;
     Packet * p = nullptr;
     switch(t) {
+        case 0x00:
+            p = new Packet_0x00();
+            break;
         case 0xa0:
             p = new Packet_0xa0();
             break;

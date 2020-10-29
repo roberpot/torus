@@ -38,8 +38,8 @@ void Packet_0x80::loads(Socket* s)
     if (s == nullptr) { //Sometimes happens at clients' closure.
         return;
     }
-    Packet_0xa8* packet = new Packet_0xa8();
-    s->write_packet(packet);
+    /*Packet_0xa8* packet = new Packet_0xa8();
+    s->write_packet(packet);*/
 
     s->get_client()->add_response_code(Packet_0x82::ResponseCode::Success);
 }

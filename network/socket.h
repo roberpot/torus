@@ -109,6 +109,16 @@ public:
     void write_packet(Packet * p);
 
     /**
+    * @brief Returns true if the socket is already closed but not yet deleted.
+    *
+    * @return true if it is closed.
+    */
+    bool is_closing();
+
+    void set_closing();
+
+
+    /**
      * @brief forced reader for strings
      *
      * @param s The socket to read from.
@@ -159,7 +169,7 @@ private:
      */
     void _rewind(t_byte * b, udword_t l);
 
-    t_byte * buffer;        ///< Buffer for IO data.    
+    t_byte * buffer;        ///< Buffer for incoming data.    
     t_byte * rewinded;      ///< Copy of the buffer to handle rewinds.
     udword_t buffer_len;    ///< Lenght of the Socket's buffer.
     udword_t rewinded_len;  ///< Lenght of the rewinded buffer.
@@ -167,6 +177,7 @@ private:
     Crypto * crypto;        ///< Encryption handler.
     socket_t _socket;       ///< Pointer to the socket_t.
     Client *_client;        ///< Pointer to the attached game Client.
+    bool _is_closing;
 #ifdef __linux__
     socket_t _accepted_socket;  ///< Pointer to the connection socket for linux builds.
 #endif //__linux__

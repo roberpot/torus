@@ -50,6 +50,7 @@ Socket::Socket() {
 #endif //__linux__
     buffer = new char[1024];
     _client = 0;
+    _is_closing = false;
 }
 
 Socket::Socket(socket_t s) {
@@ -222,6 +223,16 @@ void Socket::write_packet(Packet * p) {
     delete p;
 }
 
+bool Socket::is_closing()
+{
+    return _is_closing;
+}
+
+void Socket::set_closing()
+{
+    _is_closing = true;
+}
+
 void Socket::read_string(Socket& s, std::string& str, int len)
 {
     ADDTOCALLSTACK();
@@ -291,7 +302,8 @@ void Socket::_rewind(t_byte * b, udword_t l) {
 void Socket::shutdown() {
     ADDTOCALLSTACK();
 #ifdef _WINDOWS
-    dword_t status = ::shutdown(_socket, SD_SEND);
+    set_closing();
+    udword_t status = ::shutdown(_socket, SD_SEND);
     if (status == SOCKET_ERROR) {
         closesocket(_socket);
         THROW_ERROR(NetworkError, "shutdown failed with error: " << WSAGetLastError());

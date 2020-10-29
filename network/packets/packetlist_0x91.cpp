@@ -34,8 +34,13 @@ void Packet_0x91::loads(Socket* s)
     str << accName->c_str();
     TORUSSHELLECHO(str.str());
 
-    Packet_0xa8 *packet = new Packet_0xa8();
+    /*Packet_0xa8 *packet = new Packet_0xa8();
+    s->write_packet(packet);*/
+
+    Packet_0x82* packet = new Packet_0x82();
+    packet->set_data(Packet_0x82::ResponseCode::Success);
     s->write_packet(packet);
+    s->set_closing();  // Must disconnect the client from login server
 }
 
 Packet_0x91::~Packet_0x91()

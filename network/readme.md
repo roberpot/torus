@@ -46,3 +46,7 @@ The Socket delete it automatically, there's no need to manage it's memory.
 2) With the last process done we have enough data to handle the connection and the client is waiting for confirmation so we send packet 0xa8, which contains the server's list.
 
 3) The client has now the server's list, when one server is selected the client sends packet 0x80 with the account's information, which must here be checked for validity/etc, after all checks have been done we must send back to the client a packet 0x82 containing the connection response code, being 255 if the login attempt was correct.
+
+4)Client sends back packet 0xa0 and the server must reply with 0x8c sending IP in reverse order, port and CustomerID (must be calculated with zlib and account's name)
+
+

@@ -36,6 +36,7 @@ private:
 public:
     void event_walk(t_ubyte dir, t_ubyte seq);
     void add_response_code(Packet_0x82::ResponseCode code);
+    void event_disconnect();
 private:
     Char *_char;
 public:

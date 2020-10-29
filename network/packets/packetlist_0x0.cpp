@@ -13,4 +13,27 @@
  */
 
 
-#include <network/packets/packetlist.h>
+#include "packetlist.h"
+#include "../socket.h"
+#include "../debug_support/info.h"
+#include "../core/torus.h"
+#include "../game/client.h"
+
+const udword_t Packet_0x00::length() {
+    ADDTOCALLSTACK();
+    return 7;
+}
+
+void Packet_0x00::loads(const t_byte* b) {
+    ADDTOCALLSTACK();
+    UNREFERENCED_PARAMETER(b);
+}
+
+void Packet_0x00::loads(Socket* s) {
+    ADDTOCALLSTACK();
+
+}
+
+Packet_0x00::~Packet_0x00() {
+    ADDTOCALLSTACK();
+}

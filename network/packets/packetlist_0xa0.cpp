@@ -26,6 +26,10 @@ void Packet_0xa0::loads(Socket * s) {
     ADDTOCALLSTACK();
     word_t serverIndex;
     *s >> serverIndex;
+    if (serverIndex > 0x80) {
+        serverIndex -= 0x80;
+    }
+    TORUSSHELLECHO("Connection received to server index : " << serverIndex);
 
     //TODO: Receive and handle disconnect from loginserver, send character list and send client' flags.
 }
