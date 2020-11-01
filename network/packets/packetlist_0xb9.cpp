@@ -15,35 +15,18 @@
 #include <network/packets/packetlist.h>
 #include <network/socket.h>
 #include <debug_support/info.h>
-#include <shell.h>
 
 
-const udword_t Packet_0x91::length()
-{
-    return 62;
+const udword_t Packet_0xb9::length() {
+    ADDTOCALLSTACK();
+    return 21;
 }
 
-void Packet_0x91::loads(Socket* s)
+void Packet_0xb9::set_data(dword_t seq, Client* client)
 {
-    s->read_string(*s, *accName, 30);
-    s->read_string(*s, *accPassword, 30);
-    t_byte command;
-    *s >> command;
-    std::stringstream str;
-    str << "Account connection request from ";
-    str << accName->c_str();
-    TORUSSHELLECHO(str.str());
-
-    /*Packet_0xa8 *packet = new Packet_0xa8();
-    s->write_packet(packet);*/
-
-    Packet_0xb9* packet = new Packet_0xb9();
-    dword_t featureFlags = 1;
-    packet->set_data(featureFlags, s->get_client());
-    s->write_packet(packet);
-    s->set_closing();  // Must disconnect the client from login server
+    write_dword(1);
 }
 
-Packet_0x91::~Packet_0x91()
+Packet_0xb9::~Packet_0xb9()
 {
 }

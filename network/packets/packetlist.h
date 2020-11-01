@@ -44,6 +44,15 @@ public:
     ~Packet_0x02();
 };
 
+class Packet_0xb9 : public Packet { // Supported Features
+public:
+    const udword_t length();
+    void loads(const t_byte*) {}
+    void loads(Socket*) {}
+    void set_data(dword_t seq, Client* client);
+    ~Packet_0xb9();
+};
+
 class Packet_0xef : public Packet {
 public:
     const udword_t length();
