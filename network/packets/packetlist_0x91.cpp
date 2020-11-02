@@ -42,6 +42,10 @@ void Packet_0x91::loads(Socket* s)
     packet->set_data(featureFlags, s->get_client());
     s->write_packet(packet);
     s->set_closing();  // Must disconnect the client from login server
+
+    Packet_0xa9 *packetCharacterList = new Packet_0xa9();
+    packetCharacterList->set_data(s->get_client());
+    s->write_packet(packetCharacterList);
 }
 
 Packet_0x91::~Packet_0x91()

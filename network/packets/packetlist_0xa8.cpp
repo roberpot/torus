@@ -33,10 +33,13 @@ Packet_0xa8::Packet_0xa8()
     serverName << "TestServer"; //TODO: Send real Server's name
     t_ubyte serverPercentFull = 0;
     t_ubyte serverTimeZone = 0;
+
+
     set_packet_id(0xa8); //packet_id
-    //write_word(46);
-    write_byte(0x0);
+    init_length();
     //write_word(0);    //Skip packet's size since it's being inserted at the end
+    write_byte(0xFF);   // ?
+
     write_word(serversCount);   // TODO: Write later, after filling all the servers
 
     //TODO: Send all servers in a loop
@@ -64,11 +67,12 @@ Packet_0xa8::Packet_0xa8()
     write_byte(ip & 0xFF);
     //Clients older than 4.0.0 must receive IP in reversed order.
     
-    for (udword_t o = 0; o < buffer.size(); ++o)
+    /*for (udword_t o = 0; o < buffer.size(); ++o)
     {
         TORUSSHELLECHO("byte[" << o << "] = " << (int)buffer[o]);
-    }
-    write_word((t_ubyte)buffer.size() +2, 2);
+    }*/
+    //write_word((t_ubyte)buffer.size() +2, 2);
+    write_length();
 }
 
 Packet_0xa8::~Packet_0xa8() {

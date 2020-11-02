@@ -203,7 +203,7 @@ Packet* Socket::read_packet() {
 
 void Socket::write_packet(Packet * p) {
     ADDTOCALLSTACK();
-    p->print();
+    p->print("Sending");
 #ifdef _WINDOWS
     udword_t data_sended = send(_socket, p->dumps(), p->length(), 0);
     if (data_sended == SOCKET_ERROR) {

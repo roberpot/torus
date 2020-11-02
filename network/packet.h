@@ -37,6 +37,9 @@ public:
      * @return  The lenght.
      */
     const udword_t length();
+
+    void init_length();
+    void write_length();
     /**
      * @brief   Dumps the buffer.
      *
@@ -81,7 +84,7 @@ public:
     void write_qword(qword_t val, int pos = -1);
     void write_uqword(uqword_t val, int pos = -1);
 
-    void print();
+    void print(std::string ioType);
 
 private:
 };

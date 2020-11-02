@@ -41,6 +41,7 @@ set(PACKET_FILES
         network/packets/packetlist_0x0.cpp
         network/packets/packetlist_0x02.cpp
         network/packets/packetlist_0xef.cpp
+        network/packets/packetlist_0xa9.cpp
         network/packets/packetlist_0xb9.cpp
         network/packets/packetlist_0x21.cpp
         network/packets/packetlist_0x22.cpp

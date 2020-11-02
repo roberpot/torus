@@ -81,6 +81,16 @@ const udword_t Packet::length() {
     return (udword_t)buffer.size();// len;
 }
 
+void Packet::init_length()
+{
+    write_word(0);
+}
+
+void Packet::write_length()
+{
+    buffer[2] = buffer.size();
+}
+
 void Packet::send(Socket * socket) {
     ADDTOCALLSTACK();
     //if (buffer) {
@@ -282,10 +292,10 @@ void Packet::write_uqword(uqword_t val, int pos)
     }
 }
 
-void Packet::print()
+void Packet::print(std::string ioType)
 {
     std::stringstream ss;
-    ss << "Sending ";
+    ss << ioType;
     ss << length();
     ss << " bytes in raw data:";
     for (udword_t i = 0; i < length(); ++i) {
