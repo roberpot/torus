@@ -29,9 +29,9 @@ private:
     void _add_client(Socket * s);
     std::vector<Socket *> _sockets;
     bool _run;
-    class NetworkClientConector : public Thread {
+    class NetworkClientConnector : public Thread {
     public:
-        NetworkClientConector();
+        NetworkClientConnector();
         void * run();
         void halt();
     private:

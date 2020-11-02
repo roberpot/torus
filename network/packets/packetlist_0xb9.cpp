@@ -24,6 +24,8 @@ const udword_t Packet_0xb9::length() {
 
 void Packet_0xb9::set_data(dword_t seq, Client* client)
 {
+    UNREFERENCED_PARAMETER(seq);
+    UNREFERENCED_PARAMETER(client);
     write_dword(1);
 }
 

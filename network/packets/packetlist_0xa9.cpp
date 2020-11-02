@@ -24,6 +24,7 @@ const udword_t Packet_0xa9::length() {
 
 void Packet_0xa9::set_data(Client* client)
 {
+    UNREFERENCED_PARAMETER(client); // TODO: Gather packet's data from client.
     t_byte charCount = 1;
     write_byte(charCount);  //characters count
     for (t_byte i = 0; i < charCount; ++i)
@@ -33,10 +34,10 @@ void Packet_0xa9::set_data(Client* client)
         std::string tmpName = "XuN";
         nameStr.insert(0, 30 - tmpName.size(), 0);
         nameStr.insert(0, tmpName.c_str());
-        write_string(nameStr, nameStr.size());
+        write_string(nameStr, int(nameStr.size()));
         //char[30] - password (empty?)
         std::string passwordStr(30, 0);
-        write_string(passwordStr, passwordStr.size());
+        write_string(passwordStr, int(passwordStr.size()));
     }
 
     t_byte cityCount = 0;

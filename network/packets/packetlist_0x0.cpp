@@ -31,7 +31,7 @@ void Packet_0x00::loads(const t_byte* b) {
 
 void Packet_0x00::loads(Socket* s) {
     ADDTOCALLSTACK();
-
+    UNREFERENCED_PARAMETER(s);
 }
 
 Packet_0x00::~Packet_0x00() {

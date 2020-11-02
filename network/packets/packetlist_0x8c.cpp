@@ -24,6 +24,7 @@ const udword_t Packet_0x8c::length() {
 
 void Packet_0x8c::set_data(Socket* s)
 {
+    UNREFERENCED_PARAMETER(s);
     udword_t ip = 16777343;  //127.0.0.1    //TODO: send real IP
     write_byte(ip & 0xFF);
     write_byte((ip >> 8) & 0xFF);
