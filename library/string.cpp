@@ -48,29 +48,30 @@ std::string remove_prefix(const t_byte * p, const t_byte * s) {
 
 std::string hex_dump_buffer(const t_byte * buffer, const udword_t size) {
     std::stringstream s;
-    udword_t lines = size / 10;
+    udword_t line_size = 16;
+    udword_t lines = size / line_size;
     udword_t current_line_size;
-    if (size % 10) lines++;
+    if (size % line_size) lines++;
     s << " ## | 00 01 02 03 04 05 06 07 08 09 | *RAW**RAW* |" << std::endl;
     s << "----|-------------------------------|------------|" << std::endl;
     for(udword_t current_line = 0; current_line < lines; ++current_line) {
         s << " " << std::setfill(' ') << std::setw(2) << current_line << " | ";
-        current_line_size = 10;
-        if (current_line == (lines - 1) && size % 10) current_line_size = size % 10;
+        current_line_size = line_size;
+        if (current_line == (lines - 1) && size % line_size) current_line_size = size % line_size;
         for(udword_t curr_byte = 0; curr_byte < current_line_size; ++curr_byte) {
-            s << hex(buffer[10 * current_line + curr_byte]) << " ";
+            s << hex(buffer[line_size * current_line + curr_byte]) << " ";
         }
-        if (current_line == (lines - 1) && size % 10) {
-            for (udword_t extra = size % 10; extra < 10; ++extra) {
+        if (current_line == (lines - 1) && size % line_size) {
+            for (udword_t extra = size % line_size; extra < line_size; ++extra) {
                 s << "   ";
             }
         }
         s << "| ";
         for(udword_t curr_byte = 0; curr_byte < current_line_size; ++curr_byte) {
-            s << buffer[10 * current_line + curr_byte];
+            s << buffer[line_size * current_line + curr_byte];
         }
-        if (current_line == (lines - 1) && size % 10) {
-            for (udword_t extra = size % 10; extra < 10; ++extra) {
+        if (current_line == (lines - 1) && size % line_size) {
+            for (udword_t extra = size % line_size; extra < line_size; ++extra) {
                 s << " ";
             }
         }
