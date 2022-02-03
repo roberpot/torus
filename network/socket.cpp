@@ -198,6 +198,10 @@ Packet* Socket::read_packet() {
     ADDTOCALLSTACK();
     Packet* p = nullptr;
     p = packet_factory(*this);
+    if (p)
+    {
+        TORUSSHELLECHO("Network receive(" << p->length() << ") "<< std::endl << hex_dump_buffer(p->dumps(), p->length()));
+    }
     return p;
 }
 
@@ -274,9 +278,6 @@ void Socket::_read_bytes(udword_t len) {
         if (buffer_len != len_remaining) {
             THROW_ERROR(NetworkError, "Error reading socket: Expected len: " << len_remaining << ", readed: " << buffer_len);
         }
-    }
-    {
-        TORUSSHELLECHO("Network receive(" << len << " [ " << init << " , " << buffer_len << " ]): " << std::endl << hex_dump_buffer(buffer, len));
     }
     buffer_len = len;
     if (crypto && crypto->has_encryption())

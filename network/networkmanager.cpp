@@ -29,14 +29,14 @@ void * NetworkManager::run() {
     _clientconnector.start();
     while (_run) {
         _m.lock();
-        size_t l = _sockets.size();
-        Socket * s;
-        Packet * p;
-        UNREFERENCED_PARAMETER(p);
-        for (unsigned int i = 0; i < l; i++) {
-            s = _sockets[i];
-            while ((s->is_closing() == false) && s->data_ready()) {
-                p = s->read_packet();
+        size_t socketsCount = _sockets.size();
+        Socket * clientSocket;
+        Packet * newPacket;
+        for (unsigned int socketId = 0; socketId < socketsCount; socketId++) {
+            clientSocket = _sockets[socketId];
+            while ((clientSocket->is_closing() == false) && clientSocket->data_ready()) {
+                newPacket = clientSocket->read_packet();
+                delete newPacket;
             }
         }
         _m.unlock();
@@ -61,12 +61,12 @@ void NetworkManager::_add_client(Socket * s) {
 }
 
 
-NetworkManager::NetworkClientConector::NetworkClientConector() {
+NetworkManager::NetworkClientConnector::NetworkClientConnector() {
     _s = 0;
     _run = false;
 }
 
-void * NetworkManager::NetworkClientConector::run() {
+void * NetworkManager::NetworkClientConnector::run() {
     ADDTOCALLSTACK();
     EXC_TRY("");
     _run = true;
@@ -87,6 +87,10 @@ void * NetworkManager::NetworkClientConector::run() {
             TORUSSHELLECHO("Client connected: IP: " << s->get_ip());
             torusnet._add_client(s);
         }
+        if (_s->is_closing())
+        {
+            _s->shutdown();
+        }
         torus_thread_sleep(50);
     }
 #ifdef _WINDOWS
@@ -98,6 +102,6 @@ void * NetworkManager::NetworkClientConector::run() {
     return 0;
 }
 
-void NetworkManager::NetworkClientConector::halt() {
+void NetworkManager::NetworkClientConnector::halt() {
     _run = false;
 }
