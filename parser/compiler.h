@@ -23,7 +23,7 @@ public:
     void add_file(std::string f);
     void compile();
 private:
-    ttl::fixedgrowingqueue<std::string> _files;
+    ttl::staticgrowingqueue<std::string> _files;
 } toruscompiler;
 
 #endif //__TORUS_COMPILER_H

@@ -16,29 +16,32 @@
 #define __TORUS_UTILITY_H
 
 #include <library/queue.h>
+#include <library/map.h>
 #include <library/stack.h>
 #include <library/vector.h>
 
 namespace ttl {
 
-    fixedstack<udword_t> __a;
-    fixedgrowingstack<udword_t> __b;
+    staticstack<udword_t> __a;
+    staticgrowingstack<udword_t> __b;
     dynamicstack<udword_t> __c;
     tsfixedstack<udword_t> __d;
     tsfixedgrowingstack<udword_t> __e;
     tsdynamicstack<udword_t> __f;
     vector<udword_t> __g;
     tsvector<udword_t> __h;
-    fixedqueue<udword_t> __i;
-    fixedgrowingqueue<udword_t> __j;
+    staticqueue<udword_t> __i;
+    staticgrowingqueue<udword_t> __j;
     dynamicqueue<udword_t> __k;
     tsfixedqueue<udword_t> __l;
     tsfixedgrowingqueue<udword_t> __m;
     tsdynamicqueue<udword_t> __n;
+    staticgrowingmap<udword_t, udword_t> __o;
+    dynamicmap<udword_t, udword_t> __q;
 
     template <typename T>
-    ttl::vector<T> stack_to_vector(ttl::fixedstack<T> s) {
-        ttl::fixedstack<T> copy(s);
+    ttl::vector<T> stack_to_vector(ttl::staticstack<T> s) {
+        ttl::staticstack<T> copy(s);
         ttl::vector<T> v;
         while (!copy.empty()) {
             v.push_back(copy.top());
@@ -48,8 +51,8 @@ namespace ttl {
     }
 
     template <typename T>
-    ttl::vector<T> stack_to_vector(ttl::fixedgrowingstack<T> s) {
-        ttl::fixedgrowingstack<T> copy(s);
+    ttl::vector<T> stack_to_vector(ttl::staticgrowingstack<T> s) {
+        ttl::staticgrowingstack<T> copy(s);
         ttl::vector<T> v;
         while (!copy.empty()) {
             v.push_back(copy.top());

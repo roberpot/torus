@@ -34,7 +34,7 @@ public:
     bool check();
     void load_all();
     void save_all();
-    ttl::tsdynamicmap<udword_t, Artifact*> _artifact_list;
+    ttl::__old_tsdynamicmap<udword_t, Artifact*> _artifact_list;
     void add_char(Char *chr);
     void add_item(Item *item);
     Artifact * get_artifact(udword_t uid);

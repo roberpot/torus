@@ -33,14 +33,14 @@
 
 namespace ttl {
     template <typename T, class Allocator = std::allocator<T>>
-    class fixedqueue {
+    class staticqueue {
     public:
-        fixedqueue(udword_t size=_TTL_QUEUE_DEFAULT_SIZE);
-        fixedqueue(const fixedqueue& o);
-        fixedqueue(fixedqueue&& o);
-        ~fixedqueue();
-        fixedqueue& operator=(const fixedqueue& o);
-        fixedqueue& operator=(fixedqueue&& o);
+        staticqueue(udword_t size=_TTL_QUEUE_DEFAULT_SIZE);
+        staticqueue(const staticqueue& o);
+        staticqueue(staticqueue&& o);
+        ~staticqueue();
+        staticqueue& operator=(const staticqueue& o);
+        staticqueue& operator=(staticqueue&& o);
 
         // Element access.
         T& front();
@@ -55,7 +55,7 @@ namespace ttl {
         void push(T&& t);
         void pop();
         void clear();
-        void swap(fixedqueue& o);
+        void swap(staticqueue& o);
     private:
         T* _queue;
         udword_t _front;
@@ -66,14 +66,14 @@ namespace ttl {
     };
 
     template <typename T, class Allocator = std::allocator<T>>
-    class fixedgrowingqueue {
+    class staticgrowingqueue {
     public:
-        fixedgrowingqueue(udword_t size=_TTL_QUEUE_DEFAULT_SIZE);
-        fixedgrowingqueue(const fixedgrowingqueue& o);
-        fixedgrowingqueue(fixedgrowingqueue&& o);
-        ~fixedgrowingqueue();
-        fixedgrowingqueue& operator=(const fixedgrowingqueue& o);
-        fixedgrowingqueue& operator=(fixedgrowingqueue&& o);
+        staticgrowingqueue(udword_t size=_TTL_QUEUE_DEFAULT_SIZE);
+        staticgrowingqueue(const staticgrowingqueue& o);
+        staticgrowingqueue(staticgrowingqueue&& o);
+        ~staticgrowingqueue();
+        staticgrowingqueue& operator=(const staticgrowingqueue& o);
+        staticgrowingqueue& operator=(staticgrowingqueue&& o);
 
         // Element access.
         T& front();
@@ -88,7 +88,7 @@ namespace ttl {
         void push(T&& t);
         void pop();
         void clear();
-        void swap(fixedgrowingqueue& o);
+        void swap(staticgrowingqueue& o);
 
     private:
         T* _queue;
@@ -169,23 +169,23 @@ namespace ttl {
     };
 
     template<typename T, class Allocator = std::allocator<T>>
-    using tsfixedqueue = __T_tsqueue<T, fixedqueue<T,Allocator>>;
+    using tsfixedqueue = __T_tsqueue<T, staticqueue<T,Allocator>>;
 
     template<typename T, class Allocator = std::allocator<T>>
-    using tsfixedgrowingqueue = __T_tsqueue<T, fixedgrowingqueue<T,Allocator>>;
+    using tsfixedgrowingqueue = __T_tsqueue<T, staticgrowingqueue<T,Allocator>>;
 
     template<typename T, class Allocator = std::allocator<T>>
     using tsdynamicqueue = __T_tsqueue<T, dynamicqueue<T,Allocator>>;
 
 
     template <typename T, class Allocator>
-    fixedqueue<T,Allocator>::fixedqueue(udword_t size) :
+    staticqueue<T,Allocator>::staticqueue(udword_t size) :
         _queue(nullptr), _front(0), _end(0), _capacity(size), _empty(true) {
         _queue = _allocator.allocate(size);
     }
 
     template <typename T, class Allocator>
-    fixedqueue<T,Allocator>::fixedqueue(const fixedqueue& o) {
+    staticqueue<T,Allocator>::staticqueue(const staticqueue& o) {
         _capacity = o._capacity;
         _front = 0;
         _end = (o._capacity + o._end - o._front) % o._capacity;
@@ -200,7 +200,7 @@ namespace ttl {
     }
 
     template <typename T, class Allocator>
-    fixedqueue<T,Allocator>::fixedqueue(fixedqueue&& o) {
+    staticqueue<T,Allocator>::staticqueue(staticqueue&& o) {
         _capacity = o._capacity;
         _front = o._front;
         _end = o._end;
@@ -212,7 +212,7 @@ namespace ttl {
     }
 
     template <typename T, class Allocator>
-    fixedqueue<T,Allocator>::~fixedqueue() {
+    staticqueue<T,Allocator>::~staticqueue() {
         if (nullptr != _queue) {
             clear();
             _allocator.deallocate(_queue, _capacity);
@@ -220,7 +220,7 @@ namespace ttl {
     }
 
     template <typename T, class Allocator>
-    fixedqueue<T,Allocator>& fixedqueue<T,Allocator>::operator=(const fixedqueue& o) {
+    staticqueue<T,Allocator>& staticqueue<T,Allocator>::operator=(const staticqueue& o) {
         if (this != &o) {
             clear();
             _allocator.deallocate(_queue, _capacity);
@@ -240,7 +240,7 @@ namespace ttl {
     }
 
     template <typename T, class Allocator>
-    fixedqueue<T,Allocator>& fixedqueue<T,Allocator>::operator=(fixedqueue&& o) {
+    staticqueue<T,Allocator>& staticqueue<T,Allocator>::operator=(staticqueue&& o) {
         if (this != &o) {
             swap(o);
         }
@@ -248,7 +248,7 @@ namespace ttl {
     }
 
     template <typename T, class Allocator>
-    T& fixedqueue<T,Allocator>::front() {
+    T& staticqueue<T,Allocator>::front() {
         if (false == _empty) {
             throw QueueError("queue is empty.");
         }
@@ -256,12 +256,12 @@ namespace ttl {
     }
 
     template <typename T, class Allocator>
-    bool fixedqueue<T,Allocator>::empty() const {
+    bool staticqueue<T,Allocator>::empty() const {
         return _empty;
     }
 
     template <typename T, class Allocator>
-    udword_t fixedqueue<T,Allocator>::size() const {
+    udword_t staticqueue<T,Allocator>::size() const {
         if (_empty) {
             return 0;
         }
@@ -272,12 +272,12 @@ namespace ttl {
     }
 
     template <typename T, class Allocator>
-    udword_t fixedqueue<T,Allocator>::capacity() const {
+    udword_t staticqueue<T,Allocator>::capacity() const {
         return _capacity;
     }
 
     template <typename T, class Allocator>
-    void fixedqueue<T,Allocator>::push(const T& t) {
+    void staticqueue<T,Allocator>::push(const T& t) {
         if (_end == _front && !_empty) {
             throw QueueError("queue is full.");
         }
@@ -287,7 +287,7 @@ namespace ttl {
     }
 
     template <typename T, class Allocator>
-    void fixedqueue<T,Allocator>::push(T&& t) {
+    void staticqueue<T,Allocator>::push(T&& t) {
         if (_end == _front && !_empty) {
             throw QueueError("queue is full.");
         }
@@ -297,7 +297,7 @@ namespace ttl {
     }
 
     template <typename T, class Allocator>
-    void fixedqueue<T,Allocator>::pop() {
+    void staticqueue<T,Allocator>::pop() {
         if (_empty) {
             throw QueueError("queue is empty.");
         }
@@ -309,14 +309,14 @@ namespace ttl {
     }
 
     template <typename T, class Allocator>
-    void fixedqueue<T,Allocator>::clear() {
+    void staticqueue<T,Allocator>::clear() {
         while(!empty()) {
             pop();
         }
     }
 
     template <typename T, class Allocator>
-    void fixedqueue<T,Allocator>::swap(fixedqueue& o) {
+    void staticqueue<T,Allocator>::swap(staticqueue& o) {
         if (this != &o) {
             T* aux = _queue;
             udword_t aux_front = _front;
@@ -334,13 +334,13 @@ namespace ttl {
     }
 
     template <typename T, class Allocator>
-    fixedgrowingqueue<T,Allocator>::fixedgrowingqueue(udword_t size) :
+    staticgrowingqueue<T,Allocator>::staticgrowingqueue(udword_t size) :
         _queue(nullptr), _front(0), _end(0), _capacity(size), _empty(true) {
         _queue = _allocator.allocate(size);
     }
 
     template <typename T, class Allocator>
-    fixedgrowingqueue<T,Allocator>::fixedgrowingqueue(const fixedgrowingqueue& o) {
+    staticgrowingqueue<T,Allocator>::staticgrowingqueue(const staticgrowingqueue& o) {
         _capacity = o._capacity;
         _front = 0;
         _end = (o._capacity + o._end - o._front) % o._capacity;
@@ -355,7 +355,7 @@ namespace ttl {
     }
 
     template <typename T, class Allocator>
-    fixedgrowingqueue<T,Allocator>::fixedgrowingqueue(fixedgrowingqueue&& o) {
+    staticgrowingqueue<T,Allocator>::staticgrowingqueue(staticgrowingqueue&& o) {
         _queue = o._queue;
         _capacity = o._capacity;
         _front = o._front;
@@ -369,7 +369,7 @@ namespace ttl {
     }
 
     template <typename T, class Allocator>
-    fixedgrowingqueue<T,Allocator>::~fixedgrowingqueue() {
+    staticgrowingqueue<T,Allocator>::~staticgrowingqueue() {
         if (nullptr != _queue) {
             clear();
             _allocator.deallocate(_queue, _capacity);
@@ -377,7 +377,7 @@ namespace ttl {
     }
 
     template <typename T, class Allocator>
-    fixedgrowingqueue<T,Allocator> & fixedgrowingqueue<T,Allocator>::operator=(const fixedgrowingqueue& o) {
+    staticgrowingqueue<T,Allocator> & staticgrowingqueue<T,Allocator>::operator=(const staticgrowingqueue& o) {
         if (this != &o) {
             clear();
             _allocator.deallocate(_queue, _capacity);
@@ -397,7 +397,7 @@ namespace ttl {
     }
 
     template <typename T, class Allocator>
-    fixedgrowingqueue<T,Allocator> & fixedgrowingqueue<T,Allocator>::operator=(fixedgrowingqueue&& o) {
+    staticgrowingqueue<T,Allocator> & staticgrowingqueue<T,Allocator>::operator=(staticgrowingqueue&& o) {
         if (this != &o) {
             swap(o);
         }
@@ -405,7 +405,7 @@ namespace ttl {
     }
 
     template <typename T, class Allocator>
-    T& fixedgrowingqueue<T,Allocator>::front() {
+    T& staticgrowingqueue<T,Allocator>::front() {
         if (_empty) {
             throw QueueError("queue is empty.");
         }
@@ -413,12 +413,12 @@ namespace ttl {
     }
 
     template <typename T, class Allocator>
-    bool fixedgrowingqueue<T,Allocator>::empty() const {
+    bool staticgrowingqueue<T,Allocator>::empty() const {
         return _empty;
     }
 
     template <typename T, class Allocator>
-    udword_t fixedgrowingqueue<T,Allocator>::size() const {
+    udword_t staticgrowingqueue<T,Allocator>::size() const {
         if (_empty) {
             return 0;
         }
@@ -429,12 +429,12 @@ namespace ttl {
     }
 
     template <typename T, class Allocator>
-    udword_t fixedgrowingqueue<T,Allocator>::capacity() const {
+    udword_t staticgrowingqueue<T,Allocator>::capacity() const {
         return _capacity;
     }
 
     template <typename T, class Allocator>
-    void fixedgrowingqueue<T,Allocator>::push(const T& t) {
+    void staticgrowingqueue<T,Allocator>::push(const T& t) {
         if (_end == _front && !_empty) {
             udword_t newcapacity = _capacity << 1;
             T * aux = _allocator.allocate(newcapacity);
@@ -454,7 +454,7 @@ namespace ttl {
     }
 
     template <typename T, class Allocator>
-    void fixedgrowingqueue<T,Allocator>::push(T&& t) {
+    void staticgrowingqueue<T,Allocator>::push(T&& t) {
         if (_end == _front && !_empty) {
             udword_t newcapacity = _capacity << 1;
             T * aux = _allocator.allocate(newcapacity);
@@ -474,7 +474,7 @@ namespace ttl {
     }
 
     template <typename T, class Allocator>
-    void fixedgrowingqueue<T,Allocator>::pop() {
+    void staticgrowingqueue<T,Allocator>::pop() {
         if (_empty) {
             throw QueueError("queue is empty.");
         }
@@ -486,14 +486,14 @@ namespace ttl {
     }
 
     template <typename T, class Allocator>
-    void fixedgrowingqueue<T,Allocator>::clear() {
+    void staticgrowingqueue<T,Allocator>::clear() {
         while(!empty()) {
             pop();
         }
     }
 
     template <typename T, class Allocator>
-    void fixedgrowingqueue<T,Allocator>::swap(fixedgrowingqueue& o) {
+    void staticgrowingqueue<T,Allocator>::swap(staticgrowingqueue& o) {
         if (this != &o) {
             T* aux = _queue;
             udword_t aux_capacity = _capacity;
@@ -765,10 +765,10 @@ namespace ttl {
     template <typename T, class Q>
     T __T_tsqueue<T,Q>::front_and_pop() {
         _mutex.lock();
-        T x = _q.front();
+        T t(_q.front());
         _q.pop();
         _mutex.unlock();
-        return x;
+        return t;
     }
 
     template <typename T, class Q>

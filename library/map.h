@@ -16,24 +16,1493 @@
 #define __TORUS_MAP_H
 
 #include <cstring>
+
+#include <functional>
+#include <memory>
+
 #include <library/types.h>
 #include <library/errors.h>
 #include <threads/mutex.h>
+#include <library/vector.h>
+#include <library/stack.h>
 
 #ifdef _MSC_VER
     #pragma warning(disable: 4521 4522)
 #endif
 
-#define _TTL_MAP_DEFAULT_SIZE 10
+#define _TTL_MAP_DEFAULT_SIZE 1
 
 namespace ttl {
 
-    template<typename K, typename V>
+    template<class K, class T, class Compare = std::less<K>, class Allocator = std::allocator<std::pair<const K, T>>>
     class staticmap {
+    public:
+        typedef std::pair<const K, T> value_type;
+
+        staticmap(udword_t size=_TTL_MAP_DEFAULT_SIZE);
+        staticmap(const staticmap& o);
+        staticmap(staticmap&& o);
+        ~staticmap();
+        staticmap& operator=(const staticmap& o);
+        staticmap& operator=(staticmap&& o);
+
+        // Element access.
+        T& at(const K& key);
+        T& operator[](const K& key);
+
+        // Capacity.
+        bool empty() const;
+        bool size() const;
+        bool capacity() const;
+        bool max_size() const;
+
+        // Modifiers.
+        void clear();
+        bool insert(const value_type& v);
+        bool insert(value_type&& v);
+        bool insert(const K& k, const T& t);
+        bool insert(const K& k, T&& t);
+        bool insert(K&& k, const T& t);
+        bool insert(K&& k, T&& t);
+        bool insert_or_assign(const value_type& v);
+        bool insert_or_assign(value_type&& v);
+        bool insert_or_assign(const K& k, const T& t);
+        bool insert_or_assign(const K& k, T&& t);
+        bool insert_or_assign(K&& k, const T& t);
+        bool insert_or_assign(K&& k, T&& t);
+        void erase(const K& k);
+        void swap(staticmap& o);
+        void merge(const staticmap& o);
+
+        // Lookup.
+        udword_t count(const K& k) const;
+        vector<K> keys() const;
+
+    private:
+        udword_t _find(const K& k) const;
+        void _insert_slice(udword_t p);
+        value_type* _map;
+        udword_t _size;
+        udword_t _capacity;
+        Compare _compare;
+        Allocator _allocator;
+    };
+
+    template<class K, class T, class Compare = std::less<K>, class Allocator = std::allocator<std::pair<const K, T>>>
+    class staticgrowingmap {
+    public:
+        typedef std::pair<const K, T> value_type;
+
+        staticgrowingmap(udword_t size=_TTL_MAP_DEFAULT_SIZE);
+        staticgrowingmap(const staticgrowingmap& o);
+        staticgrowingmap(staticgrowingmap&& o);
+        ~staticgrowingmap();
+        staticgrowingmap& operator=(const staticgrowingmap& o);
+        staticgrowingmap& operator=(staticgrowingmap&& o);
+
+        // Element access.
+        T& at(const K& key);
+        T& operator[](const K& key);
+
+        // Capacity.
+        bool empty() const;
+        bool size() const;
+        bool capacity() const;
+        bool max_size() const;
+
+        // Modifiers.
+        void clear();
+        bool insert(const value_type& v);
+        bool insert(value_type&& v);
+        bool insert(const K& k, const T& t);
+        bool insert(const K& k, T&& t);
+        bool insert(K&& k, const T& t);
+        bool insert(K&& k, T&& t);
+        bool insert_or_assign(const value_type& v);
+        bool insert_or_assign(value_type&& v);
+        bool insert_or_assign(const K& k, const T& t);
+        bool insert_or_assign(const K& k, T&& t);
+        bool insert_or_assign(K&& k, const T& t);
+        bool insert_or_assign(K&& k, T&& t);
+        void erase(const K& k);
+        void swap(staticgrowingmap& o);
+        void merge(const staticgrowingmap& o);
+
+        // Lookup.
+        udword_t count(const K& k) const;
+        vector<K> keys() const;
+
+    private:
+        udword_t _find(const K& k) const;
+        void _insert_slice(udword_t p);
+        value_type* _map;
+        udword_t _size;
+        udword_t _capacity;
+        Compare _compare;
+        Allocator _allocator;
+    };
+
+    template<class K, class T, class Compare = std::less<K>, class Allocator = std::allocator<std::pair<const K, T>>>
+    class dynamicmap {
+    public:
+        typedef std::pair<const K, T> value_type;
+
+        dynamicmap(udword_t size=_TTL_MAP_DEFAULT_SIZE);
+        dynamicmap(const dynamicmap& o);
+        dynamicmap(dynamicmap&& o);
+        ~dynamicmap();
+        dynamicmap& operator=(const dynamicmap& o);
+        dynamicmap& operator=(dynamicmap&& o);
+
+        // Element access.
+        T& at(const K& key);
+        T& operator[](const K& key);
+
+        // Capacity.
+        bool empty() const;
+        bool size() const;
+        bool capacity() const;
+        bool max_size() const;
+
+        // Modifiers.
+        void clear();
+        bool insert(const value_type& v);
+        bool insert(value_type&& v);
+        bool insert(const K& k, const T& t);
+        bool insert(const K& k, T&& t);
+        bool insert(K&& k, const T& t);
+        bool insert(K&& k, T&& t);
+        bool insert_or_assign(const value_type& v);
+        bool insert_or_assign(value_type&& v);
+        bool insert_or_assign(const K& k, const T& t);
+        bool insert_or_assign(const K& k, T&& t);
+        bool insert_or_assign(K&& k, const T& t);
+        bool insert_or_assign(K&& k, T&& t);
+        void erase(const K& k);
+        void swap(dynamicmap& o);
+        void merge(const dynamicmap& o);
+
+        // Lookup.
+        udword_t count(const K& k) const;
+        vector<K> keys() const;
+
+    private:
+        struct Node {
+            enum Color {RED, BLACK} color;
+            value_type v;
+            Node* parent;
+            Node* left;
+            Node* right;
+
+            Node(Node* p, const K& k);
+            ~Node();
+            Node* grandfather() const;
+            Node* uncle() const;
+            Node* sibling() const;
+            void rotate_left(Node** root);
+            void rotate_right(Node** root);
+            bool is_on_tree() const;
+            static bool is_black(Node* n);
+            static bool is_red(Node* n);
+        };
+        Node* _find(const K& k) const;
+        void _insert_slice(Node* node);
+        value_type* _map;
+        udword_t _size;
+        Compare _compare;
+        Allocator _allocator;
+    };
+
+    /**
+     * Implementation.
+     */
+
+    template<class K, class T, class Compare, class Allocator>
+    staticmap<K,T,Compare,Allocator>::staticmap(udword_t size) :
+            _size(0), _capacity(size) {
+        _map = _allocator.allocate(_capacity);
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    staticmap<K,T,Compare,Allocator>::staticmap(const staticmap& o) :
+            _size(o._size), _capacity(o._capacity) {
+        _map = _allocator.allocate(_capacity);
+        for (udword_t i = 0; i < _size; ++i) {
+            _allocator.construct(&(_map[i]), o._map[i]);
+        }
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    staticmap<K,T,Compare,Allocator>::staticmap(staticmap&& o) {
+        _map = o._map;
+        _size = o._size;
+        _capacity = o._capacity;
+        o._map = nullptr;
+        o._size = 0;
+        o._capacity = 0;
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    staticmap<K,T,Compare,Allocator>::~staticmap() {
+        if (nullptr != _map) {
+            clear();
+            _allocator.deallocate(_map, _capacity);
+        }
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    staticmap<K,T,Compare,Allocator>& staticmap<K,T,Compare,Allocator>::operator=(const staticmap& o) {
+        if (this != &o) {
+            value_type* aux = _map;
+            udword_t aux_size = _size;
+            udword_t aux_capacity = _capacity;
+            _map = o._map;
+            _size = o._size;
+            _capacity = o._capacity;
+            o._map = aux;
+            o._size = aux_size;
+            o._capacity = aux_capacity;
+        }
+        return *this;
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    staticmap<K,T,Compare,Allocator>& staticmap<K,T,Compare,Allocator>::operator=(staticmap&& o) {
+        if (this != &o) {
+            value_type* aux = _map;
+            udword_t aux_size = _size;
+            udword_t aux_capacity = _capacity;
+            _map = o._map;
+            _size = o._size;
+            _capacity = o._capacity;
+            o._map = aux;
+            o._size = aux_size;
+            o._capacity = aux_capacity;
+        }
+        return *this;
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    T& staticmap<K,T,Compare,Allocator>::at(const K& key) {
+        udword_t p = _find(key);
+        if (Compare(_map[p].first, key) || Compare(key, _map[p].first)) {
+            throw MapError("Key not found on map");
+        }
+        return _map[p].second;
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    T& staticmap<K,T,Compare,Allocator>::operator[](const K& key) {
+        udword_t p = _find(key);
+        if (_compare(_map[p].first, key) || _compare(key, _map[p].first)) {
+            if (_size == _capacity) {
+                throw MapError("No space on map");
+            }
+            _insert_slice(p);
+            _allocator.allocate(&(_map[p]), std::make_pair(key, T()));
+        }
+        return _map[p].second;
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    bool staticmap<K,T,Compare,Allocator>::empty() const {
+        return _size == 0;
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    bool staticmap<K,T,Compare,Allocator>::size() const {
+        return _size;
+
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    bool staticmap<K,T,Compare,Allocator>::capacity() const {
+        return _capacity;
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    bool staticmap<K,T,Compare,Allocator>::max_size() const {
+        return 0;
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    void staticmap<K,T,Compare,Allocator>::clear() {
+        for (udword_t i = 0; i < _size; ++i) {
+            _allocator.destroy(&(_map[i]));
+        }
+        _size = 0;
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    bool staticmap<K,T,Compare,Allocator>::insert(const value_type& v) {
+        udword_t p = _find(v.first);
+        if (_compare(_map[p].first, v.first) || _compare(v.first, _map[p].first)) {
+            if (_size == _capacity) {
+                throw MapError("No space on map");
+            }
+            _insert_slice(p);
+            _allocator.allocate(&(_map[p]), v);
+            return true;
+        }
+        return false;
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    bool staticmap<K,T,Compare,Allocator>::insert(value_type&& v) {
+        udword_t p = _find(v.first);
+        if (_compare(_map[p].first, v.first) || _compare(v.first, _map[p].first)) {
+            if (_size == _capacity) {
+                throw MapError("No space on map");
+            }
+            _insert_slice(p);
+            _allocator.allocate(&(_map[p]), v);
+            return true;
+        }
+        return false;
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    bool staticmap<K,T,Compare,Allocator>::insert(const K& k, const T& t) {
+        udword_t p = _find(k);
+        if (_compare(_map[p].first, k) || _compare(k, _map[p].first)) {
+            if (_size == _capacity) {
+                throw MapError("No space on map");
+            }
+            _insert_slice(p);
+            _allocator.allocate(&(_map[p]), std::make_pair(k, t));
+            return true;
+        }
+        return false;
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    bool staticmap<K,T,Compare,Allocator>::insert(const K& k, T&& t) {
+        udword_t p = _find(k);
+        if (_compare(_map[p].first, k) || _compare(k, _map[p].first)) {
+            if (_size == _capacity) {
+                throw MapError("No space on map");
+            }
+            _insert_slice(p);
+            _allocator.allocate(&(_map[p]), std::make_pair(k, t));
+            return true;
+        }
+        return false;
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    bool staticmap<K,T,Compare,Allocator>::insert(K&& k, const T& t) {
+        udword_t p = _find(k);
+        if (_compare(_map[p].first, k) || _compare(k, _map[p].first)) {
+            if (_size == _capacity) {
+                throw MapError("No space on map");
+            }
+            _insert_slice(p);
+            _allocator.allocate(&(_map[p]), std::make_pair(k, t));
+            return true;
+        }
+        return false;
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    bool staticmap<K,T,Compare,Allocator>::insert(K&& k, T&& t) {
+        udword_t p = _find(k);
+        if (_compare(_map[p].first, k) || _compare(k, _map[p].first)) {
+            if (_size == _capacity) {
+                throw MapError("No space on map");
+            }
+            _insert_slice(p);
+            _allocator.allocate(&(_map[p]), std::make_pair(k, t));
+            return true;
+        }
+        return false;
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    bool staticmap<K,T,Compare,Allocator>::insert_or_assign(const value_type& v) {
+        udword_t p = _find(v.first);
+        if (_compare(_map[p].first, v.first) || _compare(v.first, _map[p].first)) {
+            if (_size == _capacity) {
+                throw MapError("No space on map");
+            }
+            _insert_slice(p);
+            _allocator.allocate(&(_map[p]), v);
+            return true;
+        } else {
+            _map[p] = v;
+        }
+        return false;
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    bool staticmap<K,T,Compare,Allocator>::insert_or_assign(value_type&& v) {
+        udword_t p = _find(v.first);
+        if (_compare(_map[p].first, v.first) || _compare(v.first, _map[p].first)) {
+            if (_size == _capacity) {
+                throw MapError("No space on map");
+            }
+            _insert_slice(p);
+            _allocator.allocate(&(_map[p]), v);
+            return true;
+        } else {
+            _map[p] = v;
+        }
+        return false;
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    bool staticmap<K,T,Compare,Allocator>::insert_or_assign(const K& k, const T& t) {
+        udword_t p = _find(k);
+        if (_compare(_map[p].first, k) || _compare(k, _map[p].first)) {
+            if (_size == _capacity) {
+                throw MapError("No space on map");
+            }
+            _insert_slice(p);
+            _allocator.allocate(&(_map[p]), std::make_pair(k, t));
+            return true;
+        } else {
+            _map[p] = std::make_pair(k, t);
+        }
+        return false;
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    bool staticmap<K,T,Compare,Allocator>::insert_or_assign(const K& k, T&& t) {
+        udword_t p = _find(k);
+        if (_compare(_map[p].first, k) || _compare(k, _map[p].first)) {
+            if (_size == _capacity) {
+                throw MapError("No space on map");
+            }
+            _insert_slice(p);
+            _allocator.allocate(&(_map[p]), std::make_pair(k, t));
+            return true;
+        } else {
+            _map[p] = std::make_pair(k, t);
+        }
+        return false;
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    bool staticmap<K,T,Compare,Allocator>::insert_or_assign(K&& k, const T& t) {
+        udword_t p = _find(k);
+        if (_compare(_map[p].first, k) || _compare(k, _map[p].first)) {
+            if (_size == _capacity) {
+                throw MapError("No space on map");
+            }
+            _insert_slice(p);
+            _allocator.allocate(&(_map[p]), std::make_pair(k, t));
+            return true;
+        } else {
+            _map[p] = std::make_pair(k, t);
+        }
+        return false;
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    bool staticmap<K,T,Compare,Allocator>::insert_or_assign(K&& k, T&& t) {
+        udword_t p = _find(k);
+        if (_compare(_map[p].first, k) || _compare(k, _map[p].first)) {
+            if (_size == _capacity) {
+                throw MapError("No space on map");
+            }
+            _insert_slice(p);
+            _allocator.allocate(&(_map[p]), std::make_pair(k, t));
+            return true;
+        } else {
+            _map[p] = std::make_pair(k, t);
+        }
+        return false;
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    void staticmap<K,T,Compare,Allocator>::erase(const K& k) {
+        udword_t p = _find(k);
+        if (!(_compare(_map[p].first, k) || _compare(k, _map[p].first))) {
+            _allocator.destroy(&(_map[p]));
+            udword_t len = _size - p - 1;
+            if (len > 0) {
+                value_type* aux = _allocator.allocate(len);
+                memcpy(aux, &(_map[p + 1]), sizeof(value_type) * len);
+                memcpy(&(_map[p]), aux, sizeof(value_type) * len);
+                _allocator.deallocate(aux, len);
+            }
+            _size--;
+        }
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    void staticmap<K,T,Compare,Allocator>::swap(staticmap& o) {
+        if (this != &o) {
+            value_type* aux = _map;
+            udword_t aux_size = _size;
+            udword_t aux_capacity = _capacity;
+            _map = o._map;
+            _size = o._size;
+            _capacity = o._capacity;
+            o._map = aux;
+            o._size = aux_size;
+            o._capacity = aux_capacity;
+        }
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    void staticmap<K,T,Compare,Allocator>::merge(const staticmap& o) {
+        for(udword_t i = 0; i < o._size; i++) {
+            insert_or_assign(o._map[i]);
+        }
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    udword_t staticmap<K,T,Compare,Allocator>::_find(const K& k) const {
+        dword_t init;
+        dword_t end;
+        udword_t mid;
+        init = 0;
+        end = _size - 1;
+        while (! _compare(end, init)) {
+            mid = (init + end) / 2;
+            if (_compare(_map[mid].first, k)) {
+                init = mid + 1;
+            } else if (_compare(k, _map[mid].first)) {
+                end = mid - 1;
+            } else {
+                return mid;
+            }
+        }
+        return static_cast<udword_t>(init);
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    void staticmap<K,T,Compare,Allocator>::_insert_slice(udword_t p) {
+        if (_size == _capacity) {
+            throw MapError("No space on map");
+        }
+        udword_t len = _size - p;
+        if (len > 0) {
+            value_type* aux = _allocator.allocate(len);
+            memcpy(aux, &(_map[p]), sizeof(value_type) * len);
+            memcpy(&(_map[p+1]), aux, sizeof(value_type) * len);
+            _allocator.deallocate(aux, len);
+        }
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    udword_t staticmap<K,T,Compare,Allocator>::count(const K& k) const {
+        udword_t p = _find(k);
+        if (_compare(_map[p].first, k) || _compare(k, _map[p].first)) {
+            return 0;
+        }
+        return 1;
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    vector<K> staticmap<K,T,Compare,Allocator>::keys() const {
+        vector<K> keys;
+        for (udword_t i = 0; i < _size; ++i) {
+            keys.push_back(_map[i].first);
+        }
+        return keys;
+    }
+
+
+    template<class K, class T, class Compare, class Allocator>
+    staticgrowingmap<K,T,Compare,Allocator>::staticgrowingmap(udword_t size) :
+        _size(0), _capacity(size) {
+        _map = _allocator.allocate(_capacity);
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    staticgrowingmap<K,T,Compare,Allocator>::staticgrowingmap(const staticgrowingmap& o) :
+        _size(o._size), _capacity(o._capacity) {
+        _map = _allocator.allocate(_capacity);
+        for (udword_t i = 0; i < _size; ++i) {
+            _allocator.construct(&(_map[i]), o._map[i]);
+        }
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    staticgrowingmap<K,T,Compare,Allocator>::staticgrowingmap(staticgrowingmap&& o) {
+        _map = o._map;
+        _size = o._size;
+        _capacity = o._capacity;
+        o._map = nullptr;
+        o._size = 0;
+        o._capacity = 0;
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    staticgrowingmap<K,T,Compare,Allocator>::~staticgrowingmap() {
+        if (nullptr != _map) {
+            clear();
+            _allocator.deallocate(_map, _capacity);
+        }
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    staticgrowingmap<K,T,Compare,Allocator>& staticgrowingmap<K,T,Compare,Allocator>::operator=(const staticgrowingmap& o) {
+        if (this != &o) {
+            value_type* aux = _map;
+            udword_t aux_size = _size;
+            udword_t aux_capacity = _capacity;
+            _map = o._map;
+            _size = o._size;
+            _capacity = o._capacity;
+            o._map = aux;
+            o._size = aux_size;
+            o._capacity = aux_capacity;
+        }
+        return *this;
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    staticgrowingmap<K,T,Compare,Allocator>& staticgrowingmap<K,T,Compare,Allocator>::operator=(staticgrowingmap&& o) {
+        if (this != &o) {
+            value_type* aux = _map;
+            udword_t aux_size = _size;
+            udword_t aux_capacity = _capacity;
+            _map = o._map;
+            _size = o._size;
+            _capacity = o._capacity;
+            o._map = aux;
+            o._size = aux_size;
+            o._capacity = aux_capacity;
+        }
+        return *this;
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    T& staticgrowingmap<K,T,Compare,Allocator>::at(const K& key) {
+        udword_t p = _find(key);
+        if (Compare(_map[p].first, key) || Compare(key, _map[p].first)) {
+            throw MapError("Key not found on map");
+        }
+        return _map[p].second;
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    T& staticgrowingmap<K,T,Compare,Allocator>::operator[](const K& key) {
+        udword_t p = _find(key);
+        if (_compare(_map[p].first, key) || _compare(key, _map[p].first)) {
+            _insert_slice(p);
+            _allocator.allocate(&(_map[p]), std::make_pair(key, T()));
+        }
+        return _map[p].second;
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    bool staticgrowingmap<K,T,Compare,Allocator>::empty() const {
+        return _size == 0;
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    bool staticgrowingmap<K,T,Compare,Allocator>::size() const {
+        return _size;
+
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    bool staticgrowingmap<K,T,Compare,Allocator>::capacity() const {
+        return _capacity;
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    bool staticgrowingmap<K,T,Compare,Allocator>::max_size() const {
+        return 0;
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    void staticgrowingmap<K,T,Compare,Allocator>::clear() {
+        for (udword_t i = 0; i < _size; ++i) {
+            _allocator.destroy(&(_map[i]));
+        }
+        _size = 0;
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    bool staticgrowingmap<K,T,Compare,Allocator>::insert(const value_type& v) {
+        udword_t p = _find(v.first);
+        if (_compare(_map[p].first, v.first) || _compare(v.first, _map[p].first)) {
+            _insert_slice(p);
+            _allocator.allocate(&(_map[p]), v);
+            return true;
+        }
+        return false;
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    bool staticgrowingmap<K,T,Compare,Allocator>::insert(value_type&& v) {
+        udword_t p = _find(v.first);
+        if (_compare(_map[p].first, v.first) || _compare(v.first, _map[p].first)) {
+            _insert_slice(p);
+            _allocator.allocate(&(_map[p]), v);
+            return true;
+        }
+        return false;
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    bool staticgrowingmap<K,T,Compare,Allocator>::insert(const K& k, const T& t) {
+        udword_t p = _find(k);
+        if (_compare(_map[p].first, k) || _compare(k, _map[p].first)) {
+            _insert_slice(p);
+            _allocator.allocate(&(_map[p]), std::make_pair(k, t));
+            return true;
+        }
+        return false;
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    bool staticgrowingmap<K,T,Compare,Allocator>::insert(const K& k, T&& t) {
+        udword_t p = _find(k);
+        if (_compare(_map[p].first, k) || _compare(k, _map[p].first)) {
+            _insert_slice(p);
+            _allocator.allocate(&(_map[p]), std::make_pair(k, t));
+            return true;
+        }
+        return false;
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    bool staticgrowingmap<K,T,Compare,Allocator>::insert(K&& k, const T& t) {
+        udword_t p = _find(k);
+        if (_compare(_map[p].first, k) || _compare(k, _map[p].first)) {
+            _insert_slice(p);
+            _allocator.allocate(&(_map[p]), std::make_pair(k, t));
+            return true;
+        }
+        return false;
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    bool staticgrowingmap<K,T,Compare,Allocator>::insert(K&& k, T&& t) {
+        udword_t p = _find(k);
+        if (_compare(_map[p].first, k) || _compare(k, _map[p].first)) {
+            _insert_slice(p);
+            _allocator.allocate(&(_map[p]), std::make_pair(k, t));
+            return true;
+        }
+        return false;
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    bool staticgrowingmap<K,T,Compare,Allocator>::insert_or_assign(const value_type& v) {
+        udword_t p = _find(v.first);
+        if (_compare(_map[p].first, v.first) || _compare(v.first, _map[p].first)) {
+            _insert_slice(p);
+            _allocator.allocate(&(_map[p]), v);
+            return true;
+        } else {
+            _map[p] = v;
+        }
+        return false;
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    bool staticgrowingmap<K,T,Compare,Allocator>::insert_or_assign(value_type&& v) {
+        udword_t p = _find(v.first);
+        if (_compare(_map[p].first, v.first) || _compare(v.first, _map[p].first)) {
+            _insert_slice(p);
+            _allocator.allocate(&(_map[p]), v);
+            return true;
+        } else {
+            _map[p] = v;
+        }
+        return false;
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    bool staticgrowingmap<K,T,Compare,Allocator>::insert_or_assign(const K& k, const T& t) {
+        udword_t p = _find(k);
+        if (_compare(_map[p].first, k) || _compare(k, _map[p].first)) {
+            _insert_slice(p);
+            _allocator.allocate(&(_map[p]), std::make_pair(k, t));
+            return true;
+        } else {
+            _map[p] = std::make_pair(k, t);
+        }
+        return false;
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    bool staticgrowingmap<K,T,Compare,Allocator>::insert_or_assign(const K& k, T&& t) {
+        udword_t p = _find(k);
+        if (_compare(_map[p].first, k) || _compare(k, _map[p].first)) {
+            _insert_slice(p);
+            _allocator.allocate(&(_map[p]), std::make_pair(k, t));
+            return true;
+        } else {
+            _map[p] = std::make_pair(k, t);
+        }
+        return false;
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    bool staticgrowingmap<K,T,Compare,Allocator>::insert_or_assign(K&& k, const T& t) {
+        udword_t p = _find(k);
+        if (_compare(_map[p].first, k) || _compare(k, _map[p].first)) {
+            _insert_slice(p);
+            _allocator.allocate(&(_map[p]), std::make_pair(k, t));
+            return true;
+        } else {
+            _map[p] = std::make_pair(k, t);
+        }
+        return false;
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    bool staticgrowingmap<K,T,Compare,Allocator>::insert_or_assign(K&& k, T&& t) {
+        udword_t p = _find(k);
+        if (_compare(_map[p].first, k) || _compare(k, _map[p].first)) {
+            _insert_slice(p);
+            _allocator.allocate(&(_map[p]), std::make_pair(k, t));
+            return true;
+        } else {
+            _map[p] = std::make_pair(k, t);
+        }
+        return false;
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    void staticgrowingmap<K,T,Compare,Allocator>::erase(const K& k) {
+        udword_t p = _find(k);
+        if (!(_compare(_map[p].first, k) || _compare(k, _map[p].first))) {
+            _allocator.destroy(&(_map[p]));
+            udword_t len = _size - p - 1;
+            if (len > 0) {
+                value_type* aux = _allocator.allocate(len);
+                memcpy(aux, &(_map[p + 1]), sizeof(value_type) * len);
+                memcpy(&(_map[p]), aux, sizeof(value_type) * len);
+                _allocator.deallocate(aux, len);
+            }
+            _size--;
+        }
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    void staticgrowingmap<K,T,Compare,Allocator>::swap(staticgrowingmap& o) {
+        if (this != &o) {
+            value_type* aux = _map;
+            udword_t aux_size = _size;
+            udword_t aux_capacity = _capacity;
+            _map = o._map;
+            _size = o._size;
+            _capacity = o._capacity;
+            o._map = aux;
+            o._size = aux_size;
+            o._capacity = aux_capacity;
+        }
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    void staticgrowingmap<K,T,Compare,Allocator>::merge(const staticgrowingmap& o) {
+        for(udword_t i = 0; i < o._size; i++) {
+            insert_or_assign(o._map[i]);
+        }
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    udword_t staticgrowingmap<K,T,Compare,Allocator>::_find(const K& k) const {
+        dword_t init;
+        dword_t end;
+        udword_t mid;
+        init = 0;
+        end = _size - 1;
+        while (! _compare(end, init)) {
+            mid = (init + end) / 2;
+            if (_compare(_map[mid].first, k)) {
+                init = mid + 1;
+            } else if (_compare(k, _map[mid].first)) {
+                end = mid - 1;
+            } else {
+                return mid;
+            }
+        }
+        return static_cast<udword_t>(init);
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    void staticgrowingmap<K,T,Compare,Allocator>::_insert_slice(udword_t p) {
+        if (_size == _capacity) {
+            udword_t newcapacity = 1;
+            while (newcapacity < _capacity) {
+                newcapacity = newcapacity << 1;
+            }
+            value_type* aux = _allocator.allocate(newcapacity);
+            memcpy(aux, _map, sizeof(value_type) * _capacity);
+            _allocator.deallocate(_map, _capacity);
+            _map = aux;
+            _capacity = newcapacity;
+        }
+        udword_t len = _size - p;
+        if (len > 0) {
+            value_type* aux = _allocator.allocate(len);
+            memcpy(aux, &(_map[p]), sizeof(value_type) * len);
+            memcpy(&(_map[p+1]), aux, sizeof(value_type) * len);
+            _allocator.deallocate(aux, len);
+        }
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    udword_t staticgrowingmap<K,T,Compare,Allocator>::count(const K& k) const {
+        udword_t p = _find(k);
+        if (_compare(_map[p].first, k) || _compare(k, _map[p].first)) {
+            return 0;
+        }
+        return 1;
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    vector<K> staticgrowingmap<K,T,Compare,Allocator>::keys() const {
+        vector<K> keys;
+        for (udword_t i = 0; i < _size; ++i) {
+            keys.push_back(_map[i].first);
+        }
+        return keys;
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    dynamicmap<K,T,Compare,Allocator>::dynamicmap(udword_t size) : _map(nullptr), _size(0) {
+        UNREFERENCED_PARAMETER(size);
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    dynamicmap<K,T,Compare,Allocator>::dynamicmap(const dynamicmap& o) : _map(nullptr), _size(o._size){
+        dynamicstack<Node*> stack;
+        Node* aux = o._map;
+        do {
+            if (false == stack.empty() && nullptr == aux) {
+                insert(stack.top()->v);
+            }
+            if (nullptr != aux) {
+                stack.push(aux);
+                aux = aux->left;
+            } else if (false == stack.empty()) {
+                aux = stack.top();
+                stack.pop();
+                aux = aux->right;
+            }
+        } while (false == stack.empty() || nullptr != aux);
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    dynamicmap<K,T,Compare,Allocator>::dynamicmap(dynamicmap&& o) {
+        _map = o._map;
+        _size = o._size;
+        o._map = nullptr;
+        o._size = 0;
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    dynamicmap<K,T,Compare,Allocator>::~dynamicmap() {
+        clear();
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    dynamicmap<K,T,Compare,Allocator>& dynamicmap<K,T,Compare,Allocator>::operator=(const dynamicmap& o) {
+        if (this != &o) {
+            clear();
+            dynamicstack<Node*> stack;
+            Node* aux = o._map;
+            do {
+                if (false == stack.empty() && nullptr == aux) {
+                    insert(stack.top()->v);
+                }
+                if (nullptr != aux) {
+                    stack.push(aux);
+                    aux = aux->left;
+                } else if (false == stack.empty()) {
+                    aux = stack.top();
+                    stack.pop();
+                    aux = aux->right;
+                }
+            } while (false == stack.empty() || nullptr != aux);
+            _size = o._size;
+        }
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    dynamicmap<K,T,Compare,Allocator>& dynamicmap<K,T,Compare,Allocator>::operator=(dynamicmap&& o) {
+        if (this != &o) {
+            swap(o);
+        }
+        return *this;
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    T& dynamicmap<K,T,Compare,Allocator>::at(const K& key) {
+        Node* n = _find(key);
+        if (false == n->is_on_tree()) {
+            throw MapError("Key not found on map");
+        }
+        return n->v.second;
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    T& dynamicmap<K,T,Compare,Allocator>::operator[](const K& key) {
+        Node* n = _find(key);
+        if (false == n->is_on_tree()) {
+            _insert_slice(n);
+            _size++;
+        }
+        return n->v.second;
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    bool dynamicmap<K,T,Compare,Allocator>::empty() const {
+        return _size == 0;
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    bool dynamicmap<K,T,Compare,Allocator>::size() const {
+        return _size;
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    bool dynamicmap<K,T,Compare,Allocator>::capacity() const{
+        return 0;
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    bool dynamicmap<K,T,Compare,Allocator>::max_size() const {
+        return 0;
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    void dynamicmap<K,T,Compare,Allocator>::clear() {
+        if (nullptr != _map) {
+            delete _map;
+            _map = nullptr;
+        }
+        _size = 0;
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    bool dynamicmap<K,T,Compare,Allocator>::insert(const value_type& v) {
+        Node * n = _find(v.first);
+        if (false == n->is_on_tree()) {
+            _insert_slice(n);
+            n->v = v;
+            return true;
+        }
+        return false;
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    bool dynamicmap<K,T,Compare,Allocator>::insert(value_type&& v) {
+        Node * n = _find(v.first);
+        if (false == n->is_on_tree()) {
+            _insert_slice(n);
+            n->v = v;
+            return true;
+        }
+        return false;
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    bool dynamicmap<K,T,Compare,Allocator>::insert(const K& k, const T& t) {
+        Node * n = _find(k);
+        if (false == n->is_on_tree()) {
+            _insert_slice(n);
+            n->v.first = k;
+            n->v.second = t;
+            return true;
+        }
+        return false;
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    bool dynamicmap<K,T,Compare,Allocator>::insert(const K& k, T&& t) {
+        Node * n = _find(k);
+        if (false == n->is_on_tree()) {
+            _insert_slice(n);
+            n->v.first = k;
+            n->v.second = t;
+            return true;
+        }
+        return false;
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    bool dynamicmap<K,T,Compare,Allocator>::insert(K&& k, const T& t) {
+        Node * n = _find(k);
+        if (false == n->is_on_tree()) {
+            _insert_slice(n);
+            n->v.first = k;
+            n->v.second = t;
+            return true;
+        }
+        return false;
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    bool dynamicmap<K,T,Compare,Allocator>::insert(K&& k, T&& t) {
+        Node * n = _find(k);
+        if (false == n->is_on_tree()) {
+            _insert_slice(n);
+            n->v.first = k;
+            n->v.second = t;
+            return true;
+        }
+        return false;
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    bool dynamicmap<K,T,Compare,Allocator>::insert_or_assign(const value_type& v) {
+        Node * n = _find(v.first);
+        if (false == n->is_on_tree()) {
+            _insert_slice(n);
+            n->v = v;
+            return true;
+        } else {
+            n->v = v;
+        }
+        return false;
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    bool dynamicmap<K,T,Compare,Allocator>::insert_or_assign(value_type&& v) {
+        Node * n = _find(v.first);
+        if (false == n->is_on_tree()) {
+            _insert_slice(n);
+            n->v = v;
+            return true;
+        } else {
+            n->v = v;
+        }
+        return false;
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    bool dynamicmap<K,T,Compare,Allocator>::insert_or_assign(const K& k, const T& t) {
+        Node * n = _find(k);
+        if (false == n->is_on_tree()) {
+            _insert_slice(n);
+            n->v.first = k;
+            n->v.second = t;
+            return true;
+        } else {
+            n->v.second = t;
+        }
+        return false;
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    bool dynamicmap<K,T,Compare,Allocator>::insert_or_assign(const K& k, T&& t) {
+        Node * n = _find(k);
+        if (false == n->is_on_tree()) {
+            _insert_slice(n);
+            n->v.first = k;
+            n->v.second = t;
+            return true;
+        } else {
+            n->v.second = t;
+        }
+        return false;
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    bool dynamicmap<K,T,Compare,Allocator>::insert_or_assign(K&& k, const T& t) {
+        Node * n = _find(k);
+        if (false == n->is_on_tree()) {
+            _insert_slice(n);
+            n->v.first = k;
+            n->v.second = t;
+            return true;
+        } else {
+            n->v.second = t;
+        }
+        return false;
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    bool dynamicmap<K,T,Compare,Allocator>::insert_or_assign(K&& k, T&& t) {
+        Node * n = _find(k);
+        if (false == n->is_on_tree()) {
+            _insert_slice(n);
+            n->v.first = k;
+            n->v.second = t;
+            return true;
+        } else {
+            n->v.second = t;
+        }
+        return false;
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    void dynamicmap<K,T,Compare,Allocator>::erase(const K& k) {
+        Node* n = _find(k);
+
+        if (false == n->is_on_tree()) {
+            throw MapError("Key not found.");
+        }
+        if (nullptr != n->left && nullptr != n->right) {
+            Node* o = n->right;
+            while (nullptr != o->left) {
+                o = o->left;
+            }
+            n->v = o->v;
+            n = o;
+        }
+        Node* c;
+        if (nullptr != n->left) {
+            c = n->left;
+        } else {
+            c = n->right;
+        }
+        // Get parent.
+        Node* p = n->parent;
+        // Replace node with child.
+        if (nullptr != c) {
+            c->parent = p;
+        }
+        if (nullptr != p && p->left == n) {
+            p->left = c;
+        } else if (nullptr != p && p->right == n) {
+            p->right = c;
+        }
+        // Base case.
+        if (Node::is_black(n) && Node::is_red(c)) {
+            c->color = Node::BLACK;
+        } else if (Node::is_black(n) && Node::is_black(c)) {
+            // Case 1. Is root node.
+            if (nullptr == p) {
+                _map = c;
+            } else {
+                // Get sibling.
+                Node* s;
+                if (p->left == c) {
+                    s = p->right;
+                } else {
+                    s = p->left;
+                }
+                // Case 2. Sibling is red.
+                if (Node::is_red(s)) {
+                    s->color = Node::BLACK;
+                    p->color = Node::RED;
+                    if (c == p->left) {
+                        p->rotate_left(_map);
+                    } else {
+                        p->rotate_right(_map);
+                    }
+                }
+                // Case 3.
+            }
+        }
+        // Remove node.
+        n->left = nullptr;
+        n->right = nullptr;
+        delete n;
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    void dynamicmap<K,T,Compare,Allocator>::swap(dynamicmap& o) {
+        if (this != &o) {
+            Node* aux = _map;
+            udword_t aux_size = _size;
+            _map = o._map;
+            _size = o._size;
+            o._map = aux;
+            o._size = aux_size;
+        }
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    void dynamicmap<K,T,Compare,Allocator>::merge(const dynamicmap& o) {
+
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    typename dynamicmap<K,T,Compare,Allocator>::Node* dynamicmap<K,T,Compare,Allocator>::_find(const K& k) const {
+        Node* node = _map;
+        Node* parent = nullptr;
+        while (nullptr != node && (_compare(k, node->v.first) || _compare(node->v.first, k))) {
+            parent = node;
+            if (_compare(k, node->v.first)) {
+                node = node->left;
+            } else if (_compare(node->v.first, k)) {
+                node = node->right;
+            }
+        }
+        if (node == nullptr) {
+            node = new Node(parent, k);
+        }
+        return node;
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    void dynamicmap<K,T,Compare,Allocator>::_insert_slice(Node* node) {
+        if (nullptr == node->parent) {
+            _map = node;
+        } else if (_compare(node->v.first, node->parent->v.first)) {
+            node->parent->left = node;
+        } else if (_compare(node->parent->v.first, node->v.first)) {
+            node->parent->right = node;
+        } else {
+            MapError("Key duped");
+        }
+        node->color = Node::RED;
+        Node* current_node;
+        Node* next_node = node;
+        while (nullptr != (current_node = next_node)) {
+            next_node = nullptr;
+            // Case 1.
+            if (nullptr == current_node->parent) {
+                current_node->color = Node::BLACK;
+                continue;
+            }
+            // Case 2.
+            if (Node::is_black(current_node->parent)) {
+                continue;
+            }
+            // Case 3.
+            Node* uncle = current_node->uncle();
+            Node* grandfather = current_node->grandfather();
+            if (Node::is_red(uncle)) {
+                current_node->parent->color = Node::BLACK;
+                uncle->color = Node::BLACK;
+                grandfather->color = Node::RED;
+                next_node = grandfather;
+                continue;
+            }
+            // Case 4.
+            if (current_node->parent->right == current_node && current_node->parent == grandfather->left) {
+                current_node->parent->rotate_left(_map);
+                current_node = current_node->left;
+            } else if (current_node->parent->left == current_node && current_node->parent == grandfather->right) {
+                current_node->parent->rotate_right(_map);
+                current_node = current_node->right;
+            }
+            current_node->parent->color = Node::BLACK;
+            grandfather->color = Node::RED;
+            if (current_node == current_node->parent->left) {
+                grandfather->rotate_right(_map);
+            } else {
+                grandfather->rotate_left(_map);
+            }
+        }
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    dynamicmap<K,T,Compare,Allocator>::Node::Node(Node* p, const K& k) : parent(p), left(nullptr), right(nullptr) {
+        v.first = k;
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    dynamicmap<K,T,Compare,Allocator>::Node::~Node(){
+        if (nullptr != left) {
+            delete left;
+        }
+        if (nullptr != right) {
+            delete right;
+        }
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    typename dynamicmap<K,T,Compare,Allocator>::Node* dynamicmap<K,T,Compare,Allocator>::Node::grandfather() const {
+        if (nullptr == parent) {
+            return nullptr;
+        }
+        return parent->parent;
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    typename dynamicmap<K,T,Compare,Allocator>::Node* dynamicmap<K,T,Compare,Allocator>::Node::uncle() const {
+        Node* grandfather = grandfather();
+        if (nullptr == grandfather) {
+            return nullptr;
+        }
+        if (parent == grandfather->left) {
+            return grandfather->right;
+        } else {
+            return grandfather->left;
+        }
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    typename dynamicmap<K,T,Compare,Allocator>::Node* dynamicmap<K,T,Compare,Allocator>::Node::sibling() const {
+        if (nullptr == parent) {
+            return nullptr;
+        }
+        if (this == parent->left) {
+            return parent->right;
+        } else {
+            return parent->left;
+        }
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    void dynamicmap<K,T,Compare,Allocator>::Node::rotate_left(Node** root) {
+        Node* a;
+        Node* b;
+        Node* c;
+        Node** p = root;
+        if (nullptr != parent && this == parent->right) {
+            p = &(parent->right);
+        } else if (nullptr != parent && this == parent->left) {
+            p = &(parent->left);
+        }
+        *p = right;
+        (*p)->parent = parent;
+        parent = *p;
+        right = (*p)->left;
+        (*p)->left = this;
+
+        if (nullptr != right) {
+            right->parent = this;
+        }
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    void dynamicmap<K,T,Compare,Allocator>::Node::rotate_right(Node** root) {
+        Node* a;
+        Node* b;
+        Node* c;
+        Node** p = root;
+        if (nullptr != parent && this == parent->right) {
+            p = &(parent->right);
+        } else if (nullptr != parent && this == parent->left) {
+            p = &(parent->left);
+        }
+        *p = left;
+        (*p)->parent = parent;
+        parent = *p;
+        left = (*p)->right;
+        (*p)->right = this;
+
+        if (nullptr != left) {
+            left->parent = this;
+        }
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    bool dynamicmap<K,T,Compare,Allocator>::Node::is_on_tree() const {
+        if (nullptr == parent) {
+            return false;
+        }
+        return parent->left == this || parent->right == this;
+    }
+    template<class K, class T, class Compare, class Allocator>
+    bool dynamicmap<K,T,Compare,Allocator>::Node::is_black(Node* n) {
+        return nullptr == n || Node::BLACK == n->color;
+    }
+
+    template<class K, class T, class Compare, class Allocator>
+    bool dynamicmap<K,T,Compare,Allocator>::Node::is_red(Node* n) {
+        return nullptr != n && Node::RED == n->color;
+    }
+
+
+
+
+
+    ////////////////////// OLD
+
+
+    template<typename K, typename V>
+    class __old__staticmap {
     public:
         class CellPosition {
         public:
-            staticmap * map;
+            __old__staticmap * map;
             bool exists;
             K key;
             udword_t position;
@@ -55,21 +1524,21 @@ namespace ttl {
             }
         };
 
-        staticmap(udword_t size=_TTL_MAP_DEFAULT_SIZE) {
+        __old__staticmap(udword_t size=_TTL_MAP_DEFAULT_SIZE) {
             _capacity = size;
             _size = 0;
             _map = new Cell[_capacity];
         }
-        staticmap(staticmap & o) {
+        __old__staticmap(__old__staticmap & o) {
             _capacity = o._capacity;
             _size = o._size;
             _map = new Cell[_capacity];
             memcpy(_map, o._map, sizeof(Cell) * _capacity);
         }
-        virtual ~staticmap() {
+        virtual ~__old__staticmap() {
             delete[] _map;
         }
-        staticmap & operator=(staticmap & o) {
+        __old__staticmap & operator=(__old__staticmap & o) {
             delete _map;
             _capacity = o._capacity;
             _size = o._size;
@@ -110,7 +1579,7 @@ namespace ttl {
                 _size--;
             }
         }
-        void swap(staticmap & o) {
+        void swap(__old__staticmap & o) {
             Cell * map = _map;
             udword_t size = _size;
             udword_t capacity = _capacity;
@@ -156,7 +1625,7 @@ namespace ttl {
     };
 
     template<typename K, typename V>
-    class dynamicmap {
+    class __old_dynamicmap {
     protected:
         class Node {
         public:
@@ -222,7 +1691,7 @@ namespace ttl {
     public:
         class CellPosition {
         public:
-            dynamicmap * map;
+            __old_dynamicmap * map;
             Node * n;
             bool exists;
             K key;
@@ -248,18 +1717,18 @@ namespace ttl {
             }
         };
 
-        dynamicmap() {
+        __old_dynamicmap() {
             _root = NULL;
             _size = 0;
         }
-        dynamicmap(dynamicmap & o) {
+        __old_dynamicmap(__old_dynamicmap & o) {
             _root = new Node(*(o._root));
             _size = o._size;
         }
-        virtual ~dynamicmap() {
+        virtual ~__old_dynamicmap() {
             delete _root;
         }
-        dynamicmap & operator=(dynamicmap & o) {
+        __old_dynamicmap & operator=(__old_dynamicmap & o) {
             delete _root;
             _root = new Node(*(o._root));
             _size = o._size;
@@ -312,7 +1781,7 @@ namespace ttl {
             }
             _size--;
         }
-        void swap(dynamicmap & o) {
+        void swap(__old_dynamicmap & o) {
             Node * tmproot = _root;
             udword_t tmpsize = _size;
             _root = o._root;
@@ -332,11 +1801,11 @@ namespace ttl {
     };
 
     template<typename K, typename V>
-    class tsstaticmap : public staticmap<K, V> {
+    class __old_tsstaticmap : public __old__staticmap<K, V> {
     public:
-        class tsCellPosition : public staticmap<K, V>::CellPosition {
+        class tsCellPosition : public __old__staticmap<K, V>::CellPosition {
         public:
-            tsstaticmap * map;
+            __old_tsstaticmap * map;
             bool exists;
             K key;
             udword_t position;
@@ -347,7 +1816,7 @@ namespace ttl {
             }
             operator V () {
                 try {
-                    V x = staticmap<K,V>::CellPosition::operator V();
+                    V x = __old__staticmap<K,V>::CellPosition::operator V();
                     map->_mutex.unlock();
                     return x;
                 }
@@ -358,43 +1827,43 @@ namespace ttl {
             }
         };
 
-        tsstaticmap(udword_t size=_TTL_MAP_DEFAULT_SIZE) {
-            staticmap<K,V>::_capacity = size;
-            staticmap<K,V>::_size = 0;
-            staticmap<K,V>::_map = new typename staticmap<K,V>::Cell[staticmap<K,V>::_capacity];
+        __old_tsstaticmap(udword_t size=_TTL_MAP_DEFAULT_SIZE) {
+            __old__staticmap<K,V>::_capacity = size;
+            __old__staticmap<K,V>::_size = 0;
+            __old__staticmap<K,V>::_map = new typename __old__staticmap<K,V>::Cell[__old__staticmap<K,V>::_capacity];
         }
-        tsstaticmap(tsstaticmap & o) {
+        __old_tsstaticmap(__old_tsstaticmap & o) {
             o._mutex.lock();
-            staticmap<K,V>::_capacity = o._capacity;
-            staticmap<K,V>::_size = o._size;
-            staticmap<K,V>::_map = new typename staticmap<K,V>::Cell[staticmap<K,V>::_capacity];
-            memcpy(staticmap<K,V>::_map, o._map, sizeof(typename staticmap<K,V>::Cell) * staticmap<K,V>::_capacity);
+            __old__staticmap<K,V>::_capacity = o._capacity;
+            __old__staticmap<K,V>::_size = o._size;
+            __old__staticmap<K,V>::_map = new typename __old__staticmap<K,V>::Cell[__old__staticmap<K,V>::_capacity];
+            memcpy(__old__staticmap<K,V>::_map, o._map, sizeof(typename __old__staticmap<K,V>::Cell) * __old__staticmap<K,V>::_capacity);
             o._mutex.unlock();
         }
-        virtual ~tsstaticmap() {
-            delete staticmap<K,V>::_map;
+        virtual ~__old_tsstaticmap() {
+            delete __old__staticmap<K,V>::_map;
         }
-        tsstaticmap & operator=(tsstaticmap & o) {
+        __old_tsstaticmap & operator=(__old_tsstaticmap & o) {
             _mutex.lock();
             o._mutex.lock();
-            delete staticmap<K,V>::_map;
-            staticmap<K,V>::_capacity = o._capacity;
-            staticmap<K,V>::_size = o._size;
-            staticmap<K,V>::_map = new typename staticmap<K,V>::Cell[staticmap<K,V>::_capacity];
-            memcpy(staticmap<K,V>::_map, o._map, sizeof(typename staticmap<K,V>::Cell) * staticmap<K,V>::_capacity);
+            delete __old__staticmap<K,V>::_map;
+            __old__staticmap<K,V>::_capacity = o._capacity;
+            __old__staticmap<K,V>::_size = o._size;
+            __old__staticmap<K,V>::_map = new typename __old__staticmap<K,V>::Cell[__old__staticmap<K,V>::_capacity];
+            memcpy(__old__staticmap<K,V>::_map, o._map, sizeof(typename __old__staticmap<K,V>::Cell) * __old__staticmap<K,V>::_capacity);
             o._mutex.unlock();
             _mutex.unlock();
             return *this;
         }
         bool empty() {
             _mutex.lock();
-            bool b = staticmap<K,V>::_size == 0;
+            bool b = __old__staticmap<K,V>::_size == 0;
             _mutex.unlock();
             return b;
         }
         udword_t size() {
             _mutex.lock();
-            udword_t s = staticmap<K,V>::_size;
+            udword_t s = __old__staticmap<K,V>::_size;
             _mutex.unlock();
             return s;
         }
@@ -402,12 +1871,12 @@ namespace ttl {
         tsCellPosition operator[](K key) {
             _mutex.lock();
             tsCellPosition p;
-            udword_t init = 0, end = staticmap<K,V>::_size - 1, pivot = 0;
+            udword_t init = 0, end = __old__staticmap<K,V>::_size - 1, pivot = 0;
             K pivot_key;
             bool stop = false;
             while ( init > end && !stop) {
                 pivot = (end - init) / 2 + init;
-                pivot_key = staticmap<K,V>::_map[pivot].key;
+                pivot_key = __old__staticmap<K,V>::_map[pivot].key;
                 if (pivot_key == key) {
                     init = pivot;
                     stop = true;
@@ -427,20 +1896,20 @@ namespace ttl {
             _mutex.lock();
             tsCellPosition p = (*this)[key];
             if (p.exists) {
-                memmove(&staticmap<K,V>::_map[p.position], &staticmap<K,V>::_map[p.position + 1], sizeof(typename staticmap<K,V>::Cell) * (staticmap<K,V>::_size - p.position));
-                staticmap<K,V>::_size--;
+                memmove(&__old__staticmap<K,V>::_map[p.position], &__old__staticmap<K,V>::_map[p.position + 1], sizeof(typename __old__staticmap<K,V>::Cell) * (__old__staticmap<K,V>::_size - p.position));
+                __old__staticmap<K,V>::_size--;
             }
             _mutex.unlock();
         }
-        void swap(tsstaticmap & o) {
+        void swap(__old_tsstaticmap & o) {
             _mutex.lock();
             o._mutex.lock();
-            typename staticmap<K,V>::Cell * map = staticmap<K,V>::_map;
-            udword_t size = staticmap<K,V>::_size;
-            udword_t capacity = staticmap<K,V>::_capacity;
-            staticmap<K,V>::_map = o._map;
-            staticmap<K,V>::_size = o._size;
-            staticmap<K,V>::_capacity = o._capacity;
+            typename __old__staticmap<K,V>::Cell * map = __old__staticmap<K,V>::_map;
+            udword_t size = __old__staticmap<K,V>::_size;
+            udword_t capacity = __old__staticmap<K,V>::_capacity;
+            __old__staticmap<K,V>::_map = o._map;
+            __old__staticmap<K,V>::_size = o._size;
+            __old__staticmap<K,V>::_capacity = o._capacity;
             o._map = map;
             o._size = size;
             o._capacity = capacity;
@@ -449,12 +1918,12 @@ namespace ttl {
         }
         void clear() {
             _mutex.lock();
-            staticmap<K,V>::_size = 0;
+            __old__staticmap<K,V>::_size = 0;
             _mutex.unlock();
         }
         udword_t count(K key) {
             _mutex.lock();
-            udword_t c = staticmap<K, V>::count(key);
+            udword_t c = __old__staticmap<K, V>::count(key);
             _mutex.unlock();
             return c;
         }
@@ -463,21 +1932,21 @@ namespace ttl {
     };
 
     template<typename K, typename V>
-    class tsdynamicmap : public dynamicmap<K,V> {
+    class __old_tsdynamicmap : public __old_dynamicmap<K,V> {
     private:
         Mutex _mutex;
     public:
-        class tsCellPosition : public dynamicmap<K,V>::CellPosition {
+        class tsCellPosition : public __old_dynamicmap<K,V>::CellPosition {
         public:
-            tsdynamicmap * map;
+            __old_tsdynamicmap * map;
             V operator=(V x) {
-                dynamicmap<K,V>::CellPosition::operator=(x);
+                __old_dynamicmap<K,V>::CellPosition::operator=(x);
                 map->_mutex.unlock();
                 return x;
             }
             operator V () {
                 try {
-                    V x = dynamicmap<K,V>::CellPosition::operator V();
+                    V x = __old_dynamicmap<K,V>::CellPosition::operator V();
                     map->_mutex.unlock();
                     return x;
                 }
@@ -488,38 +1957,38 @@ namespace ttl {
             }
         };
 
-        tsdynamicmap() {
-            dynamicmap<K,V>::_root = NULL;
-            dynamicmap<K,V>::_size = 0;
+        __old_tsdynamicmap() {
+            __old_dynamicmap<K,V>::_root = NULL;
+            __old_dynamicmap<K,V>::_size = 0;
         }
-        tsdynamicmap(tsdynamicmap & o) {
-            dynamicmap<K,V>::_root = new typename dynamicmap<K,V>::Node(*(o._root));
-            dynamicmap<K,V>::_size = o._size;
+        __old_tsdynamicmap(__old_tsdynamicmap & o) {
+            __old_dynamicmap<K,V>::_root = new typename __old_dynamicmap<K,V>::Node(*(o._root));
+            __old_dynamicmap<K,V>::_size = o._size;
         }
-        virtual ~tsdynamicmap() {
-            delete dynamicmap<K,V>::_root;
+        virtual ~__old_tsdynamicmap() {
+            delete __old_dynamicmap<K,V>::_root;
         }
-        tsdynamicmap & operator=(tsdynamicmap & o) {
-            delete dynamicmap<K,V>::_root;
-            dynamicmap<K,V>::_root = new typename dynamicmap<K,V>::Node(*(o._root));
-            dynamicmap<K,V>::_size = o._size;
+        __old_tsdynamicmap & operator=(__old_tsdynamicmap & o) {
+            delete __old_dynamicmap<K,V>::_root;
+            __old_dynamicmap<K,V>::_root = new typename __old_dynamicmap<K,V>::Node(*(o._root));
+            __old_dynamicmap<K,V>::_size = o._size;
         }
         bool empty() {
             _mutex.lock();
-            bool b = dynamicmap<K,V>::_size == 0;
+            bool b = __old_dynamicmap<K,V>::_size == 0;
             _mutex.unlock();
             return b;
         }
         udword_t size() {
             _mutex.lock();
-            udword_t s = dynamicmap<K,V>::_size;
+            udword_t s = __old_dynamicmap<K,V>::_size;
             _mutex.unlock();
             return s;
         }
         tsCellPosition operator[](K key) {
             _mutex.lock();
             tsCellPosition p;
-            typename dynamicmap<K,V>::Node * n = dynamicmap<K,V>::_root, * n_ant = NULL;
+            typename __old_dynamicmap<K,V>::Node * n = __old_dynamicmap<K,V>::_root, * n_ant = NULL;
             while(n != NULL && n->key != key) {
                 n_ant = n;
                 if (n->key < key) { n = n->r; }
@@ -535,7 +2004,7 @@ namespace ttl {
         void erase(K key) {
             _mutex.lock();
             try {
-                dynamicmap<K,V>::erase(key);
+                __old_dynamicmap<K,V>::erase(key);
                 _mutex.unlock();
             }
             catch (MapError &) {
@@ -543,13 +2012,13 @@ namespace ttl {
                 throw;
             }
         }
-        void swap(tsdynamicmap & o) {
+        void swap(__old_tsdynamicmap & o) {
             _mutex.lock();
             o._mutex.lock();
-            typename dynamicmap<K,V>::Node * tmproot = dynamicmap<K,V>::_root;
-            udword_t tmpsize = dynamicmap<K,V>::_size;
-            dynamicmap<K,V>::_root = o._root;
-            dynamicmap<K,V>::_size = o._size;
+            typename __old_dynamicmap<K,V>::Node * tmproot = __old_dynamicmap<K,V>::_root;
+            udword_t tmpsize = __old_dynamicmap<K,V>::_size;
+            __old_dynamicmap<K,V>::_root = o._root;
+            __old_dynamicmap<K,V>::_size = o._size;
             o._root = tmproot;
             o._size = tmpsize;
             o._mutex.unlock();
@@ -557,12 +2026,12 @@ namespace ttl {
         }
         void clear() {
             _mutex.lock();
-            dynamicmap<K,V>::clear();
+            __old_dynamicmap<K,V>::clear();
             _mutex.unlock();
         }
         udword_t count(K key) {
             _mutex.lock();
-            udword_t c = dynamicmap<K,V>::count(key);
+            udword_t c = __old_dynamicmap<K,V>::count(key);
             _mutex.unlock();
             return c;
         }

@@ -33,14 +33,14 @@
 
 namespace ttl {
     template<typename T, class Allocator = std::allocator<T>>
-    class fixedstack {
+    class staticstack {
     public:
-        fixedstack(udword_t size=_TTL_STACK_DEFAULT_SIZE);
-        fixedstack(const fixedstack& o);
-        fixedstack(fixedstack&& o);
-        ~fixedstack();
-        fixedstack & operator=(const fixedstack& o);
-        fixedstack & operator=(fixedstack&& o);
+        staticstack(udword_t size=_TTL_STACK_DEFAULT_SIZE);
+        staticstack(const staticstack& o);
+        staticstack(staticstack&& o);
+        ~staticstack();
+        staticstack & operator=(const staticstack& o);
+        staticstack & operator=(staticstack&& o);
 
         // Element access.
         T& top();
@@ -54,7 +54,7 @@ namespace ttl {
         void push(T&& t);
         void pop();
         void clear();
-        void swap(fixedstack& o);
+        void swap(staticstack& o);
 
     private:
         T* _stack;
@@ -64,14 +64,14 @@ namespace ttl {
     };
 
     template <typename T, class Allocator = std::allocator<T>>
-    class fixedgrowingstack {
+    class staticgrowingstack {
     public:
-        fixedgrowingstack(udword_t size=_TTL_STACK_DEFAULT_SIZE);
-        fixedgrowingstack(const fixedgrowingstack& o);
-        fixedgrowingstack(fixedgrowingstack&& o);
-        ~fixedgrowingstack();
-        fixedgrowingstack& operator=(const fixedgrowingstack& o);
-        fixedgrowingstack& operator=(fixedgrowingstack&& o);
+        staticgrowingstack(udword_t size=_TTL_STACK_DEFAULT_SIZE);
+        staticgrowingstack(const staticgrowingstack& o);
+        staticgrowingstack(staticgrowingstack&& o);
+        ~staticgrowingstack();
+        staticgrowingstack& operator=(const staticgrowingstack& o);
+        staticgrowingstack& operator=(staticgrowingstack&& o);
 
         // Element access.
         T& top();
@@ -85,7 +85,7 @@ namespace ttl {
         void push(T&& t);
         void pop();
         void clear();
-        void swap(fixedgrowingstack& o);
+        void swap(staticgrowingstack& o);
 
     private:
         T* _stack;
@@ -153,6 +153,7 @@ namespace ttl {
         void push(const T& t);
         void push(T&& t);
         void pop();
+        T top_and_pop();
         void clear();
         void swap(__T_tsstack& o);
     private:
@@ -161,10 +162,10 @@ namespace ttl {
     };
 
     template<typename T, class Allocator = std::allocator<T>>
-    using tsfixedstack = __T_tsstack<T, fixedstack<T,Allocator>>;
+    using tsfixedstack = __T_tsstack<T, staticstack<T,Allocator>>;
 
     template<typename T, class Allocator = std::allocator<T>>
-    using tsfixedgrowingstack = __T_tsstack<T, fixedgrowingstack<T,Allocator>>;
+    using tsfixedgrowingstack = __T_tsstack<T, staticgrowingstack<T,Allocator>>;
 
     template<typename T, class Allocator = std::allocator<T>>
     using tsdynamicstack = __T_tsstack<T, dynamicstack<T,Allocator>>;
@@ -175,14 +176,14 @@ namespace ttl {
 
 
     template<typename T, class Allocator>
-    fixedstack<T,Allocator>::fixedstack(udword_t size) {
+    staticstack<T,Allocator>::staticstack(udword_t size) {
         _stack = _allocator.allocate(size);
         _top = 0;
         _capacity = size;
     }
 
     template<typename T, class Allocator>
-    fixedstack<T,Allocator>::fixedstack(const fixedstack& o) {
+    staticstack<T,Allocator>::staticstack(const staticstack& o) {
         _stack = _allocator.allocate(o._capacity);
         _top = o._top;
         _capacity = o._capacity;
@@ -192,7 +193,7 @@ namespace ttl {
     }
 
     template<typename T, class Allocator>
-    fixedstack<T,Allocator>::fixedstack(fixedstack&& o) {
+    staticstack<T,Allocator>::staticstack(staticstack&& o) {
         _stack = o._stack;
         _top = o._top;
         _capacity = o._capacity;
@@ -202,7 +203,7 @@ namespace ttl {
     }
 
     template<typename T, class Allocator>
-    fixedstack<T,Allocator>::~fixedstack() {
+    staticstack<T,Allocator>::~staticstack() {
         if (nullptr != _stack) {
             for (udword_t i = 0; i < _top; ++i) {
                 _allocator.destroy(&(_stack[i]));
@@ -212,7 +213,7 @@ namespace ttl {
     }
 
     template<typename T, class Allocator>
-    fixedstack<T,Allocator>& fixedstack<T,Allocator>::operator=(const fixedstack& o) {
+    staticstack<T,Allocator>& staticstack<T,Allocator>::operator=(const staticstack& o) {
         if (this != &o) {
             clear();
             _allocator.deallocate(_stack, _capacity);
@@ -227,7 +228,7 @@ namespace ttl {
     }
 
     template<typename T, class Allocator>
-    fixedstack<T,Allocator>& fixedstack<T,Allocator>::operator=(fixedstack&& o) {
+    staticstack<T,Allocator>& staticstack<T,Allocator>::operator=(staticstack&& o) {
         if (this != &o) {
             swap(o);
         }
@@ -235,7 +236,7 @@ namespace ttl {
     }
 
     template<typename T, class Allocator>
-    T & fixedstack<T,Allocator>::top()  {
+    T & staticstack<T,Allocator>::top()  {
         if (!_top) {
             throw StackError("stack is empty.");
         }
@@ -243,17 +244,17 @@ namespace ttl {
     }
 
     template<typename T, class Allocator>
-    bool fixedstack<T,Allocator>::empty() const {
+    bool staticstack<T,Allocator>::empty() const {
         return _top == 0;
     }
 
     template<typename T, class Allocator>
-    udword_t fixedstack<T,Allocator>::size() const {
+    udword_t staticstack<T,Allocator>::size() const {
         return _top;
     }
 
     template<typename T, class Allocator>
-    void fixedstack<T,Allocator>::push(const T& t) {
+    void staticstack<T,Allocator>::push(const T& t) {
         if (_top == _capacity) {
             throw StackError("stack is full.");
         }
@@ -261,7 +262,7 @@ namespace ttl {
     }
 
     template<typename T, class Allocator>
-    void fixedstack<T,Allocator>::push(T&& t) {
+    void staticstack<T,Allocator>::push(T&& t) {
         if (_top == _capacity) {
             throw StackError("stack is full.");
         }
@@ -269,7 +270,7 @@ namespace ttl {
     }
 
     template<typename T, class Allocator>
-    void fixedstack<T,Allocator>::pop() {
+    void staticstack<T,Allocator>::pop() {
         if (!_top) {
             throw StackError("stack is empty.");
         }
@@ -277,14 +278,14 @@ namespace ttl {
     }
 
     template<typename T, class Allocator>
-    void fixedstack<T,Allocator>::clear() {
+    void staticstack<T,Allocator>::clear() {
         while(!empty()) {
             pop();
         }
     }
 
     template<typename T, class Allocator>
-    void fixedstack<T,Allocator>::swap(fixedstack & o) {
+    void staticstack<T,Allocator>::swap(staticstack & o) {
         if (this != &o) {
             T * aux = _stack;
             udword_t aux_capacity = _capacity;
@@ -299,14 +300,14 @@ namespace ttl {
     }
 
     template<typename T, class Allocator>
-    fixedgrowingstack<T,Allocator>::fixedgrowingstack(udword_t size) {
+    staticgrowingstack<T,Allocator>::staticgrowingstack(udword_t size) {
         _stack = _allocator.allocate(size);
         _top = 0;
         _capacity = size;
     }
 
     template<typename T, class Allocator>
-    fixedgrowingstack<T,Allocator>::fixedgrowingstack(const fixedgrowingstack& o) {
+    staticgrowingstack<T,Allocator>::staticgrowingstack(const staticgrowingstack& o) {
         _stack = _allocator.allocate(o._capacity);
         _top = o._top;
         _capacity = o._capacity;
@@ -316,7 +317,7 @@ namespace ttl {
     }
 
     template<typename T, class Allocator>
-    fixedgrowingstack<T,Allocator>::fixedgrowingstack(fixedgrowingstack&& o) {
+    staticgrowingstack<T,Allocator>::staticgrowingstack(staticgrowingstack&& o) {
         _stack = o._stack;
         _top = o._top;
         _capacity = o._capacity;
@@ -326,7 +327,7 @@ namespace ttl {
     }
 
     template<typename T, class Allocator>
-    fixedgrowingstack<T,Allocator>::~fixedgrowingstack() {
+    staticgrowingstack<T,Allocator>::~staticgrowingstack() {
         if (nullptr != _stack) {
             clear();
             _allocator.deallocate(_stack, _capacity);
@@ -334,7 +335,7 @@ namespace ttl {
     }
 
     template<typename T, class Allocator>
-    fixedgrowingstack<T,Allocator>& fixedgrowingstack<T,Allocator>::operator=(const fixedgrowingstack& o) {
+    staticgrowingstack<T,Allocator>& staticgrowingstack<T,Allocator>::operator=(const staticgrowingstack& o) {
         if (this != &o) {
             clear();
             _allocator.deallocate(_stack, _capacity);
@@ -349,7 +350,7 @@ namespace ttl {
     }
 
     template<typename T, class Allocator>
-    fixedgrowingstack<T,Allocator>& fixedgrowingstack<T,Allocator>::operator=(fixedgrowingstack&& o) {
+    staticgrowingstack<T,Allocator>& staticgrowingstack<T,Allocator>::operator=(staticgrowingstack&& o) {
         if (this != &o) {
             swap(o);
         }
@@ -357,7 +358,7 @@ namespace ttl {
     }
 
     template<typename T, class Allocator>
-    T& fixedgrowingstack<T,Allocator>::top() {
+    T& staticgrowingstack<T,Allocator>::top() {
         if (!_top) {
             throw StackError("stack is empty.");
         }
@@ -365,17 +366,17 @@ namespace ttl {
     }
 
     template<typename T, class Allocator>
-    bool fixedgrowingstack<T,Allocator>::empty() const {
+    bool staticgrowingstack<T,Allocator>::empty() const {
         return _top == 0;
     }
 
     template<typename T, class Allocator>
-    udword_t fixedgrowingstack<T,Allocator>::size() const {
+    udword_t staticgrowingstack<T,Allocator>::size() const {
         return _top;
     }
 
     template<typename T, class Allocator>
-    void fixedgrowingstack<T,Allocator>::push(const T& t) {
+    void staticgrowingstack<T,Allocator>::push(const T& t) {
         if (_top == _capacity) {
             udword_t  newcapacity = _capacity << 1;
             T * aux = _allocator.allocate(newcapacity);
@@ -388,7 +389,7 @@ namespace ttl {
     }
 
     template<typename T, class Allocator>
-    void fixedgrowingstack<T,Allocator>::push(T&& t) {
+    void staticgrowingstack<T,Allocator>::push(T&& t) {
         if (_top == _capacity) {
             udword_t  newcapacity = _capacity << 1;
             T * aux = _allocator.allocate(newcapacity);
@@ -401,7 +402,7 @@ namespace ttl {
     }
 
     template<typename T, class Allocator>
-    void fixedgrowingstack<T,Allocator>::pop() {
+    void staticgrowingstack<T,Allocator>::pop() {
         if (!_top) {
             throw StackError("stack is empty.");
         }
@@ -409,14 +410,14 @@ namespace ttl {
     }
 
     template<typename T, class Allocator>
-    void fixedgrowingstack<T,Allocator>::clear() {
+    void staticgrowingstack<T,Allocator>::clear() {
         while(!empty()) {
             pop();
         }
     }
 
     template<typename T, class Allocator>
-    void fixedgrowingstack<T,Allocator>::swap(fixedgrowingstack& o) {
+    void staticgrowingstack<T,Allocator>::swap(staticgrowingstack& o) {
         if (this != &o) {
             T * aux = _stack;
             udword_t aux_capacity = _capacity;
@@ -659,6 +660,15 @@ namespace ttl {
         _mutex.lock();
         _s.pop();
         _mutex.unlock();
+    }
+
+    template <typename T, class S>
+    T __T_tsstack<T,S>::top_and_pop() {
+        _mutex.lock();
+        T t(_s.top());
+        _s.pop();
+        _mutex.unlock();
+        return t;
     }
 
     template <typename T, class S>

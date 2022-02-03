@@ -201,7 +201,7 @@ namespace ttl {
     }
 
     template <class T, class Allocator>
-    vector<T, Allocator> & vector<T, Allocator>::operator=(const vector & o) {
+    vector<T, Allocator> & vector<T, Allocator>::operator=(const vector& o) {
         if (this != &o) {
             clear();
             _allocator.deallocate(_vector, _capacity);
