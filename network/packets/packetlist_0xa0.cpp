@@ -24,16 +24,24 @@ const udword_t Packet_0xa0::length() {
 
 void Packet_0xa0::loads(Socket * s) {
     ADDTOCALLSTACK();
-    word_t serverIndex;
-    *s >> serverIndex;
-    if (serverIndex > 0x80) {
-        serverIndex -= 0x80;
+    word_t server_index; // FIXME: Not working, right now it's receiving 256, it should receive 1
+    *s >> server_index;
+    if (server_index >= 0x80) {
+        server_index -= 0x80;
     }
-    TORUSSHELLECHO("Connection received to server index : " << serverIndex);
 
-    //TODO: Receive and handle disconnect from loginserver, send character list and send client' flags.
+    // >= 1.26.00 clients list Gives us a 1 based index for some reason.
+    if (server_index > 0)
+        server_index--;
+
+    //TODO: Server selection here, read IP and PORTS from configuration for the given server index.
+
+    TORUSSHELLECHO("Connection received to server index : " << server_index);
+    Packet_0x8c *packet_server_select = new Packet_0x8c();
+    packet_server_select->set_data(s, server_index);
+    packet_server_select->send(s);
+
 }
-
 Packet_0xa0::Packet_0xa0()
 {
 }

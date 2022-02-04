@@ -52,8 +52,8 @@ std::string hex_dump_buffer(const t_byte * buffer, const udword_t size) {
     udword_t lines = size / line_size;
     udword_t current_line_size;
     if (size % line_size) lines++;
-    s << " ## | 00 01 02 03 04 05 06 07 08 09 | *RAW**RAW* |" << std::endl;
-    s << "----|-------------------------------|------------|" << std::endl;
+    s << " ## | 00 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 |                   *RAW**RAW*                    |" << std::endl;
+    s << "----|-------------------------------------------------|-------------------------------------------------|" << std::endl;
     for(udword_t current_line = 0; current_line < lines; ++current_line) {
         s << " " << std::setfill(' ') << std::setw(2) << current_line << " | ";
         current_line_size = line_size;
@@ -67,6 +67,15 @@ std::string hex_dump_buffer(const t_byte * buffer, const udword_t size) {
             }
         }
         s << "| ";
+        for (udword_t curr_byte = 0; curr_byte < current_line_size; ++curr_byte) {
+            s << buffer[line_size * current_line + curr_byte] << "";
+        }
+        if (current_line == (lines - 1) && size % line_size) {
+            for (udword_t extra = size % line_size; extra < line_size; ++extra) {
+                s << " ";
+            }
+        }
+        /*s << "| ";
         for(udword_t curr_byte = 0; curr_byte < current_line_size; ++curr_byte) {
             s << buffer[line_size * current_line + curr_byte];
         }
@@ -74,7 +83,7 @@ std::string hex_dump_buffer(const t_byte * buffer, const udword_t size) {
             for (udword_t extra = size % line_size; extra < line_size; ++extra) {
                 s << " ";
             }
-        }
+        }*/
         s << " |" << std::endl;
     }
     return s.str();

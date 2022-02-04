@@ -34,9 +34,9 @@ void * NetworkManager::run() {
         Packet * newPacket;
         for (unsigned int socketId = 0; socketId < socketsCount; socketId++) {
             clientSocket = _sockets[socketId];
-            while ((clientSocket->is_closing() == false) && clientSocket->data_ready()) {
+            while (/*(clientSocket->is_closing() == false) && */ clientSocket->data_ready()) {
                 newPacket = clientSocket->read_packet();
-                delete newPacket;
+                //delete newPacket;
             }
         }
         _m.unlock();
@@ -89,6 +89,7 @@ void * NetworkManager::NetworkClientConnector::run() {
         }
         if (_s->is_closing())
         {
+            TORUSSHELLECHO("Closing socket: IP" << _s->get_ip());
             _s->shutdown();
         }
         torus_thread_sleep(50);

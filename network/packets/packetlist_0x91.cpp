@@ -34,14 +34,11 @@ void Packet_0x91::loads(Socket* s)
     str << accName->c_str();
     TORUSSHELLECHO(str.str());
 
-    /*Packet_0xa8 *packet = new Packet_0xa8();
-    s->write_packet(packet);*/
-
     Packet_0xb9* packet = new Packet_0xb9();
     dword_t featureFlags = 1;
     packet->set_data(featureFlags, s->get_client());
     s->write_packet(packet);
-    s->set_closing();  // Must disconnect the client from login server
+    //s->set_closing();  // Must disconnect the client from login server?
 
     Packet_0xa9 *packetCharacterList = new Packet_0xa9();
     packetCharacterList->set_data(s->get_client());

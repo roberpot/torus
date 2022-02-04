@@ -119,10 +119,13 @@ public:
 class Packet_0x80 : public Packet {  //LoginCredentials & ServerListRequest
     std::string accName[30];
     std::string accPassword[30];
+
+    bool _is_valid_account;
 public:
     const udword_t length();
     void loads(const t_byte*) {}
     void loads(Socket* s);
+    bool is_valid_account();
     ~Packet_0x80();
 };
 
@@ -169,7 +172,7 @@ public:
     const udword_t length();
     void loads(const t_byte*) {}
     void loads(Socket*) {}
-    void set_data(Socket *s);
+    void set_data(Socket *s, word_t server_index);
     ~Packet_0x8c();
 };
 

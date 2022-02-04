@@ -15,7 +15,7 @@
 
 #include "packetlist.h"
 #include "../socket.h"
-#include "../debug_support/info.h"
+#include "../../debug_support/info.h"
 #include "../core/torus.h"
 #include "../game/client.h"
 

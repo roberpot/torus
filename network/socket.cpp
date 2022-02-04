@@ -75,9 +75,15 @@ void Socket::init_client_socket() {
     crypto->set_mode_login();
     _client = new Client(this);
 
-    Packet_0xa8 * packet = new Packet_0xa8();
-    write_packet(packet);
-    
+    Packet_0x80 *packet_connect = new Packet_0x80();
+    packet_connect->loads(this);
+
+    if (packet_connect->is_valid_account())
+    {
+        DEBUG_NOTICE("Received valid account identification, proceeding to send server information.");
+        Packet_0xa8* packet = new Packet_0xa8();
+        write_packet(packet);
+    }    
 }
 
 
@@ -207,7 +213,9 @@ Packet* Socket::read_packet() {
 
 void Socket::write_packet(Packet * p) {
     ADDTOCALLSTACK();
-    p->print("Sending");
+    p->print("Sending ");
+    //TORUSSHELLECHO("Network send(" << p->length() << ") " << std::endl << hex_dump_buffer(p->dumps(), p->length()));
+
 #ifdef _WINDOWS
     udword_t data_sended = send(_socket, p->dumps(), p->length(), 0);
     if (data_sended == SOCKET_ERROR) {
@@ -328,3 +336,96 @@ Socket::~Socket() {
     close(_socket);
 #endif //__linux__
 }
+
+
+
+/*
+*   Connection sequence explanation up to character selection screen:
+*   - Server receives packet 0xa0 indicating the index of the selected server. - Done (read FIXME)
+*   - Server sends to client the connection information for the given server Packet 0x8c:
+*       int32 ip
+*       int16 port
+*       int32 Auth ID
+*   - Client sends packet 0x91 Requesting the character list:
+*       int32 Auth ID
+*       byte[30]	Account Name
+*       byte[30]	Password
+*       *Notes: Acc and password were already receipt, but this is a double check since the login server and game server maybe different, so both should do the check.
+                Auth ID is an additional security token providen for the loginserver and should be expected by the gameserver.
+
+*   - Server sends allowed flags for the client with packet 0xb9:
+*       int32 flags: (since UOSA the packet has 5 bytes, before it had 3).
+*           Flags
+            (
+                0x01 = enable T2A features: chat button, regions;
+                0x02 = enable renaissance features;
+                0x04 = enable third down features;
+                0x08 = enable LBR features: skills, map;
+                0x10 = enable AOS features: skills, spells, map, fightbook, housing tiles;
+                0x20 = enable 6th character slot;
+                0x40 = enable SE features: spells, skills, map, housing tiles;
+                0x80 = enable ML features: elven race, spells, skills, housing tiles;
+                0x100 = enable The Eight Age splash screen;
+                0x200 = enable The Ninth Age splash screen and crystal/shadow housing tiles;
+                0x400 = enable The Tenth Age; 0x800 = enable increased housing and bank storage;
+                0x1000 = enable 7th character slot;
+                0x2000 = enable roleplay faces;
+                0x4000 = trial account;
+                0x8000 = non-trial (live) account;
+                0x10000 = enable SA features: gargoyle race, spells, skills, housing tiles;
+                0x20000 - enable HS features;
+                0x40000 - enable Gothic housing tiles;
+                0x80000 - enable Rustic housing tiles
+            )
+*
+*   - Server sends character list, with packet 0xa9:
+*   byte characters count
+*   loop
+*       byte[30] character name
+*       byte[30] character password (best to send empty?)
+*   endloop
+*   byte cities count
+*   loop
+*       byte city index
+*       byte[32] city name
+*       byte[32] building name
+*       int32_t pos x
+*       int32_t pos y
+*       int32_t pos z
+*       int32_t map id
+*       int32_t cliloc description
+*       int32_t 0 (yes, a 0)
+*   endloop
+*   int32_t flags (for character creation)*:
+        Flags
+        (
+            0x01 = unknown flag1;
+            0x02 = overwrite configuration button;
+            0x04 = limit 1 character per account;
+            0x08 = enable context menus;
+            0x10 = limit character slots;
+            0x20 = paladin and necromancer classes, tooltips;
+            0x40 = 6th character slot;
+            0x80 = samurai and ninja classes;
+            0x100 = elven race;
+            0x200 = unknown flag2;
+            0x400 = send UO3D client type (client will send 0xE1 packet);
+            0x800 = unknown flag3;
+            0x1000 = 7th character slot;
+            0x2000 = unknown flag4;
+            0x4000 = new movement system;
+            0x8000 = unlock new felucca areas
+        )
+    int32_t last character slot**.
+
+    *Each flag is for each feature, if you need to combine features, you need to summ flags.
+        Unknown Flag1 never was sent by OSI.
+        Unknown Flag 2 was added with UO:KR launch.
+        Unknown Flag 3 was added sometimes between UO:KR and UO:SA launch.
+        Flag 4 was added with UO:SA launch.
+        All 4 flags are useless: no client reaction.
+        0x8000 flag is used for unlocking new Felucca factions areas, note that you have to use "_x" versions of map/statics if you want to move through new areas.
+    **Last character slot for SA 3D clients: it will highlight last character used.
+*
+    Since 7.0.13.0 and 4.0.13.0 City Name and Building Name have length of 32 chars, also added city x,y,z,map,cliloc description and dword 0 to city structure.
+    */

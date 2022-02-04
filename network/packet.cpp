@@ -21,12 +21,15 @@
 #include <shell.h>
 
 
-
 Packet * packet_factory(Socket & s) {
     ADDTOCALLSTACK();
+    Packet * p = nullptr;
+    if (!s.get_client())
+    {
+        return p;
+    }
     t_ubyte t = 0;
     s >> t;
-    Packet * p = nullptr;
     switch(t) {
         case 0x00:
             p = new Packet_0x00();
@@ -295,11 +298,15 @@ void Packet::write_uqword(uqword_t val, int pos)
 void Packet::print(std::string ioType)
 {
     std::stringstream ss;
+    if (buffer.empty())
+    {
+        return;
+    }
     ss << ioType;
     ss << length();
-    ss << " bytes in raw data:";
+    ss << " bytes in raw data for packet :" << buffer[0] << "\n";
     for (udword_t i = 0; i < length(); ++i) {
-        if (i % 10 == 0)
+        if (i % 16 == 0)
             ss << "\n";
         else
             ss << " | ";

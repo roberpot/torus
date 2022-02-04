@@ -35,13 +35,22 @@ void Packet_0x80::loads(Socket* s)
     str << accName->c_str();
     TORUSSHELLECHO(str.str());
 
+
+    _is_valid_account = true; // TODO: Add real account checks.
+
     if (s == nullptr) { //Sometimes happens at clients' closure.
         return;
     }
+
     /*Packet_0xa8* packet = new Packet_0xa8();
     s->write_packet(packet);*/
 
-    s->get_client()->add_response_code(Packet_0x82::ResponseCode::Success);
+    //s->get_client()->add_response_code(Packet_0x82::ResponseCode::Success); // shouldn't be here?
+}
+
+bool Packet_0x80::is_valid_account()
+{
+    return _is_valid_account;
 }
 
 Packet_0x80::~Packet_0x80()
