@@ -15,7 +15,8 @@
 #ifndef __TORUS_THREAD_UTILS_H
 #define __TORUS_THREAD_UTILS_H
 
-#include "thread_defines.h"
+#include <threads/thread_defines.h>
+
 #ifdef __TORUS_THREAD_WINAPI
 typedef DWORD torus_thread_id;
 #endif //__TORUS_THREAD_WINAPI

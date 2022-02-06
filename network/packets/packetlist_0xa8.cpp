@@ -18,11 +18,8 @@
 #include <core/config.h>
 #include <shell.h>
 
+#include <inaddr.h>
 
-const udword_t Packet_0xa8::length() {
-    ADDTOCALLSTACK();
-    return 0;
-}
 
 Packet_0xa8::Packet_0xa8()
 {
@@ -60,11 +57,27 @@ Packet_0xa8::Packet_0xa8()
     write_byte(serverTimeZone);
 
     //t_byte *ip = toruscfg.net_addr;
-    udword_t ip = 16777343;  //127.0.0.1    //TODO: send real IP
-    write_byte((ip >> 24) & 0xFF);
-    write_byte((ip >> 16) & 0xFF);
-    write_byte((ip >> 8) & 0xFF);
-    write_byte(ip & 0xFF);
+    std::string ip = "127.0.0.1";
+    in_addr addr;
+    addr.S_un.S_addr = inet_addr(ip.c_str());
+
+    bool reverse_ip = true;
+    if (reverse_ip)
+    {
+        // Clients less than 4.0.0 require IP to be sent in reverse
+        write_byte(addr.S_un.S_addr & 0xFF);
+        write_byte((addr.S_un.S_addr >> 8) & 0xFF);
+        write_byte((addr.S_un.S_addr >> 16) & 0xFF);
+        write_byte((addr.S_un.S_addr >> 24) & 0xFF);       
+    }
+    else
+    {
+        // Clients since 4.0.0 require IP to be sent in order
+        write_byte((addr.S_un.S_addr >> 24) & 0xFF);
+        write_byte((addr.S_un.S_addr >> 16) & 0xFF);
+        write_byte((addr.S_un.S_addr >> 8) & 0xFF);
+        write_byte(addr.S_un.S_addr & 0xFF);
+    }
     //Clients older than 4.0.0 must receive IP in reversed order.
     
     /*for (udword_t o = 0; o < buffer.size(); ++o)

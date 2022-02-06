@@ -15,7 +15,7 @@
 #ifndef __TORUS_THREAD_COND_H
 #define __TORUS_THREAD_COND_H
 
-#include "thread_defines.h"
+#include <threads/thread_defines.h>
 
 class ConditionVariable {
 public:

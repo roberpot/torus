@@ -28,6 +28,8 @@ class Socket;
 class Packet {
 protected:
     std::vector<t_byte> buffer;    ///< Buffer of this packet.
+    udword_t _current_pos;
+    bool _full_received;           ///< The full data for this packet has been received.
 public:
     /** @brief   Default constructor. */
     Packet();
@@ -36,10 +38,12 @@ public:
      *
      * @return  The lenght.
      */
-    const udword_t length();
+    virtual const udword_t length();
 
     void init_length();
     void write_length();
+    bool full_received();
+    udword_t id();
     /**
      * @brief   Dumps the buffer.
      *
@@ -51,13 +55,7 @@ public:
      *
      * @param parameter1    The first parameter.
      */
-    virtual void loads(const t_byte *) = 0;
-    /**
-     * @brief   Loads the given Socket.
-     *
-     * @param  s    If non-null, the Socket to process.
-     */
-    virtual void loads(Socket * s) = 0;
+    virtual void loads(Socket *s, const udword_t &len);
     /**
      * @brief   Send this message.
      *
@@ -86,7 +84,19 @@ public:
 
     void print(std::string ioType);
 
+    virtual void receive(Socket *s);
+    void read_string(std::string &target, udword_t len);
 
+    template<typename T>
+    /**
+     * @brief   Bitwise right shift operator, used to export the data received to a Packet's buffer.
+     *
+     * @param   s   The Socket to process.
+     * @param   d   The data to process.
+     *
+     * @return  The shifted result.
+     */
+    friend Packet& operator>>(Packet& s, T& d);
 private:
 };
 /**
@@ -102,6 +112,25 @@ Packet * packet_factory(Socket & s);
 
 //Packet * packet_factory(const t_byte * buffer, udword_t len);
 
+
+template<typename T>
+Packet& operator>>(Packet& p, T& d) {
+    //ADDTOCALLSTACK();
+    udword_t len = sizeof(T);
+    if (p._current_pos + len <= p.length())
+    {
+        std::vector<t_ubyte> tmp;
+        tmp.resize(len);
+        std::vector<t_byte>::iterator it_begin = p.buffer.begin() + p._current_pos;
+        std::vector<t_byte>::iterator it_end = p.buffer.begin() + p._current_pos + len;
+        std::copy(it_begin, it_end, tmp.data());
+        //p.buffer.insert(tmp.end(), it_begin, it_end);
+        //tmp.insert(p.buffer.begin() + p._current_pos, len);
+        memcpy(&d, tmp.data(), len);
+        p._current_pos += len;
+    }
+    return p;
+}
 #ifdef _MSC_VER
 #pragma warning(default:4127)
 #endif

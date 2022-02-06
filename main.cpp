@@ -12,15 +12,15 @@
  * along with Torus. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "library/system_headers.h"
-#include "parser/compiler.h"
-#include "network/networkmanager.h"
-#include "core/torus.h"
-#include "core/config.h"
-#include "shell.h"
-#include "debug_support/debug.h"
-#include "core/slave.h"
-#include "game/uo_files/uo_file_manager.h"
+#include <core/torus.h>
+#include <core/config.h>
+#include <core/slave.h>
+#include <debug_support/debug.h>
+#include <game/uo_files/uo_file_manager.h>
+#include <library/system_headers.h>
+#include <network/networkmanager.h>
+#include <parser/compiler.h>
+#include <shell.h>
 
 TorusShell torus_shell;
 Torus torus;

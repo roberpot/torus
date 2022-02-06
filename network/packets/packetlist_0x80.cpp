@@ -18,34 +18,27 @@
 #include <game/client.h>
 #include <shell.h>
 
-
 const udword_t Packet_0x80::length()
 {
-    return 62;
+    return Packet_0x80_length;
 }
 
-void Packet_0x80::loads(Socket* s)
+void Packet_0x80::receive(Socket* s)
 {
-    s->read_string(*s, *accName, 30);
-    s->read_string(*s, *accPassword, 30);
+    read_string(*accName, 30);
+    read_string(*accPassword, 30);
     t_byte command;
-    *s >> command;
+    *(this) >> command;
     std::stringstream str;
     str << "Account connection request from ";
     str << accName->c_str();
     TORUSSHELLECHO(str.str());
-
 
     _is_valid_account = true; // TODO: Add real account checks.
 
     if (s == nullptr) { //Sometimes happens at clients' closure.
         return;
     }
-
-    /*Packet_0xa8* packet = new Packet_0xa8();
-    s->write_packet(packet);*/
-
-    //s->get_client()->add_response_code(Packet_0x82::ResponseCode::Success); // shouldn't be here?
 }
 
 bool Packet_0x80::is_valid_account()

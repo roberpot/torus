@@ -16,7 +16,7 @@
 #define __TORUS_COMPILER_H
 
 #include <string>
-#include "../library/queue.h"
+#include <library/queue.h>
 
 extern class TorusCompiler {
 public:

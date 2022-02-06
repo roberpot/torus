@@ -12,7 +12,7 @@
  * along with Torus. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "thread.h"
+#include <threads/thread.h>
 
 Thread::Thread() {
     _running = false;

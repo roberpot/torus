@@ -34,9 +34,12 @@ void * NetworkManager::run() {
         Packet * newPacket;
         for (unsigned int socketId = 0; socketId < socketsCount; socketId++) {
             clientSocket = _sockets[socketId];
-            while (/*(clientSocket->is_closing() == false) && */ clientSocket->data_ready()) {
+            while ((clientSocket->is_closing() == false) && clientSocket->data_ready()) {
                 newPacket = clientSocket->read_packet();
-                //delete newPacket;
+                if (newPacket && newPacket->full_received())
+                {
+                    delete newPacket;
+                }
             }
         }
         _m.unlock();

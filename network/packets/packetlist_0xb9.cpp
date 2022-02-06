@@ -17,10 +17,10 @@
 #include <debug_support/info.h>
 
 
-const udword_t Packet_0xb9::length() {
-    ADDTOCALLSTACK();
-    return 21;
-}
+//const udword_t Packet_0xb9::length() {
+//    ADDTOCALLSTACK();
+//    return 21;
+//}
 
 void Packet_0xb9::set_data(dword_t seq, Client* client)
 {

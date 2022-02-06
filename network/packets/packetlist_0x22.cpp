@@ -21,10 +21,10 @@
 #include <network/socket.h>
 
 
-const udword_t Packet_0x22::length() {
-    ADDTOCALLSTACK();
-    return 8;
-}
+//const udword_t Packet_0x22::length() {
+//    ADDTOCALLSTACK();
+//    return 8;
+//}
 
 void Packet_0x22::set_data(t_ubyte seq, Client * client) {
     ADDTOCALLSTACK();

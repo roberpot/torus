@@ -12,7 +12,7 @@
  * along with Torus. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "utils.h"
+#include <threads/utils.h>
 
 
 torus_thread_id get_current_thread_id() {

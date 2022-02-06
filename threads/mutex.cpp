@@ -12,7 +12,7 @@
  * along with Torus. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "mutex.h"
+#include <threads/mutex.h>
 
 // Mutex:: Constructors, Destructor, Asign operator.
 

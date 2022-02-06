@@ -17,7 +17,7 @@
 
 #include <string>
 
-#include "../library/vector.h"
+#include <library/vector.h>
 
 
 namespace ast {

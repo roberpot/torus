@@ -19,6 +19,7 @@
 #include <core/errors.h>
 #include <network/socket.h>
 #include <shell.h>
+#include <initializer_list>
 
 
 Packet * packet_factory(Socket & s) {
@@ -43,13 +44,12 @@ Packet * packet_factory(Socket & s) {
         case 0x80:
             p = new Packet_0x80();
             break;
+        case 0xa8:
+            p = new Packet_0x80();
+            break;
         default:
             TORUSSHELLECHO("Unknown packet code 0x" << std::hex << (udword_t)t << std::dec << ".");
             //THROW_ERROR(NetworkError, "Unknown packet code 0x" << std::hex << (udword_t)t << std::dec << ".");
-    }
-    if (p != nullptr)
-    {
-        p->loads(&s);
     }
     return p;
 }
@@ -73,11 +73,39 @@ Packet * packet_factory(Socket & s) {
 
 Packet::Packet() {
     ADDTOCALLSTACK();
+    _current_pos = 0;
+    _full_received = false;
 }
 
 const t_byte * Packet::dumps() {
     //return buffer;    
     return buffer.data();
+}
+
+void Packet::loads(Socket *s, const udword_t& len)
+{
+    ADDTOCALLSTACK();
+    int current_length = buffer.size();
+    if (current_length < len) {
+        buffer.resize(len);
+    }
+    if (current_length + len <= length())
+    {
+        std::vector<t_byte> tmp;
+        tmp.resize(len);
+        memcpy(tmp.data(), s->data(), len);
+
+        for (size_t i = 0; i < tmp.size(); ++i) //FIXME: Please! ugly code!
+        {
+            buffer[current_length + i] =  tmp[i];
+        }
+    }
+
+    if (buffer.size() >= length())
+    {
+        _full_received = true;
+        receive(s);
+    }
 }
 
 const udword_t Packet::length() {
@@ -92,6 +120,21 @@ void Packet::init_length()
 void Packet::write_length()
 {
     buffer[2] = buffer.size();
+}
+
+bool Packet::full_received()
+{
+    return _full_received;
+}
+
+udword_t Packet::id()
+{
+    udword_t id = TUDWORD_MAX;
+    if (!buffer.empty())
+    {
+        id = buffer.at(0);
+    }
+    return id;
 }
 
 void Packet::send(Socket * socket) {
@@ -304,7 +347,7 @@ void Packet::print(std::string ioType)
     }
     ss << ioType;
     ss << length();
-    ss << " bytes in raw data for packet :" << buffer[0] << "\n";
+    ss << " bytes in raw data for packet : 0x" << hex(buffer[0]) << "\n";
     for (udword_t i = 0; i < length(); ++i) {
         if (i % 16 == 0)
             ss << "\n";
@@ -313,4 +356,18 @@ void Packet::print(std::string ioType)
         ss << hex(buffer[i]);
     }
     TORUSSHELLECHO(ss.str());
+}
+
+void Packet::read_string(std::string& target, udword_t len)
+{
+    if (_current_pos + len <= length())
+    {
+        target.resize(len);
+        std::copy(buffer.begin() + _current_pos, buffer.begin() + _current_pos + len, target.data());
+        _current_pos += len;
+    }
+}
+
+void Packet::receive(Socket *)
+{
 }

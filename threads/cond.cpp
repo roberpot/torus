@@ -12,7 +12,7 @@
  * along with Torus. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "cond.h"
+#include <threads/cond.h>
 
 
 ConditionVariable::ConditionVariable() {

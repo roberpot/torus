@@ -16,9 +16,9 @@
 #include <fstream>
 #include <streambuf>
 
-#include "../shell.h"
-#include "compiler.h"
-#include "ast.h"
+#include <shell.h>
+#include <parser/compiler.h>
+#include <parser/ast.h>
 
 extern ast::Node * tscp_parse(const char * buffer);
 

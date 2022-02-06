@@ -22,10 +22,10 @@ const udword_t Packet_0xa0::length() {
     return 3;
 }
 
-void Packet_0xa0::loads(Socket * s) {
+void Packet_0xa0::receive(Socket* s) {
     ADDTOCALLSTACK();
     word_t server_index; // FIXME: Not working, right now it's receiving 256, it should receive 1
-    *s >> server_index;
+    *(this) >> server_index;
     if (server_index >= 0x80) {
         server_index -= 0x80;
     }

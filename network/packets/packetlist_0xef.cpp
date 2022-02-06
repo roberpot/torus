@@ -22,13 +22,13 @@ const udword_t Packet_0xef::length() {
     return 21;
 }
 
-void Packet_0xef::loads(Socket * s) {
+void Packet_0xef::receive(Socket * s) {
     ADDTOCALLSTACK();
-    *s >> _seed; 
-    *s >> _client_major_version;
-    *s >> _client_minor_version;
-    *s >> _client_revision_version;
-    *s >> _client_prototype_version;
+    *(this) >> _seed; 
+    *(this) >> _client_major_version;
+    *(this) >> _client_minor_version;
+    *(this) >> _client_revision_version;
+    *(this) >> _client_prototype_version;
 }
 
 Packet_0xef::Packet_0xef()

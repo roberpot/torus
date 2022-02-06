@@ -29,6 +29,7 @@
 #include <network/packet.h>
 #include <network/crypto.h>
 #include <debug_support/callstack.h>
+#include <vector>
 
 /** @brief   Values that represent socket types. */
 enum SocketType {
@@ -108,6 +109,8 @@ public:
      */
     void write_packet(Packet * p);
 
+    t_byte *data();
+
     /**
     * @brief Returns true if the socket is already closed but not yet deleted.
     *
@@ -130,6 +133,7 @@ public:
     void shutdown();
     /** @brief   Destructor. */
     ~Socket();
+
     template<typename T>
     /**
      * @brief   Bitwise right shift operator, used to export the data received to a Packet's buffer.
@@ -140,14 +144,7 @@ public:
      * @return  The shifted result.
      */
     friend Socket & operator>>(Socket & s, T & d);
-//    friend Socket & operator>>(Socket & s, t_byte d);
-//    friend Socket & operator>>(Socket & s, word_t d);
-//    friend Socket & operator>>(Socket & s, dword_t d);
-//    friend Socket & operator>>(Socket & s, qword_t d);
-//    friend Socket & operator>>(Socket & s, t_ubyte d);
-//    friend Socket & operator>>(Socket & s, uword_t d);
-//    friend Socket & operator>>(Socket & s, udword_t d);
-//    friend Socket & operator>>(Socket & s, uqword_t d);
+
 private:
     /**
      * @brief   Determinate client seed.
@@ -160,7 +157,7 @@ private:
      *
      * @param   len (Optional) The length.
      */
-    void _read_bytes(udword_t len = 1024);
+    udword_t _read_bytes(udword_t len = 1024);
     /**
      * @brief   Rewinds the buffer.
      *
@@ -178,6 +175,7 @@ private:
     socket_t _socket;       ///< Pointer to the socket_t.
     Client *_client;        ///< Pointer to the attached game Client.
     bool _is_closing;
+    Packet* _current_packet;
 #ifdef __linux__
     socket_t _accepted_socket;  ///< Pointer to the connection socket for linux builds.
 #endif //__linux__
@@ -190,8 +188,10 @@ private:
 template<typename T>
 Socket & operator>>(Socket & s, T & d) {
     ADDTOCALLSTACK();
-    s._read_bytes(sizeof(T));
-    memcpy((void*)&d, s.buffer, sizeof(T));
+    if (s._read_bytes(sizeof(T)) > 0)
+    {
+        memcpy((void*)&d, s.buffer, sizeof(T));
+    }
     /*if (sizeof(T) == 4) {
         d = (((d & 0x000000ff) << 24) | ((d & 0x0000ff00) << 8) | ((d & 0x00ff0000) >> 8) | ((d & 0xff000000) >> 24));
     }*/

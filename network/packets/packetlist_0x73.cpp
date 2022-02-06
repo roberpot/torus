@@ -21,16 +21,21 @@
 
 const udword_t Packet_0x73::length() {
     ADDTOCALLSTACK();
-    return 0;
+    return 1;
 }
 
-void Packet_0x73::loads(Socket * s) {
+void Packet_0x73::receive(Socket * s) {
     ADDTOCALLSTACK();
     s->write_packet(this);
+    Packet_0x73 *response = new Packet_0x73();
+    response->set_data(1, s);
+    s->write_packet(response);
 }
 
-void Packet_0x73::set_data(t_ubyte , Client* )
+void Packet_0x73::set_data(t_ubyte ping, Socket *s)
 {
+    set_packet_id(0x73);
+    write_byte(ping);
 }
 
 Packet_0x73::Packet_0x73()

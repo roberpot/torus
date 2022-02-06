@@ -15,9 +15,9 @@
 #ifndef __TORUS_THREAD_THREAD_H
 #define __TORUS_THREAD_THREAD_H
 
-#include "thread_defines.h"
-#include "mutex.h"
-#include "../library/types.h"
+#include <threads/thread_defines.h>
+#include <threads/thread.h>
+#include <library/types.h>
 
 class Thread {
 public:

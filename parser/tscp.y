@@ -18,10 +18,10 @@
 #pragma warning(disable:4702 4065 4244 4081)
 #endif
 #include <iostream>
-#include "ast.h"
-#include "../library/stack.h"
-#include "../library/vector.h"
-#include "../library/utility.h"
+#include <parser/ast.h>
+#include <library/stack.h>
+#include <library/vector.h>
+#include <library/utility.h>
 
 #define YY_(x) (char *)(x)
 

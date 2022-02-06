@@ -14,11 +14,12 @@
 
 #include <library/system_headers.h>
 #include <debug_support/callstack.h>
-#include <game/char.h>
-#include <game/item.h>
+
 #include <game/account.h>
+#include <game/char.h>
+#include <game/client.h>
+#include <game/item.h>
 #include <game/server.h>
-#include "client.h"
 
 Char::Char() : Artifact(UID_CHAR) {
     ADDTOCALLSTACK();

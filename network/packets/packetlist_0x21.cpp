@@ -20,10 +20,10 @@
 #include <game/char.h>
 
 
-const udword_t Packet_0x21::length() {
-    ADDTOCALLSTACK();
-    return 8;
-}
+//const udword_t Packet_0x21::length() {
+//    ADDTOCALLSTACK();
+//    return 8;
+//}
 
 void Packet_0x21::set_data(t_ubyte seq, Client * client) {
     ADDTOCALLSTACK();

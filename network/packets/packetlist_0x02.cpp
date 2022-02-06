@@ -24,17 +24,12 @@ const udword_t Packet_0x02::length() {
     return 7;
 }
 
-void Packet_0x02::loads(const t_byte * b) {
-    ADDTOCALLSTACK();
-    UNREFERENCED_PARAMETER(b);
-}
-
-void Packet_0x02::loads(Socket * s) {
+void Packet_0x02::receive(Socket *s) {
     ADDTOCALLSTACK();
     t_byte dir = 0;
     t_byte sequence = 0;
-    *s >> dir;
-    *s >> sequence;
+    *(this) >> dir;
+    *(this) >> sequence;
     s->get_client()->event_walk(dir, sequence);
 }
 

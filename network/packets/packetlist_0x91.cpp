@@ -23,12 +23,12 @@ const udword_t Packet_0x91::length()
     return 62;
 }
 
-void Packet_0x91::loads(Socket* s)
+void Packet_0x91::receive(Socket* s)
 {
-    s->read_string(*s, *accName, 30);
-    s->read_string(*s, *accPassword, 30);
+    read_string(*accName, 30);
+    read_string(*accPassword, 30);
     t_byte command;
-    *s >> command;
+    *(this) >> command;
     std::stringstream str;
     str << "Account connection request from ";
     str << accName->c_str();

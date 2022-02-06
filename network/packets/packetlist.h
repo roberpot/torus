@@ -24,49 +24,55 @@
 #define PACKET_MOVEMENT_REQUEST Packet_0x02
 #define PACKET_MOVEMENT_REJECT Packet_0x21
 #define PACKET_MOVEMENT_ACCEPT Packet_0x22
+#define PACKET_ACCOUNT_LOGIN_REQUEST Packet_0x80
+#define PACKET_SERVER_LIST Packet_0xa8
+
+
+#define Packet_0x80_length 62
 
 class Client;
 
+/*
+* Methods required for packets:
+* For incoming packets: 
+*       const udword_t length();
+*       virtual void receive(Socket *s) override;
+* 
+* For outgoing packets:
+*       void set_data(...);
+*/
+
 class Packet_0x00 : public Packet {
 public:
-    const udword_t length();
-    void loads(const t_byte *);
-    void loads(Socket * s);
+    virtual const udword_t length() override;
+    virtual void receive(Socket* s) override;
     ~Packet_0x00();
 private:
 };
 
 class Packet_0x02 : public Packet {
 public:
-    const udword_t length();
-    void loads(const t_byte *);
-    void loads(Socket *s);
+    virtual const udword_t length() override;
+    virtual void receive(Socket *s) override;
     ~Packet_0x02();
 };
 
 class Packet_0xa9 : public Packet { // Supported Features
 public:
-    const udword_t length();
-    void loads(const t_byte*) {}
-    void loads(Socket*) {}
     void set_data(Client* client);
     ~Packet_0xa9();
 };
 
 class Packet_0xb9 : public Packet { // Supported Features
 public:
-    const udword_t length();
-    void loads(const t_byte*) {}
-    void loads(Socket*) {}
     void set_data(dword_t seq, Client* client);
     ~Packet_0xb9();
 };
 
 class Packet_0xef : public Packet {
 public:
-    const udword_t length();
-    void loads(const t_byte*) {}
-    void loads(Socket * s);
+    virtual const udword_t length() override;
+    virtual void receive(Socket* s) override;
     Packet_0xef();
     ~Packet_0xef();
     udword_t seed() { return _seed; }
@@ -80,38 +86,27 @@ private:
 
 class Packet_0x21 : public Packet {
 public:
-    const udword_t length();
-    void loads(const t_byte*) {}
-    void loads(Socket*) {}
     void set_data(t_ubyte seq, Client *client);
     ~Packet_0x21();
 };
 
 class Packet_0x22 : public Packet {
 public:
-    const udword_t length();
-    void loads(const t_byte*) {}
-    void loads(Socket*) {}
-    void set_data(t_ubyte seq, Client *client);
+    void set_data(t_ubyte seq, Client* client);
     ~Packet_0x22();
 };
 
 class Packet_0x55 : public Packet { //PacketLoginComplete (game character finished loading)
 public:
-    const udword_t length();
-    void loads(const t_byte*) {}
-    void loads(Socket*) {}
-    void set_data(t_ubyte, Client*) {}
     Packet_0x55();
     ~Packet_0x55() {}
 };
 
 class Packet_0x73 : public Packet { //PacketPing
-public:
-    const udword_t length();
-    void loads(const t_byte*) {}
-    void loads(Socket* s);
-    void set_data(t_ubyte seq, Client* client);
+public: // IO packet, has both read and write methods.
+    virtual const udword_t length() override;
+    virtual void receive(Socket* s) override;
+    void set_data(t_ubyte ping, Socket* s);
     Packet_0x73();
     ~Packet_0x73();
 };
@@ -122,9 +117,8 @@ class Packet_0x80 : public Packet {  //LoginCredentials & ServerListRequest
 
     bool _is_valid_account;
 public:
-    const udword_t length();
-    void loads(const t_byte*) {}
-    void loads(Socket* s);
+    virtual const udword_t length() override;
+    virtual void receive(Socket* s) override;
     bool is_valid_account();
     ~Packet_0x80();
 };
@@ -160,18 +154,12 @@ public:
 
         Success = 0xFF  // no error
     };
-    const udword_t length();
-    void loads(const t_byte*) {}
-    void loads(Socket*) {}
     void set_data(ResponseCode code);
     ~Packet_0x82();
 };
 
 class Packet_0x8c : public Packet {
 public:
-    const udword_t length();
-    void loads(const t_byte*) {}
-    void loads(Socket*) {}
     void set_data(Socket *s, word_t server_index);
     ~Packet_0x8c();
 };
@@ -180,26 +168,21 @@ class Packet_0x91 : public Packet {  //LoginCredentials & ServerListRequest
     std::string accName[30];
     std::string accPassword[30];
 public:
-    const udword_t length();
-    void loads(const t_byte*) {}
-    void loads(Socket* s);
+    virtual const udword_t length() override;
+    virtual void receive(Socket* s) override;
     ~Packet_0x91();
 };
 
 class Packet_0xa0 : public Packet {  //ServerSelect -> disconnects from login server, connects to game server and requests character's list and client's flags
 public:
-    const udword_t length();
-    void loads(const t_byte*) {}
-    void loads(Socket* s);
+    virtual const udword_t length() override;
+    virtual void receive(Socket* s) override;
     Packet_0xa0();
     ~Packet_0xa0();
 };
 
 class Packet_0xa8 : public Packet {  //ServerList
 public:
-    const udword_t length();
-    void loads(const t_byte*) {}
-    void loads(Socket*) {}
     Packet_0xa8();
     ~Packet_0xa8();
 };

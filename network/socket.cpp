@@ -51,12 +51,15 @@ Socket::Socket() {
     buffer = new char[1024];
     _client = 0;
     _is_closing = false;
+    _current_packet = nullptr;
 }
 
 Socket::Socket(socket_t s) {
     ADDTOCALLSTACK();
     _socket = s;
     rewinded_len = 0;
+    _is_closing = false;
+    _current_packet = nullptr;
     init_client_socket();
 }
 
@@ -76,14 +79,17 @@ void Socket::init_client_socket() {
     _client = new Client(this);
 
     Packet_0x80 *packet_connect = new Packet_0x80();
-    packet_connect->loads(this);
+    _read_bytes(Packet_0x80_length);
+    packet_connect->loads(this, Packet_0x80_length);
 
     if (packet_connect->is_valid_account())
     {
         DEBUG_NOTICE("Received valid account identification, proceeding to send server information.");
         Packet_0xa8* packet = new Packet_0xa8();
         write_packet(packet);
-    }    
+        //get_client()->add_response_code(Packet_0x82::ResponseCode::Success); // shouldn't be here?
+    }
+    delete packet_connect;
 }
 
 
@@ -202,11 +208,20 @@ bool Socket::data_ready() {
 
 Packet* Socket::read_packet() {
     ADDTOCALLSTACK();
-    Packet* p = nullptr;
-    p = packet_factory(*this);
+    Packet* p = _current_packet;
+    if (!p)
+    {
+        p = packet_factory(*this);
+    }
     if (p)
     {
-        TORUSSHELLECHO("Network receive(" << p->length() << ") "<< std::endl << hex_dump_buffer(p->dumps(), p->length()));
+        int len = _read_bytes(p->length());
+        p->loads(this, len);
+        TORUSSHELLECHO("Network receive(0x" << hex(p->id()) << ")[ " << p->length() << "] = " << std::endl << hex_dump_buffer(p->dumps(), p->length()));
+        if (p->full_received())
+        {
+            _current_packet = nullptr;
+        }
     }
     return p;
 }
@@ -235,6 +250,11 @@ void Socket::write_packet(Packet * p) {
     delete p;
 }
 
+t_byte* Socket::data()
+{
+    return buffer;
+}
+
 bool Socket::is_closing()
 {
     return _is_closing;
@@ -255,7 +275,7 @@ void Socket::read_string(Socket& s, std::string& str, int len)
     }*/
 }
 
-void Socket::_read_bytes(udword_t len) {
+udword_t Socket::_read_bytes(udword_t len) {
     ADDTOCALLSTACK();
     // First check if we rewinded.
     udword_t init = 0;
@@ -279,19 +299,21 @@ void Socket::_read_bytes(udword_t len) {
     if (len_remaining) {
 #ifdef _WINDOWS
         buffer_len = recv(_socket, &buffer[init], len_remaining, 0);
+        if (buffer_len == SOCKET_ERROR)
+        {
+            TORUSSHELLECHO("Socket recv error: ", WSAGetLastError());
+        }
+
 #endif // _WINDOWS
 #ifdef __linux__
         buffer_len = (udword_t)recv(_socket, &buffer[init], len_remaining, 0);
 #endif //__linux__
-        if (buffer_len != len_remaining) {
-            THROW_ERROR(NetworkError, "Error reading socket: Expected len: " << len_remaining << ", readed: " << buffer_len);
-        }
     }
-    buffer_len = len;
     if (crypto && crypto->has_encryption())
     {
         crypto->decrypt(buffer, len);
     }
+    return buffer_len;
 }
 
 void Socket::_rewind(t_byte * b, udword_t l) {
