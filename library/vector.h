@@ -97,10 +97,10 @@ namespace ttl {
     public:
         __T_tsvector(udword_t size=_TTL_VECTOR_DEFAULT_SIZE);
         __T_tsvector(udword_t size, const T& v);
-        __T_tsvector(__T_tsvector& o);
+        __T_tsvector(const __T_tsvector& o);
         __T_tsvector(__T_tsvector&& o);
         ~__T_tsvector();
-        __T_tsvector& operator=(__T_tsvector& o);
+        __T_tsvector& operator=(const __T_tsvector& o);
         __T_tsvector& operator=(__T_tsvector&& o);
         void assign(udword_t size, const T& t);
 
@@ -111,11 +111,11 @@ namespace ttl {
         T back();
 
         // Capacity
-        bool empty();
-        udword_t size();
-        udword_t max_size();
+        bool empty() const;
+        udword_t size() const;
+        udword_t max_size() const;
         void reserve(udword_t n);
-        udword_t capacity();
+        udword_t capacity() const;
         void shrink_to_fit();
 
         // Modifiers
@@ -123,7 +123,7 @@ namespace ttl {
         udword_t insert(udword_t p, const T& t);
         udword_t insert(udword_t p, T&& t);
         udword_t insert(udword_t p, udword_t n, const T& t);
-        udword_t insert(udword_t p, __T_tsvector& v);
+        udword_t insert(udword_t p, const __T_tsvector& v);
         udword_t erase(udword_t p);
         udword_t erase(udword_t init, udword_t end);
         void push_back(const T& t);
@@ -134,14 +134,14 @@ namespace ttl {
         void swap(__T_tsvector& v);
 
         // Operators.
-        bool operator==(__T_tsvector& o);
-        bool operator!=(__T_tsvector& o);
-        bool operator<(__T_tsvector& o);
-        bool operator<=(__T_tsvector& o);
-        bool operator>(__T_tsvector& o);
-        bool operator>=(__T_tsvector& o);
+        bool operator==(const __T_tsvector& o) const;
+        bool operator!=(const __T_tsvector& o) const;
+        bool operator<(const __T_tsvector& o) const;
+        bool operator<=(const __T_tsvector& o) const;
+        bool operator>(const __T_tsvector& o) const;
+        bool operator>=(const __T_tsvector& o) const;
     private:
-        Mutex _mutex;
+        mutable Mutex _mutex;
         V _v;
     };
 
@@ -596,7 +596,7 @@ namespace ttl {
     }
 
     template <typename T, class V>
-    __T_tsvector<T, V>::__T_tsvector(__T_tsvector& o) {
+    __T_tsvector<T, V>::__T_tsvector(const __T_tsvector& o) {
         o._mutex.lock();
         _v = o._v;
         o._mutex.unlock();
@@ -615,7 +615,7 @@ namespace ttl {
     }
 
     template <typename T, class V>
-    __T_tsvector<T, V>& __T_tsvector<T, V>::operator=(__T_tsvector& o) {
+    __T_tsvector<T, V>& __T_tsvector<T, V>::operator=(const __T_tsvector& o) {
         if (this != &o) {
             _mutex.lock();
             o._mutex.lock();
@@ -678,7 +678,7 @@ namespace ttl {
     }
 
     template <typename T, class V>
-    bool __T_tsvector<T, V>::empty() {
+    bool __T_tsvector<T, V>::empty() const {
         _mutex.lock();
         bool e = !_v.empty();
         _mutex.unlock();
@@ -686,7 +686,7 @@ namespace ttl {
     }
 
     template <typename T, class V>
-    udword_t __T_tsvector<T, V>::size() {
+    udword_t __T_tsvector<T, V>::size() const {
         _mutex.lock();
         udword_t s = _v.size();
         _mutex.unlock();
@@ -694,7 +694,7 @@ namespace ttl {
     }
 
     template <typename T, class V>
-    udword_t __T_tsvector<T, V>::max_size() {
+    udword_t __T_tsvector<T, V>::max_size() const {
         _mutex.lock();
         udword_t s = _v.max_size();
         _mutex.unlock();
@@ -709,7 +709,7 @@ namespace ttl {
     }
 
     template <typename T, class V>
-    udword_t __T_tsvector<T, V>::capacity() {
+    udword_t __T_tsvector<T, V>::capacity() const {
         _mutex.lock();
         udword_t c = _v.capacity();
         _mutex.unlock();
@@ -755,7 +755,7 @@ namespace ttl {
     }
 
     template <typename T, class V>
-    udword_t __T_tsvector<T, V>::insert(udword_t p, __T_tsvector& v) {
+    udword_t __T_tsvector<T, V>::insert(udword_t p, const __T_tsvector& v) {
         _mutex.lock();
         v._mutex.lock();
         udword_t r = _v.insert(p, v._v);
@@ -827,7 +827,7 @@ namespace ttl {
     }
 
     template <typename T, class V>
-    bool __T_tsvector<T, V>::operator==(__T_tsvector& o) {
+    bool __T_tsvector<T, V>::operator==(const __T_tsvector& o) const {
         if (this == &o) {
             return true;
         }
@@ -840,7 +840,7 @@ namespace ttl {
     }
 
     template <typename T, class V>
-    bool __T_tsvector<T, V>::operator!=(__T_tsvector& o) {
+    bool __T_tsvector<T, V>::operator!=(const __T_tsvector& o) const {
         if (this == &o) {
             return false;
         }
@@ -853,7 +853,7 @@ namespace ttl {
     }
 
     template <typename T, class V>
-    bool __T_tsvector<T, V>::operator<(__T_tsvector& o) {
+    bool __T_tsvector<T, V>::operator<(const __T_tsvector& o) const {
         if (this == &o) {
             return false;
         }
@@ -866,7 +866,7 @@ namespace ttl {
     }
 
     template <typename T, class V>
-    bool __T_tsvector<T, V>::operator<=(__T_tsvector& o) {
+    bool __T_tsvector<T, V>::operator<=(const __T_tsvector& o) const {
         if (this == &o) {
             return true;
         }
@@ -879,7 +879,7 @@ namespace ttl {
     }
 
     template <typename T, class V>
-    bool __T_tsvector<T, V>::operator>(__T_tsvector& o) {
+    bool __T_tsvector<T, V>::operator>(const __T_tsvector& o) const {
         if (this == &o) {
             return false;
         }
@@ -892,7 +892,7 @@ namespace ttl {
     }
 
     template <typename T, class V>
-    bool __T_tsvector<T, V>::operator>=(__T_tsvector& o) {
+    bool __T_tsvector<T, V>::operator>=(const __T_tsvector& o) const {
         if (this == &o) {
             return true;
         }

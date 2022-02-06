@@ -142,19 +142,19 @@ namespace ttl {
     class __T_tsqueue {
     public:
         __T_tsqueue(udword_t size=_TTL_QUEUE_DEFAULT_SIZE);
-        __T_tsqueue(__T_tsqueue& o);
+        __T_tsqueue(const __T_tsqueue& o);
         __T_tsqueue(__T_tsqueue&& o);
         ~__T_tsqueue();
-        __T_tsqueue& operator=(__T_tsqueue& o);
+        __T_tsqueue& operator=(const __T_tsqueue& o);
         __T_tsqueue& operator=(__T_tsqueue&& o);
 
         // Element access.
         T front();
 
         // Capacity.
-        bool empty();
-        udword_t size();
-        udword_t capacity();
+        bool empty() const;
+        udword_t size() const;
+        udword_t capacity() const;
 
         // Modifiers.
         void push(const T& t);
@@ -164,7 +164,7 @@ namespace ttl {
         void clear();
         void swap(__T_tsqueue<T,Q>& o);
     private:
-        Mutex _mutex;
+        mutable Mutex _mutex;
         Q _q;
     };
 
@@ -671,7 +671,7 @@ namespace ttl {
     }
 
     template <typename T, class Q>
-    __T_tsqueue<T,Q>::__T_tsqueue(__T_tsqueue& o) {
+    __T_tsqueue<T,Q>::__T_tsqueue(const __T_tsqueue& o) {
         o._mutex.lock();
         _q = o._q;
         o._mutex.unlock();
@@ -690,7 +690,7 @@ namespace ttl {
     }
 
     template <typename T, class Q>
-    __T_tsqueue<T,Q>& __T_tsqueue<T,Q>::operator=(__T_tsqueue& o) {
+    __T_tsqueue<T,Q>& __T_tsqueue<T,Q>::operator=(const __T_tsqueue& o) {
         _mutex.lock();
         o._mutex.lock();
         _q = o._q;
@@ -718,7 +718,7 @@ namespace ttl {
     }
 
     template <typename T, class Q>
-    bool __T_tsqueue<T,Q>::empty() {
+    bool __T_tsqueue<T,Q>::empty() const {
         _mutex.lock();
         bool b = _q.empty();
         _mutex.unlock();
@@ -726,7 +726,7 @@ namespace ttl {
     }
 
     template <typename T, class Q>
-    udword_t __T_tsqueue<T,Q>::size() {
+    udword_t __T_tsqueue<T,Q>::size() const {
         _mutex.lock();
         udword_t s = _q.size();
         _mutex.unlock();
@@ -734,7 +734,7 @@ namespace ttl {
     }
 
     template <typename T, class Q>
-    udword_t __T_tsqueue<T,Q>::capacity() {
+    udword_t __T_tsqueue<T,Q>::capacity() const {
         _mutex.lock();
         udword_t capacity = _q.capacity();
         _mutex.unlock();

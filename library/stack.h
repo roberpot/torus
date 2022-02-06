@@ -136,18 +136,18 @@ namespace ttl {
     class __T_tsstack {
     public:
         __T_tsstack(udword_t size=_TTL_STACK_DEFAULT_SIZE);
-        __T_tsstack(__T_tsstack& o);
+        __T_tsstack(const __T_tsstack& o);
         __T_tsstack(__T_tsstack&& o);
         ~__T_tsstack();
-        __T_tsstack & operator=(__T_tsstack& o);
+        __T_tsstack & operator=(const __T_tsstack& o);
         __T_tsstack & operator=(__T_tsstack&& o);
 
         // Element access.
         T top();
 
         // Capacity.
-        bool empty();
-        udword_t size();
+        bool empty() const;
+        udword_t size() const;
 
         // Modifiers.
         void push(const T& t);
@@ -157,7 +157,7 @@ namespace ttl {
         void clear();
         void swap(__T_tsstack& o);
     private:
-        Mutex _mutex;
+        mutable Mutex _mutex;
         S _s;
     };
 
@@ -571,7 +571,7 @@ namespace ttl {
     __T_tsstack<T,S>::__T_tsstack(udword_t size) : _s(size) {}
 
     template <typename T, class S>
-    __T_tsstack<T,S>::__T_tsstack(__T_tsstack& o) {
+    __T_tsstack<T,S>::__T_tsstack(const __T_tsstack& o) {
         if (this != &o) {
             o._mutex.lock();
             _s = o._s;
@@ -594,7 +594,7 @@ namespace ttl {
     }
 
     template <typename T, class S>
-    __T_tsstack<T,S>& __T_tsstack<T,S>::operator=(__T_tsstack& o) {
+    __T_tsstack<T,S>& __T_tsstack<T,S>::operator=(const __T_tsstack& o) {
         if (this != &o) {
             _mutex.lock();
             o._mutex.lock();
@@ -626,7 +626,7 @@ namespace ttl {
     }
 
     template <typename T, class S>
-    bool __T_tsstack<T,S>::empty() {
+    bool __T_tsstack<T,S>::empty() const {
         _mutex.lock();
         bool b = _s.empty();
         _mutex.unlock();
@@ -634,7 +634,7 @@ namespace ttl {
     }
 
     template <typename T, class S>
-    udword_t __T_tsstack<T,S>::size() {
+    udword_t __T_tsstack<T,S>::size() const {
         _mutex.lock();
         udword_t s = _s.size();
         _mutex.unlock();
