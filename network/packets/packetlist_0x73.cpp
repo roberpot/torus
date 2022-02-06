@@ -32,7 +32,7 @@ void Packet_0x73::receive(Socket * s) {
     s->write_packet(response);
 }
 
-void Packet_0x73::set_data(t_ubyte ping, Socket *s)
+void Packet_0x73::set_data(t_ubyte ping, Socket *)
 {
     set_packet_id(0x73);
     write_byte(ping);

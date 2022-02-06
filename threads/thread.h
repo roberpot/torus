@@ -16,7 +16,7 @@
 #define __TORUS_THREAD_THREAD_H
 
 #include <threads/thread_defines.h>
-#include <threads/thread.h>
+#include <threads/mutex.h>
 #include <library/types.h>
 
 class Thread {

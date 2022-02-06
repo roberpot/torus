@@ -22,7 +22,7 @@
 //    return 11;
 //}
 
-void Packet_0x8c::set_data(Socket* s, int16_t server_index)
+void Packet_0x8c::set_data(Socket* s, int16_t )
 {
     UNREFERENCED_PARAMETER(s);
     set_packet_id(0x8c); //packet_id
