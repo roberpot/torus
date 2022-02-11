@@ -31,6 +31,13 @@ Packet * packet_factory(Socket & s) {
     }
     t_ubyte t = 0;
     s >> t;
+
+    if (t == TUBYTE_MAX) // Invalid recv, 0 or -1, catch it here and close the socket
+    {
+        s.set_closing();
+        return p;
+    }
+
     switch(t) {
         case 0x00:
             p = new Packet_0x00();
@@ -45,11 +52,21 @@ Packet * packet_factory(Socket & s) {
             p = new Packet_0x80();
             break;
         case 0xa8:
-            p = new Packet_0x80();
+            p = new Packet_0xa8();
+            break;
+        case 0x91:
+            p = new Packet_0x91();
+            break;
+        case 0x73:
+            p = new Packet_0x73();
             break;
         default:
             TORUSSHELLECHO("Unknown packet code 0x" << std::hex << (udword_t)t << std::dec << ".");
             //THROW_ERROR(NetworkError, "Unknown packet code 0x" << std::hex << (udword_t)t << std::dec << ".");
+    }
+    if (p)
+    {
+        p->set_packet_id(t);
     }
     return p;
 }
@@ -85,9 +102,18 @@ const t_byte * Packet::dumps() {
 void Packet::loads(Socket *s, const udword_t& len)
 {
     ADDTOCALLSTACK();
-    int current_length = buffer.size();
-    if (current_length < len) {
-        buffer.resize(len);
+    udword_t current_length = udword_t(buffer.size());
+    if (current_length < length()) {
+        buffer.resize(length());
+    }
+
+    if (current_length + len < length())
+    {
+        TORUSSHELLECHO("Received data not enough, " << current_length + len << " out of " << length() << " for packet 0x" << id());
+    }
+    else if (current_length + len == length())
+    {
+        TORUSSHELLECHO("Received all bytes (" << length() << ") for packet 0x" << id());
     }
     if (current_length + len <= length())
     {
@@ -119,7 +145,7 @@ void Packet::init_length()
 
 void Packet::write_length()
 {
-    buffer[2] = buffer.size();
+    buffer[2] = t_byte(buffer.size()); //TODO: Check if this works right
 }
 
 bool Packet::full_received()
@@ -163,8 +189,11 @@ void Packet::write_string(std::string& str, int ilen)
 {
     ADDTOCALLSTACK();
     buffer.reserve(buffer.size() + str.size());
+    std::string tmpStr(str);
+    tmpStr.insert(0, ilen - str.size(), 0);
+    tmpStr.insert(0, str.c_str());
     for (int i = 0; i < ilen; ++i) {
-        buffer.emplace_back(str.at(i));
+        buffer.emplace_back(tmpStr.at(i));
     }
     /*if (sizeof(T) == 4) {
         d = (((d & 0x000000ff) << 24) | ((d & 0x0000ff00) << 8) | ((d & 0x00ff0000) >> 8) | ((d & 0xff000000) >> 24));
@@ -365,6 +394,18 @@ void Packet::read_string(std::string& target, udword_t len)
         target.resize(len);
         std::copy(buffer.begin() + _current_pos, buffer.begin() + _current_pos + len, target.data());
         _current_pos += len;
+    }
+}
+
+void Packet::write_from_paste(std::string paste)
+{
+    buffer.clear();
+    t_byte c[2];
+    for (size_t i = 0; i < paste.size(); i += 2)
+    {
+        c[0] = paste[i];
+        c[1] = paste[i + 1];
+        buffer.push_back(*c);
     }
 }
 

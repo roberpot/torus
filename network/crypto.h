@@ -29,6 +29,19 @@ public:
     void decrypt(t_byte * buffer, udword_t l);
     void crypt(t_ubyte * buffer, udword_t l);
 private:
+    enum class CryptMode {
+        CRYPTMODE_NONE = 0,
+        CRYPTMODE_LOGIN,
+        CRYPTMODE_GAME
+    };
+    enum class CryptType {
+        CRYPTTYPE_NONE,
+        CRYPTTYPE_BLOWFISH,
+        CRYPTTYPE_BLOWTWOFISH,
+        CRYPTTYPE_TWOFISH,
+        CRYPTTYPE_CLASSIC   //
+    };
+
     void _decrypt_login_gt_0x125360(t_ubyte * buffer, udword_t l);
     void _decrypt_login_eq_0x125360(t_ubyte * buffer, udword_t l);
     void _decrypt_login_lt_0x125360(t_ubyte * buffer, udword_t l);
@@ -49,24 +62,13 @@ private:
     udword_t _curr_key_lo;
     udword_t _curr_key_hi;
     udword_t _seed;
-    enum {
-        CRYPTMODE_NONE = 0,
-        CRYPTMODE_LOGIN,
-        CRYPTMODE_GAME
-    } _crypt_mode;
-
-    enum {
-        CRYPTTYPE_NONE,
-        CRYPTTYPE_BLOWFISH,
-        CRYPTTYPE_BLOWTWOFISH,
-        CRYPTTYPE_TWOFISH,
-        CRYPTTYPE_CLASSIC   //
-    } _crypt_type;
+    CryptMode _crypt_mode;
+    CryptType _crypt_type;
 
 public:
     inline bool has_encryption()
     {
-        return _crypt_type != CRYPTTYPE_NONE;
+        return _crypt_type != CryptType::CRYPTTYPE_NONE;
     }
 };
 

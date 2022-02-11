@@ -26,6 +26,7 @@ void Packet_0xb9::set_data(dword_t seq, Client* client)
 {
     UNREFERENCED_PARAMETER(seq);
     UNREFERENCED_PARAMETER(client);
+    set_packet_id(0xb9);
     write_dword(1);
 }
 

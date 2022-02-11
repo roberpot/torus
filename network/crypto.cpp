@@ -28,8 +28,8 @@ Crypto::Crypto() {
     _curr_key_lo = 0;
     _curr_key_hi = 0;
     _seed = 0;
-    _crypt_mode = CRYPTMODE_NONE;
-    _crypt_type = CRYPTTYPE_NONE;
+    _crypt_mode = CryptMode::CRYPTMODE_NONE;
+    _crypt_type = CryptType::CRYPTTYPE_NONE;
     _crypt_login_method = nullptr;
     _crypt_game_method = nullptr;
     _decrypt_login_method = nullptr;
@@ -49,17 +49,17 @@ void Crypto::set_crypt_key(udword_t keyHi, udword_t keyLo)
 
 void Crypto::set_mode_none() {
     ADDTOCALLSTACK();
-    _crypt_mode = CRYPTMODE_NONE;
+    _crypt_mode = CryptMode::CRYPTMODE_NONE;
 }
 
 void Crypto::set_mode_login() {
     ADDTOCALLSTACK();
-    _crypt_mode = CRYPTMODE_LOGIN;
+    _crypt_mode = CryptMode::CRYPTMODE_LOGIN;
 }
 
 void Crypto::set_mode_game() {
     ADDTOCALLSTACK();
-    _crypt_mode = CRYPTMODE_GAME;
+    _crypt_mode = CryptMode::CRYPTMODE_GAME;
 }
 
 void Crypto::detect_client_keys(t_byte * buffer, udword_t l) {
@@ -136,11 +136,11 @@ void Crypto::decrypt(t_byte * buffer, udword_t l) {
     t_ubyte *transictionBuffer = new t_ubyte[255];  // Login packet needs the buffer to be unsigned.
     memcpy(transictionBuffer, buffer, l);
     switch(_crypt_mode) {
-        case CRYPTMODE_NONE: return;
-        case CRYPTMODE_LOGIN: {
+        case CryptMode::CRYPTMODE_NONE: return;
+        case CryptMode::CRYPTMODE_LOGIN: {
             (this->*_decrypt_login_method)(transictionBuffer, l);
         } break;
-        case CRYPTMODE_GAME: {
+        case CryptMode::CRYPTMODE_GAME: {
             (this->*_decrypt_game_method)(transictionBuffer, l);
         } break;
     }
@@ -149,11 +149,11 @@ void Crypto::decrypt(t_byte * buffer, udword_t l) {
 void Crypto::crypt(t_ubyte * buffer, udword_t l) {
     ADDTOCALLSTACK();
     switch(_crypt_mode) {
-        case CRYPTMODE_NONE: return;
-        case CRYPTMODE_LOGIN: {
+        case CryptMode::CRYPTMODE_NONE: return;
+        case CryptMode::CRYPTMODE_LOGIN: {
             (this->*_crypt_login_method)(buffer, l);
         } break;
-        case CRYPTMODE_GAME: {
+        case CryptMode::CRYPTMODE_GAME: {
             (this->*_crypt_game_method)(buffer, l);
         } break;
     }

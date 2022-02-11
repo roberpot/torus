@@ -21,12 +21,11 @@
 
 const udword_t Packet_0x73::length() {
     ADDTOCALLSTACK();
-    return 1;
+    return 2;
 }
 
 void Packet_0x73::receive(Socket * s) {
     ADDTOCALLSTACK();
-    s->write_packet(this);
     Packet_0x73 *response = new Packet_0x73();
     response->set_data(1, s);
     s->write_packet(response);

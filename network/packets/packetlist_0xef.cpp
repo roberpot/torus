@@ -24,6 +24,7 @@ const udword_t Packet_0xef::length() {
 
 void Packet_0xef::receive(Socket * s) {
     ADDTOCALLSTACK();
+    UNREFERENCED_PARAMETER(s);
     *(this) >> _seed; 
     *(this) >> _client_major_version;
     *(this) >> _client_minor_version;

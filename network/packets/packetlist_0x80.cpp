@@ -25,6 +25,10 @@ const udword_t Packet_0x80::length()
 
 void Packet_0x80::receive(Socket* s)
 {
+    if (Socket::ConnectMode(s->get_connect_mode()) != Socket::ConnectMode::CONNECT_LOGIN) // Double casting to prevent Warning #C26812 (VS)
+    {
+        return;
+    }
     read_string(*accName, 30);
     read_string(*accPassword, 30);
     t_byte command;

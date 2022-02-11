@@ -87,6 +87,8 @@ public:
     virtual void receive(Socket *s);
     void read_string(std::string &target, udword_t len);
 
+    void write_from_paste(std::string paste);
+
     template<typename T>
     /**
      * @brief   Bitwise right shift operator, used to export the data received to a Packet's buffer.

@@ -34,7 +34,7 @@
 
 Socket::Socket() {
     ADDTOCALLSTACK();
-    type = SOCKETTYPE_SERVER;
+    type = SocketType::SOCKETTYPE_SERVER;
 #ifdef _WINDOWS
     //_socket = INVALID_SOCKET;
     _socket = socket(AF_INET, SOCK_STREAM, 0);
@@ -49,9 +49,15 @@ Socket::Socket() {
     }
 #endif //__linux__
     buffer = new char[1024];
+    buffer_len = 0;
+    rewinded = nullptr;
+    rewinded_len = 0;
+    crypto = nullptr;
     _client = 0;
     _is_closing = false;
     _current_packet = nullptr;
+    _cur_pos = 0;
+    _connect_mode = ConnectMode::CONNECT_NONE;
 }
 
 Socket::Socket(socket_t s) {
@@ -60,25 +66,29 @@ Socket::Socket(socket_t s) {
     rewinded_len = 0;
     _is_closing = false;
     _current_packet = nullptr;
+    _cur_pos = 0;
+    _connect_mode = ConnectMode::CONNECT_NONE;
     init_client_socket();
 }
 
 void Socket::init_client_socket() {
     ADDTOCALLSTACK();
     rewinded_len = 0;
-    type = SOCKETTYPE_CLIENT;
+    type = SocketType::SOCKETTYPE_CLIENT;
     buffer = new t_byte[1024];
     crypto = new Crypto();
     crypto->set_mode_none();
-    udword_t seed = _determinate_client_seed();
+/*    udword_t seed = _determinate_client_seed();
     crypto->set_client_seed(seed);
     _read_bytes(62);
     crypto->detect_client_keys(buffer, buffer_len);
     _rewind(buffer, 62);
+*/
     crypto->set_mode_login();
     _client = new Client(this);
+    set_connect_mode(ConnectMode::CONNECT_LOGIN);
 
-    Packet_0x80 *packet_connect = new Packet_0x80();
+    Packet_0x80* packet_connect = new Packet_0x80();
     _read_bytes(Packet_0x80_length);
     packet_connect->loads(this, Packet_0x80_length);
 
@@ -87,6 +97,7 @@ void Socket::init_client_socket() {
         DEBUG_NOTICE("Received valid account identification, proceeding to send server information.");
         Packet_0xa8* packet = new Packet_0xa8();
         write_packet(packet);
+        set_connect_mode(ConnectMode::CONNECT_SERVERLIST);
         //get_client()->add_response_code(Packet_0x82::ResponseCode::Success); // shouldn't be here?
     }
     delete packet_connect;
@@ -212,12 +223,19 @@ Packet* Socket::read_packet() {
     if (!p)
     {
         p = packet_factory(*this);
+        if (p){
+           TORUSSHELLECHO("creating new packet 0x" << hex(p->id()));
+        }
     }
+    else
+    {
+        TORUSSHELLECHO("continuing writing packet 0x" << hex(p->id()));
+    }
+
     if (p)
     {
-        int len = _read_bytes(p->length());
-        p->loads(this, len);
-        TORUSSHELLECHO("Network receive(0x" << hex(p->id()) << ")[ " << p->length() << "] = " << std::endl << hex_dump_buffer(p->dumps(), p->length()));
+        //int len = _read_bytes(p->length());
+        p->loads(this, buffer_len);
         if (p->full_received())
         {
             _current_packet = nullptr;
@@ -228,26 +246,17 @@ Packet* Socket::read_packet() {
 
 void Socket::write_packet(Packet * p) {
     ADDTOCALLSTACK();
-    p->print("Sending ");
-    //TORUSSHELLECHO("Network send(" << p->length() << ") " << std::endl << hex_dump_buffer(p->dumps(), p->length()));
+    _out_queue.push(p);
+}
 
-#ifdef _WINDOWS
-    udword_t data_sended = send(_socket, p->dumps(), p->length(), 0);
-    if (data_sended == SOCKET_ERROR) {
-        THROW_ERROR(NetworkError, "Send failed with error: " << WSAGetLastError());
-    } else if (data_sended != p->length()) {
-        THROW_ERROR(NetworkError, "Send " << data_sended << " bytes, instead of " << p->length() << " bytes.");
-    }
-#endif // _WINDOWS
-#ifdef __linux__
-    ssize_t data_sended = send(_socket, p->dumps(), p->length(), 0);
-    if (data_sended == -1) {
-        THROW_ERROR(NetworkError, "Send failed");
-    } else if (data_sended != p->length()) {
-        THROW_ERROR(NetworkError, "Send " << data_sended << " bytes, instead of " << p->length() << " bytes.");
-    }
-#endif //__linux__
-    delete p;
+void Socket::set_connect_mode(ConnectMode mode)
+{
+    _connect_mode = mode;
+}
+
+Socket::ConnectMode Socket::get_connect_mode()
+{
+    return _connect_mode;
 }
 
 t_byte* Socket::data()
@@ -282,6 +291,7 @@ udword_t Socket::_read_bytes(udword_t len) {
     udword_t len_remaining = len;
     buffer_len = 0;
     if (rewinded_len > 0) {
+        TORUSSHELLECHO("rewinding");
         if (len_remaining < rewinded_len) {
             init = len_remaining;
         } else {
@@ -290,18 +300,25 @@ udword_t Socket::_read_bytes(udword_t len) {
         memcpy(buffer, rewinded, sizeof(t_byte) * init);
         rewinded_len -= init;
         len_remaining -= init;
+        _cur_pos -= rewinded_len;
         if (rewinded_len == 0) {
             delete rewinded;
         } else {
             memmove(rewinded, &rewinded[init], sizeof(t_byte) * rewinded_len);
         }
+        if (_cur_pos < 0) // Should never happen?
+        {
+            _cur_pos = 0;
+        }
+
     }
     if (len_remaining) {
 #ifdef _WINDOWS
-        buffer_len = recv(_socket, &buffer[init], len_remaining, 0);
+        buffer_len = recv(_socket, buffer, len_remaining, 0);
+        _cur_pos = 0;
         if (buffer_len == SOCKET_ERROR)
         {
-            TORUSSHELLECHO("Socket recv error: ", WSAGetLastError());
+            TORUSSHELLECHO("Socket recv error: " << WSAGetLastError());
         }
 
 #endif // _WINDOWS
@@ -312,6 +329,11 @@ udword_t Socket::_read_bytes(udword_t len) {
     if (crypto && crypto->has_encryption())
     {
         crypto->decrypt(buffer, len);
+    }
+    if (buffer_len > 0 && buffer_len < 1024)
+    {
+        //TORUSSHELLECHO("recv done for a total bytes of " << buffer_len);
+        TORUSSHELLECHO("Network receive(0x" << hex(buffer[0]) << ")[ " << buffer_len << " ] = " << std::endl << hex_dump_buffer(buffer, buffer_len));
     }
     return buffer_len;
 }
@@ -357,6 +379,43 @@ Socket::~Socket() {
 #ifdef __linux__
     close(_socket);
 #endif //__linux__
+}
+
+int Socket::receive_data()
+{
+    int read = _read_bytes(255);
+    return read;
+}
+
+void Socket::send_data()
+{
+    while (!_out_queue.empty())
+    {
+        Packet* out_packet = _out_queue.front();
+        _out_queue.pop();
+        out_packet->print("Sending ");
+        //TORUSSHELLECHO("Network send(" << out_packet->length() << ") " << std::endl << hex_dump_buffer(out_packet->dumps(), out_packet->length()));
+
+#ifdef _WINDOWS
+        udword_t data_sended = send(_socket, out_packet->dumps(), out_packet->length(), 0);
+        if (data_sended == SOCKET_ERROR) {
+            THROW_ERROR(NetworkError, "Send failed with error: " << WSAGetLastError());
+        }
+        else if (data_sended != out_packet->length()) {
+            THROW_ERROR(NetworkError, "Send " << data_sended << " bytes, instead of " << out_packet->length() << " bytes.");
+        }
+#endif // _WINDOWS
+#ifdef __linux__
+        ssize_t data_sended = send(_socket, out_packet->dumps(), out_packet->length(), 0);
+        if (data_sended == -1) {
+            THROW_ERROR(NetworkError, "Send failed");
+        }
+        else if (data_sended != out_packet->length()) {
+            THROW_ERROR(NetworkError, "Send " << data_sended << " bytes, instead of " << out_packet->length() << " bytes.");
+        }
+#endif //__linux__
+        delete out_packet;
+    }
 }
 
 

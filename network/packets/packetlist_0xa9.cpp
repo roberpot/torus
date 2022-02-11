@@ -25,6 +25,17 @@
 void Packet_0xa9::set_data(Client* client)
 {
     UNREFERENCED_PARAMETER(client); // TODO: Gather packet's data from client.
+
+
+    std::string paste("a904560558754e0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000900596577000000000000000000000000000000000000000000000000000000000054686520456d7061746820416262657900000000000000000000000000000000000002790000035a0000000000000000001067000000000014d696e6f63000000000000000000000000000000000000000000000000000000546865204261726e61636c650000000000000000000000000000000000000000000009ac0000019d0000000f00000000001067810000000002427267461696e00000000000000000000000000000000000000000000000000537765657420447265616d7320496e6e00000000000000000000000000000000000005d80000065c0000000a000000000010678200000000034d6f6f6e676c6f7700000000000000000000000000000000000000000000000546865205363686f6c61727320496e6e00000000000000000000000000000000000011380000049000000000000000000010678300000000045472696e73696300000000000000000000000000000000000000000000000005468652054726176656c6c6572277320496e6e000000000000000000000000000000073500000ab900000000000000000010678400000000054d6167696e6369610000000000000000000000000000000000000000000000054686520477265617420486f726e732054617665726e0000000000000000000000000e96000008ae000000140000000000106785000");
+
+    write_from_paste(paste);
+    return;
+    set_packet_id(0xa9);
+
+    const int acc_name_pw_len = 30;
+    const int city_strings_len = 32; //Changed for newer clients from 30 to 32.
+
     t_byte charCount = 1;
     write_byte(charCount);  //characters count
     for (t_byte i = 0; i < charCount; ++i)
@@ -32,27 +43,29 @@ void Packet_0xa9::set_data(Client* client)
         //char[30] - name
         std::string nameStr;
         std::string tmpName = "XuN";
-        nameStr.insert(0, 30 - tmpName.size(), 0);
-        nameStr.insert(0, tmpName.c_str());
-        write_string(nameStr, int(nameStr.size()));
+        write_string(nameStr, acc_name_pw_len);
         //char[30] - password (empty?)
-        std::string passwordStr(30, 0);
-        write_string(passwordStr, int(passwordStr.size()));
+        std::string passwordStr("");
+        write_string(passwordStr, acc_name_pw_len);
     }
 
-    t_byte cityCount = 0;
+    std::vector<std::string> cities;
+    cities.push_back("britain");
+    cities.push_back("cove");
+    t_byte cityCount = t_byte(cities.size()); // FIXME: Real cities configuration
     for (t_byte i = 0; i < cityCount; ++i)
     {
-        /*
-            char[32]	City Name
-            char[32]	Building Name
-            dword	City X
-            dword	City Y
-            dword	City Z
-            dword	City Map
-            dword	City Cliloc Description
-            dword	0
-        */
+        std::string city = cities[i];
+
+        std::string cityStr;
+        write_string(city, city_strings_len); //City Name
+        write_string(city, city_strings_len); // Building Name
+        write_dword(i);         // X
+        write_dword(i + 1);     // Y
+        write_dword(i + 2);     // Z
+        write_dword(0);         // Map
+        write_dword(0);         // Cliloc
+        write_dword(0);         // Unk
     }
 
     //character creationg flags
@@ -74,6 +87,7 @@ void Packet_0xa9::set_data(Client* client)
         0x4000 = new movement system;
         0x8000 = unlock new felucca areas)
     */
+    write_dword(0x100);
     write_word(0);
 }
 

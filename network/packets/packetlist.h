@@ -115,7 +115,7 @@ class Packet_0x80 : public Packet {  //LoginCredentials & ServerListRequest
     std::string accName[30];
     std::string accPassword[30];
 
-    bool _is_valid_account;
+    bool _is_valid_account = false;
 public:
     virtual const udword_t length() override;
     virtual void receive(Socket* s) override;

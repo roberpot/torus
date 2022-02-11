@@ -31,13 +31,6 @@
 #include <debug_support/callstack.h>
 #include <vector>
 
-/** @brief   Values that represent socket types. */
-enum SocketType {
-    SOCKETTYPE_NONE = 0,
-    SOCKETTYPE_CLIENT,
-    SOCKETTYPE_SERVER
-};
-
 #ifdef _WIN64
 typedef SOCKET socket_t;
 #endif //_WIN64
@@ -49,6 +42,21 @@ class Client;
 
 class Socket {
 public:
+    enum class ConnectMode
+    {
+        CONNECT_NONE,
+        CONNECT_LOGIN,
+        CONNECT_SERVERLIST,
+        CONNECT_CHARLIST,
+        CONNECT_GAME
+    };
+    /** @brief   Values that represent socket types. */
+    enum class SocketType {
+        SOCKETTYPE_NONE = 0,
+        SOCKETTYPE_CLIENT,
+        SOCKETTYPE_SERVER
+    };
+
     /** @brief   Default constructor. */
     Socket();
     /**
@@ -109,6 +117,10 @@ public:
      */
     void write_packet(Packet * p);
 
+    void set_connect_mode(ConnectMode mode);
+
+    ConnectMode get_connect_mode();
+
     t_byte *data();
 
     /**
@@ -133,6 +145,9 @@ public:
     void shutdown();
     /** @brief   Destructor. */
     ~Socket();
+
+    int receive_data();
+    void send_data();
 
     template<typename T>
     /**
@@ -166,7 +181,8 @@ private:
      */
     void _rewind(t_byte * b, udword_t l);
 
-    t_byte * buffer;        ///< Buffer for incoming data.    
+    t_byte * buffer;        ///< Buffer for incoming data.
+    udword_t _cur_pos;        ///< Current position of the pointer to the buffer.
     t_byte * rewinded;      ///< Copy of the buffer to handle rewinds.
     udword_t buffer_len;    ///< Lenght of the Socket's buffer.
     udword_t rewinded_len;  ///< Lenght of the rewinded buffer.
@@ -176,6 +192,8 @@ private:
     Client *_client;        ///< Pointer to the attached game Client.
     bool _is_closing;
     Packet* _current_packet;
+    ConnectMode _connect_mode;
+    std::queue<Packet*> _out_queue;
 #ifdef __linux__
     socket_t _accepted_socket;  ///< Pointer to the connection socket for linux builds.
 #endif //__linux__
@@ -188,9 +206,16 @@ private:
 template<typename T>
 Socket & operator>>(Socket & s, T & d) {
     ADDTOCALLSTACK();
-    if (s._read_bytes(sizeof(T)) > 0)
+    //if (s._read_bytes(sizeof(T)) > 0)
+    if ( s._cur_pos + sizeof(T) <= s.buffer_len)
     {
-        memcpy((void*)&d, s.buffer, sizeof(T));
+        std::vector<t_byte> v;
+        for (udword_t i = s._cur_pos; i < s._cur_pos + sizeof(T); ++i)
+        {
+            v.push_back(s.buffer[i]);
+        }
+        memcpy((void*)&d, v.data(), sizeof(T));
+        s._cur_pos += sizeof(T);
     }
     /*if (sizeof(T) == 4) {
         d = (((d & 0x000000ff) << 24) | ((d & 0x0000ff00) << 8) | ((d & 0x00ff0000) >> 8) | ((d & 0xff000000) >> 24));

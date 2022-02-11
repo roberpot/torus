@@ -33,7 +33,6 @@ void Packet_0x8c::set_data(Socket* s, int16_t )
     write_byte((ip >> 24) & 0xFF);
     write_word(2593);   //TODO: Send real PORT
     write_dword(1456773342);  //TODO: Add real calculation using zlib and account's name.
-    print("packet_0x8c: ");
 }
 
 Packet_0x8c::~Packet_0x8c() {

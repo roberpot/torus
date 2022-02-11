@@ -35,12 +35,19 @@ void * NetworkManager::run() {
         for (unsigned int socketId = 0; socketId < socketsCount; socketId++) {
             clientSocket = _sockets[socketId];
             while ((clientSocket->is_closing() == false) && clientSocket->data_ready()) {
+                TORUSSHELLECHO("data ready for socket, reading it from" << clientSocket->get_ip());
+                if (clientSocket->receive_data() <= 0)
+                {
+                    clientSocket->set_closing();
+                    continue;
+                }
                 newPacket = clientSocket->read_packet();
                 if (newPacket && newPacket->full_received())
                 {
                     delete newPacket;
                 }
             }
+            clientSocket->send_data();
         }
         _m.unlock();
         torus_thread_sleep(50);

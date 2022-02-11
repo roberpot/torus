@@ -18,7 +18,12 @@
 #include <core/config.h>
 #include <shell.h>
 
-#include <inaddr.h>
+#ifdef _WIN32
+    #include <inaddr.h>
+#endif // _WIN32
+#ifdef __linux__
+    #include <netinet/in.h>
+#endif //_WIN32
 
 
 Packet_0xa8::Packet_0xa8()
@@ -35,7 +40,7 @@ Packet_0xa8::Packet_0xa8()
     set_packet_id(0xa8); //packet_id
     init_length();
     //write_word(0);    //Skip packet's size since it's being inserted at the end
-    write_byte(0xFF);   // ?
+    write_ubyte(0xFF);   // ?
 
     write_word(serversCount);   // TODO: Write later, after filling all the servers
 
