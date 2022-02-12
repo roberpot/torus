@@ -32,7 +32,11 @@ SOURCE_GROUP(library FILES ${LIBRARY_FILES})
 set(NETWORK_FILES
         network/crypto.cpp network/crypto.h
         network/packet.cpp network/packet.h
+        network/packetin.cpp network/packetin.h
+        network/packetout.cpp network/packetout.h
+        network/npacket.cpp network/npacket.h
         network/socket.cpp network/socket.h
+        network/nsocket.cpp network/nsocket.h
         network/networkmanager.cpp network/networkmanager.h)
 SOURCE_GROUP(network FILES ${NETWORK_FILES})
 
