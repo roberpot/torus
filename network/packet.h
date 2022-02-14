@@ -17,90 +17,55 @@
 
 #include <cstring>
 #include <string>
-#include <vector>
 #include <library/types.h>
 #ifdef _MSC_VER
 #pragma warning(disable:4127)
 #endif
 
-class Socket;
+class PacketIn;
 
+/**
+ *  @brief: Generic interface for packets.
+ */
 class Packet {
 protected:
-    std::vector<t_byte> buffer;    ///< Buffer of this packet.
-    udword_t _current_pos;
-    bool _full_received;           ///< The full data for this packet has been received.
+    t_byte *_buffer;                ///< Buffer of the packet.
+    udword_t _current_buffer_length;///< Length of the buffer.
+    udword_t _current_pos;          ///< Current position to read/write on the buffer.
+
+
+    /**
+     * @Brief   Creates a new buffer with the additional size specified.
+     *
+     * @param   len The increased size in bytes.
+     */
+    void _increase_buffer(udword_t len);
+
 public:
     /** @brief   Default constructor. */
     Packet();
+    virtual ~Packet();
     /**
      * @brief   Gets the length.
      *
      * @return  The lenght.
      */
-    virtual const udword_t length();
-
-    void init_length();
-    void write_length();
-    bool full_received();
-    udword_t id();
+    virtual const udword_t length() = 0;
     /**
-     * @brief   Dumps the buffer.
-     *
-     * @return  A pointer to the buffer.
+     * @brief Gets the data in the buffer.
+     * 
+     * @return nullptr if the buffer is empty, the data otherwise.
      */
-    virtual const t_byte * dumps();
+    const t_byte *data();
+
     /**
-     * @brief   Loads the given parameter 1.
-     *
-     * @param parameter1    The first parameter.
-     */
-    virtual void loads(Socket *s, const udword_t &len);
-    /**
-     * @brief   Send this message.
-     *
-     * @param  s    The Socket to process.
-     */
-    void send(Socket * s);
-    /** @brief   Destructor. */
-    virtual ~Packet();
-    /**
-     * @brief   Sets packet identifier.
-     *
-     * @param id    The identifier.
-     */
-    void set_packet_id(t_ubyte id);
-
-    void write_string(std::string &str, int len);
-    void write_bool(bool val, int pos = -1);
-    void write_byte(t_byte val, int pos = -1);
-    void write_ubyte(t_ubyte val, int pos = -1);
-    void write_word(word_t val, int pos = -1);
-    void write_uword(uword_t val, int pos = -1);
-    void write_dword(dword_t val, int pos = -1);
-    void write_udword(udword_t val, int pos = -1);
-    void write_qword(qword_t val, int pos = -1);
-    void write_uqword(uqword_t val, int pos = -1);
-
-    void print(std::string ioType);
-
-    virtual void receive(Socket *s);
-    void read_string(std::string &target, udword_t len);
-
-    void write_from_paste(std::string paste);
-
-    template<typename T>
-    /**
-     * @brief   Bitwise right shift operator, used to export the data received to a Packet's buffer.
-     *
-     * @param   s   The Socket to process.
-     * @param   d   The data to process.
-     *
-     * @return  The shifted result.
-     */
-    friend Packet& operator>>(Packet& s, T& d);
-private:
+    * @brief    Get this packet's ID.
+    * 
+    * @return The ID, if the buffer has it's ID already assigned.
+    */
+    const t_ubyte packet_id();
 };
+
 /**
  * @brief   Packets generator.
  *
@@ -108,31 +73,8 @@ private:
  *
  * @return  Null if it fails, else a pointer to a Packet.
  */
-Packet * packet_factory(Socket & s);
+PacketIn* packet_factory(t_ubyte id);
 
-//Packet * packet_factory(t_byte t);
-
-//Packet * packet_factory(const t_byte * buffer, udword_t len);
-
-
-template<typename T>
-Packet& operator>>(Packet& p, T& d) {
-    //ADDTOCALLSTACK();
-    udword_t len = sizeof(T);
-    if (p._current_pos + len <= p.length())
-    {
-        std::vector<t_ubyte> tmp;
-        tmp.resize(len);
-        std::vector<t_byte>::iterator it_begin = p.buffer.begin() + p._current_pos;
-        std::vector<t_byte>::iterator it_end = p.buffer.begin() + p._current_pos + len;
-        std::copy(it_begin, it_end, tmp.data());
-        //p.buffer.insert(tmp.end(), it_begin, it_end);
-        //tmp.insert(p.buffer.begin() + p._current_pos, len);
-        memcpy(&d, tmp.data(), len);
-        p._current_pos += len;
-    }
-    return p;
-}
 #ifdef _MSC_VER
 #pragma warning(default:4127)
 #endif

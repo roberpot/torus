@@ -17,12 +17,12 @@
 
 #include <core/errors.h>
 #include <library/types.h>
-#include <network/npacket.h>
-#include <network/nsocket.h>
+#include <network/packet.h>
+#include <network/socket.h>
 
 #include <string>
 
-class NSocket;
+class Socket;
 
 /*
 * @brief    Representation of a generic incoming packet.
@@ -40,53 +40,52 @@ class NSocket;
 *       the packet is marked as complete and inserted into the incoming queue
 *       from the related socket, prepared to call process ASAP.
 */
-class PacketIn : public NPacket
+class PacketIn : public Packet
 {
     bool _is_complete;            ///< The full data for this packet has been received.
 
 // Child classes implementations:
 public:
-    /*
+    /**
     * @brief    Expected length for the packet.
     * 
     * @return The length.
     */
     virtual const udword_t length() = 0;
-protected:
-    /*
+    /**
      *  @brief The packet has been received, process it's data.
      *
      *  @param s The socket that received this packet.
-    */
-    virtual void process(NSocket* s) = 0;
+     */
+    virtual void process(Socket* s) = 0;
 
 // Class related:
 public:
     PacketIn();
     virtual ~PacketIn();
 
-    /*
-    * @brief Retrieves the length of the received data.
-    *
-    * @return The length. 
-    */
+    /**
+     * @brief Retrieves the length of the received data.
+     *
+     * @return The length. 
+     */
     const udword_t current_length();
 
-    /*
-    * @brief    Load a chunk of bytes into the buffer.
-    * 
-    * @param    data    The chunk of bytes to insert into the packet.
-    * @paran    len     The length of the received data.
-    * 
-    * The receipt data may not form the full packet, yet.
-    */
+    /**
+     * @brief    Load a chunk of bytes into the buffer.
+     * 
+     * @param    data    The chunk of bytes to insert into the packet.
+     * @paran    len     The length of the received data.
+     * 
+     * The receipt data may not form the full packet, yet.
+     */
     void receive(const t_byte *data, const udword_t len);
     
-    /*
-    * @brief Completion status of the packet.
-    * 
-    * @return True if the data has been completelly received.
-    */
+    /**
+     * @brief Completion status of the packet.
+     * 
+     * @return True if the data has been completelly received.
+     */
     bool is_complete();
 
     template<typename T>
@@ -111,25 +110,19 @@ public:
     friend PacketIn& operator>>(PacketIn& p, std::string &s);
 
     private:
-
-    /*
-     * @Brief   Creates a new buffer with the additional size specified.
-     * 
-     * @param   len The increased size in bytes.
-    */
-    void _increase_buffer(const udword_t &len);
 };
 
 template<typename T>
 PacketIn& operator>>(PacketIn& p, T& d)
 {
-    if (p._current_pos + sizeof(T) > length())
+    if (p._current_pos + sizeof(T) > p.length())
     {
-        THROW_ERROR(NetworkError, "Trying to read " << sizeof(T) << " bytes to from " << hex(p._buffer[0]) << ", being currently in the position " << p._current_pos << " and with a total length of " << p.length() " bytes.");
-        return;
+        //THROW_ERROR(NetworkError, "Trying to read " << sizeof(T) << " bytes to from " << hex(p._buffer[0]) << ", being currently in the position " << p._current_pos << " and with a total length of " << p.length() " bytes.");
+        return p;
     }
-    memcpy(d, p._buffer[p._current_pos], sizeof(T));
+    memcpy(&d, &(p._buffer[p._current_pos]), sizeof(T));
     p._current_pos += sizeof(T);
+    return p;
 }
 
 template<typename T>
@@ -137,11 +130,12 @@ PacketIn& operator>>(PacketIn& p, std::string &s)
 {
     if (p._current_pos + sizeof(T) > s.size())
     {
-        THROW_ERROR(NetworkError, "Trying to read " << sizeof(T) << " bytes to from " << hex(p._buffer[0]) << ", being currently in the position " << p._current_pos << " into a string with a total size of " << s.size() " bytes.");
-        return;
+        //THROW_ERROR(NetworkError, "Trying to read " << sizeof(T) << " bytes to from " << hex(p._buffer[0]) << ", being currently in the position " << p._current_pos << " into a string with a total size of " << s.size() " bytes.");
+        return p;
     }
-    memcpy(s.data(), p._buffer[p._current_pos], s.size());
+    memcpy(&(s.data()), &(p._buffer[p._current_pos]), s.size());
     p._current_pos += s.size();
+    return p;
 }
 
 

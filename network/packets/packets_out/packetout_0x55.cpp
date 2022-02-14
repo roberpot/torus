@@ -12,33 +12,10 @@
  * along with Torus. If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-#include <library/system_headers.h>
-#include <debug_support/info.h>
-#include <game/client.h>
-#include <game/char.h>
 #include <network/packets/packetlist.h>
 #include <network/socket.h>
+#include <debug_support/info.h>
 
-
-//const udword_t Packet_0x22::length() {
-//    ADDTOCALLSTACK();
-//    return 8;
-//}
-
-void Packet_0x22::set_data(t_ubyte seq, Client * client) {
-    ADDTOCALLSTACK();
-    Char *chr = client->get_char();
-    if (!chr) {
-        return;
-    }
-    write_byte(0x22);
-    write_ubyte(seq);
-    write_ubyte(7); // View color (blue, red, yellow ...)
-    send(client->get_socket());
-}
-
-
-Packet_0x22::~Packet_0x22() {
+PacketOut_0x55::PacketOut_0x55() : PacketOut(0x55) {
     ADDTOCALLSTACK();
 }

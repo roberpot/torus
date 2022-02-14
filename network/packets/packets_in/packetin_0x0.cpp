@@ -12,29 +12,23 @@
  * along with Torus. If not, see <http://www.gnu.org/licenses/>.
  */
 
+
 #include <network/packets/packetlist.h>
 #include <network/socket.h>
 #include <debug_support/info.h>
+#include <core/torus.h>
+#include <game/client.h>
 
-
-//const udword_t Packet_0x8c::length() {
-//    ADDTOCALLSTACK();
-//    return 11;
-//}
-
-void Packet_0x8c::set_data(Socket* s, int16_t )
-{
-    UNREFERENCED_PARAMETER(s);
-    set_packet_id(0x8c); //packet_id
-    udword_t ip = 16777343;  //127.0.0.1    //TODO: send real IP
-    write_byte(ip & 0xFF);
-    write_byte((ip >> 8) & 0xFF);
-    write_byte((ip >> 16) & 0xFF);
-    write_byte((ip >> 24) & 0xFF);
-    write_word(2593);   //TODO: Send real PORT
-    write_dword(1456773342);  //TODO: Add real calculation using zlib and account's name.
+const udword_t PacketIn_0x00::length() {
+    ADDTOCALLSTACK();
+    return 7;
 }
 
-Packet_0x8c::~Packet_0x8c() {
+void PacketIn_0x00::process(Socket* s) {
+    ADDTOCALLSTACK();
+    UNREFERENCED_PARAMETER(s);
+}
+
+PacketIn_0x00::~PacketIn_0x00() {
     ADDTOCALLSTACK();
 }

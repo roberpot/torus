@@ -15,6 +15,7 @@
 #include <library/system_headers.h>
 #include <game/client.h>
 #include <network/packets/packetlist.h>
+#include <network/socket.h>
 #include <debug_support/callstack.h>
 #include <game/char.h>
 
@@ -30,20 +31,20 @@ Client::~Client() {
     ADDTOCALLSTACK();
 }
 
-Socket * Client::get_socket() {
+Socket* Client::get_socket() {
     return _socket;
 }
 
-void Client::send(Packet* packet)
+void Client::send(PacketOut* packet)
 {
     ADDTOCALLSTACK();
-    _socket->write_packet(packet);
+    _socket->write(packet);
 }
 
 void Client::event_walk(t_ubyte dir, t_ubyte seq) {
     ADDTOCALLSTACK();
     if (dir > DIR_QTY) {
-        Packet_0x21 *rej = new Packet_0x21();
+        PacketOut_0x21 *rej = new PacketOut_0x21();
         rej->set_data(seq, this);
     }
     if (get_char()->can_move_to_coord(1, 1)) {
@@ -51,15 +52,15 @@ void Client::event_walk(t_ubyte dir, t_ubyte seq) {
 
     }
     else {
-        Packet_0x21 *rej = new Packet_0x21();
+        PacketOut_0x21*rej = new PacketOut_0x21();
         rej->set_data(seq, this);
     }
 }
 
-void Client::add_response_code(Packet_0x82::ResponseCode code)
+void Client::add_response_code(PacketOut_0x82::ResponseCode code)
 {
     ADDTOCALLSTACK();
-    Packet_0x82* packet = new Packet_0x82();
+    PacketOut_0x82* packet = new PacketOut_0x82();
     packet->set_data(code);
     send(packet);
 }

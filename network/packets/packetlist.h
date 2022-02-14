@@ -17,7 +17,8 @@
 #define __TORUS_PACKETLIST_H
 
 #include <string>
-#include <network/packet.h>
+#include <network/packetin.h>
+#include <network/packetout.h>
 
 #define PACKET_CREATE_CHARACTER Packet_0x00
 #define PACKET_KR_2D_CLIENT_SEED Packet_0xef
@@ -42,88 +43,70 @@ class Client;
 *       void set_data(...);
 */
 
-class Packet_0x00 : public Packet {
+class PacketIn_0x00 : public PacketIn {
 public:
     virtual const udword_t length() override;
-    virtual void receive(Socket* s) override;
-    ~Packet_0x00();
+    virtual void process(Socket* s) override;
+    ~PacketIn_0x00();
 private:
 };
 
-class Packet_0x02 : public Packet {
+class PacketIn_0x02 : public PacketIn {
 public:
     virtual const udword_t length() override;
-    virtual void receive(Socket *s) override;
-    ~Packet_0x02();
+    virtual void process(Socket* s) override;
+    ~PacketIn_0x02();
 };
 
-class Packet_0xa9 : public Packet { // Supported Features
-public:
-    void set_data(Client* client);
-    ~Packet_0xa9();
-};
-
-class Packet_0xb9 : public Packet { // Supported Features
-public:
-    void set_data(dword_t seq, Client* client);
-    ~Packet_0xb9();
-};
-
-class Packet_0xef : public Packet {
-public:
-    virtual const udword_t length() override;
-    virtual void receive(Socket* s) override;
-    Packet_0xef();
-    ~Packet_0xef();
-    udword_t seed() { return _seed; }
-private:
-    udword_t _seed;
-    udword_t _client_major_version;
-    udword_t _client_minor_version;
-    udword_t _client_revision_version;
-    udword_t _client_prototype_version;
-};
-
-class Packet_0x21 : public Packet {
+class PacketOut_0x21 : public PacketOut {
 public:
     void set_data(t_ubyte seq, Client *client);
-    ~Packet_0x21();
+    PacketOut_0x21();
+    ~PacketOut_0x21();
 };
 
-class Packet_0x22 : public Packet {
+class PacketOut_0x22 : public PacketOut {
 public:
     void set_data(t_ubyte seq, Client* client);
-    ~Packet_0x22();
+    PacketOut_0x22();
+    ~PacketOut_0x22();
 };
 
-class Packet_0x55 : public Packet { //PacketLoginComplete (game character finished loading)
+class PacketOut_0x55 : public PacketOut { //PacketLoginComplete (game character finished loading)
 public:
-    Packet_0x55();
-    ~Packet_0x55() {}
+    PacketOut_0x55();
+    ~PacketOut_0x55() {}
 };
 
-class Packet_0x73 : public Packet { //PacketPing
+class PacketIn_0x73 : public PacketIn { //PacketPing
 public: // IO packet, has both read and write methods.
     virtual const udword_t length() override;
-    virtual void receive(Socket* s) override;
-    void set_data(t_ubyte ping, Socket* s);
-    Packet_0x73();
-    ~Packet_0x73();
+    virtual void process(Socket* s) override;
+    PacketIn_0x73();
+    ~PacketIn_0x73();
 };
 
-class Packet_0x80 : public Packet {  //LoginCredentials & ServerListRequest
+class PacketOut_0x73 : public PacketOut { //PacketPing
+public:
+    void set_data(t_ubyte response);
+    PacketOut_0x73();
+};
+
+class PacketIn_0x80 : public PacketIn {  //LoginCredentials & ServerListRequest
     std::string accName[30];
     std::string accPassword[30];
 
     bool _is_valid_account = false;
+    bool _from_loginserver = false;
 public:
     virtual const udword_t length() override;
-    virtual void receive(Socket* s) override;
+    void set_from_loginserver();
+    virtual void process(Socket* s) override;
     bool is_valid_account();
-    ~Packet_0x80();
+    ~PacketIn_0x80();
 };
 
-class Packet_0x82 : public Packet {  //PacketLoginResponse
+class PacketOut_0x82 : public PacketOut {  //PacketLoginResponse
 public:
     enum ResponseCode { //Response codes, copied from SphereX
         Invalid = 0x00, // no account
@@ -155,36 +138,69 @@ public:
         Success = 0xFF  // no error
     };
     void set_data(ResponseCode code);
-    ~Packet_0x82();
+    PacketOut_0x82();
+    ~PacketOut_0x82();
 };
 
-class Packet_0x8c : public Packet {
+class PacketOut_0x8c : public PacketOut {
 public:
-    void set_data(Socket *s, word_t server_index);
-    ~Packet_0x8c();
+    void set_data(Socket* s, word_t server_index);
+    PacketOut_0x8c();
+    ~PacketOut_0x8c();
 };
 
-class Packet_0x91 : public Packet {  //LoginCredentials & ServerListRequest
+class PacketIn_0x91 : public PacketIn {  //LoginCredentials & ServerListRequest
     std::string accName[30];
     std::string accPassword[30];
 public:
     virtual const udword_t length() override;
-    virtual void receive(Socket* s) override;
-    ~Packet_0x91();
+    virtual void process(Socket* s) override;
+    ~PacketIn_0x91();
 };
 
-class Packet_0xa0 : public Packet {  //ServerSelect -> disconnects from login server, connects to game server and requests character's list and client's flags
+class PacketIn_0xa0 : public PacketIn {  //ServerSelect -> disconnects from login server, connects to game server and requests character's list and client's flags
 public:
     virtual const udword_t length() override;
-    virtual void receive(Socket* s) override;
-    Packet_0xa0();
-    ~Packet_0xa0();
+    virtual void process(Socket* s) override;
+    PacketIn_0xa0();
+    ~PacketIn_0xa0();
 };
 
-class Packet_0xa8 : public Packet {  //ServerList
+class PacketOut_0xa8 : public PacketOut {  //ServerList
 public:
-    Packet_0xa8();
-    ~Packet_0xa8();
+    void set_data(Socket *s);
+    PacketOut_0xa8();
+    ~PacketOut_0xa8();
 };
+
+class PacketOut_0xa9 : public PacketOut { // Supported Features
+public:
+    void set_data(Client* client);
+    PacketOut_0xa9();
+    ~PacketOut_0xa9();
+};
+
+class PacketOut_0xb9 : public PacketOut { // Supported Features
+public:
+    void set_data(dword_t seq, Client* client);
+    PacketOut_0xb9();
+    ~PacketOut_0xb9();
+};
+
+class PacketIn_0xef : public PacketIn {
+public:
+    virtual const udword_t length() override;
+    virtual void process(Socket* s) override;
+    PacketIn_0xef();
+    virtual ~PacketIn_0xef();
+    udword_t seed() { return _seed; }
+private:
+    udword_t _seed;
+    udword_t _client_major_version;
+    udword_t _client_minor_version;
+    udword_t _client_revision_version;
+    udword_t _client_prototype_version;
+};
+
 
 #endif //__TORUS_PACKETLIST_H

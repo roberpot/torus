@@ -538,7 +538,7 @@ namespace ttl {
                 dynamicmap<K,V>::erase(key);
                 _mutex.unlock();
             }
-            catch (MapError &e) {
+            catch (MapError &) {
                 _mutex.unlock();
                 throw;
             }

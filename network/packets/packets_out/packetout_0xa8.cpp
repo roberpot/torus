@@ -26,7 +26,7 @@
 #endif //_WIN32
 
 
-Packet_0xa8::Packet_0xa8()
+void PacketOut_0xa8::set_data(Socket* s)
 {
     std::stringstream ss;
     uword_t serversCount = 1;
@@ -38,61 +38,62 @@ Packet_0xa8::Packet_0xa8()
 
 
     set_packet_id(0xa8); //packet_id
-    init_length();
     //write_word(0);    //Skip packet's size since it's being inserted at the end
-    write_ubyte(0xFF);   // ?
+    *this << (0xFF);   // ?
 
-    write_word(serversCount);   // TODO: Write later, after filling all the servers
+    *this << serversCount;   // TODO: Write later, after filling all the servers
 
     //TODO: Send all servers in a loop
-    write_word(serverIndex);
+    *this << (serverIndex);
 
     int i = (int)serverName.str().size();
 
     for (int out = 0; out < i; ++out)
     {
         t_ubyte chr = serverName.str().at(out);
-        write_byte(chr);
+        *this << (chr);
     }
     for (; i < 32; ++i)
     {
-        write_byte('\0');
+        *this << t_byte('\0');
     }
-    write_byte(serverPercentFull);
-    write_byte(serverTimeZone);
+    *this << (serverPercentFull);
+    *this << (serverTimeZone);
 
     //t_byte *ip = toruscfg.net_addr;
-    std::string ip = "127.0.0.1";
-    in_addr addr;
-    addr.S_un.S_addr = inet_addr(ip.c_str());
+    udword_t ip = s->get_ip();
 
     bool reverse_ip = true;
     if (reverse_ip)
     {
         // Clients less than 4.0.0 require IP to be sent in reverse
-        write_byte(addr.S_un.S_addr & 0xFF);
-        write_byte((addr.S_un.S_addr >> 8) & 0xFF);
-        write_byte((addr.S_un.S_addr >> 16) & 0xFF);
-        write_byte((addr.S_un.S_addr >> 24) & 0xFF);       
+        *this << t_byte(ip & 0xFF);
+        *this << t_byte((ip >> 8) & 0xFF);
+        *this << t_byte((ip >> 16) & 0xFF);
+        *this << t_byte((ip >> 24) & 0xFF);
     }
     else
     {
         // Clients since 4.0.0 require IP to be sent in order
-        write_byte((addr.S_un.S_addr >> 24) & 0xFF);
-        write_byte((addr.S_un.S_addr >> 16) & 0xFF);
-        write_byte((addr.S_un.S_addr >> 8) & 0xFF);
-        write_byte(addr.S_un.S_addr & 0xFF);
+        *this << t_byte((ip >> 24) & 0xFF);
+        *this << t_byte((ip >> 16) & 0xFF);
+        *this << t_byte((ip >> 8) & 0xFF);
+        *this << t_byte(ip & 0xFF);
     }
     //Clients older than 4.0.0 must receive IP in reversed order.
-    
+
     /*for (udword_t o = 0; o < buffer.size(); ++o)
     {
         TORUSSHELLECHO("byte[" << o << "] = " << (int)buffer[o]);
     }*/
     //write_word((t_ubyte)buffer.size() +2, 2);
-    write_length();
 }
 
-Packet_0xa8::~Packet_0xa8() {
+PacketOut_0xa8::PacketOut_0xa8() : PacketOut(0xa8)
+{
+    
+}
+
+PacketOut_0xa8::~PacketOut_0xa8() {
     ADDTOCALLSTACK();
 }

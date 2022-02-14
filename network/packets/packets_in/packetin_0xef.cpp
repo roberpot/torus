@@ -17,12 +17,29 @@
 #include <debug_support/info.h>
 
 
-//const udword_t Packet_0x55::length() {
-//    ADDTOCALLSTACK();
-//    return 21;
-//}
+const udword_t PacketIn_0xef::length() {
+    return 21;
+}
 
-Packet_0x55::Packet_0x55() {
+void PacketIn_0xef::process(Socket* s) {
     ADDTOCALLSTACK();
-    set_packet_id(0x55);
+    UNREFERENCED_PARAMETER(s);
+    TORUSSHELLECHO("Process");
+    *(this) >> _seed; 
+    *(this) >> _client_major_version;
+    *(this) >> _client_minor_version;
+    *(this) >> _client_revision_version;
+    *(this) >> _client_prototype_version;
+}
+
+PacketIn_0xef::PacketIn_0xef()
+{
+    _seed = 0;
+    _client_major_version = 0;
+    _client_minor_version = 0;
+    _client_revision_version = 0;
+    _client_prototype_version = 0;
+}
+
+PacketIn_0xef::~PacketIn_0xef() {
 }

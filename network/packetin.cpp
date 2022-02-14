@@ -40,22 +40,13 @@ void PacketIn::receive(const t_byte* data, const udword_t len)
     _increase_buffer(len);  //Ensure the buffer can store the data.
     memcpy(_buffer + _current_buffer_length, data, len);
     _current_buffer_length += len;
+    if (_current_buffer_length >= length())
+    {
+        _is_complete = true;
+    }
 }
 
 bool PacketIn::is_complete()
 {
     return _is_complete;
-}
-
-void PacketIn::_increase_buffer(const udword_t& len)
-{
-    udword_t new_size = _current_buffer_length + len;
-    t_byte *tmp_buffer = new t_byte[new_size];
-    if (_buffer != nullptr)
-    {
-        memcpy(tmp_buffer, _buffer, _current_buffer_length);
-        delete _buffer;
-    }
-    _buffer = tmp_buffer;
-    _current_buffer_length = new_size;
 }

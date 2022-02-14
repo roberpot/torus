@@ -17,17 +17,24 @@
 
 #include <library/types.h>
 
-class NSocket;
+class Socket;
 
-class PacketOut : public NPacket
+class PacketOut : public Packet
 {
+    bool _has_dynamic_length;
 public:
-    PacketOut();
+    PacketOut(t_byte id, bool has_dynamic_length = false);
     virtual ~PacketOut();
 
     const udword_t length() override;
 
-    template<typename T>
+    /**
+    * @brief    Writes the packet id at the position 0.
+    * 
+    * @param id The packet id.
+    */
+    void set_packet_id(t_byte id);
+
     /**
      * @brief   Bitwise left shift operator, used to export the buffered data into useable variables.
      *
@@ -36,7 +43,10 @@ public:
      *
      * @return  The shifted result.
      */
+    template<typename T>
     friend PacketOut& operator<<(PacketOut& p, T& d);
+    template<typename T>
+    friend PacketOut& operator<<(PacketOut& p, T&& d);
 
     /**
      * @brief   Bitwise left shift operator, used to export the buffered data into an useable std::string.
@@ -47,33 +57,62 @@ public:
      * @return  The shifted result.
      */
     friend PacketOut& operator<<(PacketOut& p, std::string& s);
+    friend PacketOut& operator<<(PacketOut& p, std::string&& s);
 
-    void send(NSocket *s);
+    void send(Socket* s);
+
+private:
+    /**
+     * @brief Write the length with a size of 0, usefull for dynamic sized packets.
+     */
+    void _init_length();
+    /**
+     * @brief Writes into the second byte the current length of the packet.
+     */
+    void _write_length();
 };
 
 
 template<typename T>
 PacketOut& operator<<(PacketOut& p, T& d)
 {
-    if (p._current_pos + sizeof(T) > length())
+    p._increase_buffer(sizeof(T));
+    if (p._current_pos + sizeof(T) > p.length())
     {
-        THROW_ERROR(NetworkError, "Trying to read " << sizeof(T) << " bytes to from " << hex(p._buffer[0]) << ", being currently in the position " << p._current_pos << " and with a total length of " << p.length() " bytes.");
-        return;
+        //THROW_ERROR(NetworkError, "Trying to read " << sizeof(T) << " bytes to from " << hex(p._buffer[0]) << ", being currently in the position " << p._current_pos << " and with a total length of " << p.length() " bytes.");
+        return p;
     }
-    memcpy(p._buffer[p._current_pos], d, sizeof(T));
+    memcpy(&(p._buffer[p._current_pos]), &d, sizeof(T));
     p._current_pos += sizeof(T);
+    return p;
+}
+
+template<typename T>
+PacketOut& operator<<(PacketOut& p, T&& d)
+{
+    p << d;
+    return p;
 }
 
 template<typename T>
 PacketOut& operator<<(PacketOut& p, std::string& s)
 {
+    p._increase_buffer(udword_t(s.size()));
     if (p._current_pos + sizeof(T) > s.size())
     {
-        THROW_ERROR(NetworkError, "Trying to read " << sizeof(T) << " bytes to from " << hex(p._buffer[0]) << ", being currently in the position " << p._current_pos << " into a string with a total size of " << s.size() " bytes.");
-        return;
+        //THROW_ERROR(NetworkError, "Trying to read " << sizeof(T) << " bytes to from " << hex(p._buffer[0]) << ", being currently in the position " << p._current_pos << " into a string with a total size of " << s.size() " bytes.");
+        return p;
     }
-    memcpy(p._buffer[p._current_pos], s.data(), s.size());
+    memcpy(&(p._buffer[p._current_pos]), &(s.data()), s.size());
     p._current_pos += s.size();
+    return p;
+}
+
+template<typename T>
+PacketOut& operator<<(PacketOut& p, std::string&& s)
+{
+    p << s;
+    return p;
 }
 
 #endif //__TORUS_PACKETOUT_H

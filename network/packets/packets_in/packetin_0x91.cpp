@@ -15,21 +15,36 @@
 #include <network/packets/packetlist.h>
 #include <network/socket.h>
 #include <debug_support/info.h>
+#include <shell.h>
 
 
-//const udword_t Packet_0xb9::length() {
-//    ADDTOCALLSTACK();
-//    return 21;
-//}
-
-void Packet_0xb9::set_data(dword_t seq, Client* client)
+const udword_t PacketIn_0x91::length()
 {
-    UNREFERENCED_PARAMETER(seq);
-    UNREFERENCED_PARAMETER(client);
-    set_packet_id(0xb9);
-    write_dword(1);
+    return 62;
 }
 
-Packet_0xb9::~Packet_0xb9()
+void PacketIn_0x91::process(Socket* s)
+{
+    (*this) >> accName;
+    (*this) >> accPassword;
+    t_byte command;
+    *(this) >> command;
+    std::stringstream str;
+    str << "Account connection request from ";
+    str << accName->c_str();
+    TORUSSHELLECHO(str.str());
+
+    PacketOut_0xb9* packet = new PacketOut_0xb9();
+    dword_t featureFlags = 1;
+    packet->set_data(featureFlags, s->get_client());
+    s->write(packet);
+    //s->set_closing();  // Must disconnect the client from login server?
+
+    PacketOut_0xa9 *packetCharacterList = new PacketOut_0xa9();
+    packetCharacterList->set_data(s->get_client());
+    s->write(packetCharacterList);
+}
+
+PacketIn_0x91::~PacketIn_0x91()
 {
 }

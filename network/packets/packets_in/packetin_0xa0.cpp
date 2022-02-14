@@ -17,12 +17,12 @@
 #include <debug_support/info.h>
 
 
-const udword_t Packet_0xa0::length() {
+const udword_t PacketIn_0xa0::length() {
     ADDTOCALLSTACK();
     return 3;
 }
 
-void Packet_0xa0::receive(Socket* s) {
+void PacketIn_0xa0::process(Socket* s) {
     ADDTOCALLSTACK();
     word_t server_index; // FIXME: Not working, right now it's receiving 256, it should receive 1
     *(this) >> server_index;
@@ -38,16 +38,16 @@ void Packet_0xa0::receive(Socket* s) {
 
     TORUSSHELLECHO("Connection received to server index : " << server_index);
     
-    Packet_0x8c *packet_server_select = new Packet_0x8c();
+    PacketOut_0x8c *packet_server_select = new PacketOut_0x8c();
     packet_server_select->set_data(s, server_index);
     packet_server_select->send(s);
-    s->set_connect_mode(Socket::ConnectMode::CONNECT_CHARLIST);
+    s->set_connection_state(ConnectionState::CONNECTIONSTATE_CHARLIST);
 }
 
-Packet_0xa0::Packet_0xa0()
+PacketIn_0xa0::PacketIn_0xa0()
 {
 }
 
-Packet_0xa0::~Packet_0xa0() {
+PacketIn_0xa0::~PacketIn_0xa0() {
     ADDTOCALLSTACK();
 }

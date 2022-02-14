@@ -15,41 +15,24 @@
 #include <network/packets/packetlist.h>
 #include <network/socket.h>
 #include <debug_support/info.h>
+#include <core/torus.h>
 #include <game/client.h>
-#include <shell.h>
 
-const udword_t Packet_0x80::length()
-{
-    return Packet_0x80_length;
+
+const udword_t PacketIn_0x02::length() {
+    ADDTOCALLSTACK();
+    return 7;
 }
 
-void Packet_0x80::receive(Socket* s)
-{
-    if (Socket::ConnectMode(s->get_connect_mode()) != Socket::ConnectMode::CONNECT_LOGIN) // Double casting to prevent Warning #C26812 (VS)
-    {
-        return;
-    }
-    read_string(*accName, 30);
-    read_string(*accPassword, 30);
-    t_byte command;
-    *(this) >> command;
-    std::stringstream str;
-    str << "Account connection request from ";
-    str << accName->c_str();
-    TORUSSHELLECHO(str.str());
-
-    _is_valid_account = true; // TODO: Add real account checks.
-
-    if (s == nullptr) { //Sometimes happens at clients' closure.
-        return;
-    }
+void PacketIn_0x02::process(Socket*s) {
+    ADDTOCALLSTACK();
+    t_byte dir = 0;
+    t_byte sequence = 0;
+    *(this) >> dir;
+    *(this) >> sequence;
+    //s->get_client()->event_walk(dir, sequence);
 }
 
-bool Packet_0x80::is_valid_account()
-{
-    return _is_valid_account;
-}
-
-Packet_0x80::~Packet_0x80()
-{
+PacketIn_0x02::~PacketIn_0x02() {
+    ADDTOCALLSTACK();
 }

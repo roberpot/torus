@@ -13,22 +13,31 @@
  */
 
 
+#include <library/system_headers.h>
+#include <debug_support/info.h>
+#include <game/client.h>
+#include <game/char.h>
 #include <network/packets/packetlist.h>
 #include <network/socket.h>
-#include <debug_support/info.h>
-#include <core/torus.h>
-#include <game/client.h>
 
-const udword_t Packet_0x00::length() {
+
+void PacketOut_0x22::set_data(t_ubyte seq, Client * client) {
     ADDTOCALLSTACK();
-    return 7;
+    Char *chr = client->get_char();
+    if (!chr) {
+        return;
+    }
+    set_packet_id(0x22);
+    *this << seq;
+    *this << 7; // View color (blue, red, yellow ...)
+    send(client->get_socket());
 }
 
-void Packet_0x00::receive(Socket* s) {
-    ADDTOCALLSTACK();
-    UNREFERENCED_PARAMETER(s);
+PacketOut_0x22::PacketOut_0x22() : PacketOut(0x22)
+{
 }
 
-Packet_0x00::~Packet_0x00() {
+
+PacketOut_0x22::~PacketOut_0x22() {
     ADDTOCALLSTACK();
 }

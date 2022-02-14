@@ -15,36 +15,26 @@
 #include <network/packets/packetlist.h>
 #include <network/socket.h>
 #include <debug_support/info.h>
-#include <shell.h>
+#include <core/torus.h>
+#include <game/client.h>
 
 
-const udword_t Packet_0x91::length()
-{
-    return 62;
+const udword_t PacketIn_0x73::length() {
+    ADDTOCALLSTACK();
+    return 2;
 }
 
-void Packet_0x91::receive(Socket* s)
-{
-    read_string(*accName, 30);
-    read_string(*accPassword, 30);
-    t_byte command;
-    *(this) >> command;
-    std::stringstream str;
-    str << "Account connection request from ";
-    str << accName->c_str();
-    TORUSSHELLECHO(str.str());
-
-    Packet_0xb9* packet = new Packet_0xb9();
-    dword_t featureFlags = 1;
-    packet->set_data(featureFlags, s->get_client());
-    s->write_packet(packet);
-    //s->set_closing();  // Must disconnect the client from login server?
-
-    Packet_0xa9 *packetCharacterList = new Packet_0xa9();
-    packetCharacterList->set_data(s->get_client());
-    s->write_packet(packetCharacterList);
+void PacketIn_0x73::process(Socket* s) {
+    ADDTOCALLSTACK();
+    PacketOut_0x73 *response = new PacketOut_0x73();
+    response->set_data(1);
+    s->write(response);
 }
 
-Packet_0x91::~Packet_0x91()
+PacketIn_0x73::PacketIn_0x73()
 {
+}
+
+PacketIn_0x73::~PacketIn_0x73() {
+    ADDTOCALLSTACK();
 }

@@ -90,7 +90,7 @@ bool Account::delete_char(Char *chr){
 void Account::connect(Socket * socket){
     ADDTOCALLSTACK();
     _socket = socket;
-    _lastip = _socket->get_ip();
+    _lastip = _socket->get_ip_str();
 }
 
 PRIVLVL Account::get_privlevel() {

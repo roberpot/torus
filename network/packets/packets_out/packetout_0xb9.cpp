@@ -15,24 +15,25 @@
 #include <network/packets/packetlist.h>
 #include <network/socket.h>
 #include <debug_support/info.h>
-#include <core/torus.h>
-#include <game/client.h>
 
 
-const udword_t Packet_0x02::length() {
-    ADDTOCALLSTACK();
-    return 7;
+//const udword_t Packet_0xb9::length() {
+//    ADDTOCALLSTACK();
+//    return 21;
+//}
+
+void PacketOut_0xb9::set_data(dword_t seq, Client* client)
+{
+    UNREFERENCED_PARAMETER(seq);
+    UNREFERENCED_PARAMETER(client);
+    set_packet_id(0xb9);
+    *this << dword_t(1);
 }
 
-void Packet_0x02::receive(Socket *s) {
-    ADDTOCALLSTACK();
-    t_byte dir = 0;
-    t_byte sequence = 0;
-    *(this) >> dir;
-    *(this) >> sequence;
-    s->get_client()->event_walk(dir, sequence);
+PacketOut_0xb9::PacketOut_0xb9() : PacketOut(0xb9)
+{
 }
 
-Packet_0x02::~Packet_0x02() {
-    ADDTOCALLSTACK();
+PacketOut_0xb9::~PacketOut_0xb9()
+{
 }

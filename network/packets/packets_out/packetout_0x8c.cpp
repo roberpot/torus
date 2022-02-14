@@ -17,19 +17,28 @@
 #include <debug_support/info.h>
 
 
-//const udword_t Packet_0x82::length()
-//{
+//const udword_t Packet_0x8c::length() {
 //    ADDTOCALLSTACK();
-//    return 2;
+//    return 11;
 //}
 
-void Packet_0x82::set_data(ResponseCode code)
+void PacketOut_0x8c::set_data(Socket* s, word_t server_index )
 {
-    ADDTOCALLSTACK();
-    set_packet_id(0x82);
-    write_byte((t_byte)code);
+    UNREFERENCED_PARAMETER(s);
+    set_packet_id(0x8c); //packet_id
+    udword_t ip = 16777343;  //127.0.0.1    //TODO: send real IP
+    *this << (ip & 0xFF);
+    *this << ((ip >> 8) & 0xFF);
+    *this << ((ip >> 16) & 0xFF);
+    *this << ((ip >> 24) & 0xFF);
+    *this << (2593);   //TODO: Send real PORT
+    *this << (1456773342);  //TODO: Add real calculation using zlib and account's name.
 }
 
-Packet_0x82::~Packet_0x82()
+PacketOut_0x8c::PacketOut_0x8c() : PacketOut(0x8c)
 {
+}
+
+PacketOut_0x8c::~PacketOut_0x8c() {
+    ADDTOCALLSTACK();
 }

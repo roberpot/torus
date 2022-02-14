@@ -34,20 +34,16 @@ void * NetworkManager::run() {
         Packet * newPacket;
         for (unsigned int socketId = 0; socketId < socketsCount; socketId++) {
             clientSocket = _sockets[socketId];
-            while ((clientSocket->is_closing() == false) && clientSocket->data_ready()) {
-                TORUSSHELLECHO("data ready for socket, reading it from" << clientSocket->get_ip());
-                if (clientSocket->receive_data() <= 0)
+            while ((clientSocket->is_read_closed() == false) && clientSocket->data_ready()) {
+                TORUSSHELLECHO("data ready for socket, reading it from" << clientSocket->get_ip_str());
+                if (clientSocket->receive() == false)
                 {
-                    clientSocket->set_closing();
+                    clientSocket->set_read_closed();
                     continue;
                 }
-                newPacket = clientSocket->read_packet();
-                if (newPacket && newPacket->full_received())
-                {
-                    delete newPacket;
-                }
             }
-            clientSocket->send_data();
+            clientSocket->read_queued_packets();
+            clientSocket->send_queued_packets();
         }
         _m.unlock();
         torus_thread_sleep(50);
@@ -88,20 +84,20 @@ void * NetworkManager::NetworkClientConnector::run() {
         THROW_ERROR(NetworkError, "WSAStartup failed with error: " << status);
     }
 #endif //_WINDOWS
-    _s = new Socket;
+    _s = new Socket(ConnectionType::CONNECTIONTYPE_SERVER);
     _s->bind(toruscfg.net_addr, toruscfg.net_port);
 
     while(_run) {
         if (_s->client_pending()) {
-            Socket * s = _s->get_socket();
+            Socket * s = _s->create_socket();
             TORUSSHELLECHO("Client connected: IP: " << s->get_ip());
             torusnet._add_client(s);
         }
-        if (_s->is_closing())
+        /*if (_s->is_closing())
         {
             TORUSSHELLECHO("Closing socket: IP" << _s->get_ip());
             _s->shutdown();
-        }
+        }*/
         torus_thread_sleep(50);
     }
 #ifdef _WINDOWS

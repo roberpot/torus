@@ -12,35 +12,38 @@
  * along with Torus. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <library/system_headers.h>
 #include <network/packets/packetlist.h>
 #include <network/socket.h>
 #include <debug_support/info.h>
+#include <game/client.h>
+#include <game/char.h>
 
 
-const udword_t Packet_0xef::length() {
+//const udword_t Packet_0x21::length() {
+//    ADDTOCALLSTACK();
+//    return 8;
+//}
+
+void PacketOut_0x21::set_data(t_ubyte seq, Client * client) {
     ADDTOCALLSTACK();
-    return 21;
+    Char *chr = client->get_char();
+    if (!chr) {
+        return;
+    }
+    set_packet_id(0x21);
+    (*this) << (seq);
+    (*this) << chr->get_pos().x;
+    (*this) << chr->get_pos().y;
+    (*this) << (t_ubyte)chr->get_dir();
+    (*this) << t_ubyte(chr->get_pos().z);
 }
 
-void Packet_0xef::receive(Socket * s) {
-    ADDTOCALLSTACK();
-    UNREFERENCED_PARAMETER(s);
-    *(this) >> _seed; 
-    *(this) >> _client_major_version;
-    *(this) >> _client_minor_version;
-    *(this) >> _client_revision_version;
-    *(this) >> _client_prototype_version;
-}
-
-Packet_0xef::Packet_0xef()
+PacketOut_0x21::PacketOut_0x21() : PacketOut(0x21)
 {
-    _seed = 0;
-    _client_major_version = 0;
-    _client_minor_version = 0;
-    _client_revision_version = 0;
-    _client_prototype_version = 0;
 }
 
-Packet_0xef::~Packet_0xef() {
+
+PacketOut_0x21::~PacketOut_0x21() {
     ADDTOCALLSTACK();
 }

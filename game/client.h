@@ -18,24 +18,25 @@
 #include <library/types.h>
 #include <network/packets/packetlist.h>
 
-class Socket;
 class Char;
+class Socket;
+class PacketOut;
 
 class Client {
 public:
-    Client(Socket *s);
+    Client(Socket*s);
     ~Client();
 private:
-    Socket *_socket;
+    Socket*_socket;
 public:
-    Socket *get_socket();
-    void send(Packet* packet);
+    Socket*get_socket();
+    void send(PacketOut* packet);
 private:
     t_ubyte _movement_sequence;  ///< Walking sequence.
     uqword_t _movement_last;    ///< Last walk packet received.
 public:
     void event_walk(t_ubyte dir, t_ubyte seq);
-    void add_response_code(Packet_0x82::ResponseCode code);
+    void add_response_code(PacketOut_0x82::ResponseCode code);
     void event_disconnect();
 private:
     Char *_char;

@@ -19,28 +19,13 @@
 #include <game/client.h>
 
 
-const udword_t Packet_0x73::length() {
-    ADDTOCALLSTACK();
-    return 2;
-}
-
-void Packet_0x73::receive(Socket * s) {
-    ADDTOCALLSTACK();
-    Packet_0x73 *response = new Packet_0x73();
-    response->set_data(1, s);
-    s->write_packet(response);
-}
-
-void Packet_0x73::set_data(t_ubyte ping, Socket *)
+void PacketOut_0x73::set_data(t_ubyte response)
 {
+    ADDTOCALLSTACK();
     set_packet_id(0x73);
-    write_byte(ping);
+    (*this) << response;
 }
 
-Packet_0x73::Packet_0x73()
+PacketOut_0x73::PacketOut_0x73() : PacketOut(0x73)
 {
-}
-
-Packet_0x73::~Packet_0x73() {
-    ADDTOCALLSTACK();
 }

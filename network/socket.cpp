@@ -13,28 +13,26 @@
  */
 
 
-#ifdef __linux__
-#include <cerrno>
-#include <arpa/inet.h>
-#endif //__linux__
-#include <cstring>
 #include <network/socket.h>
-
-#include <core/errors.h>
-#include <debug_support/debug.h>
-#include <library/string.h>
-#include <debug_support/callstack.h>
-#include <network/packet.h>
-#include <network/packets/packetlist.h>
 #include <game/client.h>
-#include <shell.h>
 
-#define N2L(C, LL) \
-    LL = ((C&0xff000000))>>24 | ((C&0x00ff0000))>>8  | ((C&0x0000ff00))<<8 | ((C&0x000000ff)<<24)
+#include <iostream>
 
-Socket::Socket() {
+Socket::Socket(socket_t s, ConnectionType connection_type) :
+    _socket(s),
+    _connection_type(connection_type)
+{
     ADDTOCALLSTACK();
-    type = SocketType::SOCKETTYPE_SERVER;
+    _init();
+    memset(&_connection_info, 0, sizeof(sockaddr_in));
+}
+
+Socket::Socket(ConnectionType connection_type) :
+    _connection_type(connection_type)
+{
+    ADDTOCALLSTACK();
+    _init();
+
 #ifdef _WINDOWS
     //_socket = INVALID_SOCKET;
     _socket = socket(AF_INET, SOCK_STREAM, 0);
@@ -48,112 +46,235 @@ Socket::Socket() {
         throw NetworkError("ERROR opening socket");
     }
 #endif //__linux__
-    buffer = new char[1024];
-    buffer_len = 0;
-    rewinded = nullptr;
-    rewinded_len = 0;
-    crypto = nullptr;
-    _client = 0;
-    _is_closing = false;
-    _current_packet = nullptr;
-    _cur_pos = 0;
-    _connect_mode = ConnectMode::CONNECT_NONE;
+
+    memset(&_connection_info, 0, sizeof(sockaddr_in));
 }
 
-Socket::Socket(socket_t s) {
-    ADDTOCALLSTACK();
-    _socket = s;
-    rewinded_len = 0;
-    _is_closing = false;
-    _current_packet = nullptr;
-    _cur_pos = 0;
-    _connect_mode = ConnectMode::CONNECT_NONE;
-    init_client_socket();
-}
+void Socket::_init()
+{
+    _current_in_packet = nullptr;
+    _is_read_closed = false;
+    _is_write_closed = false;
+    _connection_state = ConnectionState::CONNECTIONSTATE_NONE;
+    _client = nullptr;
 
-void Socket::init_client_socket() {
-    ADDTOCALLSTACK();
-    rewinded_len = 0;
-    type = SocketType::SOCKETTYPE_CLIENT;
-    buffer = new t_byte[1024];
-    crypto = new Crypto();
-    crypto->set_mode_none();
-/*    udword_t seed = _determinate_client_seed();
-    crypto->set_client_seed(seed);
-    _read_bytes(62);
-    crypto->detect_client_keys(buffer, buffer_len);
-    _rewind(buffer, 62);
-*/
-    crypto->set_mode_login();
-    _client = new Client(this);
-    set_connect_mode(ConnectMode::CONNECT_LOGIN);
+    _buffer = new t_byte[BUFFER_SIZE];
+    memset(_buffer, 0, BUFFER_SIZE);
 
-    Packet_0x80* packet_connect = new Packet_0x80();
-    _read_bytes(Packet_0x80_length);
-    packet_connect->loads(this, Packet_0x80_length);
 
-    if (packet_connect->is_valid_account())
+    if (_connection_type == ConnectionType::CONNECTIONTYPE_CLIENT)
     {
-        DEBUG_NOTICE("Received valid account identification, proceeding to send server information.");
-        Packet_0xa8* packet = new Packet_0xa8();
-        write_packet(packet);
-        set_connect_mode(ConnectMode::CONNECT_SERVERLIST);
-        //get_client()->add_response_code(Packet_0x82::ResponseCode::Success); // shouldn't be here?
+        return;
+        const udword_t packet_0xef_size = 15;
+        receive(packet_0xef_size);
+        const udword_t packet_0x80_size = 62;
+        t_byte *buffer = new t_byte[packet_0xef_size];
+        memcpy(buffer, _buffer, packet_0xef_size);
+        PacketIn *packet_0xef = packet_factory(0xef);
+        packet_0xef->receive(buffer, packet_0xef_size);
+        _current_in_packet = nullptr;
+        // TODO: Process client seed.
+        //delete packet_0xef;
+        delete []buffer;
+
+        buffer = new t_byte[packet_0x80_size];
+        memcpy(buffer, &(_buffer[packet_0xef_size + 1]), packet_0x80_size);
+        PacketIn_0x80 *packet_0x80 = static_cast<PacketIn_0x80*>(packet_factory(0x80));
+        packet_0x80->set_from_loginserver();
+        packet_0x80->receive(buffer, packet_0x80_size);
+        _current_in_packet = nullptr;
+
+        delete[] buffer;
+        delete packet_0x80;
     }
-    delete packet_connect;
 }
 
-
-udword_t Socket::_determinate_client_seed() {
+Socket::~Socket()
+{
     ADDTOCALLSTACK();
-    t_ubyte _cmd;
-    (*this) >> _cmd;
-    _rewind((t_byte*)&_cmd, sizeof(t_ubyte));
-    udword_t seed;
-    if (_cmd == 0xef) {
-        DEBUG_NOTICE("Detected login seed packet.");
-        PACKET_KR_2D_CLIENT_SEED * p = static_cast<PACKET_KR_2D_CLIENT_SEED *>(packet_factory(*this));
-        seed = p->seed();
-        DEBUG_NOTICE("Client seed: " << seed);
+    if (_current_in_packet != nullptr)
+    {
+        delete _current_in_packet;
+    }
+    while (_packets_in_queue.empty() == false)
+    {
+        PacketIn *p = _packets_in_queue.front();
         delete p;
-    } else {
-        DEBUG_NOTICE("Detected login seed (no login seed packet).");
-        (*this) >> seed;
-        //N2L(seed, seed);
+        _packets_in_queue.pop();
     }
-    return seed;
-}
+    while (_packets_out_queue.empty() == false)
+    {
+        PacketOut* p = _packets_out_queue.front();
+        delete p;
+        _packets_out_queue.pop();
+    }
 
-void Socket::bind(const t_byte * addr, word_t port) {
-    ADDTOCALLSTACK();
-    DEBUG_INFO("Binding " << addr << ":" << port);
-    dword_t status;
-    sockaddr_in _serv_addr;
-    memset(&_serv_addr, 0, sizeof(sockaddr_in));
-    _serv_addr.sin_family = AF_INET;
-    _serv_addr.sin_port = htons(port);
-    _serv_addr.sin_addr.s_addr = inet_addr(addr);
-    status = ::bind(_socket, (sockaddr*)&_serv_addr, sizeof(sockaddr));
 #ifdef _WINDOWS
-    if (status == SOCKET_ERROR) {
-        closesocket(_socket);
-        THROW_ERROR(NetworkError, "bind failed with error: " << WSAGetLastError() << ". Can not bind " << addr << ":" << port);
-    }
-    status = listen(_socket, SOMAXCONN);
-    if (status == SOCKET_ERROR) {
-        closesocket(_socket);
-        THROW_ERROR(NetworkError, "listen failed with error: " << WSAGetLastError());
-    }
+    closesocket(_socket);
 #endif // _WINDOWS
 #ifdef __linux__
-    if (status < 0) {
-        THROW_ERROR(NetworkError,"bind failed with error: " << strerror(errno) << ". Can not bind " << addr << ":" << port);
+    close(_socket);
+#endif //__linux__
+
+}
+
+bool Socket::data_ready()
+ {
+    ADDTOCALLSTACK();
+    fd_set readSet;
+    FD_ZERO(&readSet);
+    FD_SET(_socket, &readSet);
+    timeval timeout;
+    timeout.tv_sec = 0;  // Zero timeout (poll)
+    timeout.tv_usec = 0;
+    return (select((int)_socket, &readSet, NULL, NULL, &timeout) == 1);
+ }
+
+bool Socket::is_read_closed()
+{
+    return _is_read_closed;
+}
+
+void Socket::set_read_closed(bool state)
+{
+    _is_read_closed = state;
+}
+
+bool Socket::is_write_closed()
+{
+    return _is_write_closed;
+}
+
+void Socket::set_write_closed(bool state)
+{
+    _is_write_closed = state;
+}
+
+void Socket::set_read_write_closed(bool state)
+{
+    _is_read_closed = state;
+    _is_write_closed = state;
+}
+
+
+bool Socket::receive(udword_t receive_len)
+{
+    ADDTOCALLSTACK();
+    // First check if we rewinded.
+    udword_t buffer_len = 0;
+    if (receive_len > BUFFER_SIZE)
+    {
+        receive_len = BUFFER_SIZE;
     }
-    status = listen(_socket, SOMAXCONN);
-    if (status < 0) {
-        THROW_ERROR(NetworkError, "listen failed with error: " << strerror(errno));
+
+    /*if (rewinded_len > 0) {
+        TORUSSHELLECHO("rewinding");
+        if (len_remaining < rewinded_len) {
+            init = len_remaining;
+        }
+        else {
+            init = rewinded_len;
+        }
+        memcpy(buffer, rewinded, sizeof(t_byte) * init);
+        rewinded_len -= init;
+        len_remaining -= init;
+        _cur_pos -= rewinded_len;
+        if (rewinded_len == 0) {
+            delete rewinded;
+        }
+        else {
+            memmove(rewinded, &rewinded[init], sizeof(t_byte) * rewinded_len);
+        }
+        if (_cur_pos < 0) // Should never happen?
+        {
+            _cur_pos = 0;
+        }
+
+    }*/
+#ifdef _WINDOWS
+    buffer_len = recv(_socket, _buffer, receive_len, 0);
+    if (buffer_len == SOCKET_ERROR)
+    {
+        TORUSSHELLECHO("Socket recv error: " << WSAGetLastError());
+        return false;
+    }
+
+#endif // _WINDOWS
+#ifdef __linux__
+    buffer_len = (udword_t)recv(_socket, &_buffer[init], receive_len, 0);
+    if (buffer_len == 0)
+    {
+        TORUSSHELLECHO("Socket recv error: " << strerror(errno));
+        return false;
     }
 #endif //__linux__
+
+    if (buffer_len > 0 && buffer_len < 1024)
+    {
+        //TORUSSHELLECHO("recv done for a total bytes of " << buffer_len);
+        TORUSSHELLECHO("Network receive(0x" << hex(_buffer[0]) << ")[ " << std::dec << buffer_len << " ] = " << std::endl << hex_dump_buffer(_buffer, buffer_len));
+    }
+    TORUSSHELLECHO("Get packet");
+    if (_current_in_packet == nullptr)  // Try to retrieve an incomplete packet.
+    {
+        TORUSSHELLECHO("Creating packet");
+        t_ubyte id = _buffer[0];
+        _current_in_packet = packet_factory(id);
+        if (_current_in_packet)
+        {
+            TORUSSHELLECHO("Got packet");
+        }
+        else
+        {
+            TORUSSHELLECHO("Failed to get packet");
+        }
+    }
+
+    if (_current_in_packet != nullptr)
+    {
+        _current_in_packet->receive(_buffer, buffer_len);
+        if (_current_in_packet->is_complete())
+        {
+            std::cout << "Pushing packet " << _current_in_packet;
+            _packets_in_queue.push(_current_in_packet);
+            _current_in_packet = nullptr;   // The full packet has been received, clean this pointer so the next data is attacked to another packet.
+        }
+    }
+
+    return true;
+}
+
+void Socket::write(PacketOut * packet)
+{
+    _packets_out_queue.push(packet);
+}
+
+ConnectionState Socket::get_connection_state()
+{
+    return _connection_state;
+}
+
+void Socket::set_connection_state(ConnectionState connection_state)
+{
+_connection_state = connection_state;
+}
+
+ConnectionType Socket::get_connection_type()
+{
+    return _connection_type;
+}
+
+Socket* Socket::create_socket()
+{
+    ADDTOCALLSTACK();
+    Socket* s;
+#ifdef _WINDOWS
+    s = new Socket(accept(_socket, 0, 0));
+#endif //_WINDOWS
+#ifdef __linux__
+    s = new Socket(_accepted_socket);
+#endif //__linux__
+    return s;
 }
 
 bool Socket::client_pending() {
@@ -173,189 +294,116 @@ bool Socket::client_pending() {
 #endif //__linux__
 }
 
-Socket * Socket::get_socket() {
+void Socket::bind(const t_byte* addr, word_t port)
+{
     ADDTOCALLSTACK();
-    Socket * s;
+    DEBUG_INFO("Binding " << addr << ":" << port);
+    dword_t status;
+    _connection_info.sin_family = AF_INET;
+    _connection_info.sin_port = htons(port);
+    _connection_info.sin_addr.s_addr = inet_addr(addr);
+    status = ::bind(_socket, (sockaddr*)&_connection_info, sizeof(sockaddr));
+
 #ifdef _WINDOWS
-    s = new Socket(accept(_socket, 0, 0));
-#endif //_WINDOWS
+    if (status == SOCKET_ERROR) {
+        closesocket(_socket);
+        THROW_ERROR(NetworkError, "bind failed with error: " << WSAGetLastError() << ". Can not bind " << addr << ":" << port);
+    }
+    status = listen(_socket, SOMAXCONN);
+    if (status == SOCKET_ERROR) {
+        closesocket(_socket);
+        THROW_ERROR(NetworkError, "listen failed with error: " << WSAGetLastError());
+    }
+#endif // _WINDOWS
 #ifdef __linux__
-    s = new Socket(_accepted_socket);
+    if (status < 0) {
+        THROW_ERROR(NetworkError, "bind failed with error: " << strerror(errno) << ". Can not bind " << addr << ":" << port);
+    }
+    status = listen(_socket, SOMAXCONN);
+    if (status < 0) {
+        THROW_ERROR(NetworkError, "listen failed with error: " << strerror(errno));
+    }
 #endif //__linux__
-    return s;
+
+    socklen_t _addr_size = sizeof(_connection_info);
+    getpeername(_socket, (sockaddr*)&_connection_info, &_addr_size);
 }
 
-Client * Socket::get_client() {
+const t_byte* Socket::get_ip_str()
+{
     ADDTOCALLSTACK();
+    return inet_ntoa(_connection_info.sin_addr);;
+}
+
+const dword_t Socket::get_ip()
+{
+    return _connection_info.sin_addr.S_un.S_addr;
+}
+
+void Socket::send_queued_packets()
+{
+    while (!_packets_out_queue.empty())
+    {
+        PacketOut* out_packet = _packets_out_queue.front();
+        _packets_out_queue.pop();
+        if (_is_write_closed == false)
+        {
+            //out_packet->print("Sending ");
+            TORUSSHELLECHO("Network send(" << out_packet->length() << ") " << std::endl << hex_dump_buffer(out_packet->data(), out_packet->length()));
+
+#ifdef _WINDOWS
+            udword_t data_sended = send(_socket, out_packet->data(), out_packet->length(), 0);
+            if (data_sended == SOCKET_ERROR) {
+                THROW_ERROR(NetworkError, "Send failed with error: " << WSAGetLastError());
+            }
+            else if (data_sended != out_packet->length()) {
+                THROW_ERROR(NetworkError, "Send " << data_sended << " bytes, instead of " << out_packet->length() << " bytes.");
+            }
+#endif // _WINDOWS
+#ifdef __linux__
+            ssize_t data_sended = send(_socket, out_packet->dumps(), out_packet->length(), 0);
+            if (data_sended == -1) {
+                THROW_ERROR(NetworkError, "Send failed");
+            }
+            else if (data_sended != out_packet->length()) {
+                THROW_ERROR(NetworkError, "Send " << data_sended << " bytes, instead of " << out_packet->length() << " bytes.");
+            }
+#endif //__linux__
+        }
+        delete out_packet;
+    }
+}
+
+void Socket::read_queued_packets()
+{
+    while (!_packets_in_queue.empty())
+    {
+        PacketIn* in_packet = _packets_in_queue.front();
+        if (_is_read_closed == false)
+        {
+            TORUSSHELLECHO("Reading packet << " << in_packet << "(0x" << hex(in_packet->packet_id()) << ")");
+            in_packet->process(this);
+        }
+        _packets_in_queue.pop();
+        //delete in_packet;
+    }
+}
+
+Client* Socket::get_client()
+{
     return _client;
 }
 
-const t_byte * Socket::get_ip() {
+void Socket::set_client(Client* client)
+{  
+    _client = client;
+}
+
+void Socket::shutdown()
+{
     ADDTOCALLSTACK();
 #ifdef _WINDOWS
-    sockaddr_in client_info;
-    dword_t addrsize = sizeof(client_info);
-    getpeername(_socket, (sockaddr *)&client_info, &addrsize);
-    return inet_ntoa(client_info.sin_addr);
-#endif // _WINDOWS
-#if __linux__
-    sockaddr_in client_info;
-    socklen_t addrsize = sizeof(client_info);
-    getpeername(_socket, (sockaddr *)&client_info, &addrsize);
-    return inet_ntoa(client_info.sin_addr);
-#endif //__linux__
-}
-
-bool Socket::data_ready() {
-    ADDTOCALLSTACK();
-    fd_set readSet;
-    FD_ZERO(&readSet);
-    FD_SET(_socket, &readSet);
-    timeval timeout;
-    timeout.tv_sec = 0;  // Zero timeout (poll)
-    timeout.tv_usec = 0;
-    return (select((int)_socket, &readSet, NULL, NULL, &timeout) == 1);
-}
-
-Packet* Socket::read_packet() {
-    ADDTOCALLSTACK();
-    Packet* p = _current_packet;
-    if (!p)
-    {
-        p = packet_factory(*this);
-        if (p){
-           TORUSSHELLECHO("creating new packet 0x" << hex(p->id()));
-        }
-    }
-    else
-    {
-        TORUSSHELLECHO("continuing writing packet 0x" << hex(p->id()));
-    }
-
-    if (p)
-    {
-        //int len = _read_bytes(p->length());
-        p->loads(this, buffer_len);
-        if (p->full_received())
-        {
-            _current_packet = nullptr;
-        }
-    }
-    return p;
-}
-
-void Socket::write_packet(Packet * p) {
-    ADDTOCALLSTACK();
-    _out_queue.push(p);
-}
-
-void Socket::set_connect_mode(ConnectMode mode)
-{
-    _connect_mode = mode;
-}
-
-Socket::ConnectMode Socket::get_connect_mode()
-{
-    return _connect_mode;
-}
-
-t_byte* Socket::data()
-{
-    return buffer;
-}
-
-bool Socket::is_closing()
-{
-    return _is_closing;
-}
-
-void Socket::set_closing()
-{
-    _is_closing = true;
-}
-
-void Socket::read_string(Socket& s, std::string& str, int len)
-{
-    ADDTOCALLSTACK();
-    s._read_bytes(len);
-    str.append(s.buffer);
-    /*if (sizeof(T) == 4) {
-        d = (((d & 0x000000ff) << 24) | ((d & 0x0000ff00) << 8) | ((d & 0x00ff0000) >> 8) | ((d & 0xff000000) >> 24));
-    }*/
-}
-
-udword_t Socket::_read_bytes(udword_t len) {
-    ADDTOCALLSTACK();
-    // First check if we rewinded.
-    udword_t init = 0;
-    udword_t len_remaining = len;
-    buffer_len = 0;
-    if (rewinded_len > 0) {
-        TORUSSHELLECHO("rewinding");
-        if (len_remaining < rewinded_len) {
-            init = len_remaining;
-        } else {
-            init = rewinded_len;
-        }
-        memcpy(buffer, rewinded, sizeof(t_byte) * init);
-        rewinded_len -= init;
-        len_remaining -= init;
-        _cur_pos -= rewinded_len;
-        if (rewinded_len == 0) {
-            delete rewinded;
-        } else {
-            memmove(rewinded, &rewinded[init], sizeof(t_byte) * rewinded_len);
-        }
-        if (_cur_pos < 0) // Should never happen?
-        {
-            _cur_pos = 0;
-        }
-
-    }
-    if (len_remaining) {
-#ifdef _WINDOWS
-        buffer_len = recv(_socket, buffer, len_remaining, 0);
-        _cur_pos = 0;
-        if (buffer_len == SOCKET_ERROR)
-        {
-            TORUSSHELLECHO("Socket recv error: " << WSAGetLastError());
-        }
-
-#endif // _WINDOWS
-#ifdef __linux__
-        buffer_len = (udword_t)recv(_socket, &buffer[init], len_remaining, 0);
-#endif //__linux__
-    }
-    if (crypto && crypto->has_encryption())
-    {
-        crypto->decrypt(buffer, len);
-    }
-    if (buffer_len > 0 && buffer_len < 1024)
-    {
-        //TORUSSHELLECHO("recv done for a total bytes of " << buffer_len);
-        TORUSSHELLECHO("Network receive(0x" << hex(buffer[0]) << ")[ " << buffer_len << " ] = " << std::endl << hex_dump_buffer(buffer, buffer_len));
-    }
-    return buffer_len;
-}
-
-void Socket::_rewind(t_byte * b, udword_t l) {
-    ADDTOCALLSTACK();
-    if (rewinded_len > 0) {
-        t_byte * new_rewind_buffer = new t_byte[rewinded_len + l];
-        memcpy(&new_rewind_buffer[l], rewinded, sizeof(t_byte)  * rewinded_len);
-        delete rewinded;
-        rewinded = new_rewind_buffer;
-    } else {
-        rewinded = new t_byte[l];
-    }
-    memcpy(rewinded, b, sizeof(t_byte) * l);
-    rewinded_len += l;
-}
-
-void Socket::shutdown() {
-    ADDTOCALLSTACK();
-#ifdef _WINDOWS
-    set_closing();
+    set_read_write_closed();
     udword_t status = ::shutdown(_socket, SD_SEND);
     if (status == SOCKET_ERROR) {
         closesocket(_socket);
@@ -370,143 +418,3 @@ void Socket::shutdown() {
     }
 #endif //__linux__
 }
-
-Socket::~Socket() {
-    ADDTOCALLSTACK();
-#ifdef _WINDOWS
-    closesocket(_socket);
-#endif // _WINDOWS
-#ifdef __linux__
-    close(_socket);
-#endif //__linux__
-}
-
-int Socket::receive_data()
-{
-    int read = _read_bytes(255);
-    return read;
-}
-
-void Socket::send_data()
-{
-    while (!_out_queue.empty())
-    {
-        Packet* out_packet = _out_queue.front();
-        _out_queue.pop();
-        out_packet->print("Sending ");
-        //TORUSSHELLECHO("Network send(" << out_packet->length() << ") " << std::endl << hex_dump_buffer(out_packet->dumps(), out_packet->length()));
-
-#ifdef _WINDOWS
-        udword_t data_sended = send(_socket, out_packet->dumps(), out_packet->length(), 0);
-        if (data_sended == SOCKET_ERROR) {
-            THROW_ERROR(NetworkError, "Send failed with error: " << WSAGetLastError());
-        }
-        else if (data_sended != out_packet->length()) {
-            THROW_ERROR(NetworkError, "Send " << data_sended << " bytes, instead of " << out_packet->length() << " bytes.");
-        }
-#endif // _WINDOWS
-#ifdef __linux__
-        ssize_t data_sended = send(_socket, out_packet->dumps(), out_packet->length(), 0);
-        if (data_sended == -1) {
-            THROW_ERROR(NetworkError, "Send failed");
-        }
-        else if (data_sended != out_packet->length()) {
-            THROW_ERROR(NetworkError, "Send " << data_sended << " bytes, instead of " << out_packet->length() << " bytes.");
-        }
-#endif //__linux__
-        delete out_packet;
-    }
-}
-
-
-
-/*
-*   Connection sequence explanation up to character selection screen:
-*   - Server receives packet 0xa0 indicating the index of the selected server. - Done (read FIXME)
-*   - Server sends to client the connection information for the given server Packet 0x8c:
-*       int32 ip
-*       int16 port
-*       int32 Auth ID
-*   - Client sends packet 0x91 Requesting the character list:
-*       int32 Auth ID
-*       byte[30]	Account Name
-*       byte[30]	Password
-*       *Notes: Acc and password were already receipt, but this is a double check since the login server and game server maybe different, so both should do the check.
-                Auth ID is an additional security token providen for the loginserver and should be expected by the gameserver.
-
-*   - Server sends allowed flags for the client with packet 0xb9:
-*       int32 flags: (since UOSA the packet has 5 bytes, before it had 3).
-*           Flags
-            (
-                0x01 = enable T2A features: chat button, regions;
-                0x02 = enable renaissance features;
-                0x04 = enable third down features;
-                0x08 = enable LBR features: skills, map;
-                0x10 = enable AOS features: skills, spells, map, fightbook, housing tiles;
-                0x20 = enable 6th character slot;
-                0x40 = enable SE features: spells, skills, map, housing tiles;
-                0x80 = enable ML features: elven race, spells, skills, housing tiles;
-                0x100 = enable The Eight Age splash screen;
-                0x200 = enable The Ninth Age splash screen and crystal/shadow housing tiles;
-                0x400 = enable The Tenth Age; 0x800 = enable increased housing and bank storage;
-                0x1000 = enable 7th character slot;
-                0x2000 = enable roleplay faces;
-                0x4000 = trial account;
-                0x8000 = non-trial (live) account;
-                0x10000 = enable SA features: gargoyle race, spells, skills, housing tiles;
-                0x20000 - enable HS features;
-                0x40000 - enable Gothic housing tiles;
-                0x80000 - enable Rustic housing tiles
-            )
-*
-*   - Server sends character list, with packet 0xa9:
-*   byte characters count
-*   loop
-*       byte[30] character name
-*       byte[30] character password (best to send empty?)
-*   endloop
-*   byte cities count
-*   loop
-*       byte city index
-*       byte[32] city name
-*       byte[32] building name
-*       int32_t pos x
-*       int32_t pos y
-*       int32_t pos z
-*       int32_t map id
-*       int32_t cliloc description
-*       int32_t 0 (yes, a 0)
-*   endloop
-*   int32_t flags (for character creation)*:
-        Flags
-        (
-            0x01 = unknown flag1;
-            0x02 = overwrite configuration button;
-            0x04 = limit 1 character per account;
-            0x08 = enable context menus;
-            0x10 = limit character slots;
-            0x20 = paladin and necromancer classes, tooltips;
-            0x40 = 6th character slot;
-            0x80 = samurai and ninja classes;
-            0x100 = elven race;
-            0x200 = unknown flag2;
-            0x400 = send UO3D client type (client will send 0xE1 packet);
-            0x800 = unknown flag3;
-            0x1000 = 7th character slot;
-            0x2000 = unknown flag4;
-            0x4000 = new movement system;
-            0x8000 = unlock new felucca areas
-        )
-    int32_t last character slot**.
-
-    *Each flag is for each feature, if you need to combine features, you need to summ flags.
-        Unknown Flag1 never was sent by OSI.
-        Unknown Flag 2 was added with UO:KR launch.
-        Unknown Flag 3 was added sometimes between UO:KR and UO:SA launch.
-        Flag 4 was added with UO:SA launch.
-        All 4 flags are useless: no client reaction.
-        0x8000 flag is used for unlocking new Felucca factions areas, note that you have to use "_x" versions of map/statics if you want to move through new areas.
-    **Last character slot for SA 3D clients: it will highlight last character used.
-*
-    Since 7.0.13.0 and 4.0.13.0 City Name and Building Name have length of 32 chars, also added city x,y,z,map,cliloc description and dword 0 to city structure.
-    */
