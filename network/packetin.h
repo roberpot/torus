@@ -108,6 +108,7 @@ public:
      * @return  The shifted result.
      */
     friend PacketIn& operator>>(PacketIn& p, std::string &s);
+    friend PacketIn& operator>>(PacketIn& p, std::string &&s);
 
     private:
 };
@@ -133,7 +134,20 @@ PacketIn& operator>>(PacketIn& p, std::string &s)
         //THROW_ERROR(NetworkError, "Trying to read " << sizeof(T) << " bytes to from " << hex(p._buffer[0]) << ", being currently in the position " << p._current_pos << " into a string with a total size of " << s.size() " bytes.");
         return p;
     }
-    memcpy(&(s.data()), &(p._buffer[p._current_pos]), s.size());
+    memcpy(s.data(), &(p._buffer[p._current_pos]), s.size());
+    p._current_pos += s.size();
+    return p;
+}
+
+template<typename T>
+PacketIn& operator>>(PacketIn& p, std::string &&s)
+{
+    if (p._current_pos + sizeof(T) > s.size())
+    {
+        //THROW_ERROR(NetworkError, "Trying to read " << sizeof(T) << " bytes to from " << hex(p._buffer[0]) << ", being currently in the position " << p._current_pos << " into a string with a total size of " << s.size() " bytes.");
+        return p;
+    }
+    memcpy(s.data(), &(p._buffer[p._current_pos]), s.size());
     p._current_pos += s.size();
     return p;
 }

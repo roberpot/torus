@@ -13,13 +13,13 @@
  */
 
 #include <network/packet.h>
-#include <network/Packets/Packetlist.h>
 #include <network/packetout.h>
 #include <network/socket.h>
 
-PacketOut::PacketOut(t_byte id, bool has_dynamic_length) :
+PacketOut::PacketOut(udword_t id, bool has_dynamic_length) :
     _has_dynamic_length(has_dynamic_length)
 {
+    ADDTOCALLSTACK();
     set_packet_id(id);
 }
 
@@ -32,10 +32,15 @@ const udword_t PacketOut::length()
     return _current_buffer_length;
 }
 
-void PacketOut::set_packet_id(t_byte id)
+void PacketOut::set_packet_id(udword_t id)
 {
+    ADDTOCALLSTACK();
+    if (id > TUBYTE_MAX)
+    {
+        THROW_ERROR(NetworkError, "Bad packet ID " << id);
+    }
     _increase_buffer(1);
-    _buffer[0] = id;
+    _buffer[0] = t_ubyte(id);
     if (_has_dynamic_length)
     {
         _init_length();
@@ -44,16 +49,19 @@ void PacketOut::set_packet_id(t_byte id)
 
 void PacketOut::_init_length()
 {
+    ADDTOCALLSTACK();
     *this << word_t(_current_buffer_length);
 }
 
 void PacketOut::_write_length()
 {
+    ADDTOCALLSTACK();
     memcpy(&_buffer[1], &_current_buffer_length, sizeof(word_t));
 }
 
 void PacketOut::send(Socket* s)
 {
+    ADDTOCALLSTACK();
     if (_has_dynamic_length)
     {
         _write_length();

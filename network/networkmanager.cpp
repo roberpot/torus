@@ -31,7 +31,6 @@ void * NetworkManager::run() {
         _m.lock();
         size_t socketsCount = _sockets.size();
         Socket * clientSocket;
-        Packet * newPacket;
         for (unsigned int socketId = 0; socketId < socketsCount; socketId++) {
             clientSocket = _sockets[socketId];
             while ((clientSocket->is_read_closed() == false) && clientSocket->data_ready()) {

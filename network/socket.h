@@ -23,6 +23,7 @@
 #ifdef __linux__
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <arpa/inet.h>
 #endif
 
 #include <library/types.h>
@@ -76,6 +77,9 @@ class Socket
     sockaddr_in _connection_info;
     Client* _client;
     t_byte *_buffer;
+#ifdef __linux
+    int _accepted_socket;
+#endif
 
     void _init();
 public:

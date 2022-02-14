@@ -40,10 +40,10 @@ void PacketOut_0xa9::set_data(Client* client)
     *this << charCount;  //characters count
     for (t_byte i = 0; i < charCount; ++i)
     {
-        std::string nameStr[30];
+        std::string nameStr[acc_name_pw_len];
         std::string tmpName = "XuN";
         //*this << nameStr;
-        std::string passwordStr[30];
+        std::string passwordStr[acc_name_pw_len];
         //*this << passwordStr;
     }
 
@@ -55,7 +55,7 @@ void PacketOut_0xa9::set_data(Client* client)
     {
         std::string city = cities[i];
 
-        std::string cityStr[32];
+        std::string cityStr[city_strings_len];
         *this << cityStr; // City Name
         *this << cityStr; // Building Name
         *this << dword_t(i);         // X

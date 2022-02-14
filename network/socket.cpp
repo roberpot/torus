@@ -201,7 +201,7 @@ bool Socket::receive(udword_t receive_len)
 
 #endif // _WINDOWS
 #ifdef __linux__
-    buffer_len = (udword_t)recv(_socket, &_buffer[init], receive_len, 0);
+    buffer_len = (udword_t)recv(_socket, &_buffer[receive_len], receive_len, 0);
     if (buffer_len == 0)
     {
         TORUSSHELLECHO("Socket recv error: " << strerror(errno));
@@ -337,7 +337,12 @@ const t_byte* Socket::get_ip_str()
 
 const dword_t Socket::get_ip()
 {
+#ifdef _WINDOWS
     return _connection_info.sin_addr.S_un.S_addr;
+#endif
+#ifdef __linux
+    return _connection_info.sin_addr.s_addr;
+#endif
 }
 
 void Socket::send_queued_packets()
@@ -361,7 +366,7 @@ void Socket::send_queued_packets()
             }
 #endif // _WINDOWS
 #ifdef __linux__
-            ssize_t data_sended = send(_socket, out_packet->dumps(), out_packet->length(), 0);
+            ssize_t data_sended = send(_socket, out_packet->data(), out_packet->length(), 0);
             if (data_sended == -1) {
                 THROW_ERROR(NetworkError, "Send failed");
             }

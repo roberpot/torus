@@ -14,7 +14,7 @@
 
 #include <network/packet.h>
 #include <network/packetin.h>
-#include <network/Packets/Packetlist.h>
+#include <network/packets/packetlist.h>
 
 #include <library/string.h>
 #include <core/errors.h>

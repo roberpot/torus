@@ -23,7 +23,7 @@ class PacketOut : public Packet
 {
     bool _has_dynamic_length;
 public:
-    PacketOut(t_byte id, bool has_dynamic_length = false);
+    PacketOut(udword_t id, bool has_dynamic_length = false);
     virtual ~PacketOut();
 
     const udword_t length() override;
@@ -33,7 +33,7 @@ public:
     * 
     * @param id The packet id.
     */
-    void set_packet_id(t_byte id);
+    void set_packet_id(udword_t id);
 
     /**
      * @brief   Bitwise left shift operator, used to export the buffered data into useable variables.
@@ -103,7 +103,7 @@ PacketOut& operator<<(PacketOut& p, std::string& s)
         //THROW_ERROR(NetworkError, "Trying to read " << sizeof(T) << " bytes to from " << hex(p._buffer[0]) << ", being currently in the position " << p._current_pos << " into a string with a total size of " << s.size() " bytes.");
         return p;
     }
-    memcpy(&(p._buffer[p._current_pos]), &(s.data()), s.size());
+    memcpy(&(p._buffer[p._current_pos]), s.data(), s.size());
     p._current_pos += s.size();
     return p;
 }
