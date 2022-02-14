@@ -25,7 +25,7 @@
 TorusShell torus_shell;
 Torus torus;
 
-int main() {
+int main(int argc, char* argv[]) {
     torus_shell.start();
     TORUSSHELLECHO("Initializing Torus...");
     toruscfg.load_config_file("torus.ini");

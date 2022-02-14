@@ -438,9 +438,9 @@ namespace ttl {
         if (_end == _front && !_empty) {
             udword_t newcapacity = _capacity << 1;
             T * aux = _allocator.allocate(newcapacity);
-            internal::memcpy(aux, &(_queue[_front]), sizeof(T) * (_capacity - _front));
+            ttl::memory::memmove(aux, &(_queue[_front]), sizeof(T) * (_capacity - _front));
             if (_end > 0) {
-                internal::memcpy(&(aux[_capacity - _front]), _queue, sizeof(T) * _front);
+                ttl::memory::memmove(&(aux[_capacity - _front]), _queue, sizeof(T) * _front);
             }
             _end = _capacity - 1;
             _front = 0;

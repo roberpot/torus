@@ -17,6 +17,7 @@
 
 #include <cstring>
 
+#include <iostream>
 #include <memory>
 
 #include <library/errors.h>
@@ -285,8 +286,8 @@ namespace ttl {
             while (new_capacity < n) {
                 new_capacity = new_capacity << 1;
             }
-            T * aux = _allocator.allocate(new_capacity);
-            internal::memcpy(aux, _vector, sizeof(T) * _size);
+            T* aux = _allocator.allocate(new_capacity);
+            ttl::memory::memmove<T, Allocator>(aux, _vector, _size);
             _allocator.deallocate(_vector, _capacity);
             _vector = aux;
             _capacity = new_capacity;
@@ -302,7 +303,7 @@ namespace ttl {
     void vector<T, Allocator>::shrink_to_fit() {
         if (_size < _capacity) {
             T * n = _allocator.allocate(_size);
-            internal::memcpy(n, _vector, sizeof(T) * _size);
+            ttl::memory::memmove<T, Allocator>(n, _vector, _size);
             _allocator.deallocate(_vector, _capacity);
             _vector = n;
             _capacity = _size;
@@ -327,8 +328,8 @@ namespace ttl {
         if (p < _size) {
             udword_t length = _size - p;
             T * aux = _allocator.allocate(length);
-            internal::memcpy(aux, &(_vector[p]), sizeof(T) * length);
-            internal::memcpy(&(_vector[p + 1]), aux, sizeof(T) * length);
+            ttl::memory::memmove<T, Allocator>(aux, &(_vector[p]), sizeof(T) * length);
+            ttl::memory::memmove<T, Allocator>(&(_vector[p + 1]), aux, sizeof(T) * length);
             _allocator.deallocate(aux, length);
         }
         _allocator.construct(&(_vector[p]), t);
@@ -346,8 +347,8 @@ namespace ttl {
         if (p < _size) {
             udword_t length = _size - p;
             T * aux = _allocator.allocate(length);
-            internal::memcpy(aux, &(_vector[p]), sizeof(T) * length);
-            internal::memcpy(&(_vector[p + 1]), aux, sizeof(T) * length);
+            ttl::memory::memmove<T, Allocator>(aux, &(_vector[p]), sizeof(T) * length);
+            ttl::memory::memmove<T, Allocator>(&(_vector[p + 1]), aux, sizeof(T) * length);
             _allocator.deallocate(aux, length);
         }
         _allocator.construct(&(_vector[p]), t);
@@ -365,8 +366,8 @@ namespace ttl {
         if (p < _size) {
             udword_t length = _size - p;
             T * aux = _allocator.allocate(length);
-            internal::memcpy(aux, &(_vector[p]), sizeof(T) * length);
-            internal::memcpy(&(_vector[p + n]), aux, sizeof(T) * length);
+            ttl::memory::memmove<T, Allocator>(aux, &(_vector[p]), sizeof(T) * length);
+            ttl::memory::memmove<T, Allocator>(&(_vector[p + n]), aux, sizeof(T) * length);
             _allocator.deallocate(aux, length);
         }
         for(udword_t i = 0; i < n; ++i) {
@@ -387,8 +388,8 @@ namespace ttl {
         if (p < _size) {
             udword_t length = _size - p;
             T * aux = _allocator.allocate(length);
-            internal::memcpy(aux, &(_vector[p]), sizeof(T) * length);
-            internal::memcpy(&(_vector[p + n]), aux, sizeof(T) * length);
+            ttl::memory::memmove<T, Allocator>(aux, &(_vector[p]), sizeof(T) * length);
+            ttl::memory::memmove<T, Allocator>(&(_vector[p + n]), aux, sizeof(T) * length);
             _allocator.deallocate(aux, length);
         }
         for(udword_t i = 0; i < n; ++i) {
@@ -407,8 +408,8 @@ namespace ttl {
         if (p < _size - 1) {
             udword_t length = _size - p - 1;
             T * aux = _allocator.allocate(length);
-            internal::memcpy(aux, &(_vector[p + 1]), sizeof(T) * length);
-            internal::memcpy(&(_vector[p]), aux, sizeof(T) * length);
+            ttl::memory::memmove<T, Allocator>(aux, &(_vector[p + 1]), sizeof(T) * length);
+            ttl::memory::memmove<T, Allocator>(&(_vector[p]), aux, sizeof(T) * length);
             _allocator.deallocate(aux, length);
         }
         _size--;
@@ -429,11 +430,11 @@ namespace ttl {
         if (end < (_size - 1)) {
             udword_t length = _size - end - 1;
             T * aux = _allocator.allocate(length);
-            internal::memcpy(aux, &(_vector[end + 1]), sizeof(T) * length);
+            ttl::memory::memmove<T, Allocator>(aux, &(_vector[end + 1]), sizeof(T) * length);
             for (udword_t i = init; i <= end; ++i) {
                 _allocator.destroy(&(_vector[i]));
             }
-            internal::memcpy(&(_vector[init]), aux, length);
+            ttl::memory::memmove<T, Allocator>(&(_vector[init]), aux, length);
             _allocator.deallocate(aux, length);
         }
         _size -= (end - init + 1);

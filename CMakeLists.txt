@@ -16,8 +16,8 @@ endif(MSVC_VERSION)
 
 ## gcc flags
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_GNUCC) # additional flags for gcc, msvc doesn't support them.
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ansi -pedantic -Wall -pthread -static-libgcc -static-libstdc++")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -ansi -pedantic -Wall -pthread -static-libgcc")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -fpic -ansi -pedantic -Wall -pthread -static-libgcc -static-libstdc++")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -fpic -ansi -pedantic -Wall -pthread -static-libgcc")
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--whole-archive -lpthread -ldl -Wl,--no-whole-archive")
 endif(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_COMPILER_IS_GNUCC)
 
@@ -52,7 +52,7 @@ add_executable(torus_server
 # additional libs for windows
 if(WIN32)
     target_link_libraries(torus_server wsock32 ws2_32 kernel32) #ws2_32.lib for windows
-    elseif(UNIX)
+elseif(UNIX)
     target_link_libraries(torus_server pthread dl)
 endif()
 

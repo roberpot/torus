@@ -18,6 +18,7 @@
 #include <cstring>
 #include <string>
 #include <library/types.h>
+#include <shell.h>
 #ifdef _MSC_VER
 #pragma warning(disable:4127)
 #endif

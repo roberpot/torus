@@ -21,7 +21,7 @@
 #include <library/vector.h>
 
 namespace ttl {
-
+/*
     staticstack<udword_t> __a;
     staticgrowingstack<udword_t> __b;
     dynamicstack<udword_t> __c;
@@ -38,9 +38,9 @@ namespace ttl {
     tsdynamicqueue<udword_t> __n;
     staticgrowingmap<udword_t, udword_t> __o;
     dynamicmap<udword_t, udword_t> __q;
-
+*/
     template <typename T>
-    ttl::vector<T> stack_to_vector(ttl::staticstack<T> s) {
+    ttl::vector<T> stack_to_vector(const ttl::staticstack<T>& s) {
         ttl::staticstack<T> copy(s);
         ttl::vector<T> v;
         while (!copy.empty()) {
@@ -51,7 +51,7 @@ namespace ttl {
     }
 
     template <typename T>
-    ttl::vector<T> stack_to_vector(ttl::staticgrowingstack<T> s) {
+    ttl::vector<T> stack_to_vector(const ttl::staticgrowingstack<T>& s) {
         ttl::staticgrowingstack<T> copy(s);
         ttl::vector<T> v;
         while (!copy.empty()) {
@@ -62,7 +62,7 @@ namespace ttl {
     }
 
     template <typename T>
-    ttl::vector<T> stack_to_vector(ttl::dynamicstack<T> s) {
+    ttl::vector<T> stack_to_vector(const ttl::dynamicstack<T>& s) {
         ttl::dynamicstack<T> copy(s);
         ttl::vector<T> v;
         while (!copy.empty()) {

@@ -17,6 +17,7 @@
 
 #include <cstring>
 
+#include <iostream>
 #include <memory>
 
 #include <library/types.h>
@@ -123,12 +124,15 @@ namespace ttl {
     private:
         struct _dynamicstacknode {
         public:
-            _dynamicstacknode(const T& i, _dynamicstacknode * n = nullptr);
-            _dynamicstacknode(T&& i, _dynamicstacknode * n = nullptr);
+            _dynamicstacknode(const T& i, _dynamicstacknode* n = nullptr);
+            _dynamicstacknode(T&& i, _dynamicstacknode* n = nullptr);
+            ~_dynamicstacknode() {
+                PRINT_INFO(item);
+            }
             T item;
             _dynamicstacknode * next;
         };
-        _dynamicstacknode * _top;
+        _dynamicstacknode* _top;
         udword_t _size;
     };
 
@@ -380,7 +384,7 @@ namespace ttl {
         if (_top == _capacity) {
             udword_t  newcapacity = _capacity << 1;
             T * aux = _allocator.allocate(newcapacity);
-            internal::memcpy(aux, _stack, sizeof(T) * _capacity);
+            ttl::memory::memmove(aux, _stack, sizeof(T) * _capacity);
             _allocator.deallocate(_stack, _capacity);
             _stack = aux;
             _capacity = newcapacity;
@@ -393,7 +397,7 @@ namespace ttl {
         if (_top == _capacity) {
             udword_t  newcapacity = _capacity << 1;
             T * aux = _allocator.allocate(newcapacity);
-            internal::memcpy(aux, _stack, sizeof(T) * _capacity);
+            ttl::memory::memmove(aux, _stack, sizeof(T) * _capacity);
             _allocator.deallocate(_stack, _capacity);
             _stack = aux;
             _capacity = newcapacity;

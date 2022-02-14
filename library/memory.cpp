@@ -17,9 +17,10 @@
 #include <library/memory.h>
 
 namespace ttl {
-    namespace internal {
-        void* memcpy(void* __dest, const void* __src, size_t __n) {
-            return ::memcpy(__dest, __src, __n);
+    namespace memory {
+        template<>
+        void print_info(const std::string& o) {
+            std::cout << std::hex << &o << " " << "0x" << reinterpret_cast<uint64_t>(o.c_str()) << std::endl;
         }
     }
 }

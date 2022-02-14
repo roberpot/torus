@@ -59,7 +59,7 @@ namespace ast {
 
     class BlockResourcesNode : public Node {
     public:
-        BlockResourcesNode(ttl::vector<std::string> strings) : _strings(strings) {}
+        BlockResourcesNode(const ttl::vector<std::string>& strings) : _strings(strings) {}
         void generate();
     private:
         ttl::vector<std::string> _strings;
@@ -67,7 +67,7 @@ namespace ast {
 
     class BlockObsceneNode : public Node {
     public:
-        BlockObsceneNode(ttl::vector<std::string> strings) : _strings(strings) {}
+        BlockObsceneNode(const ttl::vector<std::string>& strings) : _strings(strings) {}
         void generate();
     private:
         ttl::vector<std::string> _strings;
@@ -75,7 +75,7 @@ namespace ast {
 
     class BlockFameNode : public Node {
     public:
-        BlockFameNode(ttl::vector<int> ints, ttl::vector<std::string> strings) : _ints(ints), _strings(strings) {}
+        BlockFameNode(const ttl::vector<int>& ints, const ttl::vector<std::string>& strings) : _ints(ints), _strings(strings) {}
         void generate();
     private:
         ttl::vector<int> _ints;
@@ -84,7 +84,7 @@ namespace ast {
 
     class BlockKarmaNode : public Node {
     public:
-        BlockKarmaNode(ttl::vector<int> ints, ttl::vector<std::string> strings) : _ints(ints), _strings(strings) {}
+        BlockKarmaNode(const ttl::vector<int>& ints, const ttl::vector<std::string>& strings) : _ints(ints), _strings(strings) {}
         void generate();
     private:
         ttl::vector<int> _ints;
@@ -93,7 +93,7 @@ namespace ast {
 
     class BlockNototitlesNode : public Node {
     public:
-        BlockNototitlesNode(ttl::vector<int> ints1, ttl::vector<int> ints2, ttl::vector<std::string> strings) : _ints1(ints1), _ints2(ints2), _strings(strings) {}
+        BlockNototitlesNode(const ttl::vector<int>& ints1, const ttl::vector<int>& ints2, ttl::vector<std::string> strings) : _ints1(ints1), _ints2(ints2), _strings(strings) {}
         void generate();
     private:
         ttl::vector<int> _ints1, _ints2;
@@ -102,7 +102,7 @@ namespace ast {
 
     class BlockRunesNode : public Node {
     public:
-        BlockRunesNode(ttl::vector<std::string> strings) : _strings(strings) {}
+        BlockRunesNode(const ttl::vector<std::string>& strings) : _strings(strings) {}
         void generate();
     private:
         ttl::vector<std::string> _strings;
@@ -110,7 +110,7 @@ namespace ast {
 
     class BlockPlevelNode : public Node {
     public:
-        BlockPlevelNode(udword_t plevel, ttl::vector<std::string> strings) : _plevel(plevel), _strings(strings) {}
+        BlockPlevelNode(udword_t plevel, const ttl::vector<std::string>& strings) : _plevel(plevel), _strings(strings) {}
         void generate();
     private:
         udword_t _plevel;
