@@ -43,8 +43,10 @@ extern int tscplineno;
 
 %type <node> file file_blocks block
 // Blocks
-%type <node> block_resources block_obscene block_fame block_karma block_nototitles
-%type <node> block_runes block_plevel
+%type <node> block_resources block_obscene    block_fame
+%type <node> block_karma     block_nototitles block_runes
+%type <node> block_plevel    block_defname    block_function
+%type <node> block_typedefs
 // Resources
 %type <string_stack> list_strings_more list_ids_more list_files_more
 %type <string_vector> list_strings list_ids list_files
@@ -52,7 +54,13 @@ extern int tscplineno;
 %type <int_vector> list_integers
 ///// Keywords
 // Block class
-%token FEOF RESOURCES OBSCENE FAME KARMA NOTOTITLES RUNES PLEVEL
+%token RESOURCES_BLOCK OBSCENE_BLOCK    FAME_BLOCK
+%token KARMA_BLOCK     NOTOTITLES_BLOCK RUNES_BLOCK
+%token TYPEDEFS_BLOCK
+%token FEOF_BLOCK
+%token IF ELIF ELSE ENDIF
+%token <INTEGER>       PLEVEL_BLOCK
+%token <str>           DEFNAME_BLOCK    FUNCTION_BLOCK
 %token <str> ID PATH STRING
 %token <INTEGER> INTEGER
 
@@ -60,7 +68,7 @@ extern int tscplineno;
 
 /* AST root is 'file' */
 
-file : file_blocks FEOF { $$ = $1; ast::root = $1; }
+file : file_blocks FEOF_BLOCK { $$ = $1; ast::root = $1; }
 
 file_blocks : block file_blocks { $$ = new ast::BiNode($1, $2); }
             | { $$ = NULL; }
@@ -72,20 +80,132 @@ block : block_resources { $$ = $1; }
       | block_nototitles { $$ = $1; }
       | block_runes { $$ = $1; }
       | block_plevel { $$ = $1; }
+      | block_defname { $$ = $1; }
+      | block_function { $$ = $1; }
+      | block_typedefs { $$ = $1; }
 
-block_resources : '[' RESOURCES ']' list_files { $$ = new ast::BlockResourcesNode(*$4); delete $4; }
+block_resources : RESOURCES_BLOCK list_files { $$ = new ast::BlockResourcesNode(*$2); delete $2; }
 
-block_obscene : '[' OBSCENE ']' list_strings { $$ = new ast::BlockObsceneNode(*$4); delete $4; }
+block_obscene : OBSCENE_BLOCK list_strings { $$ = new ast::BlockObsceneNode(*$2); delete $2; }
 
-block_fame : '[' FAME ']' list_integers list_strings { $$ = new ast::BlockFameNode(*$4, *$5); }
+block_fame : FAME_BLOCK list_integers list_strings { $$ = new ast::BlockFameNode(*$2, *$3); delete $2; delete $3; }
 
-block_karma : '[' KARMA ']' list_integers list_strings { $$ = new ast::BlockKarmaNode(*$4, *$5); }
+block_karma : KARMA_BLOCK list_integers list_strings { $$ = new ast::BlockKarmaNode(*$2, *$3); delete $2; delete $3; }
 
-block_nototitles : '[' NOTOTITLES ']' list_integers list_integers list_strings { $$ = new ast::BlockNototitlesNode(*$4, *$5, *$6); }
+block_nototitles : NOTOTITLES_BLOCK list_integers list_integers list_strings { $$ = new ast::BlockNototitlesNode(*$2, *$3, *$4); delete $2; delete $3; delete $4; }
 
-block_runes : '[' RUNES ']' list_strings { $$ = new ast::BlockRunesNode(*$4); }
+block_runes : RUNES_BLOCK list_strings { $$ = new ast::BlockRunesNode(*$2); delete $2; }
 
-block_plevel : '[' PLEVEL INTEGER ']' list_ids { $$ = new ast::BlockPlevelNode($3, *$5); delete $5; }
+block_plevel : PLEVEL_BLOCK list_ids { $$ = new ast::BlockPlevelNode($1, *$2); delete $2; }
+
+/*******************************************************************************************
+* TYPEDEFS BLOCK
+*******************************************************************************************/
+
+block_typedefs : TYPEDEFS_BLOCK list_typedefs { $$ = nullptr; }
+
+list_typedefs : typedefs_entries
+
+typedefs_entries : typedefs_entry typedefs_entries
+                 |
+
+typedefs_entry : ID INTEGER
+
+/*******************************************************************************************
+* DEFNAME BLOCK
+*******************************************************************************************/
+
+block_defname : DEFNAME_BLOCK list_defnames { $$ = nullptr; }
+
+list_defnames : list_defnames_more
+
+list_defnames_more : defname_entry list_defnames_more
+                   |
+
+defname_entry : ID defname_expression
+
+defname_expression : defname_or_expression
+                   | STRING
+                   | defname_random_expression
+
+defname_random_expression : '{' defname_random_tuples '}'
+
+defname_random_tuples : defname_random_tuple defname_random_tuples
+                      | defname_random_tuple
+
+defname_random_tuple : defname_random_lvalue INTEGER
+
+defname_random_lvalue : INTEGER
+                      | ID
+                      | defname_random_expression
+
+defname_or_expression : defname_terminal '|' defname_or_expression
+                      | defname_terminal
+
+defname_terminal : INTEGER
+                 | ID
+
+/*******************************************************************************************
+* FUNCTION BLOCK
+*******************************************************************************************/
+
+block_function : FUNCTION_BLOCK function_definition { $$ = nullptr; }
+
+function_definition : function_sentences
+
+function_sentences : function_sentence function_sentences
+                   |
+
+function_sentence : conditional_sentence
+//                  | loop_sentence
+//                  | switch_sentence
+//                  | return_sentence
+//                  | function_call_sentence
+                  | assignment_sentence
+
+//// conditional_sentence
+
+conditional_sentence : conditional_main_condition conditional_extra_conditions ENDIF
+
+conditional_main_condition : IF '(' conditional_expression ')' function_sentences
+
+conditional_extra_conditions : conditional_elseif_conditions conditional_else_condition
+                             | conditional_elseif_conditions
+
+conditional_elseif_conditions : conditional_elseif_condition conditional_elseif_conditions
+                              |
+
+conditional_elseif_condition : ELIF '(' conditional_expression ')' function_sentences
+                             | ELSE IF '(' conditional_expression ')' function_sentences
+
+conditional_else_condition : ELSE function_sentences
+
+//// assignament_sentence
+
+assignment_sentence : lvalue_expression '=' rvalue_expression
+
+lvalue_expression :
+
+rvalue_expression :
+
+
+
+
+conditional_expression:
+
+//loop_sentence :
+
+//switch_sentence :
+
+//return_sentence :
+
+//function_call_sentence :
+
+//assignment_sentence :
+
+/*******************************************************************************************
+* TODO: REFACTOR
+*******************************************************************************************/
 
 list_integers : INTEGER list_integers_more { $2->push($1); $$ = new ttl::vector<int>; (*$$) = stack_to_vector(*$2); delete $2; }
 
@@ -94,17 +214,17 @@ list_integers_more : ',' INTEGER list_integers_more { $3->push($2); $$ = $3; }
 
 list_files : list_files_more { $$ = new ttl::vector<std::string>; (*$$) = stack_to_vector(*$1); delete $1; }
 
-list_files_more : PATH list_files_more { $2->push(*$1); $$ = $2; }
+list_files_more : PATH list_files_more { $2->push(*$1); $$ = $2; delete $1; }
                 | { $$ = new ttl::dynamicstack<std::string>(); }
 
 list_strings : list_strings_more { $$ = new ttl::vector<std::string>; (*$$) = stack_to_vector(*$1); delete $1; }
 
-list_strings_more : STRING list_strings_more { $2->push(*$1); $$ = $2; }
+list_strings_more : STRING list_strings_more { $2->push(*$1); $$ = $2; delete $1; }
                   |  { $$ = new ttl::dynamicstack<std::string>(); }
 
 list_ids : list_ids_more { $$ = new ttl::vector<std::string>; (*$$) = stack_to_vector(*$1); delete $1; }
 
-list_ids_more : ID list_ids_more { $2->push(*$1); $$ = $2; }
+list_ids_more : ID list_ids_more { $2->push(*$1); $$ = $2; delete $1; }
               | { $$ = new ttl::dynamicstack<std::string>(); }
 
 
@@ -123,9 +243,9 @@ ast::Node * tscp_parse(const char * buffer)
 
 
 int tscperror(char * msj) {
-  std::cout << "YACC::error " << msj << std::endl;
-//  SyntaxError e(msj);
-//  throw e;
+  throw tscplineno;
+  //SyntaxError e(msj);
+  //throw e;
   return 1;
 }
 

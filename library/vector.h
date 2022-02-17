@@ -32,7 +32,7 @@
 #define _TTL_VECTOR_DEFAULT_SIZE 1
 
 namespace ttl {
-    template <class T, class Allocator = std::allocator<T>>
+    template<class T, class Allocator = std::allocator<T>>
     class vector {
     public:
         // Constructors
@@ -93,7 +93,7 @@ namespace ttl {
         Allocator _allocator;
     };
 
-    template <typename T, class V>
+    template<typename T, class V>
     class __T_tsvector {
     public:
         __T_tsvector(udword_t size=_TTL_VECTOR_DEFAULT_SIZE);
@@ -154,14 +154,14 @@ namespace ttl {
      * Implementation.
      */
 
-    template <class T, class Allocator>
+    template<class T, class Allocator>
     vector<T, Allocator>::vector(udword_t size) {
         _capacity = size;
         _vector = _allocator.allocate(_capacity);
         _size = 0;
     }
 
-    template <class T, class Allocator>
+    template<class T, class Allocator>
     vector<T, Allocator>::vector(udword_t size, const T & v) {
         _capacity = size;
         _vector = _allocator.allocate(_capacity);
@@ -171,7 +171,7 @@ namespace ttl {
         }
     }
 
-    template <class T, class Allocator>
+    template<class T, class Allocator>
     vector<T, Allocator>::vector(const vector& o) {
         _capacity = o._capacity;
         _vector = _allocator.allocate(_capacity);
@@ -181,7 +181,7 @@ namespace ttl {
         }
     }
 
-    template <class T, class Allocator>
+    template<class T, class Allocator>
     vector<T, Allocator>::vector(vector&& o) {
         _capacity = o._capacity;
         _vector = o._vector;
@@ -191,7 +191,7 @@ namespace ttl {
         o._size = 0;
     }
 
-    template <class T, class Allocator>
+    template<class T, class Allocator>
     vector<T, Allocator>::~vector() {
         if (nullptr != _vector) {
             for (udword_t i = 0; i < _size; ++i) {
@@ -201,7 +201,7 @@ namespace ttl {
         }
     }
 
-    template <class T, class Allocator>
+    template<class T, class Allocator>
     vector<T, Allocator> & vector<T, Allocator>::operator=(const vector& o) {
         if (this != &o) {
             clear();
@@ -216,7 +216,7 @@ namespace ttl {
         return *this;
     }
 
-    template <class T, class Allocator>
+    template<class T, class Allocator>
     vector<T, Allocator> & vector<T, Allocator>::operator=(vector&& o) {
         if (this != &o) {
             swap(o);
@@ -224,8 +224,8 @@ namespace ttl {
         return *this;
     }
 
-    template <class T, class Allocator>
-    void vector<T, Allocator>::assign(udword_t size, const T & t) {
+    template<class T, class Allocator>
+    void vector<T, Allocator>::assign(udword_t size, const T& t) {
         reserve(size);
         for (udword_t i = 0; i < _size; ++i) {
             _allocator.destroy(&(_vector[i]));
@@ -236,7 +236,7 @@ namespace ttl {
         _size = size;
     }
 
-    template <class T, class Allocator>
+    template<class T, class Allocator>
     T & vector<T, Allocator>::at(udword_t n) {
         if (n >= _size) {
             throw VectorError("Out of range.");
@@ -244,42 +244,42 @@ namespace ttl {
         return _vector[n];
     }
 
-    template <class T, class Allocator>
+    template<class T, class Allocator>
     T & vector<T, Allocator>::operator[](udword_t n) {
         return _vector[n];
     }
 
-    template <class T, class Allocator>
-    T & vector<T, Allocator>::front() {
+    template<class T, class Allocator>
+    T& vector<T, Allocator>::front() {
         return _vector[0];
     }
 
-    template <class T, class Allocator>
-    T & vector<T, Allocator>::back() {
+    template<class T, class Allocator>
+    T& vector<T, Allocator>::back() {
         return _vector[_size - 1];
     }
 
-    template <class T, class Allocator>
-    T * vector<T, Allocator>::data() {
+    template<class T, class Allocator>
+    T* vector<T, Allocator>::data() {
         return _vector;
     }
 
-    template <class T, class Allocator>
+    template<class T, class Allocator>
     bool vector<T, Allocator>::empty() const {
         return _size == 0;
     }
 
-    template <class T, class Allocator>
+    template<class T, class Allocator>
     udword_t vector<T, Allocator>::size() const {
         return _size;
     }
 
-    template <class T, class Allocator>
+    template<class T, class Allocator>
     udword_t vector<T, Allocator>::max_size() const {
         return TDWORD_MAX;
     }
 
-    template <class T, class Allocator>
+    template<class T, class Allocator>
     void vector<T, Allocator>::reserve(udword_t n) {
         if (_capacity < n) {
             udword_t new_capacity = 1;
@@ -294,15 +294,15 @@ namespace ttl {
         }
     }
 
-    template <class T, class Allocator>
+    template<class T, class Allocator>
     udword_t vector<T, Allocator>::capacity() const {
         return _capacity;
     }
 
-    template <class T, class Allocator>
+    template<class T, class Allocator>
     void vector<T, Allocator>::shrink_to_fit() {
         if (_size < _capacity) {
-            T * n = _allocator.allocate(_size);
+            T* n = _allocator.allocate(_size);
             ttl::memory::memmove<T, Allocator>(n, _vector, _size);
             _allocator.deallocate(_vector, _capacity);
             _vector = n;
@@ -310,7 +310,7 @@ namespace ttl {
         }
     }
 
-    template <class T, class Allocator>
+    template<class T, class Allocator>
     void vector<T, Allocator>::clear() {
         for(udword_t i = 0; i < _size; ++i) {
             _allocator.destroy(&(_vector[i]));
@@ -318,7 +318,7 @@ namespace ttl {
         _size = 0;
     }
 
-    template <class T, class Allocator>
+    template<class T, class Allocator>
     udword_t vector<T, Allocator>::insert(udword_t p, const T& t) {
         udword_t new_size = _size + 1;
         if (p >= _size) {
@@ -327,7 +327,7 @@ namespace ttl {
         reserve(new_size);
         if (p < _size) {
             udword_t length = _size - p;
-            T * aux = _allocator.allocate(length);
+            T* aux = _allocator.allocate(length);
             ttl::memory::memmove<T, Allocator>(aux, &(_vector[p]), sizeof(T) * length);
             ttl::memory::memmove<T, Allocator>(&(_vector[p + 1]), aux, sizeof(T) * length);
             _allocator.deallocate(aux, length);
@@ -337,7 +337,7 @@ namespace ttl {
         return p;
     }
 
-    template <class T, class Allocator>
+    template<class T, class Allocator>
     udword_t vector<T, Allocator>::insert(udword_t p, T&& t) {
         udword_t new_size = _size + 1;
         if (p >= _size) {
@@ -346,7 +346,7 @@ namespace ttl {
         reserve(new_size);
         if (p < _size) {
             udword_t length = _size - p;
-            T * aux = _allocator.allocate(length);
+            T* aux = _allocator.allocate(length);
             ttl::memory::memmove<T, Allocator>(aux, &(_vector[p]), sizeof(T) * length);
             ttl::memory::memmove<T, Allocator>(&(_vector[p + 1]), aux, sizeof(T) * length);
             _allocator.deallocate(aux, length);
@@ -356,7 +356,7 @@ namespace ttl {
         return p;
     }
 
-    template <class T, class Allocator>
+    template<class T, class Allocator>
     udword_t vector<T, Allocator>::insert(udword_t p, udword_t n, const T& t) {
         udword_t new_size = _size + n;
         if (p >= _size) {
@@ -365,7 +365,7 @@ namespace ttl {
         reserve(new_size);
         if (p < _size) {
             udword_t length = _size - p;
-            T * aux = _allocator.allocate(length);
+            T* aux = _allocator.allocate(length);
             ttl::memory::memmove<T, Allocator>(aux, &(_vector[p]), sizeof(T) * length);
             ttl::memory::memmove<T, Allocator>(&(_vector[p + n]), aux, sizeof(T) * length);
             _allocator.deallocate(aux, length);
@@ -377,7 +377,7 @@ namespace ttl {
         return p;
     }
 
-    template <class T, class Allocator>
+    template<class T, class Allocator>
     udword_t vector<T, Allocator>::insert(udword_t p, const vector& v) {
         udword_t n = v._size;
         udword_t new_size = _size + n;
@@ -387,7 +387,7 @@ namespace ttl {
         reserve(new_size);
         if (p < _size) {
             udword_t length = _size - p;
-            T * aux = _allocator.allocate(length);
+            T* aux = _allocator.allocate(length);
             ttl::memory::memmove<T, Allocator>(aux, &(_vector[p]), sizeof(T) * length);
             ttl::memory::memmove<T, Allocator>(&(_vector[p + n]), aux, sizeof(T) * length);
             _allocator.deallocate(aux, length);
@@ -399,7 +399,7 @@ namespace ttl {
         return p;
     }
 
-    template <class T, class Allocator>
+    template<class T, class Allocator>
     udword_t vector<T, Allocator>::erase(udword_t p) {
         if (p >= _size) {
             throw VectorError("Out of range.");
@@ -407,7 +407,7 @@ namespace ttl {
         _allocator.destroy(&(_vector));
         if (p < _size - 1) {
             udword_t length = _size - p - 1;
-            T * aux = _allocator.allocate(length);
+            T* aux = _allocator.allocate(length);
             ttl::memory::memmove<T, Allocator>(aux, &(_vector[p + 1]), sizeof(T) * length);
             ttl::memory::memmove<T, Allocator>(&(_vector[p]), aux, sizeof(T) * length);
             _allocator.deallocate(aux, length);
@@ -416,7 +416,7 @@ namespace ttl {
         return p;
     }
 
-    template <class T, class Allocator>
+    template<class T, class Allocator>
     udword_t vector<T, Allocator>::erase(udword_t init, udword_t end) {
         if (init >= _size) {
             throw VectorError("Out of range.");
@@ -429,7 +429,7 @@ namespace ttl {
         }
         if (end < (_size - 1)) {
             udword_t length = _size - end - 1;
-            T * aux = _allocator.allocate(length);
+            T* aux = _allocator.allocate(length);
             ttl::memory::memmove<T, Allocator>(aux, &(_vector[end + 1]), sizeof(T) * length);
             for (udword_t i = init; i <= end; ++i) {
                 _allocator.destroy(&(_vector[i]));
@@ -441,21 +441,21 @@ namespace ttl {
         return init;
     }
 
-    template <class T, class Allocator>
+    template<class T, class Allocator>
     void vector<T, Allocator>::push_back(const T& t) {
         reserve(_size + 1);
         _allocator.construct(&(_vector[_size]), t);
         _size++;
     }
 
-    template <class T, class Allocator>
+    template<class T, class Allocator>
     void vector<T, Allocator>::push_back(T&& t) {
         reserve(_size + 1);
         _allocator.construct(&(_vector[_size]), t);
         _size++;
     }
 
-    template <class T, class Allocator>
+    template<class T, class Allocator>
     void vector<T, Allocator>::pop_back() {
         if (_size) {
             _allocator.destroy(&(_vector[_size - 1]));
@@ -463,7 +463,7 @@ namespace ttl {
         }
     }
 
-    template <class T, class Allocator>
+    template<class T, class Allocator>
     void vector<T, Allocator>::resize(udword_t s) {
         reserve(s);
         if (s < _size) {
@@ -478,7 +478,7 @@ namespace ttl {
         _size = s;
     }
 
-    template <class T, class Allocator>
+    template<class T, class Allocator>
     void vector<T, Allocator>::resize(udword_t s, const T & v) {
         reserve(s);
         if (s < _size) {
@@ -493,7 +493,7 @@ namespace ttl {
         _size = s;
     }
 
-    template <class T, class Allocator>
+    template<class T, class Allocator>
     void vector<T, Allocator>::swap(vector & v) {
         if (this != &v) {
             T * aux = _vector;
@@ -508,7 +508,7 @@ namespace ttl {
         }
     }
 
-    template <class T, class Allocator>
+    template<class T, class Allocator>
     bool vector<T, Allocator>::operator==(const vector& o) const {
         if (this == &o) {
             return true;
@@ -520,7 +520,7 @@ namespace ttl {
         return true;
     }
 
-    template <class T, class Allocator>
+    template<class T, class Allocator>
     bool vector<T, Allocator>::operator!=(const vector& o) const {
         if (this == &o) {
             return false;
@@ -532,7 +532,7 @@ namespace ttl {
         return false;
     }
 
-    template <class T, class Allocator>
+    template<class T, class Allocator>
     bool vector<T, Allocator>::operator<(const vector& o) const {
         if (this == &o) {
             return false;
@@ -545,7 +545,7 @@ namespace ttl {
         return true;
     }
 
-    template <class T, class Allocator>
+    template<class T, class Allocator>
     bool vector<T, Allocator>::operator<=(const vector& o) const {
         if (this == &o) {
             return true;
@@ -558,7 +558,7 @@ namespace ttl {
         return true;
     }
 
-    template <class T, class Allocator>
+    template<class T, class Allocator>
     bool vector<T, Allocator>::operator>(const vector& o) const {
         if (this == &o) {
             return false;
@@ -571,7 +571,7 @@ namespace ttl {
         return true;
     }
 
-    template <class T, class Allocator>
+    template<class T, class Allocator>
     bool vector<T, Allocator>::operator>=(const vector& o) const {
         if (this == &o) {
             return true;
@@ -586,36 +586,36 @@ namespace ttl {
 
     // __T_tsvector implementation.
 
-    template <typename T, class V>
+    template<typename T, class V>
     __T_tsvector<T, V>::__T_tsvector(udword_t size) : _v(size) {
 
     }
 
-    template <typename T, class V>
+    template<typename T, class V>
     __T_tsvector<T, V>::__T_tsvector(udword_t size, const T& v) : _v(size, v) {
 
     }
 
-    template <typename T, class V>
+    template<typename T, class V>
     __T_tsvector<T, V>::__T_tsvector(const __T_tsvector& o) {
         o._mutex.lock();
         _v = o._v;
         o._mutex.unlock();
     }
 
-    template <typename T, class V>
+    template<typename T, class V>
     __T_tsvector<T, V>::__T_tsvector(__T_tsvector&& o) {
         o._mutex.lock();
         _v.swap(o._v);
         o._mutex.unlock();
     }
 
-    template <typename T, class V>
+    template<typename T, class V>
     __T_tsvector<T, V>::~__T_tsvector() {
         _mutex.lock();
     }
 
-    template <typename T, class V>
+    template<typename T, class V>
     __T_tsvector<T, V>& __T_tsvector<T, V>::operator=(const __T_tsvector& o) {
         if (this != &o) {
             _mutex.lock();
@@ -627,7 +627,7 @@ namespace ttl {
         return *this;
     }
 
-    template <typename T, class V>
+    template<typename T, class V>
     __T_tsvector<T, V>& __T_tsvector<T, V>::operator=(__T_tsvector&& o) {
         if (this != &o) {
             _mutex.lock();
@@ -639,14 +639,14 @@ namespace ttl {
         return *this;
     }
 
-    template <typename T, class V>
+    template<typename T, class V>
     void __T_tsvector<T, V>::assign(udword_t size, const T& t) {
         _mutex.lock();
         _v.assign(size, t);
         _mutex.unlock();
     }
 
-    template <typename T, class V>
+    template<typename T, class V>
     T __T_tsvector<T, V>::at(udword_t n) {
         _mutex.lock();
         T t = _v.at(n);
@@ -654,7 +654,7 @@ namespace ttl {
         return t;
     }
 
-    template <typename T, class V>
+    template<typename T, class V>
     T __T_tsvector<T, V>::operator[](udword_t n) {
         _mutex.lock();
         T & t = _v[n];
@@ -662,7 +662,7 @@ namespace ttl {
         return t;
     }
 
-    template <typename T, class V>
+    template<typename T, class V>
     T __T_tsvector<T, V>::front() {
         _mutex.lock();
         T t = _v[0];
@@ -670,7 +670,7 @@ namespace ttl {
         return t;
     }
 
-    template <typename T, class V>
+    template<typename T, class V>
     T __T_tsvector<T, V>::back() {
         _mutex.lock();
         T t = _v[_v.size() - 1];
@@ -678,7 +678,7 @@ namespace ttl {
         return t;
     }
 
-    template <typename T, class V>
+    template<typename T, class V>
     bool __T_tsvector<T, V>::empty() const {
         _mutex.lock();
         bool e = !_v.empty();
@@ -686,7 +686,7 @@ namespace ttl {
         return e;
     }
 
-    template <typename T, class V>
+    template<typename T, class V>
     udword_t __T_tsvector<T, V>::size() const {
         _mutex.lock();
         udword_t s = _v.size();
@@ -694,7 +694,7 @@ namespace ttl {
         return s;
     }
 
-    template <typename T, class V>
+    template<typename T, class V>
     udword_t __T_tsvector<T, V>::max_size() const {
         _mutex.lock();
         udword_t s = _v.max_size();
@@ -702,14 +702,14 @@ namespace ttl {
         return s;
     }
 
-    template <typename T, class V>
+    template<typename T, class V>
     void __T_tsvector<T, V>::reserve(udword_t n) {
         _mutex.unlock();
         _v.reserve(n);
         _mutex.unlock();
     }
 
-    template <typename T, class V>
+    template<typename T, class V>
     udword_t __T_tsvector<T, V>::capacity() const {
         _mutex.lock();
         udword_t c = _v.capacity();
@@ -717,21 +717,21 @@ namespace ttl {
         return c;
     }
 
-    template <typename T, class V>
+    template<typename T, class V>
     void __T_tsvector<T, V>::shrink_to_fit() {
         _mutex.lock();
         _v.shrink_to_fit();
         _mutex.unlock();
     }
 
-    template <typename T, class V>
+    template<typename T, class V>
     void __T_tsvector<T, V>::clear() {
         _mutex.lock();
         _v.clear();
         _mutex.unlock();
     }
 
-    template <typename T, class V>
+    template<typename T, class V>
     udword_t __T_tsvector<T, V>::insert(udword_t p, const T& t) {
         _mutex.lock();
         udword_t r = _v.insert(p, t);
@@ -739,7 +739,7 @@ namespace ttl {
         return r;
     }
 
-    template <typename T, class V>
+    template<typename T, class V>
     udword_t __T_tsvector<T, V>::insert(udword_t p, T&& t) {
         _mutex.lock();
         udword_t r = _v.insert(p, t);
@@ -747,7 +747,7 @@ namespace ttl {
         return r;
     }
 
-    template <typename T, class V>
+    template<typename T, class V>
     udword_t __T_tsvector<T, V>::insert(udword_t p, udword_t n, const T& t) {
         _mutex.lock();
         udword_t r = _v.insert(p, n, t);
@@ -755,7 +755,7 @@ namespace ttl {
         return r;
     }
 
-    template <typename T, class V>
+    template<typename T, class V>
     udword_t __T_tsvector<T, V>::insert(udword_t p, const __T_tsvector& v) {
         _mutex.lock();
         v._mutex.lock();
@@ -765,7 +765,7 @@ namespace ttl {
         return r;
     }
 
-    template <typename T, class V>
+    template<typename T, class V>
     udword_t __T_tsvector<T, V>::erase(udword_t p) {
         _mutex.lock();
         udword_t r = _v.erase(p);
@@ -773,7 +773,7 @@ namespace ttl {
         return r;
     }
 
-    template <typename T, class V>
+    template<typename T, class V>
     udword_t __T_tsvector<T, V>::erase(udword_t init, udword_t end) {
         _mutex.lock();
         udword_t r = _v.erase(init, end);
@@ -781,42 +781,42 @@ namespace ttl {
         return r;
     }
 
-    template <typename T, class V>
+    template<typename T, class V>
     void __T_tsvector<T, V>::push_back(const T& t) {
         _mutex.lock();
         _v.push_back(t);
         _mutex.unlock();
     }
 
-    template <typename T, class V>
+    template<typename T, class V>
     void __T_tsvector<T, V>::push_back(T&& t) {
         _mutex.lock();
         _v.push_back(t);
         _mutex.unlock();
     }
 
-    template <typename T, class V>
+    template<typename T, class V>
     void __T_tsvector<T, V>::pop_back() {
         _mutex.lock();
         _v.pop_back();
         _mutex.unlock();
     }
 
-    template <typename T, class V>
+    template<typename T, class V>
     void __T_tsvector<T, V>::resize(udword_t s) {
         _mutex.lock();
         _v.resize(s);
         _mutex.unlock();
     }
 
-    template <typename T, class V>
+    template<typename T, class V>
     void __T_tsvector<T, V>::resize(udword_t s, const T& v) {
         _mutex.lock();
         _v.resize(s, v);
         _mutex.unlock();
     }
 
-    template <typename T, class V>
+    template<typename T, class V>
     void __T_tsvector<T, V>::swap(__T_tsvector& v) {
         if (this != &v) {
             _mutex.lock();
@@ -827,7 +827,7 @@ namespace ttl {
         }
     }
 
-    template <typename T, class V>
+    template<typename T, class V>
     bool __T_tsvector<T, V>::operator==(const __T_tsvector& o) const {
         if (this == &o) {
             return true;
@@ -840,7 +840,7 @@ namespace ttl {
         return b;
     }
 
-    template <typename T, class V>
+    template<typename T, class V>
     bool __T_tsvector<T, V>::operator!=(const __T_tsvector& o) const {
         if (this == &o) {
             return false;
@@ -853,7 +853,7 @@ namespace ttl {
         return b;
     }
 
-    template <typename T, class V>
+    template<typename T, class V>
     bool __T_tsvector<T, V>::operator<(const __T_tsvector& o) const {
         if (this == &o) {
             return false;
@@ -866,7 +866,7 @@ namespace ttl {
         return b;
     }
 
-    template <typename T, class V>
+    template<typename T, class V>
     bool __T_tsvector<T, V>::operator<=(const __T_tsvector& o) const {
         if (this == &o) {
             return true;
@@ -879,7 +879,7 @@ namespace ttl {
         return b;
     }
 
-    template <typename T, class V>
+    template<typename T, class V>
     bool __T_tsvector<T, V>::operator>(const __T_tsvector& o) const {
         if (this == &o) {
             return false;
@@ -892,7 +892,7 @@ namespace ttl {
         return b;
     }
 
-    template <typename T, class V>
+    template<typename T, class V>
     bool __T_tsvector<T, V>::operator>=(const __T_tsvector& o) const {
         if (this == &o) {
             return true;

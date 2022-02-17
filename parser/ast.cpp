@@ -18,12 +18,19 @@
 #include <parser/compiler.h>
 #include <shell.h>
 
+#define NODE_DEBUG 0
+#if NODE_DEBUG == 1
+#define NODE_INFO() std::cout << __PRETTY_FUNCTION__ << ":" << this << std::endl
+#else
+#define NODE_INFO()
+#endif
 
 namespace ast {
 
     Node * root = nullptr;
 
     void MonoNode::generate() {
+        NODE_INFO();
         if (_c) _c->generate();
     }
 
@@ -37,6 +44,7 @@ namespace ast {
     }
 
     void BiNode::generate() {
+        NODE_INFO();
         if (_l) _l->generate();
         if (_r) _r->generate();
     }
@@ -48,24 +56,28 @@ namespace ast {
     }
 
     void TriNode::generate() {
+        NODE_INFO();
         if (_l) _l->generate();
         if (_c) _c->generate();
         if (_r) _r->generate();
     }
 
     void BlockResourcesNode::generate() {
+        NODE_INFO();
         for(udword_t i = 0; i < _strings.size(); ++i) {
             toruscompiler.add_file(_strings[i]);
         }
     }
 
     void BlockObsceneNode::generate() {
+        NODE_INFO();
         for(udword_t i = 0; i < _strings.size(); ++i) {
             toruscfg.obscene_strings.insert(_strings[i]);
         }
     }
 
     void BlockFameNode::generate() {
+        NODE_INFO();
         DEBUG_MSG("Fame ranges: " << _ints.size() << " titles: " << _strings.size());
         if (_ints.size() != _strings.size()) {
             // TODO: Fame ranges and titles incorrect.
@@ -75,6 +87,7 @@ namespace ast {
     }
 
     void BlockKarmaNode::generate() {
+        NODE_INFO();
         DEBUG_MSG("Karma ranges: " << _ints.size() << " titles: " << _strings.size());
         if (_ints.size() != _strings.size()) {
             // TODO: Karma ranges and titles incorrect.
@@ -84,6 +97,7 @@ namespace ast {
     }
 
     void BlockNototitlesNode::generate() {
+        NODE_INFO();
         DEBUG_MSG("Nototitles ranges: " << _ints1.size() << " " << _ints2.size() << " (" << (_ints1.size() * _ints2.size()) << ") " << " titles: " << _strings.size());
         if ((_ints1.size() * _ints2.size()) != _strings.size()) {
             // TODO: Nototitles ranges and titles incorrect.
@@ -94,11 +108,13 @@ namespace ast {
     }
 
     void BlockRunesNode::generate() {
+        NODE_INFO();
         DEBUG_MSG("Runes count: " << _strings.size());
         toruscfg.runes = _strings;
     }
 
     void BlockPlevelNode::generate() {
+        NODE_INFO();
         DEBUG_MSG("Plevel: " << _plevel << " function count: " << _strings.size());
     }
 

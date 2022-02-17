@@ -126,9 +126,6 @@ namespace ttl {
         public:
             _dynamicstacknode(const T& i, _dynamicstacknode* n = nullptr);
             _dynamicstacknode(T&& i, _dynamicstacknode* n = nullptr);
-            ~_dynamicstacknode() {
-                PRINT_INFO(item);
-            }
             T item;
             _dynamicstacknode * next;
         };
@@ -384,7 +381,7 @@ namespace ttl {
         if (_top == _capacity) {
             udword_t  newcapacity = _capacity << 1;
             T * aux = _allocator.allocate(newcapacity);
-            ttl::memory::memmove(aux, _stack, sizeof(T) * _capacity);
+            ttl::memory::memmove(aux, _stack, _capacity);
             _allocator.deallocate(_stack, _capacity);
             _stack = aux;
             _capacity = newcapacity;
@@ -397,7 +394,7 @@ namespace ttl {
         if (_top == _capacity) {
             udword_t  newcapacity = _capacity << 1;
             T * aux = _allocator.allocate(newcapacity);
-            ttl::memory::memmove(aux, _stack, sizeof(T) * _capacity);
+            ttl::memory::memmove(aux, _stack, _capacity);
             _allocator.deallocate(_stack, _capacity);
             _stack = aux;
             _capacity = newcapacity;

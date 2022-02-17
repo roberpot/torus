@@ -32,16 +32,16 @@ namespace ast {
 
     class MonoNode : public Node {
     public:
-        MonoNode(Node * c) : _c(c) {}
+        MonoNode(Node* c) : _c(c) {}
         virtual void generate();
         virtual ~MonoNode();
     private:
-        Node * _c;
+        Node* _c;
     };
 
     class BiNode : public Node {
     public:
-        BiNode(Node * l, Node * r) : _l(l), _r(r) {}
+        BiNode(Node* l, Node* r) : _l(l), _r(r) {}
         virtual void generate();
         virtual ~BiNode();
     private:
@@ -50,7 +50,7 @@ namespace ast {
 
     class TriNode : public Node {
     public:
-        TriNode(Node * l, Node * c, Node * r) : _l(l), _c(c), _r(r) {}
+        TriNode(Node* l, Node* c, Node* r) : _l(l), _c(c), _r(r) {}
         virtual void generate();
         virtual ~TriNode();
     private:

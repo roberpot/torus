@@ -437,10 +437,10 @@ namespace ttl {
     void staticgrowingqueue<T,Allocator>::push(const T& t) {
         if (_end == _front && !_empty) {
             udword_t newcapacity = _capacity << 1;
-            T * aux = _allocator.allocate(newcapacity);
-            ttl::memory::memmove(aux, &(_queue[_front]), sizeof(T) * (_capacity - _front));
+            T* aux = _allocator.allocate(newcapacity);
+            ttl::memory::memmove(aux, &(_queue[_front]), _capacity - _front);
             if (_end > 0) {
-                ttl::memory::memmove(&(aux[_capacity - _front]), _queue, sizeof(T) * _front);
+                ttl::memory::memmove(&(aux[_capacity - _front]), _queue, _front);
             }
             _end = _capacity - 1;
             _front = 0;
@@ -458,9 +458,9 @@ namespace ttl {
         if (_end == _front && !_empty) {
             udword_t newcapacity = _capacity << 1;
             T * aux = _allocator.allocate(newcapacity);
-            memcpy(aux, &(_queue[_front]), sizeof(T) * (_capacity - _front));
+            ttl::memory::memcpy(aux, &(_queue[_front]), _capacity - _front);
             if (_end > 0) {
-                memcpy(&(aux[_capacity - _front]), _queue, sizeof(T) * _front);
+                ttl::memory::memcpy(&(aux[_capacity - _front]), _queue, _front);
             }
             _end = _capacity - 1;
             _front = 0;

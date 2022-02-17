@@ -1,0 +1,92 @@
+/*
+ * This file is part of Torus.
+ * Torus is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * Torus is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with Torus. If not, see <http://www.gnu.org/licenses/>.
+ */
+/*
+ * Based on spherescripts from the sphereserver project.
+ * https://github.com/Sphereserver/Scripts
+ */
+
+[DEFNAME admin_options]
+// If you do not want clients of lower or equal plevel see the IP addresses
+// of clients of equal or higher plevel, set this to 1
+// (does not apply to plevel 7)
+admin_hideips 0
+// If you do not want clients to see clients with a higher plevel that are
+// invisible (.invis) in the list, set this to 1
+admin_hidehighpriv 0
+// When a flag is set or unset, it is sometimes necessary for the character
+// to be updated for the new setting to take effect. The settings below
+// control whether to call UPDATEX, UPDATE or RESENDTOOLTIP on the character
+// based on which flags have been modified.
+admin_updatexflags       statf_invisible|statf_insubstantial|statf_hidden
+admin_updateflags        statf_invul|statf_freeze|statf_stone|statf_hallucinating|statf_poisoned|statf_criminal|statf_nightsight|statf_hovering
+admin_resendtooltipflags  statf_incognito
+
+[DEFNAME admin_strings]
+// Titles for privilege levels
+admin_plevel_0       "Guest"
+admin_plevel_1       "Player"
+admin_plevel_2       "Counselor"
+admin_plevel_3       "Seer"
+admin_plevel_4       "Game Master"
+admin_plevel_5       "Developer"
+admin_plevel_6       "Administrator"
+admin_plevel_7       "Owner"
+// Titles for UO expansion
+admin_resdisp_0      "Pre-T2A"
+admin_resdisp_1      "The 2nd Age"
+admin_resdisp_2      "Lord Blackthorn's Revenge"
+admin_resdisp_3      "Age Of Shadows"
+admin_resdisp_4      "Samurai Empire"
+admin_resdisp_5      "Mondain's Legacy"
+admin_resdisp_6      "Kingdom Reborn"
+admin_resdisp_7      "Stygian Abyss"
+admin_resdisp_8      "High Seas"
+// Titles for flags, copied from axis (slightly modified)
+admin_flag_1         "Invulnerability"
+admin_flag_2         "Dead"
+admin_flag_3         "Paralyzed"
+admin_flag_4         "Invisible"
+admin_flag_5         "Sleeping"
+admin_flag_6         "Warmode"
+admin_flag_7         "Reactive Armor"
+admin_flag_8         "Poisoned"
+admin_flag_9         "Nightsight"
+admin_flag_10        "Magic Reflect"
+admin_flag_11        "Polymorphed"
+admin_flag_12        "Incognito"
+admin_flag_13        "Spirit Speak"
+admin_flag_14        "Insubstantial"
+admin_flag_15        "Emote"
+admin_flag_16        "Comm Crystal"
+admin_flag_17        "Has Shield"
+admin_flag_18        "Can move with bow"
+admin_flag_19        "Stoned"
+admin_flag_20        "Hovering"
+admin_flag_21        "Flying"
+admin_flag_22        "" // unused
+admin_flag_23        "Hallucinating"
+admin_flag_24        "Hidden"
+admin_flag_25        "Indoors"
+admin_flag_26        "Criminal"
+admin_flag_27        "Conjured (summoned)"
+admin_flag_28        "Pet"
+admin_flag_29        "Spawned"
+admin_flag_30        "Save parity"
+admin_flag_31        "Ridden"
+admin_flag_32        "Mounted on horseback"
+// Don't edit below this line unless you know what you are doing
+
+[FUNCTION admin]
+
+[EOF]

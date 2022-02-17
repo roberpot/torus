@@ -25,13 +25,12 @@ ttl::memory::print_info(X); \
 }
 
 namespace ttl {
-
     namespace memory {
         template<typename T, typename Allocator=std::allocator<T>>
-                T* memmove(T* dest, T* origin, std::size_t count);
+        T* memmove(T* dest, T* origin, std::size_t count);
 
         template<typename T, typename Allocator=std::allocator<T>>
-                T* memcpy(T* dest, T* origin, std::size_t count);
+        T* memcpy(T* dest, T* origin, std::size_t count);
 
         template<typename T>
         void print_info(const T& o);
@@ -97,8 +96,7 @@ namespace ttl {
             T* Memory<T, Allocator, false>::memmove(T* dest, T* origin, std::size_t count) {
                 Allocator allocator;
                 for (std::size_t i = 0; i < count; ++i) {
-                    std::size_t index = count - i - 1;
-                    allocator.construct(&dest[index], std::move(origin[index]));
+                    allocator.construct(&dest[i], std::move(origin[i]));
                 }
                 return dest;
             }
@@ -112,8 +110,7 @@ namespace ttl {
             T* Memory<T, Allocator, false>::memcpy(T* dest, T* origin, std::size_t count) {
                 Allocator allocator;
                 for (std::size_t i = count ; i < count; ++i) {
-                    std::size_t index = count - i - 1;
-                    allocator.construct(&dest[index], origin[index]);
+                    allocator.construct(&dest[i], origin[i]);
                 }
                 return dest;
             }

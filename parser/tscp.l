@@ -12,16 +12,19 @@
  * along with Torus. If not, see <http://www.gnu.org/licenses/>.
  */
 
-D			[0-9]
-L			[a-zA-Z_]
-H			[a-fA-F0-9]
+NUM       [0-9]
+LETTER    [a-zA-Z]
+ALPHA     {LETTER}|_
+ALPHANUM  {LETTER}|{NUM}|_
+ID        {ALPHA}{ALPHANUM}*
 
 %{
 #ifdef _MSC_VER
 #pragma warning(disable:4005)
 #endif
-#include <iostream>
 #include <cstdlib>
+#include <cstring>
+#include <iostream>
 #include <debug_support/info.h>
 #include <library/stack.h>
 #include <library/vector.h>
@@ -29,6 +32,25 @@ H			[a-fA-F0-9]
 #include <parser/tscp_parser.h>
 
 std::string tmp;
+char* tmpp;
+
+int get_header_int(const char* buffer, const char* label) {
+    const char* i = strstr(buffer, label) + strlen(label);
+    while (*i == ' ') i++;
+    return std::atoi(i);
+}
+
+std::string get_header_id(const char* buffer, const char* label) {
+    char* tmpbuffer = new char[strlen(buffer)];
+    const char* i = strstr(buffer, label) + strlen(label);
+    while (*i == ' ') i++;
+    strcpy(tmpbuffer, i);
+    char* j = tmpbuffer + strlen(tmpbuffer) - 1;
+    while (*j == ' ' || *j == ']') *j-- = '\000';
+    std::string s(tmpbuffer);
+    delete tmpbuffer;
+    return s;
+}
 
 %}
 
@@ -37,49 +59,61 @@ std::string tmp;
 %option never-interactive
 
 %x TSCP_BLOCK_COMMENT
-%x TSCP_BLOCK_RESOURCE_FILES
+%x TSCP_BLOCK_RESOURCES
+%x TSCP_BLOCK_FUNCTION
 
 %%
 
  /* Comments */
 
-<INITIAL,TSCP_BLOCK_RESOURCE_FILES>"//".*				;
+"//".*				;
 "/*"				{ BEGIN(TSCP_BLOCK_COMMENT); }
 <TSCP_BLOCK_COMMENT>"*/"	{ BEGIN(INITIAL); }
 <TSCP_BLOCK_COMMENT>\n		;
 <TSCP_BLOCK_COMMENT>.		;
 
- /* File path scanner. */
+ /* Block headers */
+<*>\[[ ]*RESOURCES[ ]*\]           { BEGIN(TSCP_BLOCK_RESOURCES); return RESOURCES_BLOCK; }
+<*>\[[ ]*OBSCENE[ ]*\]             { BEGIN(INITIAL); return OBSCENE_BLOCK; }
+<*>\[[ ]*FAME[ ]*\]                { BEGIN(INITIAL); return FAME_BLOCK; }
+<*>\[[ ]*KARMA[ ]*\]               { BEGIN(INITIAL); return KARMA_BLOCK; }
+<*>\[[ ]*NOTOTITLES[ ]*\]          { BEGIN(INITIAL); return NOTOTITLES_BLOCK; }
+<*>\[[ ]*RUNES[ ]*\]               { BEGIN(INITIAL); return RUNES_BLOCK; }
+<*>\[[ ]*PLEVEL[ ]+{NUM}[ ]*\]     { BEGIN(INITIAL); tscplval.INTEGER = get_header_int(tscptext, "PLEVEL"); return PLEVEL_BLOCK; }
+<*>\[[ ]*DEFNAME[ ]+{ID}[ ]*\]     { BEGIN(INITIAL); tscplval.str = new std::string(get_header_id(tscptext, "DEFNAME")); return DEFNAME_BLOCK; }
+<*>\[[ ]*FUNCTION[ ]+{ID}[ ]*\]    { BEGIN(TSCP_BLOCK_FUNCTION); tscplval.str = new std::string(get_header_id(tscptext, "FUNCTION")); return FUNCTION_BLOCK; }
+<*>\[[ ]*TYPEDEFS[ ]*\]               { BEGIN(INITIAL); return TYPEDEFS_BLOCK; }
+<*>\[[ ]*EOF[ ]*\]                 { BEGIN(INITIAL); return FEOF_BLOCK; }
 
-<TSCP_BLOCK_RESOURCE_FILES>\]  { return *tscptext; }
-<TSCP_BLOCK_RESOURCE_FILES>\[  { BEGIN(INITIAL); unput('['); }
-<TSCP_BLOCK_RESOURCE_FILES>\n   { if (tmp.size() > 0 ) { tscplval.str = new std::string(tmp); tmp.clear(); return PATH; }}
-<TSCP_BLOCK_RESOURCE_FILES>[ \t\r]+ ;
-<TSCP_BLOCK_RESOURCE_FILES>.   { tmp.push_back(*tscptext); }
+ /* RESOURCES BLOCK */
+
+<TSCP_BLOCK_RESOURCES>\n   { if (tmp.size() > 0 ) { tscplval.str = new std::string(tmp); tmp.clear(); return PATH; }}
+<TSCP_BLOCK_RESOURCES>[ \t\r]+ ;
+<TSCP_BLOCK_RESOURCES>.   { tmp.push_back(*tscptext); }
+
+<TSCP_BLOCK_FUNCTION>"if"         { return IF; }
+<TSCP_BLOCK_FUNCTION>"elif"       { return ELIF; }
+<TSCP_BLOCK_FUNCTION>"elseif"     { return ELIF; }
+<TSCP_BLOCK_FUNCTION>"else"       { return ELSE; }
+<TSCP_BLOCK_FUNCTION>"endif"      { return ENDIF; }
+
 
  /* Ignorables */
-[ \n\t\r]+			        ;
-
+<INITIAL,TSCP_BLOCK_FUNCTION>[ \n\t\r]+			        ;
  /* Keywords */
-"RESOURCES"                 { BEGIN(TSCP_BLOCK_RESOURCE_FILES); tscplval.str = new std::string; return RESOURCES; }
-"OBSCENE"                   return OBSCENE;
-"FAME"                      return FAME;
-"KARMA"                     return KARMA;
-"NOTOTITLES"                return NOTOTITLES;
-"RUNES"                     return RUNES;
-"PLEVEL"                    return PLEVEL;
-"[EOF]"                     return FEOF;
  /*  */
-[a-zA-Z_][a-zA-Z_0-9]*      { tscplval.str = new std::string(tscptext); return ID; }
+{ID}                        { tscplval.str = new std::string(tscptext); return ID; }
 \".*\"                      { tscplval.str = new std::string(tscptext); tscplval.str->pop_back(); tscplval.str->erase(0, 1); return STRING; }
 -?[0-9]+	            	{ tscplval.INTEGER = atoi(tscptext); return INTEGER; }
+0[0-9a-f]+                  { tscplval.INTEGER = strtol(tscptext, &tmpp, 16); return INTEGER; }
 
-[{},\[\]]			return *tscptext;
+[{},\[\]|]                  return *tscptext;
 .			                { /*LexicalError e("Carácter no reconocido."); throw e;*/ throw 1; }
 %%
 
-void tscp_init_parser(const char * buffer) {
+void tscp_init_parser(const char* buffer) {
  tscp_scan_string(buffer);
+ tscplineno = 1;
 }
 
 UNREFERENCED_FUNCTION(yyunput);

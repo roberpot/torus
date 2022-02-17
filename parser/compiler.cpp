@@ -43,8 +43,15 @@ void TorusCompiler::compile() {
         }
         std::string str((std::istreambuf_iterator<char>(t)),
                         std::istreambuf_iterator<char>());
-        ast::Node * tree = tscp_parse(str.c_str());
-        tree->generate();
-        TORUSSHELLECHO("Compiling " << current_file << "... OK");
+        try {
+            ast::Node * tree = tscp_parse(str.c_str());
+            if (nullptr != tree) {
+                tree->generate();
+            }
+            TORUSSHELLECHO("Compiling " << current_file << "... OK");
+        }
+        catch (int lineno) {
+            TORUSSHELLECHO("Compiling " << current_file << "... ERROR AT LINE " << lineno);
+        }
     }
 }

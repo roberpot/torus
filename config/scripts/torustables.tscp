@@ -34,7 +34,8 @@ As a general rule:
 ******************************************************************************/
 
 [RESOURCES]
-scripts/sphere_admin.scp
+scripts/torus_defs.tscp
+scripts/torus_admin.tscp
 
 [OBSCENE]
 "pene"
@@ -220,7 +221,7 @@ TRY
 TRYP
 TRYSRC
 TRYSRV
-//PLEVEL
+PLEVEL
 //SERV.MYSQLPASSWORD
 
 [EOF]
