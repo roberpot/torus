@@ -39,7 +39,6 @@ void PacketIn::receive(const t_byte* data, const udword_t len)
 {
     _increase_buffer(len);  //Ensure the buffer can store the data.
     memcpy(_buffer + _current_buffer_length, data, len);
-    _current_buffer_length += len;
     if (_current_buffer_length >= length())
     {
         _is_complete = true;

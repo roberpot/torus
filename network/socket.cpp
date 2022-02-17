@@ -13,6 +13,7 @@
  */
 
 
+#include <core/config.h>
 #include <network/socket.h>
 #include <game/client.h>
 
@@ -64,28 +65,21 @@ void Socket::_init()
 
     if (_connection_type == ConnectionType::CONNECTIONTYPE_CLIENT)
     {
-        return;
         const udword_t packet_0xef_size = 15;
-        receive(packet_0xef_size);
         const udword_t packet_0x80_size = 62;
-        t_byte *buffer = new t_byte[packet_0xef_size];
-        memcpy(buffer, _buffer, packet_0xef_size);
-        PacketIn *packet_0xef = packet_factory(0xef);
-        packet_0xef->receive(buffer, packet_0xef_size);
-        _current_in_packet = nullptr;
+
+        //PacketIn *packet_0xef = packet_factory(0xef);
+        //_current_in_packet = packet_0xef;
+        receive(packet_0xef_size);
+
         // TODO: Process client seed.
-        //delete packet_0xef;
-        delete []buffer;
 
-        buffer = new t_byte[packet_0x80_size];
-        memcpy(buffer, &(_buffer[packet_0xef_size + 1]), packet_0x80_size);
-        PacketIn_0x80 *packet_0x80 = static_cast<PacketIn_0x80*>(packet_factory(0x80));
+        PacketIn *packet_in = packet_factory(0x80);
+        PacketIn_0x80 *packet_0x80 = static_cast<PacketIn_0x80*>(packet_in);
+        _current_in_packet = packet_0x80;
         packet_0x80->set_from_loginserver();
-        packet_0x80->receive(buffer, packet_0x80_size);
+        receive(packet_0x80_size);
         _current_in_packet = nullptr;
-
-        delete[] buffer;
-        delete packet_0x80;
     }
 }
 
@@ -256,7 +250,7 @@ ConnectionState Socket::get_connection_state()
 
 void Socket::set_connection_state(ConnectionState connection_state)
 {
-_connection_state = connection_state;
+    _connection_state = connection_state;
 }
 
 ConnectionType Socket::get_connection_type()

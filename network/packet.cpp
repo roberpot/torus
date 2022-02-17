@@ -23,10 +23,10 @@
 #include <initializer_list>
 
 
-PacketIn* packet_factory( t_ubyte id ) {
+PacketIn* packet_factory( udword_t id ) {
     ADDTOCALLSTACK();
     PacketIn * p = nullptr;
-    switch(id) {
+    switch (t_ubyte(id)) {
         case 0x00:
             p = new PacketIn_0x00();
             break;

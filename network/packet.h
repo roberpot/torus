@@ -73,7 +73,7 @@ public:
  *
  * @return  Null if it fails, else a pointer to a Packet.
  */
-PacketIn* packet_factory(t_ubyte id);
+PacketIn* packet_factory(udword_t id);
 
 #ifdef _MSC_VER
 #pragma warning(default:4127)
