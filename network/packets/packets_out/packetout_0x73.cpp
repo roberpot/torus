@@ -22,8 +22,7 @@
 void PacketOut_0x73::set_data(t_ubyte response)
 {
     ADDTOCALLSTACK();
-    set_packet_id(0x73);
-    (*this) << response;
+    write_ubyte(response);
 }
 
 PacketOut_0x73::PacketOut_0x73() : PacketOut(0x73)

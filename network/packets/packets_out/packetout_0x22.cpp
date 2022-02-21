@@ -27,10 +27,8 @@ void PacketOut_0x22::set_data(t_ubyte seq, Client * client) {
     if (!chr) {
         return;
     }
-    set_packet_id(0x22);
-    *this << seq;
-    *this << 7; // View color (blue, red, yellow ...)
-    send(client->get_socket());
+    write_ubyte(seq);
+    write_ubyte(7); // View color (blue, red, yellow ...)
 }
 
 PacketOut_0x22::PacketOut_0x22() : PacketOut(0x22)

@@ -27,22 +27,39 @@ void * NetworkManager::run() {
     EXC_TRY("");
     _run = true;
     _clientconnector.start();
+    std::vector<Socket *> v_tmp_sockets;
+    fd_set readSet;
     while (_run) {
         _m.lock();
         size_t socketsCount = _sockets.size();
         Socket * clientSocket;
-        for (unsigned int socketId = 0; socketId < socketsCount; socketId++) {
-            clientSocket = _sockets[socketId];
-            while ((clientSocket->is_read_closed() == false) && clientSocket->data_ready()) {
+        FD_ZERO(&readSet);
+        if (data_ready(readSet))
+        {
+            for (unsigned int socketId = 0; socketId < socketsCount; socketId++) {
+                clientSocket = _sockets[socketId];
+                v_tmp_sockets.push_back(clientSocket);
+                if (clientSocket->is_read_closed())
+                {
+                    continue;
+                }
+                if (!FD_ISSET(clientSocket->get_socket(), &readSet))
+                {
+                    clientSocket->clean_incoming_packets();
+                    continue;
+                }
                 TORUSSHELLECHO("data ready for socket, reading it from" << clientSocket->get_ip_str());
                 if (clientSocket->receive() == false)
                 {
-                    clientSocket->set_read_closed();
                     continue;
                 }
+                clientSocket->read_queued_packets();
+                clientSocket->send_queued_packets();
+                FD_CLR(clientSocket->get_socket(), &readSet);
             }
-            clientSocket->read_queued_packets();
-            clientSocket->send_queued_packets();
+            _sockets.clear();
+            _sockets = v_tmp_sockets;
+            v_tmp_sockets.clear();
         }
         _m.unlock();
         torus_thread_sleep(50);
@@ -63,6 +80,21 @@ void NetworkManager::_add_client(Socket * s) {
     _m.lock();
     _sockets.push_back(s);
     _m.unlock();
+}
+
+bool NetworkManager::data_ready(fd_set& fd)
+{
+    int count = 0;
+    for (size_t i = 0; i < _sockets.size(); ++i)
+    {
+        FD_SET(_sockets[i]->get_socket(), &fd);
+        ++count;
+    }
+    timeval timeout; // time to wait for data.
+    timeout.tv_sec = 0;
+    timeout.tv_usec = 100;
+    int res = select(count + 1, &fd, nullptr, nullptr, &timeout);
+    return  res > 0;
 }
 
 
@@ -97,7 +129,7 @@ void * NetworkManager::NetworkClientConnector::run() {
             TORUSSHELLECHO("Closing socket: IP" << _s->get_ip());
             _s->shutdown();
         }*/
-        torus_thread_sleep(50);
+        torus_thread_sleep(1);
     }
 #ifdef _WINDOWS
     WSACleanup();

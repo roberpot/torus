@@ -25,11 +25,6 @@ PacketIn::~PacketIn()
 {
 }
 
-const udword_t PacketIn::length()
-{
-    return _current_buffer_length;
-}
-
 const udword_t PacketIn::current_length()
 {
     return _current_buffer_length;
@@ -37,8 +32,9 @@ const udword_t PacketIn::current_length()
 
 void PacketIn::receive(const t_byte* data, const udword_t len)
 {
+    udword_t old_length = _current_buffer_length;
     _increase_buffer(len);  //Ensure the buffer can store the data.
-    memcpy(_buffer + _current_buffer_length, data, len);
+    memcpy(_buffer + old_length, data, len);
     if (_current_buffer_length >= length())
     {
         _is_complete = true;

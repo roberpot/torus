@@ -13,8 +13,8 @@
  */
 
 
-#include <core/config.h>
 #include <network/socket.h>
+#include <core/config.h>    //Include after socket, this includes windows.h which gives conflicts with winsock2
 #include <game/client.h>
 
 #include <iostream>
@@ -58,6 +58,7 @@ void Socket::_init()
     _is_write_closed = false;
     _connection_state = ConnectionState::CONNECTIONSTATE_NONE;
     _client = nullptr;
+    _seed = 0;
 
     _buffer = new t_byte[BUFFER_SIZE];
     memset(_buffer, 0, BUFFER_SIZE);
@@ -80,6 +81,11 @@ void Socket::_init()
         packet_0x80->set_from_loginserver();
         receive(packet_0x80_size);
         _current_in_packet = nullptr;
+
+        PacketOut_0xa8* packet = new PacketOut_0xa8();
+        packet->set_data(this);
+        packet->send(this);
+        set_connection_state(ConnectionState::CONNECTIONSTATE_SERVERLIST);
     }
 }
 
@@ -112,16 +118,18 @@ Socket::~Socket()
 
 }
 
-bool Socket::data_ready()
+bool Socket::data_ready(fd_set& readSet)
  {
     ADDTOCALLSTACK();
-    fd_set readSet;
-    FD_ZERO(&readSet);
-    FD_SET(_socket, &readSet);
     timeval timeout;
     timeout.tv_sec = 0;  // Zero timeout (poll)
     timeout.tv_usec = 0;
-    return (select((int)_socket, &readSet, NULL, NULL, &timeout) == 1);
+    int read = select((int)_socket, &readSet, NULL, NULL, &timeout);
+    if (read < 0)
+    {
+        set_read_write_closed(true);
+    }
+    return ( read == 1 );
  }
 
 bool Socket::is_read_closed()
@@ -208,20 +216,24 @@ bool Socket::receive(udword_t receive_len)
         //TORUSSHELLECHO("recv done for a total bytes of " << buffer_len);
         TORUSSHELLECHO("Network receive(0x" << hex(_buffer[0]) << ")[ " << std::dec << buffer_len << " ] = " << std::endl << hex_dump_buffer(_buffer, buffer_len));
     }
-    TORUSSHELLECHO("Get packet");
+    else
+    {
+        set_read_closed(true);
+    }
+
+    if (_current_in_packet != nullptr)
+    {
+        if (_current_in_packet->packet_id() == 0)
+        {
+            delete _current_in_packet;
+            _current_in_packet = nullptr;
+        }
+    }
+
     if (_current_in_packet == nullptr)  // Try to retrieve an incomplete packet.
     {
-        TORUSSHELLECHO("Creating packet");
         t_ubyte id = _buffer[0];
         _current_in_packet = packet_factory(id);
-        if (_current_in_packet)
-        {
-            TORUSSHELLECHO("Got packet");
-        }
-        else
-        {
-            TORUSSHELLECHO("Failed to get packet");
-        }
     }
 
     if (_current_in_packet != nullptr)
@@ -229,7 +241,7 @@ bool Socket::receive(udword_t receive_len)
         _current_in_packet->receive(_buffer, buffer_len);
         if (_current_in_packet->is_complete())
         {
-            std::cout << "Pushing packet " << _current_in_packet;
+            //TORUSSHELLECHO("Pushing packet << " << _current_in_packet << "(0x" << hex(_current_in_packet->packet_id()) << ") to _packets_in_queue");
             _packets_in_queue.push(_current_in_packet);
             _current_in_packet = nullptr;   // The full packet has been received, clean this pointer so the next data is attacked to another packet.
         }
@@ -269,6 +281,11 @@ Socket* Socket::create_socket()
     s = new Socket(_accepted_socket);
 #endif //__linux__
     return s;
+}
+
+socket_t Socket::get_socket()
+{
+    return _socket;
 }
 
 bool Socket::client_pending() {
@@ -344,7 +361,6 @@ void Socket::send_queued_packets()
     while (!_packets_out_queue.empty())
     {
         PacketOut* out_packet = _packets_out_queue.front();
-        _packets_out_queue.pop();
         if (_is_write_closed == false)
         {
             //out_packet->print("Sending ");
@@ -369,6 +385,7 @@ void Socket::send_queued_packets()
             }
 #endif //__linux__
         }
+        _packets_out_queue.pop();
         delete out_packet;
     }
 }
@@ -380,11 +397,26 @@ void Socket::read_queued_packets()
         PacketIn* in_packet = _packets_in_queue.front();
         if (_is_read_closed == false)
         {
-            TORUSSHELLECHO("Reading packet << " << in_packet << "(0x" << hex(in_packet->packet_id()) << ")");
+            //TORUSSHELLECHO("Reading packet << " << in_packet << "(0x" << hex(in_packet->packet_id()) << ") from _packets_in_queue");
             in_packet->process(this);
+            //TORUSSHELLECHO("Processed");
         }
         _packets_in_queue.pop();
-        //delete in_packet;
+        delete in_packet;
+    }
+}
+void Socket::clean_incoming_packets()
+{
+    while (!_packets_in_queue.empty())
+    {
+        PacketIn* in_packet = _packets_in_queue.front();
+        _packets_in_queue.pop();
+        delete in_packet;
+    }
+    if (_current_in_packet != nullptr)
+    {
+        delete _current_in_packet;
+        _current_in_packet = nullptr;
     }
 }
 
@@ -416,4 +448,14 @@ void Socket::shutdown()
         THROW_ERROR(NetworkError, "shutdown failed with error: " << strerror(errno));
     }
 #endif //__linux__
+}
+
+void Socket::set_seed(udword_t seed)
+{
+    _seed = seed;
+}
+
+udword_t Socket::get_seed()
+{
+    return _seed;
 }

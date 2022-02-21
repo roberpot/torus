@@ -25,14 +25,14 @@
 void PacketOut_0x8c::set_data(Socket* s, word_t server_index )
 {
     UNREFERENCED_PARAMETER(s);
-    set_packet_id(0x8c); //packet_id
+    UNREFERENCED_PARAMETER(server_index);
     udword_t ip = 16777343;  //127.0.0.1    //TODO: send real IP
-    *this << (ip & 0xFF);
-    *this << ((ip >> 8) & 0xFF);
-    *this << ((ip >> 16) & 0xFF);
-    *this << ((ip >> 24) & 0xFF);
-    *this << (2593);   //TODO: Send real PORT
-    *this << (1456773342);  //TODO: Add real calculation using zlib and account's name.
+    write_ubyte(ip & 0xFF);
+    write_ubyte((ip >> 8) & 0xFF);
+    write_ubyte((ip >> 16) & 0xFF);
+    write_ubyte((ip >> 24) & 0xFF);
+    write_word(2593);   //TODO: Send real PORT
+    write_dword(s->get_seed());  //TODO: Add real calculation using zlib and account's name.
 }
 
 PacketOut_0x8c::PacketOut_0x8c() : PacketOut(0x8c)

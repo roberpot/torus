@@ -35,31 +35,19 @@ public:
     */
     void set_packet_id(udword_t id);
 
-    /**
-     * @brief   Bitwise left shift operator, used to export the buffered data into useable variables.
-     *
-     * @param   p   The Packet to write on.
-     * @param   d   The data to write.
-     *
-     * @return  The shifted result.
-     */
-    template<typename T>
-    friend PacketOut& operator<<(PacketOut& p, T& d);
-    template<typename T>
-    friend PacketOut& operator<<(PacketOut& p, T&& d);
-
-    /**
-     * @brief   Bitwise left shift operator, used to export the buffered data into an useable std::string.
-     *
-     * @param   p   The Packet to write on.
-     * @param   s   The string to write.
-     *
-     * @return  The shifted result.
-     */
-    friend PacketOut& operator<<(PacketOut& p, std::string& s);
-    friend PacketOut& operator<<(PacketOut& p, std::string&& s);
-
     void send(Socket* s);
+
+    void write_byte(t_byte byte);
+    void write_ubyte(t_ubyte ubyte);
+    void write_word(word_t word);
+    void write_uword(uword_t uword);
+    void write_dword(dword_t dword);
+    void write_udword(udword_t udword);
+    void write_qword(qword_t qword);
+    void write_uqword(uqword_t uqword);
+
+    void write_string(std::string string);
+
 
 private:
     /**
@@ -73,46 +61,5 @@ private:
 };
 
 
-template<typename T>
-PacketOut& operator<<(PacketOut& p, T& d)
-{
-    p._increase_buffer(sizeof(T));
-    if (p._current_pos + sizeof(T) > p.length())
-    {
-        //THROW_ERROR(NetworkError, "Trying to read " << sizeof(T) << " bytes to from " << hex(p._buffer[0]) << ", being currently in the position " << p._current_pos << " and with a total length of " << p.length() " bytes.");
-        return p;
-    }
-    memcpy(&(p._buffer[p._current_pos]), &d, sizeof(T));
-    p._current_pos += sizeof(T);
-    return p;
-}
-
-template<typename T>
-PacketOut& operator<<(PacketOut& p, T&& d)
-{
-    p << d;
-    return p;
-}
-
-template<typename T>
-PacketOut& operator<<(PacketOut& p, std::string& s)
-{
-    p._increase_buffer(udword_t(s.size()));
-    if (p._current_pos + sizeof(T) > s.size())
-    {
-        //THROW_ERROR(NetworkError, "Trying to read " << sizeof(T) << " bytes to from " << hex(p._buffer[0]) << ", being currently in the position " << p._current_pos << " into a string with a total size of " << s.size() " bytes.");
-        return p;
-    }
-    memcpy(&(p._buffer[p._current_pos]), s.data(), s.size());
-    p._current_pos += s.size();
-    return p;
-}
-
-template<typename T>
-PacketOut& operator<<(PacketOut& p, std::string&& s)
-{
-    p << s;
-    return p;
-}
 
 #endif //__TORUS_PACKETOUT_H

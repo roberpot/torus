@@ -37,28 +37,25 @@ void PacketOut_0xa8::set_data(Socket* s)
     t_ubyte serverTimeZone = 0;
 
 
-    set_packet_id(0xa8); //packet_id
     //write_word(0);    //Skip packet's size since it's being inserted at the end
-    *this << (0xFF);   // ?
+    write_ubyte(0xFF);   // ?
 
-    *this << serversCount;   // TODO: Write later, after filling all the servers
+    write_uword(serversCount);   // TODO: Write later, after filling all the servers
 
     //TODO: Send all servers in a loop
-    *this << (serverIndex);
+    write_uword(serverIndex);
 
     int i = (int)serverName.str().size();
 
-    for (int out = 0; out < i; ++out)
-    {
-        t_ubyte chr = serverName.str().at(out);
-        *this << (chr);
-    }
     for (; i < 32; ++i)
     {
-        *this << t_byte('\0');
+        serverName << '\0';
     }
-    *this << (serverPercentFull);
-    *this << (serverTimeZone);
+
+    write_string(serverName.str());
+
+    write_ubyte(serverPercentFull);
+    write_ubyte(serverTimeZone);
 
     //t_byte *ip = toruscfg.net_addr;
     udword_t ip = s->get_ip();
@@ -67,29 +64,24 @@ void PacketOut_0xa8::set_data(Socket* s)
     if (reverse_ip)
     {
         // Clients less than 4.0.0 require IP to be sent in reverse
-        *this << t_byte(ip & 0xFF);
-        *this << t_byte((ip >> 8) & 0xFF);
-        *this << t_byte((ip >> 16) & 0xFF);
-        *this << t_byte((ip >> 24) & 0xFF);
+        write_ubyte(ip & 0xFF);
+        write_ubyte((ip >> 8) & 0xFF);
+        write_ubyte((ip >> 16) & 0xFF);
+        write_ubyte((ip >> 24) & 0xFF);
     }
     else
     {
         // Clients since 4.0.0 require IP to be sent in order
-        *this << t_byte((ip >> 24) & 0xFF);
-        *this << t_byte((ip >> 16) & 0xFF);
-        *this << t_byte((ip >> 8) & 0xFF);
-        *this << t_byte(ip & 0xFF);
+        write_ubyte((ip >> 24) & 0xFF);
+        write_ubyte((ip >> 16) & 0xFF);
+        write_ubyte((ip >> 8) & 0xFF);
+        write_ubyte(ip & 0xFF);
     }
     //Clients older than 4.0.0 must receive IP in reversed order.
 
-    /*for (udword_t o = 0; o < buffer.size(); ++o)
-    {
-        TORUSSHELLECHO("byte[" << o << "] = " << (int)buffer[o]);
-    }*/
-    //write_word((t_ubyte)buffer.size() +2, 2);
 }
 
-PacketOut_0xa8::PacketOut_0xa8() : PacketOut(0xa8)
+PacketOut_0xa8::PacketOut_0xa8() : PacketOut(0xa8, true)
 {
     
 }

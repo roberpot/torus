@@ -26,8 +26,7 @@
 void PacketOut_0x82::set_data(ResponseCode code)
 {
     ADDTOCALLSTACK();
-    set_packet_id(0x82);
-    *this << code;
+    write_ubyte(t_ubyte(code));
 }
 
 PacketOut_0x82::PacketOut_0x82() : PacketOut(0x82)

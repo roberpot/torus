@@ -77,6 +77,7 @@ class Socket
     sockaddr_in _connection_info;
     Client* _client;
     t_byte *_buffer;
+    udword_t _seed;
 #ifdef __linux
     int _accepted_socket;
 #endif
@@ -93,7 +94,7 @@ public:
      *
      * @return  True if it succeeds, false if it fails.
      */
-    bool data_ready();
+    bool data_ready(fd_set& readSet);
 
     /**
      * @brief   Check if the socket is closed for reading.
@@ -172,6 +173,13 @@ public:
     Socket* create_socket();
 
     /**
+     * @brief   Gets the internal socket.
+     * 
+     * @return the connection socket.
+     */
+    socket_t get_socket();
+
+    /**
      * @brief   Determines there is a client pending.
      *
      * @return  True if it succeeds, false if it fails.
@@ -206,6 +214,11 @@ public:
     void send_queued_packets();
 
     /**
+     * @brief Clean all the packets stored to be processed.
+     */
+    void clean_incoming_packets();
+
+    /**
      * @brief Read all the incoming queued packets.
      */
     void read_queued_packets();
@@ -226,6 +239,9 @@ public:
 
     /** @brief   Shuts down this object and closes its connection. */
     void shutdown();
+
+    void set_seed(udword_t seed);
+    udword_t get_seed();
 };
 
 

@@ -31,19 +31,27 @@ void PacketOut_0xa9::set_data(Client* client)
 
     //write_from_paste(paste);
     //return;
-    set_packet_id(t_byte(0xa9));
 
     const int acc_name_pw_len = 30;
     const int city_strings_len = 32; //Changed for newer clients from 30 to 32.
 
     t_byte charCount = 1;
-    *this << charCount;  //characters count
+    write_byte(charCount);  //characters count
     for (t_byte i = 0; i < charCount; ++i)
     {
-        std::string nameStr[acc_name_pw_len];
-        std::string tmpName = "XuN";
+        std::string nameStr = "XuN";
+        size_t j = nameStr.size();
+        for (; j < acc_name_pw_len; ++j)
+        {
+            nameStr.push_back('\0');
+        }
         //*this << nameStr;
-        std::string passwordStr[acc_name_pw_len];
+        std::string passwordStr = "";
+        j = passwordStr.size();
+        for (; j < acc_name_pw_len; ++j)
+        {
+            passwordStr.push_back('\0');
+        }
         //*this << passwordStr;
     }
 
@@ -54,16 +62,21 @@ void PacketOut_0xa9::set_data(Client* client)
     for (t_byte i = 0; i < cityCount; ++i)
     {
         std::string city = cities[i];
+        size_t j = city.size();
+        for (; j < city_strings_len; ++j)
+        {
+            city.push_back('\0');
+        }
 
-        std::string cityStr[city_strings_len];
-        *this << cityStr; // City Name
-        *this << cityStr; // Building Name
-        *this << dword_t(i);         // X
-        *this << dword_t(i + 1);     // Y
-        *this << dword_t(i + 2);     // Z
-        *this << dword_t(0);         // Map
-        *this << dword_t(0);         // Cliloc
-        *this << dword_t(0);         // Unk
+        std::string cityStr(city);
+        write_string(cityStr); // City Name
+        write_string(cityStr); // Building Name
+        write_dword(i);         // X
+        write_dword(i + 1);     // Y
+        write_dword(i + 2);     // Z
+        write_dword(0);         // Map
+        write_dword(0);         // Cliloc
+        write_dword(0);         // Unk
     }
 
     //character creationg flags
@@ -85,11 +98,11 @@ void PacketOut_0xa9::set_data(Client* client)
         0x4000 = new movement system;
         0x8000 = unlock new felucca areas)
     */
-    *this << dword_t(0x100);
-    *this << word_t(0);
+    write_dword(0x100);
+    write_word(0);
 }
 
-PacketOut_0xa9::PacketOut_0xa9() : PacketOut(t_byte(0xa9))
+PacketOut_0xa9::PacketOut_0xa9() : PacketOut(0xa9)
 {
 }
 

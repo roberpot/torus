@@ -31,12 +31,11 @@ void PacketOut_0x21::set_data(t_ubyte seq, Client * client) {
     if (!chr) {
         return;
     }
-    set_packet_id(0x21);
-    (*this) << (seq);
-    (*this) << chr->get_pos().x;
-    (*this) << chr->get_pos().y;
-    (*this) << (t_ubyte)chr->get_dir();
-    (*this) << t_ubyte(chr->get_pos().z);
+    write_ubyte(seq);
+    write_word(chr->get_pos().x);
+    write_word(chr->get_pos().y);
+    write_byte(t_byte(chr->get_dir()));
+    write_ubyte(chr->get_pos().z);
 }
 
 PacketOut_0x21::PacketOut_0x21() : PacketOut(0x21)

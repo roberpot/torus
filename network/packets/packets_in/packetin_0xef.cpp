@@ -18,18 +18,19 @@
 
 
 const udword_t PacketIn_0xef::length() {
-    return 21;
+    return 15;
 }
 
 void PacketIn_0xef::process(Socket* s) {
     ADDTOCALLSTACK();
     UNREFERENCED_PARAMETER(s);
-    TORUSSHELLECHO("Process");
     *(this) >> _seed; 
     *(this) >> _client_major_version;
     *(this) >> _client_minor_version;
     *(this) >> _client_revision_version;
     *(this) >> _client_prototype_version;
+
+    s->set_seed(_seed);
 }
 
 PacketIn_0xef::PacketIn_0xef()
