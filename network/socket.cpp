@@ -203,7 +203,7 @@ bool Socket::receive(udword_t receive_len)
 
 #endif // _WINDOWS
 #ifdef __linux__
-    buffer_len = (udword_t)recv(_socket, &_buffer[receive_len], receive_len, 0);
+    buffer_len = (udword_t)recv(_socket, _buffer, receive_len, 0);
     if (buffer_len == 0)
     {
         TORUSSHELLECHO("Socket recv error: " << strerror(errno));

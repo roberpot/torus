@@ -36,7 +36,7 @@ void * NetworkManager::run() {
         FD_ZERO(&readSet);
         if (data_ready(readSet))
         {
-            for (unsigned int socketId = 0; socketId < socketsCount; socketId++) {
+            for (unsigned int socketId = 0; socketId < socketsCount; ++socketId) {
                 clientSocket = _sockets[socketId];
                 v_tmp_sockets.push_back(clientSocket);
                 if (clientSocket->is_read_closed())
@@ -53,13 +53,24 @@ void * NetworkManager::run() {
                 {
                     continue;
                 }
-                clientSocket->read_queued_packets();
-                clientSocket->send_queued_packets();
                 FD_CLR(clientSocket->get_socket(), &readSet);
             }
             _sockets.clear();
             _sockets = v_tmp_sockets;
             v_tmp_sockets.clear();
+        }
+        for (unsigned int socketId = 0; socketId < socketsCount; ++socketId)
+        {
+            clientSocket = _sockets[socketId];
+
+            if (!clientSocket->is_read_closed())
+            {
+                clientSocket->read_queued_packets();
+            }
+            if (!clientSocket->is_write_closed())
+            {
+                clientSocket->send_queued_packets();
+            }
         }
         _m.unlock();
         torus_thread_sleep(50);
@@ -87,8 +98,17 @@ bool NetworkManager::data_ready(fd_set& fd)
     int count = 0;
     for (size_t i = 0; i < _sockets.size(); ++i)
     {
-        FD_SET(_sockets[i]->get_socket(), &fd);
+        int s = _sockets[i]->get_socket();
+        FD_SET(s, &fd);
+#ifdef __WINDOWS
         ++count;
+#endif
+#ifdef __linux__
+        if (count < s)
+        {
+            s = count;
+        }
+#endif
     }
     timeval timeout; // time to wait for data.
     timeout.tv_sec = 0;
