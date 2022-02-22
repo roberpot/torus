@@ -14,6 +14,7 @@
 
 #include <network/packets/packetlist.h>
 #include <network/socket.h>
+#include <core/config.h>
 #include <debug_support/info.h>
 
 
@@ -25,13 +26,16 @@
 void PacketOut_0x8c::set_data(Socket* s, word_t server_index )
 {
     UNREFERENCED_PARAMETER(s);
-    UNREFERENCED_PARAMETER(server_index);
-    udword_t ip = 16777343;  //127.0.0.1    //TODO: send real IP
+    server_index = 0; //FIXME: Use real index
+    ServerInfo info = toruscfg._game_servers[server_index];
+    in_addr inaddr;
+    inet_aton(info.ip.c_str(), &inaddr);
+    udword_t ip = inaddr.s_addr; //127.0.0.1    //TODO: send real IP
     write_ubyte(ip & 0xFF);
     write_ubyte((ip >> 8) & 0xFF);
     write_ubyte((ip >> 16) & 0xFF);
     write_ubyte((ip >> 24) & 0xFF);
-    write_word(2593);   //TODO: Send real PORT
+    write_word(info.port);   //TODO: Send real PORT
     write_dword(s->get_seed());  //TODO: Add real calculation using zlib and account's name.
 }
 

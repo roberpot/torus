@@ -54,6 +54,15 @@ std::string hex_dump_buffer(const t_byte * buffer, const udword_t size) {
     if (size % line_size) lines++;
     s << " ## | 00 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 |                   *RAW**RAW*                    |" << std::endl;
     s << "----|-------------------------------------------------|-------------------------------------------------|" << std::endl;
+    for (size_t i = 0; i < size; ++i)
+    {
+        s << hex(buffer[i]) << " ";
+        if (i % line_size == 0 && i != 0)
+        {
+            s << std::endl;
+        }
+    }
+    return s.str();
     for(udword_t current_line = 0; current_line < lines; ++current_line) {
         s << " " << std::setfill(' ') << std::setw(2) << current_line << " | ";
         current_line_size = line_size;
@@ -66,7 +75,7 @@ std::string hex_dump_buffer(const t_byte * buffer, const udword_t size) {
                 s << "   ";
             }
         }
-        s << "| ";
+        /*s << "| ";
         for (udword_t curr_byte = 0; curr_byte < current_line_size; ++curr_byte) {
             s << buffer[line_size * current_line + curr_byte] << "";
         }
@@ -74,8 +83,8 @@ std::string hex_dump_buffer(const t_byte * buffer, const udword_t size) {
             for (udword_t extra = size % line_size; extra < line_size; ++extra) {
                 s << " ";
             }
-        }
-        /*s << "| ";
+        }*/
+        s << "| ";
         for(udword_t curr_byte = 0; curr_byte < current_line_size; ++curr_byte) {
             s << buffer[line_size * current_line + curr_byte];
         }
@@ -83,8 +92,38 @@ std::string hex_dump_buffer(const t_byte * buffer, const udword_t size) {
             for (udword_t extra = size % line_size; extra < line_size; ++extra) {
                 s << " ";
             }
-        }*/
+        }
         s << " |" << std::endl;
     }
     return s.str();
+}
+
+std::vector<std::string> split(const std::string &str, t_byte del) {
+    std::vector<std::string> ret;
+
+    std::string::size_type prev_pos = 0;
+    std::string::size_type pos = 0;
+    while((pos = str.find(del, pos)) != std::string::npos)
+    {
+        std::string substring( str.substr(prev_pos, pos - prev_pos) );
+        ret.push_back(substring);
+        prev_pos = ++pos;
+    }
+
+    ret.push_back(str.substr(prev_pos, pos - prev_pos)); // Last word
+    return ret;
+}
+
+void clean(std::string &str) {
+    std::string ret(str);
+    str.clear();
+    for (size_t i = 0; i < ret.size(); ++i)
+    {
+        t_byte chr = ret[i];
+        if (chr == 92 || chr == 32 || chr == 34)
+        {
+            continue;
+        }
+        str.push_back(ret[i]);
+    }
 }

@@ -14,6 +14,7 @@
 
 #include <network/packets/packetlist.h>
 #include <network/socket.h>
+#include <network/networkmanager.h>
 #include <debug_support/info.h>
 #include <core/config.h>
 #include <shell.h>
@@ -57,9 +58,14 @@ void PacketOut_0xa8::set_data(Socket* s)
     write_ubyte(serverPercentFull);
     write_ubyte(serverTimeZone);
 
-    //t_byte *ip = toruscfg.net_addr;
-    udword_t ip = s->get_ip();
+    udword_t ip = torusnet.get_server_ip();  //127.0.0.1    //TODO: send real IP
 
+
+    /*sockaddr_in inadd;
+    inadd.sin_family = AF_INET;
+    inadd.sin_addr.s_addr = inet_addr("84.122.110.73");
+    udword_t ip = inadd.sin_addr.s_addr;  //127.0.0.1    //TODO: send real IP*/
+    //Clients older than 4.0.0 must receive IP in reversed order.
     bool reverse_ip = true;
     if (reverse_ip)
     {
@@ -77,7 +83,6 @@ void PacketOut_0xa8::set_data(Socket* s)
         write_ubyte((ip >> 8) & 0xFF);
         write_ubyte(ip & 0xFF);
     }
-    //Clients older than 4.0.0 must receive IP in reversed order.
 
 }
 

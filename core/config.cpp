@@ -13,10 +13,13 @@
  */
 
 #include <cstring>
+#include <fstream>
+#include <shell.h>
 
 #include <core/config.h>
-#include <shell.h>
 #include <debug_support/info.h>
+#include <library/string.h>
+
 
 Config toruscfg;
 
@@ -25,6 +28,8 @@ Config::Config() {
 
 void Config::load_config_file(const t_byte * file) {
     UNREFERENCED_PARAMETER(file);
+    std::ifstream f(file);
+
     _reset();
     crypto_keys.push_back(std::make_pair(0x3F1E813D, 0xAB8A127F)); // 7.0.76
     crypto_keys.push_back(std::make_pair(0x2042036D, 0xA5D1BE7F)); // 7.0.73;
@@ -123,6 +128,71 @@ void Config::load_config_file(const t_byte * file) {
 0200000 02d13a5fd 0a39d527f enc_btfish // = 2.00.00x
 0200000 02d13a5fd 0a39d527f enc_bfish // 2.00.00
      */
+
+    if (f.is_open())
+    {
+        bool read = true;
+        bool server_type = false;
+        while (read)
+        {
+            std::string line;
+            while (std::getline(f, line)) {
+                if (line.compare("[EOF]") == 0) {
+                    TORUSSHELLECHO("Readed EOF block");
+                    read = false;
+                    break;
+                } else if (line.compare("[SERVERS]") == 0) {
+                    TORUSSHELLECHO("Readed SERVERS block");
+                    server_type = true;
+                } else if (line.find("[") != std::string::npos && line.find("]") != std::string::npos) {
+                    //Other headers
+                    server_type = false;
+                } else {
+                    std::vector<std::string> str(split(line, '='));
+                    if (str.size() == 2) {
+                        std::string key(str[0]);
+                        std::string val(str[1]);
+                        clean(key);
+                        clean(val);
+                        TORUSSHELLECHO("Found line with key = " << key << " and value = " << val);
+                        if (server_type == true) { // [SERVERS]
+                            std::vector<std::string> server(split(val, ','));
+                            if (server.size() == 3) {
+                                ServerInfo sinfo;
+                                sinfo.name = std::string(server[0]);
+                                sinfo.ip = std::string(server[1]);
+                                sinfo.port = atoi(server[2].c_str());
+
+                                if (key.compare("loginserver") == 0)
+                                {
+                                    login_server = sinfo;
+                                    /*TORUSSHELLECHO(
+                                            "Found " << key << " with name = " << sinfo.name << ", ip = "
+                                                     << sinfo.ip << " and port = " << sinfo.port);*/
+                                }
+                                else if (key.compare("gameserver") == 0)
+                                {
+                                    add_game_server(sinfo);
+                                    /*TORUSSHELLECHO(
+                                            "Found " << key << " with name = " << sinfo.name << ", ip = "
+                                                     << sinfo.ip << " and port = " << sinfo.port);*/
+                                }
+                            } else {
+                                if (key.compare("gameserver_index") == 0)
+                                {
+                                    gameserver_index = atoi(val.c_str());
+                                }
+                            }
+                        }
+                        else // other [HEADERS]
+                        {
+
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 
 void Config::_reset() {
@@ -130,9 +200,10 @@ void Config::_reset() {
     server_name = "TorusServer";
     server_desc = "TorusServer";
     torustable_file = "scripts/torustable.tscp";
-    net_addr = new char[10];
-    strcpy(net_addr, "127.0.0.1");
-    net_port = 2593;
+    login_server.name = server_name;
+    login_server.ip = "192.168.30.128";
+    login_server.port = 2593;
+    gameserver_index = 0;
     tick_duration = 250;
     tick_duration_overloaded = 225;
     tick_duration_idle = 30;
@@ -185,4 +256,13 @@ void Config::_reset() {
 */
     // END Maps Section
     
+}
+
+void Config::add_game_server(ServerInfo &server) {
+    //TODO: Verificate data.
+    _game_servers.push_back(server);
+}
+void Config::add_game_server(std::string& name, std::string& ip, udword_t& port) {
+    ServerInfo server(name, ip, port);
+    add_game_server(server);
 }

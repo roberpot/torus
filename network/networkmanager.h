@@ -25,6 +25,7 @@ extern class NetworkManager : public Thread {
 public:
     void * run();
     void halt();
+    udword_t get_server_ip();
 private:
     void _add_client(Socket * s);
     bool data_ready(fd_set &fd);
@@ -35,8 +36,10 @@ private:
         NetworkClientConnector();
         void * run();
         void halt();
+        udword_t get_server_ip();
     private:
-        Socket * _s;
+        Socket * _loginserver;
+        Socket * _gameserver;
         bool _run;
     } _clientconnector;
     Mutex _m;

@@ -117,9 +117,12 @@ bool NetworkManager::data_ready(fd_set& fd)
     return  res > 0;
 }
 
+udword_t NetworkManager::get_server_ip() {
+    return _clientconnector.get_server_ip();
+}
 
 NetworkManager::NetworkClientConnector::NetworkClientConnector() {
-    _s = 0;
+    _loginserver = 0;
     _run = false;
 }
 
@@ -135,13 +138,19 @@ void * NetworkManager::NetworkClientConnector::run() {
         THROW_ERROR(NetworkError, "WSAStartup failed with error: " << status);
     }
 #endif //_WINDOWS
-    _s = new Socket(ConnectionType::CONNECTIONTYPE_SERVER);
-    _s->bind(toruscfg.net_addr, toruscfg.net_port);
+    _loginserver = new Socket(ConnectionType::CONNECTIONTYPE_LOGINSERVER);
+    _loginserver->bind(toruscfg.login_server.ip.c_str(), toruscfg.login_server.port);
 
+    std::string gameip(toruscfg._game_servers[toruscfg.gameserver_index].ip.c_str());
+
+    _gameserver = new Socket(ConnectionType::CONNECTIONTYPE_LOGINSERVER);
+    _gameserver->bind(gameip.c_str(),
+                      toruscfg._game_servers[toruscfg.gameserver_index].port);
     while(_run) {
-        if (_s->client_pending()) {
-            Socket * s = _s->create_socket();
-            TORUSSHELLECHO("Client connected: IP: " << s->get_ip());
+        sockaddr_in addr;
+        if (_loginserver->client_pending(addr)) {
+            Socket * s = _loginserver->create_socket(addr);
+            TORUSSHELLECHO("Client connected: IP: " << s->get_ip_str());
             torusnet._add_client(s);
         }
         /*if (_s->is_closing())
@@ -151,6 +160,7 @@ void * NetworkManager::NetworkClientConnector::run() {
         }*/
         torus_thread_sleep(1);
     }
+
 #ifdef _WINDOWS
     WSACleanup();
 #endif //_WINDOWS
@@ -162,4 +172,8 @@ void * NetworkManager::NetworkClientConnector::run() {
 
 void NetworkManager::NetworkClientConnector::halt() {
     _run = false;
+}
+
+udword_t NetworkManager::NetworkClientConnector::get_server_ip() {
+    return _gameserver->get_ip();
 }

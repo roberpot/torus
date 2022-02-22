@@ -64,7 +64,7 @@ Packet::~Packet()
 {
     if (_buffer != nullptr)
     {
-        //ºTORUSSHELLECHO("Deleting packet 0x" << hex(_buffer[0]) << "(" << std::dec << _current_buffer_length << ") " << std::endl << hex_dump_buffer(data(), _current_buffer_length));
+        //ï¿½TORUSSHELLECHO("Deleting packet 0x" << hex(_buffer[0]) << "(" << std::dec << _current_buffer_length << ") " << std::endl << hex_dump_buffer(data(), _current_buffer_length));
         delete[] _buffer;
         _buffer = nullptr;
     }
@@ -87,6 +87,7 @@ const t_ubyte Packet::packet_id()
 
 void Packet::_increase_buffer(udword_t len)
 {
+    TORUSSHELLECHO("Increasing buffer by " << len << " bytes, current size = " << _current_buffer_length)
     udword_t new_size = _current_buffer_length + len;
     t_byte* tmp_buffer = new t_byte[new_size];
     memset(tmp_buffer, 0, new_size);

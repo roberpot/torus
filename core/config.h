@@ -39,6 +39,22 @@ struct MapFile {
     }
 };
 
+struct ServerInfo {
+    std::string name;
+    std::string ip;
+    udword_t port;
+    ServerInfo(std::string &n, std::string &i, udword_t &p){
+        name = n;
+        ip = i;
+        port = p;
+    }
+    ServerInfo(){
+        name = "";
+        ip = "0.0.0.0";
+        port = 0;
+    }
+};
+
 extern class Config {
 public:
     Config();
@@ -48,8 +64,9 @@ public:
     std::string server_name;
     std::string server_desc;
     std::string torustable_file;
-    t_byte * net_addr;
-    word_t net_port;
+    ServerInfo login_server;
+    std::vector<ServerInfo> _game_servers;
+    udword_t gameserver_index;
     uword_t tick_duration;
     uword_t tick_duration_overloaded;
     uword_t tick_duration_idle;
@@ -69,6 +86,9 @@ public:
     // Maps.
     std::vector<MapFile> map_files;
     std::vector<std::pair<t_ubyte, t_ubyte>> maps;
+
+    void add_game_server(ServerInfo &server);
+    void add_game_server(std::string& name, std::string& ip, udword_t& port);
 private:
     void _reset();
 } toruscfg;

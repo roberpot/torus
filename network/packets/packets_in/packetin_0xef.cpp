@@ -18,7 +18,7 @@
 
 
 const udword_t PacketIn_0xef::length() {
-    return 15;
+    return 21;
 }
 
 void PacketIn_0xef::process(Socket* s) {

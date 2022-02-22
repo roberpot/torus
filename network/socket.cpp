@@ -66,14 +66,13 @@ void Socket::_init()
 
     if (_connection_type == ConnectionType::CONNECTIONTYPE_CLIENT)
     {
-        const udword_t packet_0xef_size = 15;
+        const udword_t packet_0xef_size = 21;
         const udword_t packet_0x80_size = 62;
 
         //PacketIn *packet_0xef = packet_factory(0xef);
         //_current_in_packet = packet_0xef;
         receive(packet_0xef_size);
-
-        // TODO: Process client seed.
+        set_connection_state(ConnectionState::CONNECTIONSTATE_LOGIN);
 
         PacketIn *packet_in = packet_factory(0x80);
         PacketIn_0x80 *packet_0x80 = static_cast<PacketIn_0x80*>(packet_in);
@@ -241,7 +240,7 @@ bool Socket::receive(udword_t receive_len)
         _current_in_packet->receive(_buffer, buffer_len);
         if (_current_in_packet->is_complete())
         {
-            //TORUSSHELLECHO("Pushing packet << " << _current_in_packet << "(0x" << hex(_current_in_packet->packet_id()) << ") to _packets_in_queue");
+            TORUSSHELLECHO("Pushing packet << " << _current_in_packet << "(0x" << hex(_current_in_packet->packet_id()) << ") to _packets_in_queue");
             _packets_in_queue.push(_current_in_packet);
             _current_in_packet = nullptr;   // The full packet has been received, clean this pointer so the next data is attacked to another packet.
         }
@@ -270,7 +269,7 @@ ConnectionType Socket::get_connection_type()
     return _connection_type;
 }
 
-Socket* Socket::create_socket()
+Socket* Socket::create_socket(sockaddr_in &sock_in)
 {
     ADDTOCALLSTACK();
     Socket* s;
@@ -279,6 +278,8 @@ Socket* Socket::create_socket()
 #endif //_WINDOWS
 #ifdef __linux__
     s = new Socket(_accepted_socket);
+    s->_connection_info.sin_family = AF_INET;
+    s->_connection_info = sock_in;
 #endif //__linux__
     return s;
 }
@@ -288,7 +289,7 @@ socket_t Socket::get_socket()
     return _socket;
 }
 
-bool Socket::client_pending() {
+bool Socket::client_pending(sockaddr_in &sockin) {
     ADDTOCALLSTACK();
 #ifdef _WINDOWS
     fd_set readSet;
@@ -300,7 +301,8 @@ bool Socket::client_pending() {
     return (select((int)_socket, &readSet, NULL, NULL, &timeout) == 1);
 #endif //_WINDOWS
 #ifdef __linux__
-    _accepted_socket = accept(_socket, 0, 0);
+    socklen_t len = sizeof(sockin);
+    _accepted_socket = accept(_socket, reinterpret_cast<struct sockaddr *>(&sockin), &len);
     return (_accepted_socket != -1);
 #endif //__linux__
 }
@@ -328,7 +330,8 @@ void Socket::bind(const t_byte* addr, word_t port)
 #endif // _WINDOWS
 #ifdef __linux__
     if (status < 0) {
-        THROW_ERROR(NetworkError, "bind failed with error: " << strerror(errno) << ". Can not bind " << addr << ":" << port);
+        std::string err(strerror(errno));
+        THROW_ERROR(NetworkError, "bind failed with error: " << err << ". Can not bind " << addr << ":" << port);
     }
     status = listen(_socket, SOMAXCONN);
     if (status < 0) {
@@ -346,7 +349,7 @@ const t_byte* Socket::get_ip_str()
     return inet_ntoa(_connection_info.sin_addr);;
 }
 
-const dword_t Socket::get_ip()
+dword_t Socket::get_ip()
 {
 #ifdef _WINDOWS
     return _connection_info.sin_addr.S_un.S_addr;
@@ -397,7 +400,7 @@ void Socket::read_queued_packets()
         PacketIn* in_packet = _packets_in_queue.front();
         if (_is_read_closed == false)
         {
-            //TORUSSHELLECHO("Reading packet << " << in_packet << "(0x" << hex(in_packet->packet_id()) << ") from _packets_in_queue");
+            TORUSSHELLECHO("Reading packet << " << in_packet << "(0x" << hex(in_packet->packet_id()) << ") from _packets_in_queue");
             in_packet->process(this);
             //TORUSSHELLECHO("Processed");
         }

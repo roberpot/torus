@@ -56,7 +56,8 @@ enum class ConnectionType
 {
     CONNECTIONTYPE_NONE,
     CONNECTIONTYPE_CLIENT,
-    CONNECTIONTYPE_SERVER
+    CONNECTIONTYPE_LOGINSERVER,
+    CONNECTIONTYPE_GAMESERVER
 };
 
 /**
@@ -86,7 +87,7 @@ class Socket
 public:
 
     Socket(socket_t s, ConnectionType connection_type = ConnectionType::CONNECTIONTYPE_CLIENT);
-    Socket(ConnectionType connection_type = ConnectionType::CONNECTIONTYPE_SERVER);
+    Socket(ConnectionType connection_type = ConnectionType::CONNECTIONTYPE_LOGINSERVER);
     virtual ~Socket();
 
     /**
@@ -170,7 +171,7 @@ public:
      *
      * @return  Null if it fails, else the socket.
      */
-    Socket* create_socket();
+    Socket* create_socket(sockaddr_in &sock_in);
 
     /**
      * @brief   Gets the internal socket.
@@ -184,7 +185,7 @@ public:
      *
      * @return  True if it succeeds, false if it fails.
      */
-    bool client_pending();
+    bool client_pending(sockaddr_in &sockin);
 
     /**
      * @brief   Binds the given addr and the given port.
@@ -206,7 +207,7 @@ public:
      * 
      * @return The int representation of the IP.
      */
-    const dword_t get_ip();
+    dword_t get_ip();
 
     /**
      * @brief Send all the outgoing queued packets 
