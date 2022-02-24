@@ -54,10 +54,10 @@ std::string hex_dump_buffer(const t_byte * buffer, const udword_t size) {
     if (size % line_size) lines++;
     s << " ## | 00 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 |                   *RAW**RAW*                    |" << std::endl;
     s << "----|-------------------------------------------------|-------------------------------------------------|" << std::endl;
-    for (size_t i = 0; i < size; ++i)
+    for (size_t i = 1; i <= size; ++i)
     {
-        s << hex(buffer[i]) << " ";
-        if (i % line_size == 0 && i != 0)
+        s << hex(buffer[i - 1]) << " ";
+        if (i % line_size == 0 )
         {
             s << std::endl;
         }

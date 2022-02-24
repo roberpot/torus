@@ -28,7 +28,7 @@ void PacketIn_0x73::process(Socket* s) {
     ADDTOCALLSTACK();
     PacketOut_0x73 *response = new PacketOut_0x73();
     response->set_data(1);
-    s->write(response);
+    response->send(s);
 }
 
 PacketIn_0x73::PacketIn_0x73()

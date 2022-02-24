@@ -21,25 +21,28 @@
 #include <threads/mutex.h>
 
 
+
 extern class NetworkManager : public Thread {
 public:
     void * run();
     void halt();
     udword_t get_server_ip();
 private:
-    void _add_client(Socket * s);
-    bool data_ready(fd_set &fd);
-    std::vector<Socket *> _sockets;
+    void _add_login_client(Socket* s);
+    void _add_game_client(Socket* s);
+    bool data_ready(fd_set &fd, const std::vector<Socket*>& socket_list);
+    std::vector<Socket*> _login_sockets;
+    std::vector<Socket*> _game_sockets;
     bool _run;
     class NetworkClientConnector : public Thread {
     public:
         NetworkClientConnector();
-        void * run();
+        void* run();
         void halt();
         udword_t get_server_ip();
     private:
-        Socket * _loginserver;
-        Socket * _gameserver;
+        Socket* _loginserver;
+        Socket* _gameserver;
         bool _run;
     } _clientconnector;
     Mutex _m;

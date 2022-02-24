@@ -25,6 +25,8 @@ const udword_t PacketIn_0x91::length()
 
 void PacketIn_0x91::process(Socket* s)
 {
+    int32_t junk;
+    (*this) >> junk;
     (*this) >> accName;
     (*this) >> accPassword;
     t_byte command;
@@ -37,12 +39,12 @@ void PacketIn_0x91::process(Socket* s)
     PacketOut_0xb9* packet = new PacketOut_0xb9();
     dword_t featureFlags = 1;
     packet->set_data(featureFlags, s->get_client());
-    s->write(packet);
+    packet->send(s);
     //s->set_closing();  // Must disconnect the client from login server?
 
     PacketOut_0xa9 *packetCharacterList = new PacketOut_0xa9();
     packetCharacterList->set_data(s->get_client());
-    s->write(packetCharacterList);
+    packetCharacterList->send(s);
 }
 
 PacketIn_0x91::~PacketIn_0x91()

@@ -19,9 +19,10 @@
 
 #include <iostream>
 
-Socket::Socket(socket_t s, ConnectionType connection_type) :
+Socket::Socket(socket_t s, ConnectionType connection_type, ConnectionType server_type) :
     _socket(s),
-    _connection_type(connection_type)
+    _connection_type(connection_type),
+    _server_type(server_type)
 {
     ADDTOCALLSTACK();
     _init();
@@ -63,8 +64,13 @@ void Socket::_init()
     _buffer = new t_byte[BUFFER_SIZE];
     memset(_buffer, 0, BUFFER_SIZE);
 
+    if (_server_type == ConnectionType::CONNECTIONTYPE_GAMESERVER)
+    {
+        _connection_state = ConnectionState::CONNECTIONSTATE_CHARLIST;
+    }
 
-    if (_connection_type == ConnectionType::CONNECTIONTYPE_CLIENT)
+    if ( (_connection_type == ConnectionType::CONNECTIONTYPE_CLIENT) &&
+            (_server_type == ConnectionType::CONNECTIONTYPE_LOGINSERVER))
     {
         const udword_t packet_0xef_size = 21;
         const udword_t packet_0x80_size = 62;
@@ -80,7 +86,6 @@ void Socket::_init()
         packet_0x80->set_from_loginserver();
         receive(packet_0x80_size);
         _current_in_packet = nullptr;
-
         PacketOut_0xa8* packet = new PacketOut_0xa8();
         packet->set_data(this);
         packet->send(this);
@@ -213,7 +218,7 @@ bool Socket::receive(udword_t receive_len)
     if (buffer_len > 0 && buffer_len < 1024)
     {
         //TORUSSHELLECHO("recv done for a total bytes of " << buffer_len);
-        TORUSSHELLECHO("Network receive(0x" << hex(_buffer[0]) << ")[ " << std::dec << buffer_len << " ] = " << std::endl << hex_dump_buffer(_buffer, buffer_len));
+        TORUSSHELLECHO("Socket " << this << " receive(0x" << hex(_buffer[0]) << ")[" << std::dec << buffer_len << "] = " << std::endl << hex_dump_buffer(_buffer, buffer_len));
     }
     else
     {
@@ -222,11 +227,14 @@ bool Socket::receive(udword_t receive_len)
 
     if (_current_in_packet != nullptr)
     {
-        if (_current_in_packet->packet_id() == 0)
+        /*if (_connection_state == ConnectionState::CONNECTIONSTATE_CHARLIST)
         {
-            delete _current_in_packet;
-            _current_in_packet = nullptr;
-        }
+            if (_current_in_packet->packet_id() == 0)
+            {
+                delete _current_in_packet;
+                _current_in_packet = nullptr;
+            }
+        }*/
     }
 
     if (_current_in_packet == nullptr)  // Try to retrieve an incomplete packet.
@@ -259,6 +267,16 @@ ConnectionState Socket::get_connection_state()
     return _connection_state;
 }
 
+void Socket::set_server_type(ConnectionType type)
+{
+    _server_type = type;
+}
+
+ConnectionType Socket::get_server_type()
+{
+    return _server_type;
+}
+
 void Socket::set_connection_state(ConnectionState connection_state)
 {
     _connection_state = connection_state;
@@ -269,12 +287,13 @@ ConnectionType Socket::get_connection_type()
     return _connection_type;
 }
 
-Socket* Socket::create_socket(sockaddr_in &sock_in)
+Socket* Socket::create_socket(sockaddr_in &sockin, ConnectionType server_type)
 {
     ADDTOCALLSTACK();
     Socket* s;
 #ifdef _WINDOWS
-    s = new Socket(accept(_socket, 0, 0));
+    s = new Socket(accept(_socket, reinterpret_cast<struct sockaddr*>(&sockin), 0),
+        ConnectionType::CONNECTIONTYPE_CLIENT, server_type);
 #endif //_WINDOWS
 #ifdef __linux__
     s = new Socket(_accepted_socket);
@@ -320,12 +339,14 @@ void Socket::bind(const t_byte* addr, word_t port)
 #ifdef _WINDOWS
     if (status == SOCKET_ERROR) {
         closesocket(_socket);
-        THROW_ERROR(NetworkError, "bind failed with error: " << WSAGetLastError() << ". Can not bind " << addr << ":" << port);
+        int err = WSAGetLastError();
+        THROW_ERROR(NetworkError, "bind failed with error: " << err << ". Can not bind " << addr << ":" << port);
     }
     status = listen(_socket, SOMAXCONN);
     if (status == SOCKET_ERROR) {
         closesocket(_socket);
-        THROW_ERROR(NetworkError, "listen failed with error: " << WSAGetLastError());
+        int err = WSAGetLastError();
+        THROW_ERROR(NetworkError, "listen failed with error: " << err);
     }
 #endif // _WINDOWS
 #ifdef __linux__
@@ -390,6 +411,7 @@ void Socket::send_queued_packets()
         }
         _packets_out_queue.pop();
         delete out_packet;
+        break;
     }
 }
 

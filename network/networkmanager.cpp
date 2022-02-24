@@ -31,13 +31,15 @@ void * NetworkManager::run() {
     fd_set readSet;
     while (_run) {
         _m.lock();
-        size_t socketsCount = _sockets.size();
+        size_t socketsCount;;
         Socket * clientSocket;
+        socketsCount = _game_sockets.size();
         FD_ZERO(&readSet);
-        if (data_ready(readSet))
+
+        if (data_ready(readSet, _game_sockets))
         {
             for (unsigned int socketId = 0; socketId < socketsCount; ++socketId) {
-                clientSocket = _sockets[socketId];
+                clientSocket = _game_sockets[socketId];
                 v_tmp_sockets.push_back(clientSocket);
                 if (clientSocket->is_read_closed())
                 {
@@ -55,13 +57,54 @@ void * NetworkManager::run() {
                 }
                 FD_CLR(clientSocket->get_socket(), &readSet);
             }
-            _sockets.clear();
-            _sockets = v_tmp_sockets;
+            _game_sockets.clear();
+            _game_sockets = v_tmp_sockets;
             v_tmp_sockets.clear();
         }
         for (unsigned int socketId = 0; socketId < socketsCount; ++socketId)
         {
-            clientSocket = _sockets[socketId];
+            clientSocket = _game_sockets[socketId];
+
+            if (!clientSocket->is_read_closed())
+            {
+                clientSocket->read_queued_packets();
+            }
+            if (!clientSocket->is_write_closed())
+            {
+                clientSocket->send_queued_packets();
+            }
+        }
+
+        FD_ZERO(&readSet);
+        socketsCount = _login_sockets.size();
+        if (data_ready(readSet, _login_sockets))
+        {
+            for (unsigned int socketId = 0; socketId < socketsCount; ++socketId) {
+                clientSocket = _login_sockets[socketId];
+                v_tmp_sockets.push_back(clientSocket);
+                if (clientSocket->is_read_closed())
+                {
+                    continue;
+                }
+                if (!FD_ISSET(clientSocket->get_socket(), &readSet))
+                {
+                    clientSocket->clean_incoming_packets();
+                    continue;
+                }
+                TORUSSHELLECHO("data ready for socket " << clientSocket << ", reading it from" << clientSocket->get_ip_str());
+                if (clientSocket->receive() == false)
+                {
+                    continue;
+                }
+                FD_CLR(clientSocket->get_socket(), &readSet);
+            }
+            _login_sockets.clear();
+            _login_sockets = v_tmp_sockets;
+            v_tmp_sockets.clear();
+        }
+        for (unsigned int socketId = 0; socketId < socketsCount; ++socketId)
+        {
+            clientSocket = _login_sockets[socketId];
 
             if (!clientSocket->is_read_closed())
             {
@@ -87,18 +130,29 @@ void NetworkManager::halt() {
     _run = false;
 }
 
-void NetworkManager::_add_client(Socket * s) {
+udword_t NetworkManager::get_server_ip()
+{
+    return _clientconnector.get_server_ip();
+}
+
+void NetworkManager::_add_game_client(Socket * s) {
     _m.lock();
-    _sockets.push_back(s);
+    _game_sockets.push_back(s);
     _m.unlock();
 }
 
-bool NetworkManager::data_ready(fd_set& fd)
+void NetworkManager::_add_login_client(Socket* s) {
+    _m.lock();
+    _login_sockets.push_back(s);
+    _m.unlock();
+}
+
+bool NetworkManager::data_ready(fd_set& fd, const std::vector<Socket*>& socket_list)
 {
     int count = 0;
-    for (size_t i = 0; i < _sockets.size(); ++i)
+    for (size_t i = 0; i < socket_list.size(); ++i)
     {
-        int s = _sockets[i]->get_socket();
+        int s = socket_list[i]->get_socket();
         FD_SET(s, &fd);
 #ifdef __WINDOWS
         ++count;
@@ -117,12 +171,9 @@ bool NetworkManager::data_ready(fd_set& fd)
     return  res > 0;
 }
 
-udword_t NetworkManager::get_server_ip() {
-    return _clientconnector.get_server_ip();
-}
-
 NetworkManager::NetworkClientConnector::NetworkClientConnector() {
     _loginserver = 0;
+    _gameserver = 0;
     _run = false;
 }
 
@@ -149,9 +200,14 @@ void * NetworkManager::NetworkClientConnector::run() {
     while(_run) {
         sockaddr_in addr;
         if (_loginserver->client_pending(addr)) {
-            Socket * s = _loginserver->create_socket(addr);
+            Socket * s = _loginserver->create_socket(addr, ConnectionType::CONNECTIONTYPE_LOGINSERVER);
             TORUSSHELLECHO("Client connected: IP: " << s->get_ip_str());
-            torusnet._add_client(s);
+            torusnet._add_login_client(s);
+        }
+        if (_gameserver->client_pending(addr)) {
+            Socket* s = _gameserver->create_socket(addr, ConnectionType::CONNECTIONTYPE_GAMESERVER);
+            TORUSSHELLECHO("Client connected: IP: " << s->get_ip_str());
+            torusnet._add_game_client(s);
         }
         /*if (_s->is_closing())
         {

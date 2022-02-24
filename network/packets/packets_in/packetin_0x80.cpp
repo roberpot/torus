@@ -56,7 +56,7 @@ void PacketIn_0x80::process(Socket* s)
     {
         DEBUG_NOTICE("Received valid account identification, proceeding to send server information.");
         PacketOut_0xa8* packet = new PacketOut_0xa8();
-        s->write(packet);
+        packet->send(s);
         s->set_connection_state(ConnectionState::CONNECTIONSTATE_SERVERLIST);
     }
 }

@@ -75,6 +75,7 @@ class Socket
     socket_t _socket;
     ConnectionState _connection_state;
     ConnectionType _connection_type;
+    ConnectionType _server_type;
     sockaddr_in _connection_info;
     Client* _client;
     t_byte *_buffer;
@@ -86,7 +87,8 @@ class Socket
     void _init();
 public:
 
-    Socket(socket_t s, ConnectionType connection_type = ConnectionType::CONNECTIONTYPE_CLIENT);
+    Socket(socket_t s, ConnectionType connection_type = ConnectionType::CONNECTIONTYPE_CLIENT,
+            ConnectionType server_type = ConnectionType::CONNECTIONTYPE_LOGINSERVER);
     Socket(ConnectionType connection_type = ConnectionType::CONNECTIONTYPE_LOGINSERVER);
     virtual ~Socket();
 
@@ -165,13 +167,16 @@ public:
      */
     ConnectionType get_connection_type();
 
+    ConnectionType get_server_type();
+    void set_server_type(ConnectionType type);
+
 
     /**
      * @brief   Gets the socket.
      *
      * @return  Null if it fails, else the socket.
      */
-    Socket* create_socket(sockaddr_in &sock_in);
+    Socket* create_socket(sockaddr_in &sock_in, ConnectionType server_type);
 
     /**
      * @brief   Gets the internal socket.

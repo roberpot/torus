@@ -30,10 +30,7 @@
 void PacketOut_0xa8::set_data(Socket* s)
 {
     std::stringstream ss;
-    uword_t serversCount = 1;
-    uword_t serverIndex = 1;
-    std::stringstream serverName;
-    serverName << "TestServer"; //TODO: Send real Server's name
+    uword_t servers_count = toruscfg._game_servers.size();
     t_ubyte serverPercentFull = 0;
     t_ubyte serverTimeZone = 0;
 
@@ -41,49 +38,58 @@ void PacketOut_0xa8::set_data(Socket* s)
     //write_word(0);    //Skip packet's size since it's being inserted at the end
     write_ubyte(0xFF);   // ?
 
-    write_uword(serversCount);   // TODO: Write later, after filling all the servers
+    write_uword(servers_count);   // TODO: Write later, after filling all the servers
 
     //TODO: Send all servers in a loop
-    write_uword(serverIndex);
-
-    int i = (int)serverName.str().size();
-
-    for (; i < 32; ++i)
+    for (uword_t server_id = 0; server_id < servers_count; ++server_id)
     {
-        serverName << '\0';
+
+        write_uword(server_id);
+
+        ServerInfo server_info(toruscfg._game_servers[server_id]);
+
+        std::stringstream serverName;
+        serverName << server_info.name; //TODO: Send real Server's name
+        int i = (int)serverName.str().size();
+
+        for (; i < 32; ++i)
+        {
+            serverName << '\0';
+        }
+
+        write_string(serverName.str());
+
+        serverPercentFull = 0;  //TODO
+        serverTimeZone = 0;
+        write_ubyte(serverPercentFull);
+        write_ubyte(serverTimeZone);
+
+        std::vector<std::string> ip = split(server_info.ip, '.');  //127.0.0.1    //TODO: send real IP
+
+
+        /*sockaddr_in inadd;
+        inadd.sin_family = AF_INET;
+        inadd.sin_addr.s_addr = inet_addr("84.122.110.73");
+        udword_t ip = inadd.sin_addr.s_addr;  //127.0.0.1    //TODO: send real IP*/
+        //Clients older than 4.0.0 must receive IP in reversed order.
+        bool reverse_ip = true;
+        if (reverse_ip)
+        {
+            // Clients less than 4.0.0 require IP to be sent in reverse
+            write_ubyte(atoi(ip[3].c_str()) & 0xFF);
+            write_ubyte(atoi(ip[2].c_str()) & 0xFF);
+            write_ubyte(atoi(ip[1].c_str()) & 0xFF);
+            write_ubyte(atoi(ip[0].c_str()) & 0xFF);
+        }
+        else
+        {
+            // Clients since 4.0.0 require IP to be sent in order
+            write_ubyte(atoi(ip[0].c_str()) & 0xFF);
+            write_ubyte(atoi(ip[1].c_str()) & 0xFF);
+            write_ubyte(atoi(ip[2].c_str()) & 0xFF);
+            write_ubyte(atoi(ip[3].c_str()) & 0xFF);
+        }
     }
-
-    write_string(serverName.str());
-
-    write_ubyte(serverPercentFull);
-    write_ubyte(serverTimeZone);
-
-    udword_t ip = torusnet.get_server_ip();  //127.0.0.1    //TODO: send real IP
-
-
-    /*sockaddr_in inadd;
-    inadd.sin_family = AF_INET;
-    inadd.sin_addr.s_addr = inet_addr("84.122.110.73");
-    udword_t ip = inadd.sin_addr.s_addr;  //127.0.0.1    //TODO: send real IP*/
-    //Clients older than 4.0.0 must receive IP in reversed order.
-    bool reverse_ip = true;
-    if (reverse_ip)
-    {
-        // Clients less than 4.0.0 require IP to be sent in reverse
-        write_ubyte(ip & 0xFF);
-        write_ubyte((ip >> 8) & 0xFF);
-        write_ubyte((ip >> 16) & 0xFF);
-        write_ubyte((ip >> 24) & 0xFF);
-    }
-    else
-    {
-        // Clients since 4.0.0 require IP to be sent in order
-        write_ubyte((ip >> 24) & 0xFF);
-        write_ubyte((ip >> 16) & 0xFF);
-        write_ubyte((ip >> 8) & 0xFF);
-        write_ubyte(ip & 0xFF);
-    }
-
 }
 
 PacketOut_0xa8::PacketOut_0xa8() : PacketOut(0xa8, true)

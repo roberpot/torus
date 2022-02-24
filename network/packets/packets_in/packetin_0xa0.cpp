@@ -37,11 +37,11 @@ void PacketIn_0xa0::process(Socket* s) {
     //TODO: Server selection here, read IP and PORTS from configuration for the given server index.
 
     TORUSSHELLECHO("Connection received to server index : " << server_index);
-    
+
+    s->set_connection_state(ConnectionState::CONNECTIONSTATE_CHARLIST);
     PacketOut_0x8c *packet_server_select = new PacketOut_0x8c();
     packet_server_select->set_data(s, server_index);
     packet_server_select->send(s);
-    s->set_connection_state(ConnectionState::CONNECTIONSTATE_CHARLIST);
 }
 
 PacketIn_0xa0::PacketIn_0xa0()

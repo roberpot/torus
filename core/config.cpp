@@ -137,6 +137,10 @@ void Config::load_config_file(const t_byte * file) {
         {
             std::string line;
             while (std::getline(f, line)) {
+                if (line.size() == 0)
+                {
+                    continue;
+                }
                 if (line.compare("[EOF]") == 0) {
                     TORUSSHELLECHO("Readed EOF block");
                     read = false;
