@@ -50,8 +50,11 @@ void TorusCompiler::compile() {
             }
             TORUSSHELLECHO("Compiling " << current_file << "... OK");
         }
-        catch (int lineno) {
-            TORUSSHELLECHO("Compiling " << current_file << "... ERROR AT LINE " << lineno);
+        catch (ttl::LexicalError& e) {
+            TORUSSHELLECHO("Compiling " << current_file << "... " << e.what());
+        }
+        catch (ttl::SyntaxError& e) {
+            TORUSSHELLECHO("Compiling " << current_file << "... " << e.what());
         }
     }
 }

@@ -17,6 +17,7 @@
 
 #include <string>
 
+#include <library/stack.h>
 #include <library/vector.h>
 
 
@@ -59,7 +60,7 @@ namespace ast {
 
     class BlockResourcesNode : public Node {
     public:
-        BlockResourcesNode(const ttl::vector<std::string>& strings) : _strings(strings) {}
+        BlockResourcesNode(const ttl::dynamicstack<std::string>& strings);
         void generate();
     private:
         ttl::vector<std::string> _strings;

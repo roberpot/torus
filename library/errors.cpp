@@ -13,40 +13,39 @@
  */
 
 #include <cstring>
+#include <sstream>
 #include <library/errors.h>
 
 namespace ttl {
     Exception::Exception() {
-        _msg = nullptr;
+        _msg[0] = '\000';
     }
 
-    Exception::Exception(const t_byte * e) {
-        _msg = new t_byte[strlen(e)];
-        memcpy(_msg, e, sizeof(t_byte) * strlen(e));
+    Exception::Exception(const t_byte* e) {
+        strncpy(_msg, e, 255);
     }
 
-    Exception::~Exception() {
-        if (_msg != nullptr) {
-            delete _msg;
-        }
-    }
-
-    const t_byte * Exception::what() const {
-        if (_msg == nullptr) {
-            return "No message supplied.";
-        }
+    const t_byte* Exception::what() const {
         return _msg;
     }
 
-    VectorError::VectorError(const t_byte * e) : Exception::Exception(e) {
+    VectorError::VectorError(const t_byte* e) : Exception::Exception(e) {
     }
 
-    StackError::StackError(const t_byte * e) : Exception::Exception(e) {
+    StackError::StackError(const t_byte* e) : Exception::Exception(e) {
     }
 
-    QueueError::QueueError(const t_byte * e) : Exception::Exception(e) {
+    QueueError::QueueError(const t_byte* e) : Exception::Exception(e) {
     }
 
-    MapError::MapError(const t_byte * e) : Exception::Exception(e) {
+    MapError::MapError(const t_byte* e) : Exception::Exception(e) {
+    }
+
+    LexicalError::LexicalError(char c, int l) {
+        sprintf(_msg, "Lexical error at line %d. Unexpected \"%c\".", l, c);
+    }
+
+    SyntaxError::SyntaxError(int l) {
+        sprintf(_msg, "Syntax error at line %d.", l);
     }
 }

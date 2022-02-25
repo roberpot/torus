@@ -17,6 +17,7 @@
 #include <debug_support/debug.h>
 #include <parser/compiler.h>
 #include <shell.h>
+#include <library/utility.h>
 
 #define NODE_DEBUG 0
 #if NODE_DEBUG == 1
@@ -60,6 +61,10 @@ namespace ast {
         if (_l) _l->generate();
         if (_c) _c->generate();
         if (_r) _r->generate();
+    }
+
+    BlockResourcesNode::BlockResourcesNode(const ttl::dynamicstack<std::string>& strings) {
+        _strings = ttl::stack_to_vector(strings);
     }
 
     void BlockResourcesNode::generate() {

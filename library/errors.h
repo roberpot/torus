@@ -21,35 +21,44 @@ namespace ttl {
     class Exception {
     public:
         Exception();
-        Exception(const t_byte * e);
-        virtual ~Exception();
-        virtual const t_byte * what() const;
-    private:
-        t_byte * _msg;
+        Exception(const t_byte* e);
+        virtual const t_byte* what() const;
+    protected:
+        t_byte _msg[256];
     };
 
     class VectorError : public Exception {
     public:
-        VectorError(const t_byte * e);
+        VectorError(const t_byte* e);
     };
     class StackError : public Exception {
     public:
-        StackError(const t_byte * e);
+        StackError(const t_byte* e);
     };
 
     class QueueError : public Exception {
     public:
-        QueueError(const t_byte * e);
+        QueueError(const t_byte* e);
     };
 
     class ListError : public Exception {
     public:
-        ListError(const t_byte * e);
+        ListError(const t_byte* e);
     };
 
     class MapError : public Exception {
     public:
-        MapError(const t_byte * e);
+        MapError(const t_byte* e);
+    };
+
+    class LexicalError : public Exception {
+    public:
+        LexicalError(char c, int l);
+    };
+
+    class SyntaxError : public Exception {
+    public:
+        SyntaxError(int l);
     };
 
 }

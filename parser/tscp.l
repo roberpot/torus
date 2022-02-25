@@ -58,57 +58,106 @@ std::string get_header_id(const char* buffer, const char* label) {
 %option noyywrap
 %option never-interactive
 
-%x TSCP_BLOCK_COMMENT
-%x TSCP_BLOCK_RESOURCES
+%s TSCP_BLOCK_RESOURCES
+%x TSCP_BLOCK_DEFNAME
+%x TSCP_BLOCK_TYPEDEFS
 %x TSCP_BLOCK_FUNCTION
 
 %%
 
- /* Comments */
+ /* COMMENTS */
 
-"//".*				;
-"/*"				{ BEGIN(TSCP_BLOCK_COMMENT); }
-<TSCP_BLOCK_COMMENT>"*/"	{ BEGIN(INITIAL); }
-<TSCP_BLOCK_COMMENT>\n		;
-<TSCP_BLOCK_COMMENT>.		;
+<*>"//".*                               ;
+<*>[/][*][^*]*[*]+([^*/][^*]*[*]+)*[/]  ;
 
- /* Block headers */
-<*>\[[ ]*RESOURCES[ ]*\]           { BEGIN(TSCP_BLOCK_RESOURCES); return RESOURCES_BLOCK; }
-<*>\[[ ]*OBSCENE[ ]*\]             { BEGIN(INITIAL); return OBSCENE_BLOCK; }
-<*>\[[ ]*FAME[ ]*\]                { BEGIN(INITIAL); return FAME_BLOCK; }
-<*>\[[ ]*KARMA[ ]*\]               { BEGIN(INITIAL); return KARMA_BLOCK; }
-<*>\[[ ]*NOTOTITLES[ ]*\]          { BEGIN(INITIAL); return NOTOTITLES_BLOCK; }
-<*>\[[ ]*RUNES[ ]*\]               { BEGIN(INITIAL); return RUNES_BLOCK; }
-<*>\[[ ]*PLEVEL[ ]+{NUM}[ ]*\]     { BEGIN(INITIAL); tscplval.INTEGER = get_header_int(tscptext, "PLEVEL"); return PLEVEL_BLOCK; }
-<*>\[[ ]*DEFNAME[ ]+{ID}[ ]*\]     { BEGIN(INITIAL); tscplval.str = new std::string(get_header_id(tscptext, "DEFNAME")); return DEFNAME_BLOCK; }
-<*>\[[ ]*FUNCTION[ ]+{ID}[ ]*\]    { BEGIN(TSCP_BLOCK_FUNCTION); tscplval.str = new std::string(get_header_id(tscptext, "FUNCTION")); return FUNCTION_BLOCK; }
-<*>\[[ ]*TYPEDEFS[ ]*\]               { BEGIN(INITIAL); return TYPEDEFS_BLOCK; }
-<*>\[[ ]*EOF[ ]*\]                 { BEGIN(INITIAL); return FEOF_BLOCK; }
+ /* BLOCK HEADERS */
 
- /* RESOURCES BLOCK */
+<*>\[[ ]*RESOURCES[ ]*\]             { BEGIN(TSCP_BLOCK_RESOURCES); return RESOURCES_BLOCK; }
+<*>\[[ ]*DEFNAME[ ]+{ID}[ ]*\]       { BEGIN(TSCP_BLOCK_DEFNAME); tscplval.str = new std::string(get_header_id(tscptext, "DEFNAME")); return DEFNAME_BLOCK; }
+<*>\[[ ]*DIALOG[ ]+{ID}[ ]*\]        { BEGIN(TSCP_BLOCK_FUNCTION); tscplval.str = new std::string(get_header_id(tscptext, "DIALOG")); return DIALOG_BLOCK; }
+<*>\[[ ]*FUNCTION[ ]+{ID}[ ]*\]      { BEGIN(TSCP_BLOCK_FUNCTION); tscplval.str = new std::string(get_header_id(tscptext, "FUNCTION")); return FUNCTION_BLOCK; }
+<*>\[[ ]*BUTTONEVENTS[ ]+{ID}[ ]*\]  { BEGIN(TSCP_BLOCK_FUNCTION); tscplval.str = new std::string(get_header_id(tscptext, "BUTTONEVENTS")); return BUTTONEVENTS_BLOCK; }
+<*>\[[ ]*TYPEDEFS[ ]*\]              { BEGIN(TSCP_BLOCK_TYPEDEFS); return TYPEDEFS_BLOCK; }
+<*>\[[ ]*EOF[ ]*\]                   { BEGIN(INITIAL); return EOF_BLOCK; }
 
-<TSCP_BLOCK_RESOURCES>\n   { if (tmp.size() > 0 ) { tscplval.str = new std::string(tmp); tmp.clear(); return PATH; }}
+ /* BLOCK RESOURCES */
+
+<TSCP_BLOCK_RESOURCES>\n       { if (tmp.size() > 0 ) { tscplval.str = new std::string(tmp); tmp.clear(); return PATH; }}
 <TSCP_BLOCK_RESOURCES>[ \t\r]+ ;
-<TSCP_BLOCK_RESOURCES>.   { tmp.push_back(*tscptext); }
+<TSCP_BLOCK_RESOURCES>.        { tmp.push_back(*tscptext); }
 
-<TSCP_BLOCK_FUNCTION>"if"         { return IF; }
-<TSCP_BLOCK_FUNCTION>"elif"       { return ELIF; }
-<TSCP_BLOCK_FUNCTION>"elseif"     { return ELIF; }
-<TSCP_BLOCK_FUNCTION>"else"       { return ELSE; }
-<TSCP_BLOCK_FUNCTION>"endif"      { return ENDIF; }
+ /* BLOCK DEFNAME */
 
+<TSCP_BLOCK_DEFNAME>{ID}         { tscplval.str = new std::string(tscptext); return ID; }
+<TSCP_BLOCK_DEFNAME>[=|;\{\}]     { return *tscptext; }
+<TSCP_BLOCK_DEFNAME>[ \n\t\r]+   ;
+<TSCP_BLOCK_DEFNAME>-?[0-9]+     { tscplval.INTEGER = atoi(tscptext); return INTEGER; }
+<TSCP_BLOCK_DEFNAME>0[0-9a-f]+   { tscplval.INTEGER = strtol(tscptext, &tmpp, 16); return INTEGER; }
+<TSCP_BLOCK_DEFNAME>\".*\"       { tscplval.str = new std::string(tscptext); tscplval.str->pop_back(); tscplval.str->erase(0, 1); return STRING; }
+
+ /* BLOCK TYPEDEFS */
+
+<TSCP_BLOCK_TYPEDEFS>{ID}         { tscplval.str = new std::string(tscptext); return ID; }
+<TSCP_BLOCK_TYPEDEFS>[=;]         { return *tscptext; }
+<TSCP_BLOCK_TYPEDEFS>[ \n\t\r]+   ;
+<TSCP_BLOCK_TYPEDEFS>-?[0-9]+     { tscplval.INTEGER = atoi(tscptext); return INTEGER; }
+<TSCP_BLOCK_TYPEDEFS>0[0-9a-f]+   { tscplval.INTEGER = strtol(tscptext, &tmpp, 16); return INTEGER; }
+
+ /* BLOCK DIALOG */
+<TSCP_BLOCK_FUNCTION>[ \n\t\r]+                  ;
+<TSCP_BLOCK_FUNCTION>"location"                  { return DIALOG_LOCATION; }
+<TSCP_BLOCK_FUNCTION>"page"                      { return DIALOG_PAGE; }
+<TSCP_BLOCK_FUNCTION>"resizepic"                 { return DIALOG_RESIZEPIC; }
+<TSCP_BLOCK_FUNCTION>"gumppictiled"              { return DIALOG_GUMPPICTILED; }
+<TSCP_BLOCK_FUNCTION>"checkertrans"              { return DIALOG_CHECKERTRANS; }
+<TSCP_BLOCK_FUNCTION>"button"                    { return DIALOG_BUTTON; }
+<TSCP_BLOCK_FUNCTION>"dtext"                     { return DIALOG_DTEXT; }
+<TSCP_BLOCK_FUNCTION>"if"                        { return IF; }
+<TSCP_BLOCK_FUNCTION>"elseif"                    { return ELIF; }
+<TSCP_BLOCK_FUNCTION>"elif"                      { return ELIF; }
+<TSCP_BLOCK_FUNCTION>"else"                      { return ELSE; }
+<TSCP_BLOCK_FUNCTION>"for"                       { return FOR; }
+<TSCP_BLOCK_FUNCTION>"return"                    { return RETURN; }
+<TSCP_BLOCK_FUNCTION>"=="                        { return EQUAL; }
+<TSCP_BLOCK_FUNCTION>"!="                        { return NOT_EQUAL; }
+<TSCP_BLOCK_FUNCTION>"<="                        { return LESS_OR_EQUAL; }
+<TSCP_BLOCK_FUNCTION>">="                        { return GREATER_OR_EQUAL; }
+<TSCP_BLOCK_FUNCTION>"&&"                        { return AND; }
+<TSCP_BLOCK_FUNCTION>"||"                        { return OR; }
+<TSCP_BLOCK_FUNCTION>"+="                        { return SUM_ASIG; }
+<TSCP_BLOCK_FUNCTION>"-="                        { return SUB_ASIG; }
+<TSCP_BLOCK_FUNCTION>"*="                        { return MUL_ASIG; }
+<TSCP_BLOCK_FUNCTION>"/="                        { return DIV_ASIG; }
+<TSCP_BLOCK_FUNCTION>"%="                        { return REM_ASIG; }
+<TSCP_BLOCK_FUNCTION>"&="                        { return AND_ASIG; }
+<TSCP_BLOCK_FUNCTION>"^="                        { return XOR_ASIG; }
+<TSCP_BLOCK_FUNCTION>"|="                        { return OR_ASIG; }
+<TSCP_BLOCK_FUNCTION>"++"                        { return UNARY_INCREMENT; }
+<TSCP_BLOCK_FUNCTION>"--"                        { return UNARY_DECREMENT; }
+<TSCP_BLOCK_FUNCTION>\".*\"                      { tscplval.str = new std::string(tscptext); tscplval.str->pop_back(); tscplval.str->erase(0, 1); return STRING; }
+<TSCP_BLOCK_FUNCTION>"TAG"                       { return TAG; }
+<TSCP_BLOCK_FUNCTION>"TAG0"                      { return TAG0; }
+<TSCP_BLOCK_FUNCTION>"CTAG"                      { return CTAG; }
+<TSCP_BLOCK_FUNCTION>"CTAG0"                     { return CTAG0; }
+<TSCP_BLOCK_FUNCTION>"LOCAL"                     { return LOCAL; }
+<TSCP_BLOCK_FUNCTION>"VAR"                       { return VAR; }
+<TSCP_BLOCK_FUNCTION>"SRC"                       { return SRC; }
+<TSCP_BLOCK_FUNCTION>"ACT"                       { return ACT; }
+<TSCP_BLOCK_FUNCTION>"ARGV"                      { return ARGV; }
+<TSCP_BLOCK_FUNCTION>"SELF"                      { return SELF; }
+<TSCP_BLOCK_FUNCTION>"ON_BUTTON"                 { return ON_BUTTON; }
+<TSCP_BLOCK_FUNCTION>"ON_BUTTONS"                { return ON_BUTTONS; }
+<TSCP_BLOCK_FUNCTION>[,();\.=<>\{\}+\-*/!&\[\]]  { return *tscptext; }
+<TSCP_BLOCK_FUNCTION>-?[0-9]+                    { tscplval.INTEGER = atoi(tscptext); return INTEGER; }
+<TSCP_BLOCK_FUNCTION>0[0-9a-f]+                  { tscplval.INTEGER = strtol(tscptext, &tmpp, 16); return INTEGER; }
+<TSCP_BLOCK_FUNCTION>{ID}                        { tscplval.str = new std::string(tscptext); return ID; }
+
+ /* Glyphs */
+[=;]                   { return *tscptext; }
 
  /* Ignorables */
-<INITIAL,TSCP_BLOCK_FUNCTION>[ \n\t\r]+			        ;
- /* Keywords */
- /*  */
-{ID}                        { tscplval.str = new std::string(tscptext); return ID; }
-\".*\"                      { tscplval.str = new std::string(tscptext); tscplval.str->pop_back(); tscplval.str->erase(0, 1); return STRING; }
--?[0-9]+	            	{ tscplval.INTEGER = atoi(tscptext); return INTEGER; }
-0[0-9a-f]+                  { tscplval.INTEGER = strtol(tscptext, &tmpp, 16); return INTEGER; }
-
-[{},\[\]|]                  return *tscptext;
-.			                { /*LexicalError e("Carácter no reconocido."); throw e;*/ throw 1; }
+<INITIAL>[ \n\t\r]+    ;
+<*>.                   { throw ttl::LexicalError(*tscptext, tscplineno); }
 %%
 
 void tscp_init_parser(const char* buffer) {
@@ -116,6 +165,14 @@ void tscp_init_parser(const char* buffer) {
  tscplineno = 1;
 }
 
+
+/*
+{ID}                        { tscplval.str = new std::string(tscptext); return ID; }
+\".*\"                      { tscplval.str = new std::string(tscptext); tscplval.str->pop_back(); tscplval.str->erase(0, 1); return STRING; }
+-?[0-9]+	            	{ tscplval.INTEGER = atoi(tscptext); return INTEGER; }
+0[0-9a-f]+                  { tscplval.INTEGER = strtol(tscptext, &tmpp, 16); return INTEGER; }
+
+*/
 UNREFERENCED_FUNCTION(yyunput);
 #ifdef _MSC_VER
 #pragma warning(default:4005)

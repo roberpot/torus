@@ -35,32 +35,30 @@ extern int tscplineno;
  ast::Node * node;
  std::string * str;
  int INTEGER;
- ttl::dynamicstack<int> * int_stack;
- ttl::dynamicstack<std::string> * string_stack;
- ttl::vector<int> * int_vector;
- ttl::vector<std::string> * string_vector;
+ ttl::dynamicstack<std::string>* string_stack;
 };
 
 %type <node> file file_blocks block
 // Blocks
-%type <node> block_resources block_obscene    block_fame
-%type <node> block_karma     block_nototitles block_runes
-%type <node> block_plevel    block_defname    block_function
-%type <node> block_typedefs
+%type <node> block_resources  block_defname   block_typedefs
+%type <node> block_dialog     block_function  block_buttonevents
 // Resources
-%type <string_stack> list_strings_more list_ids_more list_files_more
-%type <string_vector> list_strings list_ids list_files
-%type <int_stack> list_integers_more
-%type <int_vector> list_integers
+%type <string_stack> files_list
 ///// Keywords
 // Block class
-%token RESOURCES_BLOCK OBSCENE_BLOCK    FAME_BLOCK
-%token KARMA_BLOCK     NOTOTITLES_BLOCK RUNES_BLOCK
-%token TYPEDEFS_BLOCK
-%token FEOF_BLOCK
-%token IF ELIF ELSE ENDIF
-%token <INTEGER>       PLEVEL_BLOCK
-%token <str>           DEFNAME_BLOCK    FUNCTION_BLOCK
+%token RESOURCES_BLOCK  TYPEDEFS_BLOCK
+%token EOF_BLOCK
+%token DIALOG_LOCATION      DIALOG_PAGE          DIALOG_RESIZEPIC
+%token DIALOG_GUMPPICTILED  DIALOG_CHECKERTRANS  DIALOG_BUTTON
+%token DIALOG_DTEXT
+%token ON_BUTTON  ON_BUTTONS
+%token LOCAL  VAR  TAG   TAG0  CTAG  CTAG0
+%token SRC    ACT  ARGV  SELF
+%token LESS_OR_EQUAL GREATER_OR_EQUAL EQUAL NOT_EQUAL AND OR
+%token SUM_ASIG SUB_ASIG MUL_ASIG DIV_ASIG REM_ASIG AND_ASIG XOR_ASIG OR_ASIG
+%token SHIFT_LEFT SHIFT_RIGHT UNARY_INCREMENT UNARY_DECREMENT
+%token IF ELSE ELIF FOR RETURN
+%token <str> DEFNAME_BLOCK  DIALOG_BLOCK  FUNCTION_BLOCK BUTTONEVENTS_BLOCK
 %token <str> ID PATH STRING
 %token <INTEGER> INTEGER
 
@@ -68,165 +66,205 @@ extern int tscplineno;
 
 /* AST root is 'file' */
 
-file : file_blocks FEOF_BLOCK { $$ = $1; ast::root = $1; }
+file : file_blocks EOF_BLOCK { $$ = $1; ast::root = $1; }
 
 file_blocks : block file_blocks { $$ = new ast::BiNode($1, $2); }
             | { $$ = NULL; }
 
-block : block_resources { $$ = $1; }
-      | block_obscene { $$ = $1; }
-      | block_fame { $$ = $1; }
-      | block_karma { $$ = $1; }
-      | block_nototitles { $$ = $1; }
-      | block_runes { $$ = $1; }
-      | block_plevel { $$ = $1; }
-      | block_defname { $$ = $1; }
-      | block_function { $$ = $1; }
-      | block_typedefs { $$ = $1; }
-
-block_resources : RESOURCES_BLOCK list_files { $$ = new ast::BlockResourcesNode(*$2); delete $2; }
-
-block_obscene : OBSCENE_BLOCK list_strings { $$ = new ast::BlockObsceneNode(*$2); delete $2; }
-
-block_fame : FAME_BLOCK list_integers list_strings { $$ = new ast::BlockFameNode(*$2, *$3); delete $2; delete $3; }
-
-block_karma : KARMA_BLOCK list_integers list_strings { $$ = new ast::BlockKarmaNode(*$2, *$3); delete $2; delete $3; }
-
-block_nototitles : NOTOTITLES_BLOCK list_integers list_integers list_strings { $$ = new ast::BlockNototitlesNode(*$2, *$3, *$4); delete $2; delete $3; delete $4; }
-
-block_runes : RUNES_BLOCK list_strings { $$ = new ast::BlockRunesNode(*$2); delete $2; }
-
-block_plevel : PLEVEL_BLOCK list_ids { $$ = new ast::BlockPlevelNode($1, *$2); delete $2; }
+block : block_resources    { $$ = $1; }
+      | block_defname      { $$ = $1; }
+      | block_typedefs     { $$ = $1; }
+      | block_dialog       { $$ = $1; }
+      | block_function     { $$ = $1; }
+      | block_buttonevents { $$ = $1; }
 
 /*******************************************************************************************
-* TYPEDEFS BLOCK
+* RESOURCES BLOCK
 *******************************************************************************************/
 
-block_typedefs : TYPEDEFS_BLOCK list_typedefs { $$ = nullptr; }
+block_resources : RESOURCES_BLOCK files_list { $$ = new ast::BlockResourcesNode(*$2); delete $2; }
 
-list_typedefs : typedefs_entries
-
-typedefs_entries : typedefs_entry typedefs_entries
-                 |
-
-typedefs_entry : ID INTEGER
+files_list : PATH files_list { $$ = $2; $$->push(*$1); delete $1; }
+           |                 { $$ = new ttl::dynamicstack<std::string>(); }
 
 /*******************************************************************************************
 * DEFNAME BLOCK
 *******************************************************************************************/
 
-block_defname : DEFNAME_BLOCK list_defnames { $$ = nullptr; }
+block_defname : DEFNAME_BLOCK defname_list { $$ = nullptr; }
 
-list_defnames : list_defnames_more
+defname_list : statement_asig defname_list
+             |
 
-list_defnames_more : defname_entry list_defnames_more
-                   |
+/*******************************************************************************************
+* TYPEDEF BLOCK
+*******************************************************************************************/
 
-defname_entry : ID defname_expression
+block_typedefs : TYPEDEFS_BLOCK defname_list { $$ = nullptr; }
 
-defname_expression : defname_or_expression
-                   | STRING
-                   | defname_random_expression
+/*******************************************************************************************
+* DIALOG BLOCK
+*******************************************************************************************/
 
-defname_random_expression : '{' defname_random_tuples '}'
+block_dialog : DIALOG_BLOCK statement_sequence { $$ = nullptr; }
 
-defname_random_tuples : defname_random_tuple defname_random_tuples
-                      | defname_random_tuple
+/*******************************************************************************************
+* BUTTONEVENTS BLOCK
+*******************************************************************************************/
 
-defname_random_tuple : defname_random_lvalue INTEGER
+block_buttonevents : BUTTONEVENTS_BLOCK buttonevents { $$ = nullptr; }
 
-defname_random_lvalue : INTEGER
-                      | ID
-                      | defname_random_expression
+buttonevents : buttonevent buttonevents
+	     | buttonevent
 
-defname_or_expression : defname_terminal '|' defname_or_expression
-                      | defname_terminal
-
-defname_terminal : INTEGER
-                 | ID
+buttonevent : ON_BUTTON '(' INTEGER ')' '{' statement_sequence '}'
+            | ON_BUTTONS '(' INTEGER ',' INTEGER ')' '{' statement_sequence '}'
 
 /*******************************************************************************************
 * FUNCTION BLOCK
 *******************************************************************************************/
 
-block_function : FUNCTION_BLOCK function_definition { $$ = nullptr; }
+block_function : FUNCTION_BLOCK statement_sequence { $$ = nullptr; }
 
-function_definition : function_sentences
+statement_sequence : statement_sequence statement
+                   | statement
 
-function_sentences : function_sentence function_sentences
-                   |
+statement : DIALOG_LOCATION '(' INTEGER ',' INTEGER ')' ';'
+          | DIALOG_PAGE '(' INTEGER ')' ';'
+          | DIALOG_RESIZEPIC '(' INTEGER ',' INTEGER ',' INTEGER ',' INTEGER ',' INTEGER ')' ';'
+          | DIALOG_GUMPPICTILED '(' INTEGER ',' INTEGER ',' INTEGER ',' INTEGER ',' INTEGER ')' ';'
+          | DIALOG_CHECKERTRANS '(' INTEGER ',' INTEGER ',' INTEGER ',' INTEGER ')' ';'
+          | DIALOG_BUTTON '(' arithmetic_or ',' arithmetic_or ',' arithmetic_or ',' arithmetic_or ',' arithmetic_or ',' arithmetic_or ',' arithmetic_or ')' ';'
+          | DIALOG_DTEXT '(' arithmetic_or ',' arithmetic_or ',' arithmetic_or ',' arithmetic_or ')' ';'
+          | statement_asig
+          | statement_functioncall
+          | statement_conditional
+          | statement_loop
+          | statement_return
 
-function_sentence : conditional_sentence
-//                  | loop_sentence
-//                  | switch_sentence
-//                  | return_sentence
-//                  | function_call_sentence
-                  | assignment_sentence
+statement_conditional : IF '(' arithmetic_or ')' '{' statement_sequence '}' statement_conditional_if_extra
 
-//// conditional_sentence
+statement_conditional_if_extra : statement_conditional_if_extra statement_conditional_if_end
+                               | ELIF '(' arithmetic_or ')' '{' statement_sequence '}'
+                               |
 
-conditional_sentence : conditional_main_condition conditional_extra_conditions ENDIF
+statement_conditional_if_end : ELSE '{' statement_sequence '}'
 
-conditional_main_condition : IF '(' conditional_expression ')' function_sentences
+statement_loop : FOR '(' asig ';' arithmetic_or ';' asig ')' '{' statement_sequence '}'
 
-conditional_extra_conditions : conditional_elseif_conditions conditional_else_condition
-                             | conditional_elseif_conditions
-
-conditional_elseif_conditions : conditional_elseif_condition conditional_elseif_conditions
-                              |
-
-conditional_elseif_condition : ELIF '(' conditional_expression ')' function_sentences
-                             | ELSE IF '(' conditional_expression ')' function_sentences
-
-conditional_else_condition : ELSE function_sentences
-
-//// assignament_sentence
-
-assignment_sentence : lvalue_expression '=' rvalue_expression
-
-lvalue_expression :
-
-rvalue_expression :
-
-
-
-
-conditional_expression:
-
-//loop_sentence :
-
-//switch_sentence :
-
-//return_sentence :
-
-//function_call_sentence :
-
-//assignment_sentence :
+statement_return : RETURN ';'
+                 | RETURN arithmetic_or ';'
 
 /*******************************************************************************************
-* TODO: REFACTOR
+* COMMON
 *******************************************************************************************/
 
-list_integers : INTEGER list_integers_more { $2->push($1); $$ = new ttl::vector<int>; (*$$) = stack_to_vector(*$2); delete $2; }
+statement_asig : asig ';'
 
-list_integers_more : ',' INTEGER list_integers_more { $3->push($2); $$ = $3; }
-                   | { $$ = new ttl::dynamicstack<int>(); }
+asig : lvalue asig_op arithmetic_or
+     | lvalue UNARY_INCREMENT
+     | lvalue UNARY_DECREMENT
 
-list_files : list_files_more { $$ = new ttl::vector<std::string>; (*$$) = stack_to_vector(*$1); delete $1; }
+asig_op : '='
+        | SUM_ASIG
+        | SUB_ASIG
+        | MUL_ASIG
+        | DIV_ASIG
+        | REM_ASIG
+        | AND_ASIG
+        | XOR_ASIG
+        | OR_ASIG
 
-list_files_more : PATH list_files_more { $2->push(*$1); $$ = $2; delete $1; }
-                | { $$ = new ttl::dynamicstack<std::string>(); }
+arithmetic_or : arithmetic_or OR arithmetic_and
+              | arithmetic_and
 
-list_strings : list_strings_more { $$ = new ttl::vector<std::string>; (*$$) = stack_to_vector(*$1); delete $1; }
+arithmetic_and : arithmetic_and AND arithmetic_bitwise_or
+               | arithmetic_bitwise_or
 
-list_strings_more : STRING list_strings_more { $2->push(*$1); $$ = $2; delete $1; }
-                  |  { $$ = new ttl::dynamicstack<std::string>(); }
+arithmetic_bitwise_or : arithmetic_bitwise_or '|' arithmetic_bitwise_xor
+                     | arithmetic_bitwise_xor
 
-list_ids : list_ids_more { $$ = new ttl::vector<std::string>; (*$$) = stack_to_vector(*$1); delete $1; }
+arithmetic_bitwise_xor : arithmetic_bitwise_xor '^' arithmetic_bitwise_and
+                       | arithmetic_bitwise_and
 
-list_ids_more : ID list_ids_more { $2->push(*$1); $$ = $2; delete $1; }
-              | { $$ = new ttl::dynamicstack<std::string>(); }
+arithmetic_bitwise_and : arithmetic_bitwise_and '&' arithmetic_eq
+                       | arithmetic_eq
 
+arithmetic_eq : arithmetic_eq EQUAL arithmetic_rel
+              | arithmetic_eq NOT_EQUAL arithmetic_rel
+              | arithmetic_rel
+
+arithmetic_rel : arithmetic_rel '<' arithmetic_shift
+               | arithmetic_rel LESS_OR_EQUAL arithmetic_shift
+               | arithmetic_rel '>' arithmetic_shift
+               | arithmetic_rel GREATER_OR_EQUAL arithmetic_shift
+               | arithmetic_shift
+
+arithmetic_shift : arithmetic_shift SHIFT_LEFT arithmetic_add_sub
+                 | arithmetic_shift SHIFT_RIGHT arithmetic_add_sub
+                 | arithmetic_add_sub
+
+arithmetic_add_sub : arithmetic_add_sub '+' arithmetic_mult_div_rem
+                   | arithmetic_add_sub '-' arithmetic_mult_div_rem
+                   | arithmetic_mult_div_rem
+
+arithmetic_mult_div_rem : arithmetic_mult_div_rem '/' arithmetic_logical_not
+                        | arithmetic_mult_div_rem '*' arithmetic_logical_not
+                        | arithmetic_mult_div_rem '%' arithmetic_logical_not
+                        | arithmetic_logical_not
+
+arithmetic_logical_not : '!' arithmetic_logical_not
+                       | arithmetic_bitwise_not
+
+arithmetic_bitwise_not : '~' arithmetic_bitwise_not
+                       | arithemtic_unary_minus
+
+arithemtic_unary_minus : '-' arithemtic_unary_minus
+                       | arithmetic_unary_increment_decrement
+
+arithmetic_unary_increment_decrement : arithmetic_unary_increment_decrement UNARY_INCREMENT
+                                     | arithmetic_unary_increment_decrement UNARY_DECREMENT
+                                     | arithmetic_value
+
+arithmetic_value : '(' arithmetic_or ')'
+                 | rvalue
+
+rvalue : lvalue
+       | random_expression
+       | INTEGER
+       | STRING
+
+lvalue : lvalue '.' alvalue
+       | lvalue '.' ID '(' argument_list ')'
+       | final_lvalue
+
+alvalue : TAG
+        | TAG0
+        | CTAG
+        | CTAG0
+        | ID
+        | ID '[' arithmetic_or ']'
+
+final_lvalue : LOCAL
+             | VAR
+             | SRC
+             | ACT
+             | ARGV '[' arithmetic_mult_div_rem ']'
+             | SELF
+             | alvalue
+
+random_expression : '{' random_ranges '}'
+
+random_ranges : random_ranges random_range
+              | random_range
+
+random_range : rvalue INTEGER
+
+statement_functioncall : lvalue ';'
+                       | ID '(' argument_list ')' ';'
+
+argument_list : argument_list rvalue
+              |
 
 %%
 
@@ -243,9 +281,7 @@ ast::Node * tscp_parse(const char * buffer)
 
 
 int tscperror(char * msj) {
-  throw tscplineno;
-  //SyntaxError e(msj);
-  //throw e;
+  throw ttl::SyntaxError(tscplineno);
   return 1;
 }
 
