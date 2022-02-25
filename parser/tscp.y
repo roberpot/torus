@@ -93,7 +93,8 @@ files_list : PATH files_list { $$ = $2; $$->push(*$1); delete $1; }
 
 block_defname : DEFNAME_BLOCK defname_list { $$ = nullptr; }
 
-defname_list : statement_asig defname_list
+defname_list : ID '=' arithmetic_or ';' defname_list
+             | ID '[' INTEGER ']' '=' arithmetic_or ';' defname_list
              |
 
 /*******************************************************************************************

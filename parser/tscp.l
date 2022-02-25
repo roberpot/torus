@@ -88,12 +88,12 @@ std::string get_header_id(const char* buffer, const char* label) {
 
  /* BLOCK DEFNAME */
 
-<TSCP_BLOCK_DEFNAME>{ID}         { tscplval.str = new std::string(tscptext); return ID; }
-<TSCP_BLOCK_DEFNAME>[=|;\{\}]     { return *tscptext; }
-<TSCP_BLOCK_DEFNAME>[ \n\t\r]+   ;
-<TSCP_BLOCK_DEFNAME>-?[0-9]+     { tscplval.INTEGER = atoi(tscptext); return INTEGER; }
-<TSCP_BLOCK_DEFNAME>0[0-9a-f]+   { tscplval.INTEGER = strtol(tscptext, &tmpp, 16); return INTEGER; }
-<TSCP_BLOCK_DEFNAME>\".*\"       { tscplval.str = new std::string(tscptext); tscplval.str->pop_back(); tscplval.str->erase(0, 1); return STRING; }
+<TSCP_BLOCK_DEFNAME>{ID}           { tscplval.str = new std::string(tscptext); return ID; }
+<TSCP_BLOCK_DEFNAME>[=|;\{\}\[\]]  { return *tscptext; }
+<TSCP_BLOCK_DEFNAME>[ \n\t\r]+     ;
+<TSCP_BLOCK_DEFNAME>-?[0-9]+       { tscplval.INTEGER = atoi(tscptext); return INTEGER; }
+<TSCP_BLOCK_DEFNAME>0[0-9a-f]+     { tscplval.INTEGER = strtol(tscptext, &tmpp, 16); return INTEGER; }
+<TSCP_BLOCK_DEFNAME>\".*\"         { tscplval.str = new std::string(tscptext); tscplval.str->pop_back(); tscplval.str->erase(0, 1); return STRING; }
 
  /* BLOCK TYPEDEFS */
 
