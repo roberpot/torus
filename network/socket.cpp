@@ -321,7 +321,7 @@ Socket* Socket::create_socket(sockaddr_in &sockin, ConnectionType server_type)
 #ifdef __linux__
     s = new Socket(_accepted_socket);
     s->_connection_info.sin_family = AF_INET;
-    s->_connection_info = sock_in;
+    s->_connection_info = sockin;
 #endif //__linux__
     return s;
 }
