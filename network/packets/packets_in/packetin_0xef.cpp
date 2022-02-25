@@ -17,7 +17,7 @@
 #include <debug_support/info.h>
 
 
-const udword_t PacketIn_0xef::length() {
+const uword_t PacketIn_0xef::length() {
     return 21;
 }
 

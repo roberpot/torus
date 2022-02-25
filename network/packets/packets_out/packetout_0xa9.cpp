@@ -40,7 +40,7 @@ void PacketOut_0xa9::set_data(Client* client)
 
 
     std::vector<std::string> characters{"XuN", "", "", "", ""};
-    t_byte charCount = max(characters.size(), 5); // Must send always 5, client bug.
+    t_byte charCount = t_byte(max(characters.size(), 5)); // Must send always 5, client bug.
     write_byte(charCount);  //characters count
     for (t_byte i = 0; i < charCount; ++i)
     {
@@ -121,7 +121,7 @@ void PacketOut_0xa9::set_data(Client* client)
         0x4000 = new movement system;
         0x8000 = unlock new felucca areas)
     */
-    write_dword(0x100);
+    write_dword(1960);
     //write_word(0); // Only for enhanced client.
 }
 

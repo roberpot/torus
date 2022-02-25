@@ -42,8 +42,8 @@ struct MapFile {
 struct ServerInfo {
     std::string name;
     std::string ip;
-    udword_t port;
-    ServerInfo(std::string &n, std::string &i, udword_t &p){
+    uword_t port;
+    ServerInfo(std::string &n, std::string &i, uword_t &p){
         name = n;
         ip = i;
         port = p;
@@ -88,7 +88,7 @@ public:
     std::vector<std::pair<t_ubyte, t_ubyte>> maps;
 
     void add_game_server(ServerInfo &server);
-    void add_game_server(std::string& name, std::string& ip, udword_t& port);
+    void add_game_server(std::string& name, std::string& ip, uword_t& port);
 private:
     void _reset();
 } toruscfg;

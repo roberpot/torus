@@ -19,7 +19,7 @@
 #include <game/client.h>
 
 
-const udword_t PacketIn_0x02::length() {
+const uword_t PacketIn_0x02::length() {
     ADDTOCALLSTACK();
     return 7;
 }
@@ -30,7 +30,7 @@ void PacketIn_0x02::process(Socket*s) {
     t_byte sequence = 0;
     *(this) >> dir;
     *(this) >> sequence;
-    //s->get_client()->event_walk(dir, sequence);
+    s->get_client()->event_walk(dir, sequence);
 }
 
 PacketIn_0x02::~PacketIn_0x02() {

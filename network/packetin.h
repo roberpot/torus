@@ -51,7 +51,7 @@ public:
     * 
     * @return The length.
     */
-    virtual const udword_t length() = 0;
+    virtual const uword_t length() = 0;
     /**
      *  @brief The packet has been received, process it's data.
      *
@@ -79,7 +79,7 @@ public:
      * 
      * The receipt data may not form the full packet, yet.
      */
-    void receive(const t_byte *data, const udword_t len);
+    void receive(const t_byte *data, const uword_t len);
     
     /**
      * @brief Completion status of the packet.

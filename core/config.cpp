@@ -165,7 +165,7 @@ void Config::load_config_file(const t_byte * file) {
                                 ServerInfo sinfo;
                                 sinfo.name = std::string(server[0]);
                                 sinfo.ip = std::string(server[1]);
-                                sinfo.port = atoi(server[2].c_str());
+                                sinfo.port = uword_t(atoi(server[2].c_str()));
 
                                 if (key.compare("loginserver") == 0)
                                 {
@@ -266,7 +266,7 @@ void Config::add_game_server(ServerInfo &server) {
     //TODO: Verificate data.
     _game_servers.push_back(server);
 }
-void Config::add_game_server(std::string& name, std::string& ip, udword_t& port) {
+void Config::add_game_server(std::string& name, std::string& ip, uword_t& port) {
     ServerInfo server(name, ip, port);
     add_game_server(server);
 }

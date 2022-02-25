@@ -18,7 +18,7 @@
 #include <game/client.h>
 #include <shell.h>
 
-const udword_t PacketIn_0x80::length()
+const uword_t PacketIn_0x80::length()
 {
     return Packet_0x80_length;
 }

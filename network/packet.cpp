@@ -23,7 +23,7 @@
 #include <initializer_list>
 
 
-PacketIn* packet_factory( udword_t id ) {
+PacketIn* packet_factory(udword_t id ) {
     ADDTOCALLSTACK();
     PacketIn * p = nullptr;
     switch (t_ubyte(id)) {
@@ -85,10 +85,10 @@ const t_ubyte Packet::packet_id()
     return id;
 }
 
-void Packet::_increase_buffer(udword_t len)
+void Packet::_increase_buffer(uword_t len)
 {
     //TORUSSHELLECHO("Increasing buffer by " << len << " bytes, current size = " << _current_buffer_length)
-    udword_t new_size = _current_buffer_length + len;
+    uword_t new_size = _current_buffer_length + len;
     t_byte* tmp_buffer = new t_byte[new_size];
     memset(tmp_buffer, 0, new_size);
     if (_buffer != nullptr)

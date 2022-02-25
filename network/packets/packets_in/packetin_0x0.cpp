@@ -19,7 +19,7 @@
 #include <core/torus.h>
 #include <game/client.h>
 
-const udword_t PacketIn_0x00::length() {
+const uword_t PacketIn_0x00::length() {
     ADDTOCALLSTACK();
     return 7;
 }

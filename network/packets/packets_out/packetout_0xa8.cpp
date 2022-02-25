@@ -29,8 +29,9 @@
 
 void PacketOut_0xa8::set_data(Socket* s)
 {
+    UNREFERENCED_PARAMETER(s);
     std::stringstream ss;
-    uword_t servers_count = toruscfg._game_servers.size();
+    uword_t servers_count = uword_t(toruscfg._game_servers.size());
     t_ubyte serverPercentFull = 0;
     t_ubyte serverTimeZone = 0;
 
@@ -44,7 +45,7 @@ void PacketOut_0xa8::set_data(Socket* s)
     for (uword_t server_id = 0; server_id < servers_count; ++server_id)
     {
 
-        write_uword(server_id);
+        write_uword(server_id + 1);
 
         ServerInfo server_info(toruscfg._game_servers[server_id]);
 

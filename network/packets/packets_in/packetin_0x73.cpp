@@ -19,7 +19,7 @@
 #include <game/client.h>
 
 
-const udword_t PacketIn_0x73::length() {
+const uword_t PacketIn_0x73::length() {
     ADDTOCALLSTACK();
     return 2;
 }

@@ -30,7 +30,7 @@ const udword_t PacketIn::current_length()
     return _current_buffer_length;
 }
 
-void PacketIn::receive(const t_byte* data, const udword_t len)
+void PacketIn::receive(const t_byte* data, const uword_t len)
 {
     udword_t old_length = _current_buffer_length;
     _increase_buffer(len);  //Ensure the buffer can store the data.

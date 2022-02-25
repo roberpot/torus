@@ -17,7 +17,7 @@
 #include <debug_support/info.h>
 
 
-const udword_t PacketIn_0xa0::length() {
+const uword_t PacketIn_0xa0::length() {
     ADDTOCALLSTACK();
     return 3;
 }

@@ -26,7 +26,7 @@ public:
     PacketOut(udword_t id, bool has_dynamic_length = false);
     virtual ~PacketOut();
 
-    const udword_t length() override;
+    const uword_t length() override;
 
     /**
     * @brief    Writes the packet id at the position 0.

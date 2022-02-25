@@ -30,8 +30,8 @@ class PacketIn;
 class Packet {
 protected:
     t_byte *_buffer;                ///< Buffer of the packet.
-    udword_t _current_buffer_length;///< Length of the buffer.
-    udword_t _current_pos;          ///< Current position to read/write on the buffer.
+    uword_t _current_buffer_length;///< Length of the buffer.
+    uword_t _current_pos;          ///< Current position to read/write on the buffer.
 
 
     /**
@@ -39,7 +39,7 @@ protected:
      *
      * @param   len The increased size in bytes.
      */
-    void _increase_buffer(udword_t len);
+    void _increase_buffer(uword_t len);
 
 public:
     /** @brief   Default constructor. */
@@ -50,7 +50,7 @@ public:
      *
      * @return  The lenght.
      */
-    virtual const udword_t length() = 0;
+    virtual const uword_t length() = 0;
     /**
      * @brief Gets the data in the buffer.
      * 

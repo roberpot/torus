@@ -18,7 +18,7 @@
 #include <shell.h>
 
 
-const udword_t PacketIn_0x91::length()
+const uword_t PacketIn_0x91::length()
 {
     return 62;
 }

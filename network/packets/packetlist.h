@@ -45,7 +45,7 @@ class Client;
 
 class PacketIn_0x00 : public PacketIn {
 public:
-    virtual const udword_t length() override;
+    virtual const uword_t length() override;
     virtual void process(Socket* s) override;
     ~PacketIn_0x00();
 private:
@@ -53,7 +53,7 @@ private:
 
 class PacketIn_0x02 : public PacketIn {
 public:
-    virtual const udword_t length() override;
+    virtual const uword_t length() override;
     virtual void process(Socket* s) override;
     ~PacketIn_0x02();
 };
@@ -80,7 +80,7 @@ public:
 
 class PacketIn_0x73 : public PacketIn { //PacketPing
 public: // IO packet, has both read and write methods.
-    virtual const udword_t length() override;
+    virtual const uword_t length() override;
     virtual void process(Socket* s) override;
     PacketIn_0x73();
     ~PacketIn_0x73();
@@ -99,7 +99,7 @@ class PacketIn_0x80 : public PacketIn {  //LoginCredentials & ServerListRequest
     bool _is_valid_account = false;
     bool _from_loginserver = false;
 public:
-    virtual const udword_t length() override;
+    virtual const uword_t length() override;
     void set_from_loginserver();
     virtual void process(Socket* s) override;
     bool is_valid_account();
@@ -153,14 +153,14 @@ class PacketIn_0x91 : public PacketIn {  //LoginCredentials & ServerListRequest
     std::string accName[30];
     std::string accPassword[30];
 public:
-    virtual const udword_t length() override;
+    virtual const uword_t length() override;
     virtual void process(Socket* s) override;
     ~PacketIn_0x91();
 };
 
 class PacketIn_0xa0 : public PacketIn {  //ServerSelect -> disconnects from login server, connects to game server and requests character's list and client's flags
 public:
-    virtual const udword_t length() override;
+    virtual const uword_t length() override;
     virtual void process(Socket* s) override;
     PacketIn_0xa0();
     ~PacketIn_0xa0();
@@ -189,7 +189,7 @@ public:
 
 class PacketIn_0xef : public PacketIn {
 public:
-    virtual const udword_t length() override;
+    virtual const uword_t length() override;
     virtual void process(Socket* s) override;
     PacketIn_0xef();
     virtual ~PacketIn_0xef();

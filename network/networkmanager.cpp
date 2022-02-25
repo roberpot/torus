@@ -50,7 +50,7 @@ void * NetworkManager::run() {
                     clientSocket->clean_incoming_packets();
                     continue;
                 }
-                TORUSSHELLECHO("data ready for socket, reading it from" << clientSocket->get_ip_str());
+                TORUSSHELLECHO("data ready for socket " << clientSocket << ", reading it from" << clientSocket->get_ip_str());
                 if (clientSocket->receive() == false)
                 {
                     continue;
@@ -152,7 +152,7 @@ bool NetworkManager::data_ready(fd_set& fd, const std::vector<Socket*>& socket_l
     int count = 0;
     for (size_t i = 0; i < socket_list.size(); ++i)
     {
-        int s = socket_list[i]->get_socket();
+        int s = int(socket_list[i]->get_socket());
         FD_SET(s, &fd);
 #ifdef __WINDOWS
         ++count;
@@ -201,12 +201,12 @@ void * NetworkManager::NetworkClientConnector::run() {
         sockaddr_in addr;
         if (_loginserver->client_pending(addr)) {
             Socket * s = _loginserver->create_socket(addr, ConnectionType::CONNECTIONTYPE_LOGINSERVER);
-            TORUSSHELLECHO("Client connected: IP: " << s->get_ip_str());
+            TORUSSHELLECHO("Client (" << s << ") connected to LoginServer: IP: " << s->get_ip_str());
             torusnet._add_login_client(s);
         }
         if (_gameserver->client_pending(addr)) {
             Socket* s = _gameserver->create_socket(addr, ConnectionType::CONNECTIONTYPE_GAMESERVER);
-            TORUSSHELLECHO("Client connected: IP: " << s->get_ip_str());
+            TORUSSHELLECHO("Client (" << s << ") connected to GameServer: IP: " << s->get_ip_str());
             torusnet._add_game_client(s);
         }
         /*if (_s->is_closing())

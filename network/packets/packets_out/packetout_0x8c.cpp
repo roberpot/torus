@@ -28,15 +28,14 @@ void PacketOut_0x8c::set_data(Socket* s, word_t server_index )
     UNREFERENCED_PARAMETER(s);
     server_index = 0; //FIXME: Use real index
     ServerInfo info = toruscfg._game_servers[server_index];
-    in_addr inaddr;
     std::vector<std::string> ip = split(info.ip, '.');
 
-    write_ubyte(atoi(ip[0].c_str()) & 0xFF);
-    write_ubyte(atoi(ip[1].c_str()) & 0xFF);
-    write_ubyte(atoi(ip[2].c_str()) & 0xFF);
-    write_ubyte(atoi(ip[3].c_str()) & 0xFF);
-    write_word(info.port);   //TODO: Send real PORT
-    write_dword(s->get_seed());  //TODO: Add real calculation using zlib and account's name.
+    write_ubyte(t_ubyte(atoi(ip[0].c_str())));
+    write_ubyte(t_ubyte(atoi(ip[1].c_str())));
+    write_ubyte(t_ubyte(atoi(ip[2].c_str())));
+    write_ubyte(t_ubyte(atoi(ip[3].c_str())));
+    write_uword(info.port);   //TODO: Send real PORT
+    write_dword(0x7f000001);  //TODO: Add real calculation using zlib and account's name.
 }
 
 PacketOut_0x8c::PacketOut_0x8c() : PacketOut(0x8c)

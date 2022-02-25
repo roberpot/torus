@@ -27,7 +27,7 @@ PacketOut::~PacketOut()
 {
 }
 
-const udword_t PacketOut::length()
+const uword_t PacketOut::length()
 {
     return _current_buffer_length;
 }
@@ -49,14 +49,14 @@ void PacketOut::set_packet_id(udword_t id)
 void PacketOut::_init_length()
 {
     ADDTOCALLSTACK();
-    write_uword(_current_buffer_length);
+    write_uword(uword_t(_current_buffer_length));
 }
 
 void PacketOut::_write_length()
 {
     ADDTOCALLSTACK();
-    _buffer[1] = _current_buffer_length >> 8;
-    _buffer[2] = _current_buffer_length;
+    _buffer[1] = t_byte(_current_buffer_length >> 8);
+    _buffer[2] = t_byte(_current_buffer_length);
 }
 
 void PacketOut::send(Socket* s)
@@ -84,64 +84,64 @@ void PacketOut::write_ubyte(t_ubyte ubyte)
 void PacketOut::write_word(word_t word)
 {
     _increase_buffer(2);
-    _buffer[_current_pos++] = word >> 8;
-    _buffer[_current_pos++] = word;
+    _buffer[_current_pos++] = t_byte(word >> 8);
+    _buffer[_current_pos++] = t_byte(word);
 }
 
 void PacketOut::write_uword(uword_t uword)
 {
     _increase_buffer(2);
-    _buffer[_current_pos++] = uword >> 8;
-    _buffer[_current_pos++] = uword;
+    _buffer[_current_pos++] = t_byte(uword >> 8);
+    _buffer[_current_pos++] = t_byte(uword);
 }
 
 void PacketOut::write_dword(dword_t dword)
 {
     _increase_buffer(4);
-    _buffer[_current_pos++] = dword >> 24;
-    _buffer[_current_pos++] = dword >> 16;
-    _buffer[_current_pos++] = dword >> 8;
-    _buffer[_current_pos++] = dword;
+    _buffer[_current_pos++] = t_byte(dword >> 24);
+    _buffer[_current_pos++] = t_byte(dword >> 16);
+    _buffer[_current_pos++] = t_byte(dword >> 8);
+    _buffer[_current_pos++] = t_byte(dword);
 }
 
 void PacketOut::write_udword(udword_t udword)
 {
     _increase_buffer(4);
-    _buffer[_current_pos++] = udword >> 24;
-    _buffer[_current_pos++] = udword >> 16;
-    _buffer[_current_pos++] = udword >> 8;
-    _buffer[_current_pos++] = udword;
+    _buffer[_current_pos++] = t_byte(udword >> 24);
+    _buffer[_current_pos++] = t_byte(udword >> 16);
+    _buffer[_current_pos++] = t_byte(udword >> 8);
+    _buffer[_current_pos++] = t_byte(udword);
 }
 
 void PacketOut::write_qword(qword_t qword)
 {
     _increase_buffer(8);
-    _buffer[_current_pos++] = qword >> 56;
-    _buffer[_current_pos++] = qword >> 48;
-    _buffer[_current_pos++] = qword >> 40;
-    _buffer[_current_pos++] = qword >> 32;
-    _buffer[_current_pos++] = qword >> 24;
-    _buffer[_current_pos++] = qword >> 16;
-    _buffer[_current_pos++] = qword >> 8;
-    _buffer[_current_pos++] = qword;
+    _buffer[_current_pos++] = t_byte(qword >> 56);
+    _buffer[_current_pos++] = t_byte(qword >> 48);
+    _buffer[_current_pos++] = t_byte(qword >> 40);
+    _buffer[_current_pos++] = t_byte(qword >> 32);
+    _buffer[_current_pos++] = t_byte(qword >> 24);
+    _buffer[_current_pos++] = t_byte(qword >> 16);
+    _buffer[_current_pos++] = t_byte(qword >> 8);
+    _buffer[_current_pos++] = t_byte(qword);
 }
 
 void PacketOut::write_uqword(uqword_t uqword)
 {
     _increase_buffer(8);
-    _buffer[_current_pos++] = uqword >> 56;
-    _buffer[_current_pos++] = uqword >> 48;
-    _buffer[_current_pos++] = uqword >> 40;
-    _buffer[_current_pos++] = uqword >> 32;
-    _buffer[_current_pos++] = uqword >> 24;
-    _buffer[_current_pos++] = uqword >> 16;
-    _buffer[_current_pos++] = uqword >> 8;
-    _buffer[_current_pos++] = uqword;
+    _buffer[_current_pos++] = t_byte(uqword >> 56);
+    _buffer[_current_pos++] = t_byte(uqword >> 48);
+    _buffer[_current_pos++] = t_byte(uqword >> 40);
+    _buffer[_current_pos++] = t_byte(uqword >> 32);
+    _buffer[_current_pos++] = t_byte(uqword >> 24);
+    _buffer[_current_pos++] = t_byte(uqword >> 16);
+    _buffer[_current_pos++] = t_byte(uqword >> 8);
+    _buffer[_current_pos++] = t_byte(uqword);
 }
 
 void PacketOut::write_string(std::string string)
 {
-    size_t size = string.size();
+    uword_t size = uword_t(string.size());
     _increase_buffer(size);
     for (size_t i = 0; i < size; ++i)
     {

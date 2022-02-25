@@ -80,6 +80,7 @@ class Socket
     Client* _client;
     t_byte *_buffer;
     udword_t _seed;
+    bool _seeded;
 #ifdef __linux
     int _accepted_socket;
 #endif
@@ -198,7 +199,7 @@ public:
      * @param   addr    The address to bind.
      * @param   port    The port to bind.
      */
-    void bind(const t_byte* addr, word_t port);
+    void bind(const t_byte* addr, uword_t port);
 
     /**
      * @brief   Gets the IP string.
