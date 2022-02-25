@@ -59,4 +59,12 @@ typedef std::uint64_t uqword_t;
 namespace ttl {
 }
 
+
+#ifdef _WINDOWS
+#define maximum max
+#else
+#include <algorithm>
+#define maximum std::max
+#endif
+
 #endif //__TORUS_TYPES_H

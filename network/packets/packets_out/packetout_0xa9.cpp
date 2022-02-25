@@ -15,6 +15,7 @@
 #include <network/packets/packetlist.h>
 #include <network/socket.h>
 #include <debug_support/info.h>
+#include <library/types.h>
 
 
 //const udword_t Packet_0xa9::length() {
@@ -40,7 +41,7 @@ void PacketOut_0xa9::set_data(Client* client)
 
 
     std::vector<std::string> characters{"XuN", "", "", "", ""};
-    t_byte charCount = t_byte(max(characters.size(), 5)); // Must send always 5, client bug.
+    t_byte charCount = t_byte(maximum(int(characters.size()), 5)); // Must send always 5, client bug.
     write_byte(charCount);  //characters count
     for (t_byte i = 0; i < charCount; ++i)
     {
