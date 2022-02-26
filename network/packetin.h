@@ -88,6 +88,8 @@ public:
      */
     bool is_complete();
 
+    void read_string(std::string &str, uword_t len = 0);
+
     template<typename T>
     /**
      * @brief   Bitwise right shift operator, used to export the buffered data into useable variables.
@@ -98,17 +100,6 @@ public:
      * @return  The shifted result.
      */
     friend PacketIn& operator>>(PacketIn& p, T& d);
-
-    /**
-     * @brief   Bitwise right shift operator, used to export the buffered data into an useable std::string.
-     *
-     * @param   p   The Packet to read from.
-     * @param   s   The string into which to write (must have it's length assigned).
-     *
-     * @return  The shifted result.
-     */
-    friend PacketIn& operator>>(PacketIn& p, std::string &s);
-    friend PacketIn& operator>>(PacketIn& p, std::string &&s);
 
     private:
 };
@@ -123,32 +114,6 @@ PacketIn& operator>>(PacketIn& p, T& d)
     }
     memcpy(&d, &(p._buffer[p._current_pos]), sizeof(T));
     p._current_pos += sizeof(T);
-    return p;
-}
-
-template<typename T>
-PacketIn& operator>>(PacketIn& p, std::string &s)
-{
-    if (p._current_pos + sizeof(T) > s.size())
-    {
-        //THROW_ERROR(NetworkError, "Trying to read " << sizeof(T) << " bytes to from " << hex(p._buffer[0]) << ", being currently in the position " << p._current_pos << " into a string with a total size of " << s.size() " bytes.");
-        return p;
-    }
-    memcpy(s.data(), &(p._buffer[p._current_pos]), s.size());
-    p._current_pos += s.size();
-    return p;
-}
-
-template<typename T>
-PacketIn& operator>>(PacketIn& p, std::string &&s)
-{
-    if (p._current_pos + sizeof(T) > s.size())
-    {
-        //THROW_ERROR(NetworkError, "Trying to read " << sizeof(T) << " bytes to from " << hex(p._buffer[0]) << ", being currently in the position " << p._current_pos << " into a string with a total size of " << s.size() " bytes.");
-        return p;
-    }
-    memcpy(s.data(), &(p._buffer[p._current_pos]), s.size());
-    p._current_pos += s.size();
     return p;
 }
 

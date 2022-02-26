@@ -12,6 +12,9 @@
  * along with Torus. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <game/account.h>
+#include <game/accounts_manager.h>
+#include <library/string.h>
 #include <network/packets/packetlist.h>
 #include <network/socket.h>
 #include <debug_support/info.h>
@@ -20,31 +23,50 @@
 
 const uword_t PacketIn_0x91::length()
 {
-    return 62;
+    return 65;
 }
 
 void PacketIn_0x91::process(Socket* s)
 {
-    int32_t junk;
-    (*this) >> junk;
-    (*this) >> accName;
-    (*this) >> accPassword;
-    t_byte command;
-    *(this) >> command;
-    std::stringstream str;
-    str << "Account connection request from ";
-    str << accName->c_str();
-    TORUSSHELLECHO(str.str());
+    dword_t seed;
+    (*this) >> seed;
+    s->set_seed(seed);
 
-    PacketOut_0xb9* packet = new PacketOut_0xb9();
-    dword_t featureFlags = 1;
-    packet->set_data(featureFlags, s->get_client());
-    packet->send(s);
-    //s->set_closing();  // Must disconnect the client from login server?
+    std::string account_name;
+    std::string account_password;
+    read_string(account_name, 30);
+    read_string(account_password, 30);
 
-    PacketOut_0xa9 *packetCharacterList = new PacketOut_0xa9();
-    packetCharacterList->set_data(s->get_client());
-    packetCharacterList->send(s);
+    account_name = clean(account_name);
+    account_password = clean(account_password);
+
+    TORUSSHELLECHO("[GameServer] Connection request to account " << account_name <<  ".");
+
+    Account* acc = torusacc.get_account(account_name);
+
+    if (acc == nullptr)
+    {
+        //LoginAck -> Invalid account
+        return;
+    }
+    else if (!acc->password_match(account_password))
+    {
+        //LoginAck -> Invalid pw
+        return;
+    }
+
+    if (acc->connect(s))
+    {
+        DEBUG_NOTICE("Received valid account identification, proceeding to send client features and characters list.");
+        PacketOut_0xb9* packet = new PacketOut_0xb9();
+        dword_t featureFlags = 1;
+        packet->set_data(featureFlags, s->get_client());
+        packet->send(s);
+
+        PacketOut_0xa9* packetCharacterList = new PacketOut_0xa9();
+        packetCharacterList->set_data(s->get_client());
+        packetCharacterList->send(s);
+    }    
 }
 
 PacketIn_0x91::~PacketIn_0x91()

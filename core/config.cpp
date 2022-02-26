@@ -27,7 +27,6 @@ Config::Config() {
 }
 
 void Config::load_config_file(const t_byte * file) {
-    UNREFERENCED_PARAMETER(file);
     std::ifstream f(file);
 
     _reset();
@@ -156,8 +155,8 @@ void Config::load_config_file(const t_byte * file) {
                     if (str.size() == 2) {
                         std::string key(str[0]);
                         std::string val(str[1]);
-                        clean(key);
-                        clean(val);
+                        key = clean(key);
+                        val = clean(val);
                         TORUSSHELLECHO("Found line with key = " << key << " and value = " << val);
                         if (server_type == true) { // [SERVERS]
                             std::vector<std::string> server(split(val, ','));

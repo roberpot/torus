@@ -68,7 +68,6 @@ inline __HexHelperStruct<T> hex(T x) {
 std::string hex_dump_buffer(const t_byte * buffer, const udword_t size);
 
 std::vector<std::string> split(const std::string &str, t_byte del);
-void clean(std::string &str);
-
+std::string clean(const std::string &str);
 
 #endif //__TORUS_STRING_H

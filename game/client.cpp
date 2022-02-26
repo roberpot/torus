@@ -71,6 +71,7 @@ void Client::event_disconnect()
         _char = nullptr;
         //
     }
+    _socket->set_read_closed();
 }
 
 Char * Client::get_char() {

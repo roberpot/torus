@@ -18,6 +18,7 @@
 #include <library/types.h>
 #include <network/packets/packetlist.h>
 
+class Account;
 class Char;
 class Socket;
 class PacketOut;
@@ -40,6 +41,7 @@ public:
     void event_disconnect();
 private:
     Char *_char;
+    Account *_account;
 public:
     Char *get_char();
     void attatch(Char *chr);

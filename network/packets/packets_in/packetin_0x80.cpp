@@ -12,20 +12,18 @@
  * along with Torus. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <game/account.h>
+#include <game/accounts_manager.h>
+#include <game/client.h>
+#include <library/string.h>
 #include <network/packets/packetlist.h>
 #include <network/socket.h>
 #include <debug_support/info.h>
-#include <game/client.h>
 #include <shell.h>
 
 const uword_t PacketIn_0x80::length()
 {
     return Packet_0x80_length;
-}
-
-void PacketIn_0x80::set_from_loginserver()
-{
-    _from_loginserver = true;
 }
 
 void PacketIn_0x80::process(Socket* s)
@@ -34,15 +32,30 @@ void PacketIn_0x80::process(Socket* s)
     {
         return;
     }
-    (*this) >> accName;
-    (*this) >> accPassword;
+    std::string account_name;
+    std::string account_password;
+    read_string(account_name, 30);
+    read_string(account_password, 30);
+
+    account_name = clean(account_name);
+    account_password = clean(account_password);
+
     t_byte command;
     *(this) >> command;
-    std::stringstream str;
-    str << "Account connection request from ";
-    str << accName->c_str();
-    TORUSSHELLECHO(str.str());
+    TORUSSHELLECHO("[LoginServer] Connection request to account " << account_name <<  ".");
 
+    Account *acc = torusacc.get_account(account_name);
+
+    if (acc == nullptr)
+    {
+        //LoginAck -> Invalid account
+        return ;
+    }
+    else if (!acc->password_match(account_password))
+    {
+        //LoginAck -> Invalid pw
+        return;
+    }
     _is_valid_account = true; // TODO: Add real account checks.
 
     if (s == nullptr) { //Sometimes happens at clients' closure.
@@ -52,13 +65,14 @@ void PacketIn_0x80::process(Socket* s)
     {
         //get_client()->add_response_code(Packet_0x82::ResponseCode::Success); // shouldn't be here?
     }
-    if (_from_loginserver)
+    if (acc->connect(s))
     {
         DEBUG_NOTICE("Received valid account identification, proceeding to send server information.");
         PacketOut_0xa8* packet = new PacketOut_0xa8();
+        packet->set_data(s);
         packet->send(s);
         s->set_connection_state(ConnectionState::CONNECTIONSTATE_SERVERLIST);
-    }
+    }    
 }
 
 bool PacketIn_0x80::is_valid_account()

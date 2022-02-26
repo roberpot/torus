@@ -93,14 +93,9 @@ public:
 };
 
 class PacketIn_0x80 : public PacketIn {  //LoginCredentials & ServerListRequest
-    std::string accName[30];
-    std::string accPassword[30];
-
     bool _is_valid_account = false;
-    bool _from_loginserver = false;
 public:
     virtual const uword_t length() override;
-    void set_from_loginserver();
     virtual void process(Socket* s) override;
     bool is_valid_account();
     ~PacketIn_0x80();

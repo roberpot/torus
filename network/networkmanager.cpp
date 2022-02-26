@@ -82,8 +82,9 @@ void * NetworkManager::run() {
             for (unsigned int socketId = 0; socketId < socketsCount; ++socketId) {
                 clientSocket = _login_sockets[socketId];
                 v_tmp_sockets.push_back(clientSocket);
-                if (clientSocket->is_read_closed())
+                if (clientSocket->is_read_closed() || clientSocket->is_write_closed())
                 {
+                    clientSocket->shutdown();
                     continue;
                 }
                 if (!FD_ISSET(clientSocket->get_socket(), &readSet))
@@ -209,13 +210,10 @@ void * NetworkManager::NetworkClientConnector::run() {
             TORUSSHELLECHO("Client (" << s << ") connected to GameServer: IP: " << s->get_ip_str());
             torusnet._add_game_client(s);
         }
-        /*if (_s->is_closing())
-        {
-            TORUSSHELLECHO("Closing socket: IP" << _s->get_ip());
-            _s->shutdown();
-        }*/
         torus_thread_sleep(1);
     }
+    _loginserver->shutdown();
+    _gameserver->shutdown();
 
 #ifdef _WINDOWS
     WSACleanup();

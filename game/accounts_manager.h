@@ -27,14 +27,14 @@ public:
     AccountsManager();
     ~AccountsManager();
 private:
-    std::vector<Account*> _list;
+    std::map<std::string, Account*> _list;
 public:
     void init();
     bool exists(std::string name, std::string pw);
     void load_all();
     void save_all();
     bool check();
-    Account *get_account(size_t id);
+    Account *get_account(std::string name);
     bool create(std::string name, std::string pw, t_ubyte privlevel);
 } torusacc;
 

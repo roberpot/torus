@@ -44,6 +44,7 @@ enum PRIVLVL
 #define EXP_SA  0x020   ///< Stygian Abyss.
 #define EXP_HS  0x040   ///< High Seas.
 
+class Client;
 
 class Account {
 private:
@@ -55,6 +56,7 @@ private:
     std::string _lastip;    ///< Last IP connected to this account.
     Socket *_socket;        ///< Pointer to the socket currently connected to this account.
     PRIVLVL _privlevel;
+    Client *_client;
 public:
     Account();
     ~Account();
@@ -94,7 +96,7 @@ public:
     *
     * @param socket the socket connecting to the account.
     */
-    void connect(Socket *socket);
+    bool connect(Socket *socket);
     /**
     * @brief Gets the account's privilege level
     *
@@ -113,6 +115,19 @@ public:
     * Remove this account and all the characters containing.
     */
     void remove();
+    /**
+     * @brief Get the Client attached to this account, if any.
+     * 
+     * @return the Client or nullptr.
+     */
+    Client *get_client();
+    /**
+     * @brief Check if the account's password match the given one.
+     * 
+     * @param pw The password to check.
+     * @return True if both passwords match, false otherwise.
+     */
+    bool password_match(const std::string &pw);
 };
 
 #endif // __TORUS_GAME_ACCOUNT_H

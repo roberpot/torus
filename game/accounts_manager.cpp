@@ -23,6 +23,7 @@ AccountsManager torusacc;
 
 AccountsManager::AccountsManager()
 {
+    create("nefthon", "a", 8);
 }
 
 AccountsManager::~AccountsManager()
@@ -37,7 +38,7 @@ void AccountsManager::init()
 bool AccountsManager::exists(std::string name, std::string pw)
 {
     ADDTOCALLSTACK();
-    return false;
+    return _list.find(name) != _list.end();
 }
 
 void AccountsManager::load_all()
@@ -56,13 +57,25 @@ bool AccountsManager::check()
     return true;
 }
 
-Account * AccountsManager::get_account(size_t id)
+Account * AccountsManager::get_account(std::string name)
 {
     ADDTOCALLSTACK();
-    if (id > 0) {
-        return _list[id];
+    Account *acc = nullptr;
+    if (!name.empty())
+    {
+        /*for (auto& key : _list)
+        {
+            if (key.first == name)
+            {
+                acc = key.second;
+            }
+        }*/
+        if (_list.count(name.c_str()) != 0)
+        {
+            acc = _list[name];
+        }      
     }
-    return NULL;
+    return acc;
 }
 
 bool AccountsManager::create(std::string name, std::string pw, t_ubyte privlevel)
@@ -72,6 +85,6 @@ bool AccountsManager::create(std::string name, std::string pw, t_ubyte privlevel
         DEBUG_ERROR("Error creating account '" << name << "', reason: Account already exists.");
         return false;
     }
-    _list.push_back(new Account(name, pw, (PRIVLVL)privlevel));
+    _list[name] = new Account(name, pw, (PRIVLVL)privlevel);
     return false;
 }

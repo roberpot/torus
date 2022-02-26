@@ -76,20 +76,13 @@ void Socket::_init()
         const udword_t packet_0xef_size = 21;
         const udword_t packet_0x80_size = 62;
 
-        //PacketIn *packet_0xef = packet_factory(0xef);
-        //_current_in_packet = packet_0xef;
         receive(packet_0xef_size);
         set_connection_state(ConnectionState::CONNECTIONSTATE_LOGIN);
         PacketIn* packet_in = packet_factory(0x80);
         PacketIn_0x80* packet_0x80 = static_cast<PacketIn_0x80*>(packet_in);
         _current_in_packet = packet_0x80;
-        packet_0x80->set_from_loginserver();
         receive(packet_0x80_size);
         _current_in_packet = nullptr;
-        PacketOut_0xa8* packet = new PacketOut_0xa8();
-        packet->set_data(this);
-        packet->send(this);
-        set_connection_state(ConnectionState::CONNECTIONSTATE_SERVERLIST);
     }
 }
 
@@ -254,6 +247,7 @@ bool Socket::receive(udword_t receive_len)
 
             t_byte *newbuffer = new t_byte[buffer_len - 4];
             memcpy(newbuffer, &_buffer[4], buffer_len );
+            buffer_len -= 4;
             _buffer = newbuffer;
         }
     }

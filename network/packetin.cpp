@@ -38,10 +38,28 @@ void PacketIn::receive(const t_byte* data, const uword_t len)
     if (_current_buffer_length >= length())
     {
         _is_complete = true;
+        _current_pos = 1; // Move the cursor, so the id is not read when processing it's data in the packets' specific code.
     }
 }
 
 bool PacketIn::is_complete()
 {
     return _is_complete;
+}
+
+void PacketIn::read_string(std::string& str, uword_t len)
+{
+    if (len == 0)
+    {
+        len = uword_t(str.size());
+    }
+    if (_current_pos + len > length())
+    {
+        //THROW_ERROR(NetworkError, "Trying to read " << sizeof(T) << " bytes to from " << hex(p._buffer[0]) << ", being currently in the position " << p._current_pos << " into a string with a total size of " << s.size() " bytes.");
+        return;
+    }
+    str.clear();
+    str.resize(len);
+    memcpy(str.data(), &(_buffer[_current_pos]), len);
+    _current_pos += len;
 }

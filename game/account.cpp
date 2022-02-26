@@ -21,12 +21,13 @@
 
 Account::Account() {
     _socket = nullptr;
+    _client = nullptr;
 }
 
 Account::~Account(){
     ADDTOCALLSTACK();
     if (_socket)
-        delete _socket;
+        _socket->set_read_closed();
 }
 
 Account::Account(std::string accname, std::string accpw, PRIVLVL accpriv)
@@ -35,6 +36,8 @@ Account::Account(std::string accname, std::string accpw, PRIVLVL accpriv)
     _name = accname;
     _password = accpw;
     _privlevel = accpriv;
+    _socket = nullptr;
+    _client = nullptr;
 }
 
 t_byte Account::get_char_count() {
@@ -87,10 +90,46 @@ bool Account::delete_char(Char *chr){
     return false;
 }
 
-void Account::connect(Socket * socket){
+bool Account::connect(Socket * newsocket){
     ADDTOCALLSTACK();
-    _socket = socket;
+    if (_socket != nullptr) //Already connected? Check if it's a swap between loginserver and gameserver
+    {
+        bool is_connected_to_game = _socket->get_server_type() == ConnectionType::CONNECTIONTYPE_GAMESERVER;
+        bool is_connecting_to_game = newsocket->get_server_type() == ConnectionType::CONNECTIONTYPE_GAMESERVER;
+
+        if (is_connected_to_game) //Already playing
+        {
+            // Should block connection if already playing ...?
+            // ... or should disconnect it? 
+            //      May be a player whom client crashed and it's connecting again, so a disconnect of the previous socket is prefered.
+            //      May be oether casualities, which we should mostly not contemplate.
+            _socket->set_read_write_closed();
+        }
+        else // Already on loginserver
+        {
+            if (is_connecting_to_game)
+            {
+                if (_socket->get_seed() == newsocket->get_seed())
+                {
+                    _socket->set_read_write_closed();
+                }
+                else
+                {
+                    //Seed missmatch, must log-in first and use the seed providen by the loginserver.
+                    DEBUG_NOTICE("Attempting to login to account " << _name << " with seed '" << newsocket->get_seed() << "', expected seed = '" << _socket->get_seed() << "'.");
+                    newsocket->set_read_write_closed();
+                    return false;
+                }
+            }
+            else //Another connection to this account?
+            {
+                // Do nothing at the moment, so last connection prevails.
+            }
+        }
+    }
+    _socket = newsocket;
     _lastip = _socket->get_ip_str();
+    return true;
 }
 
 PRIVLVL Account::get_privlevel() {
@@ -113,4 +152,20 @@ void Account::remove() {
         }
     }
     delete this;
+}
+
+Client* Account::get_client()
+{
+    Client *client = nullptr;
+    if (_socket)
+    {
+        client = _socket->get_client();
+    }
+    return client;
+}
+
+bool Account::password_match(const std::string& pw)
+{
+    //Todo: MD5
+    return _password == pw;
 }

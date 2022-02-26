@@ -114,16 +114,17 @@ std::vector<std::string> split(const std::string &str, t_byte del) {
     return ret;
 }
 
-void clean(std::string &str) {
-    std::string ret(str);
-    str.clear();
-    for (size_t i = 0; i < ret.size(); ++i)
+std::string clean(const std::string &str) {
+    std::string ret;
+    size_t i = 0;
+    for (; i < str.size(); ++i)
     {
-        t_byte chr = ret[i];
-        if (chr == 92 || chr == 32 || chr == 34)
+        t_byte chr = str[i];
+        if (chr == 92 || chr == 32 || chr == 34 || chr == '\0')
         {
             continue;
         }
-        str.push_back(ret[i]);
+        ret.push_back(str[i]);
     }
+    return ret;
 }
