@@ -31,6 +31,7 @@
 
 #define Packet_0x80_length 62
 
+class Char;
 class Client;
 
 /*
@@ -43,6 +44,8 @@ class Client;
 *       void set_data(...);
 */
 
+
+// Character creation
 class PacketIn_0x00 : public PacketIn {
 public:
     virtual const uword_t length() override;
@@ -51,6 +54,7 @@ public:
 private:
 };
 
+// Movement request
 class PacketIn_0x02 : public PacketIn {
 public:
     virtual const uword_t length() override;
@@ -58,6 +62,15 @@ public:
     ~PacketIn_0x02();
 };
 
+// Login confirm
+class PacketOut_0x1b : public PacketOut {
+public:
+    void set_data(Char* character);
+    PacketOut_0x1b();
+    ~PacketOut_0x1b();
+};
+
+// Movement rejected
 class PacketOut_0x21 : public PacketOut {
 public:
     void set_data(t_ubyte seq, Client *client);
@@ -65,6 +78,7 @@ public:
     ~PacketOut_0x21();
 };
 
+// Movement accepted
 class PacketOut_0x22 : public PacketOut {
 public:
     void set_data(t_ubyte seq, Client* client);
@@ -72,13 +86,30 @@ public:
     ~PacketOut_0x22();
 };
 
-class PacketOut_0x55 : public PacketOut { //PacketLoginComplete (game character finished loading)
+// PacketLoginComplete (game character finished loading)
+class PacketOut_0x55 : public PacketOut {
 public:
     PacketOut_0x55();
     ~PacketOut_0x55() {}
 };
 
-class PacketIn_0x73 : public PacketIn { //PacketPing
+// Play character
+class PacketIn_0x5d : public PacketIn {
+public:
+    virtual const uword_t length() override;
+    virtual void process(Socket* s) override;
+    ~PacketIn_0x5d();
+};
+
+// Play Music
+class PacketOut_0x6d : public PacketOut {
+public:
+    void set_data(t_ubyte id);
+    PacketOut_0x6d();
+};
+
+// PacketPing In
+class PacketIn_0x73 : public PacketIn {
 public: // IO packet, has both read and write methods.
     virtual const uword_t length() override;
     virtual void process(Socket* s) override;
@@ -86,13 +117,15 @@ public: // IO packet, has both read and write methods.
     ~PacketIn_0x73();
 };
 
-class PacketOut_0x73 : public PacketOut { //PacketPing
+// PacketPing Out
+class PacketOut_0x73 : public PacketOut {
 public:
     void set_data(t_ubyte response);
     PacketOut_0x73();
 };
 
-class PacketIn_0x80 : public PacketIn {  //LoginCredentials & ServerListRequest
+// LoginCredentials & ServerListRequest
+class PacketIn_0x80 : public PacketIn {
     bool _is_valid_account = false;
 public:
     virtual const uword_t length() override;
@@ -101,14 +134,15 @@ public:
     ~PacketIn_0x80();
 };
 
-class PacketOut_0x82 : public PacketOut {  //PacketLoginResponse
+// PacketLoginResponse
+class PacketOut_0x82 : public PacketOut {
 public:
     enum ResponseCode { //Response codes, copied from SphereX
         Invalid = 0x00, // no account
-        InUse = 0x01, // already in use
+        InUse   = 0x01, // already in use
         Blocked = 0x02, // client blocked
         BadPass = 0x03, // incorrect password
-        Other = 0x04, // other (e.g. timeout)
+        Other   = 0x04, // other (e.g. timeout)
 
         // the error codes below are not sent to or understood by the client,
         // and should be translated into one of the codes above
@@ -137,6 +171,7 @@ public:
     ~PacketOut_0x82();
 };
 
+// Play server accepted
 class PacketOut_0x8c : public PacketOut {
 public:
     void set_data(Socket* s, word_t server_index);
@@ -144,7 +179,8 @@ public:
     ~PacketOut_0x8c();
 };
 
-class PacketIn_0x91 : public PacketIn {  //LoginCredentials & ServerListRequest
+// LoginCredentials & CharList Request
+class PacketIn_0x91 : public PacketIn {
     std::string accName[30];
     std::string accPassword[30];
 public:
@@ -161,27 +197,39 @@ public:
     ~PacketIn_0xa0();
 };
 
-class PacketOut_0xa8 : public PacketOut {  //ServerList
+// ServerList
+class PacketOut_0xa8 : public PacketOut {
 public:
     void set_data(Socket *s);
     PacketOut_0xa8();
     ~PacketOut_0xa8();
 };
 
-class PacketOut_0xa9 : public PacketOut { // Supported Features
+// Characters List
+class PacketOut_0xa9 : public PacketOut {
 public:
     void set_data(Client* client);
     PacketOut_0xa9();
     ~PacketOut_0xa9();
 };
 
-class PacketOut_0xb9 : public PacketOut { // Supported Features
+// Supported Features
+class PacketOut_0xb9 : public PacketOut {
 public:
     void set_data(dword_t seq, Client* client);
     PacketOut_0xb9();
     ~PacketOut_0xb9();
 };
 
+// Extended Command
+class PacketOut_0xbf : public PacketOut {
+public:
+    void set_data();
+    PacketOut_0xbf();
+    ~PacketOut_0xbf();
+};
+
+// New Client Version
 class PacketIn_0xef : public PacketIn {
 public:
     virtual const uword_t length() override;

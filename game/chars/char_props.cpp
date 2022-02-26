@@ -20,46 +20,46 @@
 
 CharProps::CharProps() {
     ADDTOCALLSTACK();
-    _race = RACE_QTY;
-    _gender = GENDER_QTY;
+    _race = CharRace::RACE_QTY;
+    _gender = CharGender::GENDER_QTY;
     _fame = 0;
     _karma = 0;
     _body = 400;    //TODO update value with any Body when they get implemented.
     _obody = 400;
     _ocolor = 0;
-    _dir = N;
+    _dir = Dir::N;
 }
 
 CharProps::~CharProps() {
     ADDTOCALLSTACK();
 }
 
-void CharProps::set_race(CHAR_RACE race) {
+void CharProps::set_race(CharRace race) {
     ADDTOCALLSTACK();
     _race = race;
 }
 
-CHAR_RACE CharProps::get_race() {
+CharRace CharProps::get_race() {
     ADDTOCALLSTACK();
     return _race;
 }
 
-void CharProps::set_gender(CHAR_GENDER gender) {
+void CharProps::set_gender(CharGender gender) {
     ADDTOCALLSTACK();
     _gender = gender;
 }
 
-CHAR_GENDER CharProps::get_gender() {
+CharGender CharProps::get_gender() {
     ADDTOCALLSTACK();
     return _gender;
 }
 
-void CharProps::set_prop(CHAR_PROP prop, dword_t val) {
+void CharProps::set_prop(CharProp prop, dword_t val) {
     ADDTOCALLSTACK();
     _props[prop] = val;
 }
 
-qword_t CharProps::get_prop(CHAR_PROP prop) {
+qword_t CharProps::get_prop(CharProp prop) {
     ADDTOCALLSTACK();
     qword_t ret = 0;
     if (_props[prop])
@@ -117,12 +117,12 @@ udword_t CharProps::get_ocolor() {
     return _ocolor;
 }
 
-void CharProps::set_dir(DIR dir) {
+void CharProps::set_dir(Dir dir) {
     ADDTOCALLSTACK();
     _dir = dir;
 }
 
-DIR CharProps::get_dir() {
+Dir CharProps::get_dir() {
     ADDTOCALLSTACK();
     return _dir;
 }

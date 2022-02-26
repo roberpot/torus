@@ -25,6 +25,7 @@ Char::Char() : Artifact(UID_CHAR) {
     ADDTOCALLSTACK();
     _account = nullptr;
     _client = nullptr;
+    _body = BodyType::BODY_HUMAN_MALE;
     server.add_char(this);
 }
 
@@ -32,6 +33,7 @@ Char::Char(udword_t uid) : Artifact(uid) {
     ADDTOCALLSTACK();
     _account = nullptr;
     _client = nullptr;
+    _body = BodyType::BODY_HUMAN_MALE;
     server.add_char(this);
 }
 
@@ -119,9 +121,9 @@ uword_t Char::get_status_flag(Char *viewer) {
     udword_t cflags = get_flags();
     // if (flags freezed / stoned)
     //  _status_flags |= SF_FREEZED;
-    if (get_gender() == GENDER_FEMALE)
+    if (get_gender() == CharGender::GENDER_FEMALE)
         flags |= SF_FEMALE;
-    if (get_race() == RACE_GARGOYLE /* && cflags & FLAG_FLYING && (viewer->get_client()->get_version() >= CLIENT_SA || viewer->get_client()->is_enhanced())*/) { // No need to check this for viewers who cannot see gargoyles and their flying mode.
+    if (get_race() == CharRace::RACE_GARGOYLE /* && cflags & FLAG_FLYING && (viewer->get_client()->get_version() >= CLIENT_SA || viewer->get_client()->is_enhanced())*/) { // No need to check this for viewers who cannot see gargoyles and their flying mode.
         flags |= SF_FLYING;
     }
     if (cflags & CFLAG_POISONED) {  // FLYING and POISONED share the same flag.
@@ -151,15 +153,25 @@ bool Char::can_equip(udword_t iflags) {
         return true;
     if (iflags & CAN_EQUIP_NONE)
         return false;
-    if ((iflags & CAN_EQUIP_MALE_ONLY) && get_gender() != GENDER_MALE)
+    if ((iflags & CAN_EQUIP_MALE_ONLY) && get_gender() != CharGender::GENDER_MALE)
         return false;
-    if ((iflags & CAN_EQUIP_FEMALE_ONLY) && get_gender() != GENDER_FEMALE)
+    if ((iflags & CAN_EQUIP_FEMALE_ONLY) && get_gender() != CharGender::GENDER_FEMALE)
         return false;
-    if (get_race() == RACE_HUMAN && !(iflags & CAN_EQUIP_HUMAN))
+    if (get_race() == CharRace::RACE_HUMAN && !(iflags & CAN_EQUIP_HUMAN))
         return false;
-    if (get_race() == RACE_ELF && !(iflags & CAN_EQUIP_ELF))
+    if (get_race() == CharRace::RACE_ELF && !(iflags & CAN_EQUIP_ELF))
         return false;
-    if (get_race() == RACE_GARGOYLE && !(iflags & CAN_EQUIP_GARGOYLE))
+    if (get_race() == CharRace::RACE_GARGOYLE && !(iflags & CAN_EQUIP_GARGOYLE))
         return false;
     return true;
+}
+
+BodyType Char::get_body()
+{
+    return _body;
+}
+
+void Char::set_body(BodyType body)
+{
+    _body = body;
 }

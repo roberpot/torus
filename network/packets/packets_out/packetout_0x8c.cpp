@@ -18,11 +18,6 @@
 #include <debug_support/info.h>
 
 
-//const udword_t Packet_0x8c::length() {
-//    ADDTOCALLSTACK();
-//    return 11;
-//}
-
 void PacketOut_0x8c::set_data(Socket* s, word_t server_index )
 {
     UNREFERENCED_PARAMETER(s);
@@ -44,7 +39,8 @@ void PacketOut_0x8c::set_data(Socket* s, word_t server_index )
     write_ubyte(t_ubyte(atoi(ip[2].c_str())));
     write_ubyte(t_ubyte(atoi(ip[3].c_str())));
     write_uword(info.port);
-    write_dword(s->get_seed());  //TODO: Add real calculation using zlib and account's name.
+    //write_dword(s->get_seed());  //TODO: Add real calculation using zlib and account's name. Sometimes it fails reading the seed in packet 0x91.
+    write_dword(0);
 }
 
 PacketOut_0x8c::PacketOut_0x8c() : PacketOut(0x8c)

@@ -47,7 +47,8 @@ endif(MSVC_VERSION)
 add_executable(torus_server
         ${SOURCE_FILES}
         ${BISON_tscp_parser_OUTPUTS}
-        ${FLEX_tscp_scanner_OUTPUTS})
+        ${FLEX_tscp_scanner_OUTPUTS}
+        "CMakeSources.cmake")
 
 # additional libs for windows
 if(WIN32)

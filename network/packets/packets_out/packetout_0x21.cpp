@@ -20,24 +20,6 @@
 #include <game/char.h>
 
 
-//const udword_t Packet_0x21::length() {
-//    ADDTOCALLSTACK();
-//    return 8;
-//}
-
-void PacketOut_0x21::set_data(t_ubyte seq, Client * client) {
-    ADDTOCALLSTACK();
-    Char *chr = client->get_char();
-    if (!chr) {
-        return;
-    }
-    write_ubyte(seq);
-    write_word(chr->get_pos().x);
-    write_word(chr->get_pos().y);
-    write_byte(t_byte(chr->get_dir()));
-    write_ubyte(chr->get_pos().z);
-}
-
 PacketOut_0x21::PacketOut_0x21() : PacketOut(0x21)
 {
 }
@@ -45,4 +27,17 @@ PacketOut_0x21::PacketOut_0x21() : PacketOut(0x21)
 
 PacketOut_0x21::~PacketOut_0x21() {
     ADDTOCALLSTACK();
+}
+
+void PacketOut_0x21::set_data(t_ubyte seq, Client* client) {
+    ADDTOCALLSTACK();
+    Char* chr = client->get_char();
+    if (!chr) {
+        return;
+    }
+    write_ubyte(seq);
+    write_word(chr->get_pos().get_x());
+    write_word(chr->get_pos().get_y());
+    write_byte(t_byte(chr->get_dir()));
+    write_ubyte(chr->get_pos().get_z());
 }

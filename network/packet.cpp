@@ -30,11 +30,8 @@ PacketIn* packet_factory(udword_t id ) {
         case 0x00:
             p = new PacketIn_0x00();
             break;
-        case 0xa0:
-            p = new PacketIn_0xa0();
-            break;
-        case 0xef: 
-            p = new PacketIn_0xef();
+        case 0x5d:
+            p = new PacketIn_0x5d();
             break;
         case 0x80:
             p = new PacketIn_0x80();
@@ -44,6 +41,12 @@ PacketIn* packet_factory(udword_t id ) {
             break;
         case 0x73:
             p = new PacketIn_0x73();
+            break;
+        case 0xa0:
+            p = new PacketIn_0xa0();
+            break;
+        case 0xef:
+            p = new PacketIn_0xef();
             break;
         default:
             TORUSSHELLECHO("Unknown packet code 0x" << hex(id) << ".");

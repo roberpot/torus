@@ -107,13 +107,13 @@ public:
 template<typename T>
 PacketIn& operator>>(PacketIn& p, T& d)
 {
-    if (p._current_pos + sizeof(T) > p.length())
+    if (p._current_pos + sizeof(d) > p.length())
     {
         //THROW_ERROR(NetworkError, "Trying to read " << sizeof(T) << " bytes to from " << hex(p._buffer[0]) << ", being currently in the position " << p._current_pos << " and with a total length of " << p.length() " bytes.");
         return p;
     }
-    memcpy(&d, &(p._buffer[p._current_pos]), sizeof(T));
-    p._current_pos += sizeof(T);
+    memcpy(&d, &(p._buffer[p._current_pos]), sizeof(d));
+    p._current_pos += sizeof(d);
     return p;
 }
 

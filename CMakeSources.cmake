@@ -45,6 +45,7 @@ SOURCE_GROUP(network\\packets FILES ${PACKETLIST_FILES})
 set(PACKETIN_FILES
         network/packets/packets_in/packetin_0x0.cpp
         network/packets/packets_in/packetin_0x02.cpp
+        network/packets/packets_in/packetin_0x5d.cpp
         network/packets/packets_in/packetin_0x73.cpp
         network/packets/packets_in/packetin_0x80.cpp
         network/packets/packets_in/packetin_0x91.cpp
@@ -54,15 +55,18 @@ set(PACKETIN_FILES
 SOURCE_GROUP(network\\packets\\packets_in FILES ${PACKETIN_FILES})
 
 set(PACKETOUT_FILES
+        network/packets/packets_out/packetout_0x1b.cpp
         network/packets/packets_out/packetout_0x22.cpp
         network/packets/packets_out/packetout_0x21.cpp
         network/packets/packets_out/packetout_0x55.cpp
+        network/packets/packets_out/packetout_0x6d.cpp
         network/packets/packets_out/packetout_0x73.cpp
         network/packets/packets_out/packetout_0x82.cpp
         network/packets/packets_out/packetout_0x8c.cpp
         network/packets/packets_out/packetout_0xa8.cpp
         network/packets/packets_out/packetout_0xa9.cpp
         network/packets/packets_out/packetout_0xb9.cpp
+        network/packets/packets_out/packetout_0xbf.cpp
 )
 SOURCE_GROUP(network\\packets\\packets_out FILES ${PACKETOUT_FILES})
 
@@ -84,6 +88,7 @@ set(GAME_FILES
         game/accounts_manager.cpp   game/accounts_manager.h
         game/artifact.cpp           game/artifact.h
         game/client.cpp             game/client.h
+        game/coord_point.cpp        game/coord_point.h
         game/char.cpp               game/char.h
         game/item.cpp               game/item.h
         game/server.cpp             game/server.h

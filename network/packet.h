@@ -22,6 +22,8 @@
 #pragma warning(disable:4127)
 #endif
 
+#define CHARACTERS_STRING_LENGTH 30
+
 class PacketIn;
 
 /**

@@ -30,7 +30,6 @@ void PacketIn_0x91::process(Socket* s)
 {
     dword_t seed;
     (*this) >> seed;
-    s->set_seed(seed);
 
     std::string account_name;
     std::string account_password;

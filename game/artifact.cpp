@@ -74,7 +74,7 @@ void Artifact::set_name(std::string name){
 
 void Artifact::move_to(word_t destX, word_t destY){
     ADDTOCALLSTACK();
-    if (!can_move_to_coord(destX, destY)) {
+    if (!_position.can_move_to_coord(destX, destY)) {
         DEBUG_ERROR("Trying to move 0x" << std::hex << get_uid() << "to a non-valid dest '" << destX << ", " << destY << ".");
     }
     /*bool updateMapCache = false;    // Blocking items updates the map cache to improve the speed of walking checks.
@@ -87,8 +87,7 @@ void Artifact::move_to(word_t destX, word_t destY){
     if (updateMapCache) {
         maplist.get_map(map).get_map_point(x, y).del_item(); // remove item from current position.
     }*/
-    x = destX;
-    y = destY;
+    _position.set_point(destX, destY);
     /*if (updateMapCache) {
         maplist.get_map(map).get_map_point(x, y).add_item(); // adding item to the new position.
     }*/
@@ -96,20 +95,20 @@ void Artifact::move_to(word_t destX, word_t destY){
 
 void Artifact::set_z(t_byte destZ) {
     ADDTOCALLSTACK();
-    if (!can_move_to_z(destZ)) {
+    if (!_position.can_move_to_z(destZ)) {
         DEBUG_ERROR("Trying to move 0x" << std::hex << get_uid() << " out of limits (" << destZ << "), avoiding it.");
         return;
     }
-    z = destZ;
+    _position.set_z(destZ);
 }
 
 void Artifact::set_map(t_ubyte destMap){
     ADDTOCALLSTACK();
-    if (!can_move_to_map(destMap)) {
+    if (!_position.can_move_to_map(destMap)) {
         DEBUG_ERROR("Trying to move 0x" << std::hex << get_uid() << " to map out of limits, avoiding it.");
         return;
     }
-    map = destMap;
+    _position.set_map(destMap);
 }
 
 void Artifact::set_pos(word_t destX, word_t destY, t_byte destZ, t_ubyte destMap){
@@ -119,8 +118,8 @@ void Artifact::set_pos(word_t destX, word_t destY, t_byte destZ, t_ubyte destMap
     set_map(destMap);
 }
 
-Pos Artifact::get_pos() {
-    return _pos;
+CoordPoint Artifact::get_pos() {
+    return _position;
 }
 
 uword_t Artifact::get_distance(Artifact * target) {
@@ -128,9 +127,9 @@ uword_t Artifact::get_distance(Artifact * target) {
     return get_distance(target->get_pos());
 }
 
-uword_t Artifact::get_distance(Pos target) {
+uword_t Artifact::get_distance(CoordPoint target) {
     ADDTOCALLSTACK();
-    return (_pos.x > target.x ? _pos.x - target.x : target.x - _pos.x) + (_pos.y > target.y ? _pos.y - target.y : target.y - _pos.y);
+    return _position.get_distance(target);
 }
 
 bool Artifact::has_flag(udword_t flag){
@@ -179,40 +178,4 @@ uqword_t Artifact::get_timer() {
 void Artifact::set_timer(uqword_t ticks){
     ADDTOCALLSTACK();
     _timer = server.get_serv_time() + ticks;
-}
-
-bool Pos::can_move_to_coord(word_t destX, word_t destY){
-    ADDTOCALLSTACK();
-    if (destX < 0 || destX > maplist.get_map(map)->get_max_x()) {
-        return false;
-    }
-    if (destY < 0 || destY > maplist.get_map(map)->get_max_y()) {
-        return false;
-    }
-    /*
-    if (maplist[map].get_flags() & MAPFLAGS_BLOCK){
-        return false;    // TODO: Read map to set flags and create internal flags to do checks against them
-    }
-    */
-    return true;
-}
-
-bool Pos::can_move_to_z(t_byte destZ){
-    ADDTOCALLSTACK();
-    if (destZ < CHAR_MIN || destZ > TBYTE_MAX) {
-        return false;
-    }
-    return true;
-}
-
-bool Pos::can_move_to_map(t_ubyte destMap){
-    ADDTOCALLSTACK();
-    if (destMap > TUBYTE_MAX) {
-        return false;
-    }
-    return true;
-}
-
-bool Pos::can_move_to(word_t destX, word_t destY, t_byte destZ, t_ubyte destMap) {
-    return can_move_to_coord(destX, destY) && can_move_to_z(destZ) && can_move_to_map(destMap);
 }

@@ -19,20 +19,20 @@
 
 #include <library/types.h>
 
-enum CHAR_RACE {
+enum class CharRace {
     RACE_HUMAN,
     RACE_ELF,
     RACE_GARGOYLE,
     RACE_QTY
 };
 
-enum CHAR_GENDER {
+enum class CharGender {
     GENDER_MALE,    ///< Male character.
     GENDER_FEMALE,  ///< Female character.
     GENDER_QTY      ///< Monsters.
 };
 
-enum CHAR_PROP {
+enum class CharProp {
     PROP_BLOODCOLOR,
     PROP_CURFOLLOWER,
     PROP_MAXFOLLOWER,
@@ -49,7 +49,7 @@ enum CHAR_PROP {
     PROP_LOWERREAGENTCOST
 };
 
-enum DIR {
+enum class Dir {
     N,
     NE,
     E,
@@ -82,20 +82,20 @@ public:
 
 // Races & genders
 private:
-    CHAR_RACE _race;
-    CHAR_GENDER _gender;
+    CharRace _race;
+    CharGender _gender;
 public:
-    void set_race(CHAR_RACE race);
-    CHAR_RACE get_race();
-    void set_gender(CHAR_GENDER gender);
-    CHAR_GENDER get_gender();
+    void set_race(CharRace race);
+    CharRace get_race();
+    void set_gender(CharGender gender);
+    CharGender get_gender();
 
 // Props
 private:
-    std::map<CHAR_PROP, qword_t> _props;
+    std::map<CharProp, qword_t> _props;
 public:
-    void set_prop(CHAR_PROP prop, dword_t val);
-    qword_t get_prop(CHAR_PROP prop);
+    void set_prop(CharProp prop, dword_t val);
+    qword_t get_prop(CharProp prop);
 
 // Misc
 private:
@@ -120,10 +120,10 @@ public:
     void set_ocolor(udword_t ocolor);
     udword_t get_ocolor();
 private:
-    DIR _dir;
+    Dir _dir;
 public:
-    void set_dir(DIR dir);
-    DIR get_dir();
+    void set_dir(Dir dir);
+    Dir get_dir();
 
 };
 

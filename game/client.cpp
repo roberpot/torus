@@ -43,11 +43,11 @@ void Client::send(PacketOut* packet)
 
 void Client::event_walk(t_ubyte dir, t_ubyte seq) {
     ADDTOCALLSTACK();
-    if (dir > DIR_QTY) {
+    if (Dir(dir) > Dir::DIR_QTY) {
         PacketOut_0x21 *rej = new PacketOut_0x21();
         rej->set_data(seq, this);
     }
-    if (get_char()->can_move_to_coord(1, 1)) {
+    if (get_char()->get_pos().can_move_to_coord(1, 1)) {
         _movement_sequence++;
 
     }

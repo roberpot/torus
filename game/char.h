@@ -19,7 +19,6 @@
 #include <game/artifact.h>
 #include <game/chars/char_props.h>
 #include <game/chars/char_stats.h>
-#include <game/server.h>
 
 // Movement flags
 #define CFLAG_CAN_MOVE          0x000001    // Can walk.
@@ -45,6 +44,13 @@
 #define DISTANCE_SEE_ITEMS 14
 #define DISTANCE_SEE_MULTIS 18
 
+
+enum class BodyType
+{
+    BODY_HUMAN_MALE = 0x400,
+    BODY_HUMAN_FEMALE = 0x401
+};
+
 class Account;
 class Item;
 class Client;
@@ -55,10 +61,14 @@ class Char :
 private:
     CharStats _stats[STATS_QTY];
     Client* _client;         ///< Client attached to this char.
+    BodyType _body;
     ~Char();
+
 public:
     Char();
     Char(udword_t uid);
+
+// Base & Stats
     CharStats &get_stat(STAT_TYPE key);
     bool can_move() override;
     void remove();
@@ -66,6 +76,7 @@ public:
     bool can_see(Char *target);
     bool can_see(Item *target);
 
+//Account&Client
 private:
     Account *_account;
 public:
@@ -74,9 +85,13 @@ public:
     void attach_client(Client* client);
     void detatch_client();
     Client* get_client();
+
+
 public:
     uword_t get_status_flag(Char *viewer);
     bool can_equip(udword_t iflags);
+    BodyType get_body();
+    void set_body(BodyType body);
 };
 
 #endif // __TORUS_GAME_CHAR_H_

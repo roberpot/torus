@@ -18,24 +18,14 @@
 #include <string>
 
 #include <library/types.h>
+#include <game/coord_point.h>
 #include <game/uid.h>
-#include <game/server.h>
 
-struct Pos {
-    word_t x = 1;
-    word_t y = 1;
-    t_byte z = 0;
-    t_ubyte map = 0;
-    bool can_move_to_coord(word_t destX, word_t destY);
-    bool can_move_to_z(t_byte destZ);
-    bool can_move_to_map(t_ubyte destMap);
-    bool can_move_to(word_t destX, word_t destY, t_byte destZ, t_ubyte destMap);
-};
 
 class Char;
 class Item;
 
-class Artifact : public Uid, public Pos {
+class Artifact : public Uid {
 public:
     udword_t get_uid();
 protected:
@@ -46,7 +36,6 @@ protected:
     virtual bool tick() = 0;
 
 public:
-    friend void Server::tick();
     virtual ~Artifact();
     //Name
 private:
@@ -57,15 +46,15 @@ public:
 
     //Pos
 private:
-    Pos _pos;
+    CoordPoint _position;
 public:
     void move_to(word_t destX, word_t destY);
     void set_z(t_byte destZ);
     void set_map(t_ubyte destMap);
     void set_pos(word_t destX, word_t destY, t_byte destZ, t_ubyte destMap);
-    Pos get_pos();
+    CoordPoint get_pos();
     uword_t get_distance(Artifact *target);
-    uword_t get_distance(Pos target);
+    uword_t get_distance(CoordPoint target);
     virtual bool can_move() = 0;
 
     //Flags

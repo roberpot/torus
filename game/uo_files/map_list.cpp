@@ -24,7 +24,7 @@ MapList::~MapList() {
 
 Map *MapList::get_map(t_ubyte id) {
     ADDTOCALLSTACK();
-    return (*this)[id];
+    return (*this).at(id);
 }
 
 t_ubyte MapList::get_map_count() {
