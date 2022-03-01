@@ -33,6 +33,7 @@
 
 class Char;
 class Client;
+class Uid;
 
 /*
 * Methods required for packets:
@@ -86,6 +87,13 @@ public:
     ~PacketOut_0x22();
 };
 
+// Character query
+class PacketIn_0x34 : public PacketIn {
+public:
+    virtual const uword_t length() override;
+    virtual void process(Socket* s) override;
+};
+
 // PacketLoginComplete (game character finished loading)
 class PacketOut_0x55 : public PacketOut {
 public:
@@ -122,6 +130,13 @@ class PacketOut_0x73 : public PacketOut {
 public:
     void set_data(t_ubyte response);
     PacketOut_0x73();
+};
+
+// Send Char
+class PacketOut_0x78 : public PacketOut {
+public:
+    void set_data(Char* character); //Char* character
+    PacketOut_0x78();
 };
 
 // LoginCredentials & ServerListRequest
@@ -219,6 +234,22 @@ public:
     void set_data(dword_t seq, Client* client);
     PacketOut_0xb9();
     ~PacketOut_0xb9();
+};
+
+// Client version (Entering World)
+class PacketIn_0xbd : public PacketIn {
+public:
+    virtual const uword_t length() override;
+    virtual void process(Socket* s) override;
+};
+
+// Extended Command
+class PacketIn_0xbf : public PacketIn {
+    uword_t _length;
+public:
+    virtual const uword_t length() override;
+    virtual void process(Socket* s) override;
+    PacketIn_0xbf();
 };
 
 // Extended Command

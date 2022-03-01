@@ -51,64 +51,51 @@ void Server::save_all() {
 
 void Server::add_char(Char * chr) {
     ADDTOCALLSTACK();
-    if (_artifact_list[chr->get_uid()]) {
-        DEBUG_ERROR("Trying to add char with uid '" << chr->get_uid() << "' when there is already a char with this uid.");
-        chr->remove();
-    }
-    else {
-        _artifact_list[chr->get_uid()] = chr;
-    }
+    _chars.add(chr->get_uid(), chr);
+    //TODO WOC
 }
 
 void Server::add_item(Item * item) {
     ADDTOCALLSTACK();
-    if (_artifact_list[item->get_uid()]) {
-        DEBUG_ERROR("Trying to add char with uid '" << item->get_uid() << "' when there is already a char with this uid.");
-        item->remove();
-    }
-    else {
-        _artifact_list[item->get_uid()] = item;
-    }
+    //TODO WOC
 }
 
-Artifact * Server::get_artifact(udword_t uid) {
+Artifact * Server::get_artifact(const Uid& uid) {
     ADDTOCALLSTACK();
-    Artifact * art = _artifact_list[uid];
-    if (art)
-        return art;
-    return NULL;
+    //TODO WOC
+    return nullptr;
+}
+
+Char* Server::get_char(const Uid& uid)
+{
+    Char *character = nullptr;
+    //TODO WOC
+    return character;
+}
+
+Item* Server::get_item(const Uid& uid)
+{
+    //TODO WOC
+    return nullptr;
 }
 
 void Server::del_char(Char * chr) {
     ADDTOCALLSTACK();
-    _gclist.push_back(chr);
+    //TODO WOC
 }
 
 void Server::del_item(Item * item) {
     ADDTOCALLSTACK();
-    _gclist.push_back(item);
+    //TODO WOC
 }
 
 void Server::del_artifact(Artifact * art) {
     ADDTOCALLSTACK();
-    udword_t total = (udword_t)_artifact_list.size();
-    if (total) {
-        for (udword_t i = 0; i < total; ++i) {
-            Artifact *tmp = _artifact_list[i];
-            if (tmp == art) {
-                delete tmp;
-                _artifact_list.erase(i);
-            }
-        }
-    }
+    //TODO WOC
 }
 
 void Server::tick() {
     ADDTOCALLSTACK();
-    if (_gclist.size()) {
-        while (_gclist.size()) {
-            del_artifact(_gclist[0]);
-        }
-    }
+    //TODO TICKS
     _serv_time += _tick_period;
 }

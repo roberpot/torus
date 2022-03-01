@@ -19,6 +19,7 @@
 #include <library/map.h>
 #include <library/vector.h>
 #include <game/uid.h>
+#include <game/word_object_container.h>
 
 class Char;
 class Item;
@@ -27,6 +28,8 @@ class Artifact;
 extern class Server {
     uqword_t _serv_time; ///< Server time in ticks.
     uword_t _tick_period;
+
+    WorldObjectContainer<Char*> _chars;
 public:
     Server();
     ~Server();
@@ -34,11 +37,11 @@ public:
     bool check();
     void load_all();
     void save_all();
-    ttl::__old_tsdynamicmap<udword_t, Artifact*> _artifact_list;
-    void add_char(Char *chr);
+    void add_char(Char* chr);
     void add_item(Item *item);
-    Artifact * get_artifact(udword_t uid);
-    ttl::tsvector<Artifact*> _gclist;
+    Artifact * get_artifact(const Uid& uid);
+    Char *get_char(const Uid& uid);
+    Item *get_item(const Uid& uid);
     void del_char(Char *chr);
     void del_item(Item *item);
     void del_artifact(Artifact *art);

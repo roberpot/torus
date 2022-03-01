@@ -17,16 +17,19 @@
 
 #include <library/types.h>
 
-#define UID_CLEAR        0x00000000
+#define UID_CLEAR       0x00000000
 #define UID_CHAR        0x0
 #define UID_ITEM        0x40000000
 #define UID_RESOURCE    0x80000000
-#define UID_UNUSED        0xFFFFFFFF
+#define UID_UNUSED      0xFFFFFFFF
+
+class Artifact;
 
 class Uid {
 private:
     udword_t _uid;    ///< numeric value.
 protected:
+    friend class Artifact;
     /**
     * @brief Sets the Uid for this obj.
     *
@@ -41,14 +44,6 @@ protected:
     * Creates a new Uid.
     */
     Uid();
-    /**
-    * @brief Existing Uid constructor.
-    *
-    * Receives a already existing Uid (loading from save?) and sets it.
-    * @param uid the Uid.
-    */
-    Uid(udword_t uid);
-    ~Uid();
     /**
     * @brief Find and set a new Uid for this object.
     *
@@ -68,6 +63,19 @@ protected:
     */
     void set_uid_type(udword_t mask);
 public:
+    /**
+    * @brief Existing Uid constructor.
+    *
+    * Receives a already existing Uid (loading from save?) and sets it.
+    * @param uid the Uid.
+    */
+    Uid(udword_t uid);
+    ~Uid();
+    bool operator==(const Uid &uid) const;
+    bool operator<(const Uid& uid) const;
+    bool operator<=(const Uid& uid) const;
+    bool operator>(const Uid& uid) const;
+    bool operator>=(const Uid& uid) const;
     /**
     * @brief Returns this uid.
     *

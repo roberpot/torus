@@ -19,16 +19,21 @@
 #include <debug_support/debug.h>
 
 Map::Map(){
-    ADDTOCALLSTACK();
+    _index = TUWORD_MAX;
     _x = 0;
     _y = 0;
     _fileid = 0;
     _sector_size = 64;
+    _blocks = nullptr;
     _filename = "map0.mul";
     _is_valid = false;
 }
 
 Map::~Map(){
+    if (_blocks)
+    {
+        delete _blocks;
+    }
 }
 
 bool Map::create(uword_t index, uword_t x, uword_t y, t_ubyte ss, t_ubyte file_id, std::string filename)

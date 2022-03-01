@@ -18,6 +18,7 @@
 #include <threads/utils.h>
 #include <core/config.h>
 #include <game/server.h>
+#include <game/uo_files/map_list.h>
 
 Torus::Torus() {
 }

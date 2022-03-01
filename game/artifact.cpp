@@ -26,23 +26,23 @@
 Artifact::Artifact(udword_t uid){
     ADDTOCALLSTACK();
     if ((uid &~(UID_ITEM | UID_RESOURCE)) == UID_CLEAR) {
-        free_uid();
-        set_uid_type(uid);
+        _uid.free_uid();
+        _uid.set_uid_type(uid);
     }
     else {
-        set_uid(uid);
+        _uid.set_uid(uid);
     }
     _flags = 0;
     _color = 0;
 }
 
-udword_t Artifact::get_uid() {
-    return Uid::get_uid();
+Uid& Artifact::get_uid() {
+    return _uid;
 }
 
 Artifact::~Artifact(){
     ADDTOCALLSTACK();
-    free_uid();
+    _uid.free_uid();
 }
 
 Char * Artifact::get_char() {
@@ -75,7 +75,9 @@ void Artifact::set_name(std::string name){
 void Artifact::move_to(word_t destX, word_t destY){
     ADDTOCALLSTACK();
     if (!_position.can_move_to_coord(destX, destY)) {
-        DEBUG_ERROR("Trying to move 0x" << std::hex << get_uid() << "to a non-valid dest '" << destX << ", " << destY << ".");
+        //DEBUG_ERROR("Trying to move 0x" << std::hex << get_uid().get_uid() << "to a non-valid dest " << std::dec << destX << ", " << destY);
+        //DEBUG_ERROR("Trying to move to a non-valid dest " << std::dec << destX << ", " << destY);
+        DEBUG_ERROR("Trying to move to a non-valid dest");
     }
     /*bool updateMapCache = false;    // Blocking items updates the map cache to improve the speed of walking checks.
     if (is_item()) {
@@ -96,7 +98,7 @@ void Artifact::move_to(word_t destX, word_t destY){
 void Artifact::set_z(t_byte destZ) {
     ADDTOCALLSTACK();
     if (!_position.can_move_to_z(destZ)) {
-        DEBUG_ERROR("Trying to move 0x" << std::hex << get_uid() << " out of limits (" << destZ << "), avoiding it.");
+        DEBUG_ERROR("Trying to move 0x" << std::hex << get_uid().get_uid() << " out of limits (" << destZ << "), avoiding it.");
         return;
     }
     _position.set_z(destZ);
@@ -105,7 +107,7 @@ void Artifact::set_z(t_byte destZ) {
 void Artifact::set_map(t_ubyte destMap){
     ADDTOCALLSTACK();
     if (!_position.can_move_to_map(destMap)) {
-        DEBUG_ERROR("Trying to move 0x" << std::hex << get_uid() << " to map out of limits, avoiding it.");
+        DEBUG_ERROR("Trying to move 0x" << std::hex << get_uid().get_uid() << " to map out of limits, avoiding it.");
         return;
     }
     _position.set_map(destMap);

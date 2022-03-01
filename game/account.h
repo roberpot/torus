@@ -22,6 +22,7 @@
 
 class Char;
 class Socket;
+class Uid;
 
 enum PRIVLVL
 {
@@ -50,7 +51,8 @@ class Account {
 private:
     std::string _name;      ///< Account name, used mostly for login.
     std::string _password;  ///< Account password.
-    std::vector<Char *> _charlist;  ///< Character's list.
+    std::vector<Uid> _charlist;  ///< Character's list.
+    Char *_character;
     udword_t _flags;        ///< Account flags.
     uword_t _expansion;     ///< Expansion level this account has access.
     std::string _lastip;    ///< Last IP connected to this account.
@@ -86,11 +88,18 @@ public:
     */
     bool add_char(Char *chr);
     /**
+    * @brief Get the character at the given slot.
+    *
+    * @param slot The character slot.
+    * @return The Char, if exists.
+    */
+    Char* get_char(const udword_t &slot);
+    /**
     * @brief remove a character from this account.
     *
     * @param chr the character to remove.
     */
-    bool delete_char(Char *chr);
+    bool remove_char(Char *chr);
     /**
     * @brief Receiving a connection for this account.
     *

@@ -28,7 +28,7 @@ PacketOut_0x1b::~PacketOut_0x1b()
 
 void PacketOut_0x1b::set_data(Char* character)
 {
-    write_dword(character->get_uid());
+    write_dword(character->get_uid().get_uid());
     write_dword(0);              //Unused
     write_word(word_t(character->get_body()));
     write_word(character->get_pos().get_x());
@@ -40,8 +40,10 @@ void PacketOut_0x1b::set_data(Char* character)
     write_word(0);              //Unused
     write_word(0);              //Unused
     Map* map = maplist.get_map(character->get_pos().get_map());
-    write_word(map->get_max_x());
-    write_word(map->get_max_y());
+    //write_word(map->get_max_x());   //FIXME
+    //write_word(map->get_max_y());
+    write_word(7168);
+    write_word(4096);
     write_word(0);              //Unused
     write_dword(0);             //Unused
 }

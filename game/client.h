@@ -39,12 +39,13 @@ public:
     void event_walk(t_ubyte dir, t_ubyte seq);
     void add_response_code(PacketOut_0x82::ResponseCode code);
     void event_disconnect();
+    void event_character_login(const std::string &name, const dword_t &flags, const dword_t &login_count, const dword_t &slot, const dword_t &ip);
 private:
     Char *_char;
     Account *_account;
 public:
     Char *get_char();
-    void attatch(Char *chr);
+    void attatch(Account* acc);
 };
 
 #endif // __TORUS_GAME_CLIENT_H_

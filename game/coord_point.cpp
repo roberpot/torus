@@ -18,8 +18,8 @@
 #include "coord_point.h"
 
 CoordPoint::CoordPoint() :
-    _x(0),
-    _y(0),
+    _x(633),
+    _y(858),
     _z(0),
     _m(0)
 {
@@ -147,6 +147,11 @@ uword_t CoordPoint::get_distance(const CoordPoint& target)
 bool CoordPoint::can_move_to_coord(const word_t& destX, const word_t& destY) {
     ADDTOCALLSTACK();
     Map* map = maplist.get_map(_m);
+    if (map == nullptr)
+    {
+        //err
+        return false;
+    }
     if (destX < 0 || destX >map->get_max_x()) {
         return false;
     }

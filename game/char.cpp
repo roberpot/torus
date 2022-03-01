@@ -26,7 +26,6 @@ Char::Char() : Artifact(UID_CHAR) {
     _account = nullptr;
     _client = nullptr;
     _body = BodyType::BODY_HUMAN_MALE;
-    server.add_char(this);
 }
 
 Char::Char(udword_t uid) : Artifact(uid) {
@@ -34,16 +33,16 @@ Char::Char(udword_t uid) : Artifact(uid) {
     _account = nullptr;
     _client = nullptr;
     _body = BodyType::BODY_HUMAN_MALE;
-    server.add_char(this);
+    //server.add_char(this);
 }
 
 Char::~Char(){
     ADDTOCALLSTACK();
 }
 
-CharStats &Char::get_stat(STAT_TYPE key){
+CharStats &Char::get_stat(StatType key){
     ADDTOCALLSTACK();
-    return _stats[key];
+    return _stats[int(key)];
 }
 
 bool Char::can_move(){

@@ -58,7 +58,7 @@ void Socket::_init()
     _is_read_closed = false;
     _is_write_closed = false;
     _connection_state = ConnectionState::CONNECTIONSTATE_NONE;
-    _client = nullptr;
+    _client = new Client(this);
     _seed = 0;
     _seeded = false;
 
@@ -105,6 +105,11 @@ Socket::~Socket()
         delete p;
         _packets_out_queue.pop();
     }
+    if (_client)
+    {
+        delete _client;
+    }
+
 
 #ifdef _WINDOWS
     closesocket(_socket);
@@ -219,9 +224,9 @@ bool Socket::receive(udword_t receive_len)
     }
 
 
+    t_ubyte first_byte = _buffer[0];
     if (_seeded == false)
     {
-        t_ubyte first_byte = _buffer[0];
 
         // check for new seed (sometimes it's received on its own)
         if (buffer_len == 1 && first_byte == 239)
@@ -448,6 +453,7 @@ void Socket::read_queued_packets()
         delete in_packet;
     }
 }
+
 void Socket::clean_incoming_packets()
 {
     while (!_packets_in_queue.empty())

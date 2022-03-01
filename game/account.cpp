@@ -16,6 +16,9 @@
 #include <game/account.h>
 #include <game/accounts_manager.h>
 #include <game/char.h>
+#include <game/client.h>
+#include <game/server.h>
+#include <game/uid.h>
 #include <network/socket.h>
 #include <debug_support/callstack.h>
 
@@ -38,16 +41,25 @@ Account::Account(std::string accname, std::string accpw, PRIVLVL accpriv)
     _privlevel = accpriv;
     _socket = nullptr;
     _client = nullptr;
+
+    //FIXME: Remove this when a proper save system get's implemented.
+    Char *character = new Char();
+    character->set_name("XuN");
+    for (int i = int(StatType::STR); i < int(StatType::SECONDARY_STAT_QTY); ++i)
+    {
+        character->get_stat(StatType(i)).set_base(100);
+    }
+    //character->set_pos(633, 858, 0, 0);
+    add_char(character);
+    _character = character;//FIXME DELETE
+
+    server.add_char(character);
+
 }
 
 t_byte Account::get_char_count() {
     ADDTOCALLSTACK();
-    t_byte count = 0;
-    for (t_byte i = 0; i < 7; i++) {    // run the whole character's list.
-        if (_charlist[i])   // increase count if a character is found.
-            count++;
-    }
-    return count;
+    return t_byte(_charlist.size());
 }
 
 t_byte Account::get_max_chars(){
@@ -67,27 +79,39 @@ bool Account::can_add_char(){
 
 bool Account::add_char(Char *chr){
     ADDTOCALLSTACK();
-    for (udword_t i = 0; i < _charlist.size(); i++) {    // run the whole character list to find an empty slot
-        Char* existingchar = _charlist[i];
-        if (existingchar && existingchar == chr)
-            continue;
-        _charlist.push_back(chr);
-        return true;
-    }
+    if (!_charlist.empty())
+    {
+        if (std::find(_charlist.begin(), _charlist.end(), chr->get_uid()) == _charlist.end())
+        {
+            //Already inserted.
+            return false;
+        }
+    }    
+    _charlist.push_back(chr->get_uid());
     return false;
 }
 
-bool Account::delete_char(Char *chr){
-    ADDTOCALLSTACK();
-    for (udword_t i = 0; i < _charlist.size(); i++) {    // run the whole character list to find this character.
-        Char *existingchar = _charlist[i];
-        if (existingchar && existingchar == chr) {
-            _charlist.erase(_charlist.begin() + i);        // delete de Char* directly.
-            chr->remove();
-            return true;
-        }
+Char* Account::get_char(const udword_t& slot)
+{
+    return _character;//FIXME
+    Char *character = nullptr;
+    if (_charlist.size() > slot)
+    {
+        character = server.get_char(_charlist[slot]);
     }
-    return false;
+    return character;
+}
+
+bool Account::remove_char(Char *chr){
+    ADDTOCALLSTACK();
+    std::vector<Uid>::iterator it = std::find(_charlist.begin(), _charlist.end(), chr->get_uid());
+    if (it == _charlist.end())
+    {
+        //Not found
+        return false;
+    }
+    _charlist.erase(it);    
+    return true;
 }
 
 bool Account::connect(Socket * newsocket){
@@ -116,9 +140,9 @@ bool Account::connect(Socket * newsocket){
                 else
                 {
                     //Seed missmatch, must log-in first and use the seed providen by the loginserver.
-                    DEBUG_NOTICE("Attempting to login to account " << _name << " with seed '" << newsocket->get_seed() << "', expected seed = '" << _socket->get_seed() << "'.");
+                    /*DEBUG_NOTICE("Attempting to login to account " << _name << " with seed '" << newsocket->get_seed() << "', expected seed = '" << _socket->get_seed() << "'."); // FIXME: Sometimes seed is not sent.
                     newsocket->set_read_write_closed();
-                    return false;
+                    return false;*/
                 }
             }
             else //Another connection to this account?
@@ -128,6 +152,8 @@ bool Account::connect(Socket * newsocket){
         }
     }
     _socket = newsocket;
+    _client = newsocket->get_client();
+    _client->attatch(this);
     _lastip = _socket->get_ip_str();
     return true;
 }
@@ -145,7 +171,7 @@ void Account::set_privlevel(PRIVLVL lvl) {
 void Account::remove() {
     ADDTOCALLSTACK();
     for (udword_t i = 0; i < _charlist.size(); i++) {
-        Char *chr = _charlist[i];
+        Char *chr = server.get_char(_charlist[i]);
         if (chr) {
             chr->remove();
             chr = nullptr;

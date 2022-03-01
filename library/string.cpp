@@ -46,7 +46,7 @@ std::string remove_prefix(const t_byte * p, const t_byte * s) {
     return remove_prefix(p, ss);
 }
 
-std::string hex_dump_buffer(const t_byte * buffer, const udword_t size) {
+std::string hex_dump_buffer(const t_byte* buffer, const udword_t size) {
     std::stringstream s;
     udword_t line_size = 16;
     udword_t lines = size / line_size;
@@ -67,7 +67,7 @@ std::string hex_dump_buffer(const t_byte * buffer, const udword_t size) {
         s << " " << std::setfill(' ') << std::setw(2) << current_line << " | ";
         current_line_size = line_size;
         if (current_line == (lines - 1) && size % line_size) current_line_size = size % line_size;
-        for(udword_t curr_byte = 0; curr_byte < current_line_size; ++curr_byte) {
+        for (udword_t curr_byte = 0; curr_byte < current_line_size; ++curr_byte) {
             s << hex(buffer[line_size * current_line + curr_byte]) << " ";
         }
         if (current_line == (lines - 1) && size % line_size) {
@@ -77,15 +77,6 @@ std::string hex_dump_buffer(const t_byte * buffer, const udword_t size) {
         }
         /*s << "| ";
         for (udword_t curr_byte = 0; curr_byte < current_line_size; ++curr_byte) {
-            s << buffer[line_size * current_line + curr_byte] << "";
-        }
-        if (current_line == (lines - 1) && size % line_size) {
-            for (udword_t extra = size % line_size; extra < line_size; ++extra) {
-                s << " ";
-            }
-        }*/
-        s << "| ";
-        for(udword_t curr_byte = 0; curr_byte < current_line_size; ++curr_byte) {
             s << buffer[line_size * current_line + curr_byte];
         }
         if (current_line == (lines - 1) && size % line_size) {
@@ -93,7 +84,7 @@ std::string hex_dump_buffer(const t_byte * buffer, const udword_t size) {
                 s << " ";
             }
         }
-        s << " |" << std::endl;
+        s << " |" << std::endl;*/
     }
     return s.str();
 }

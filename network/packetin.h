@@ -43,6 +43,7 @@ class Socket;
 class PacketIn : public Packet
 {
     bool _is_complete;            ///< The full data for this packet has been received.
+    bool _has_dynamic_length;
 
 // Child classes implementations:
 public:
@@ -61,7 +62,7 @@ public:
 
 // Class related:
 public:
-    PacketIn();
+    PacketIn(bool has_dynamic_length = false);
     virtual ~PacketIn();
 
     /**

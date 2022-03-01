@@ -59,7 +59,7 @@ class Char :
     public Artifact,
     public CharProps {
 private:
-    CharStats _stats[STATS_QTY];
+    CharStats _stats[int(StatType::STATS_QTY)];
     Client* _client;         ///< Client attached to this char.
     BodyType _body;
     ~Char();
@@ -69,7 +69,7 @@ public:
     Char(udword_t uid);
 
 // Base & Stats
-    CharStats &get_stat(STAT_TYPE key);
+    CharStats &get_stat(StatType key);
     bool can_move() override;
     void remove();
     bool tick();

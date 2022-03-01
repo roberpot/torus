@@ -34,6 +34,30 @@ Uid::~Uid(){
     free_uid();
 }
 
+bool Uid::operator==(const Uid& uid) const
+{
+    return _uid == uid._uid;
+}
+bool Uid::operator<(const Uid& uid) const
+{
+    return _uid < uid._uid;
+}
+
+bool Uid::operator<=(const Uid& uid) const
+{
+    return _uid <= uid._uid;
+}
+
+bool Uid::operator>(const Uid& uid) const
+{
+    return _uid > uid._uid;
+}
+
+bool Uid::operator>=(const Uid& uid) const
+{
+    return _uid >= uid._uid;
+}
+
 void Uid::set_uid(udword_t uid) {
     ADDTOCALLSTACK();
     _uid = uid;

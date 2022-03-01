@@ -19,17 +19,31 @@
 
 MapList maplist;
 
+MapList::MapList()
+{
+}
+
 MapList::~MapList() {
+    for (int i = 0; i < _list.size(); ++i)
+    {
+        delete _list[i];
+    }
 }
 
 Map *MapList::get_map(t_ubyte id) {
     ADDTOCALLSTACK();
-    return (*this).at(id);
+    Map *map = nullptr;
+    if (_list.size() > id)
+    {
+        map = _list[id];
+    }
+    
+    return map;
 }
 
 t_ubyte MapList::get_map_count() {
     ADDTOCALLSTACK();
-    return (t_ubyte)(*this).size();
+    return (t_ubyte)_list.size();
 }
 
 void MapList::add_map(t_ubyte index, Map* map){
@@ -40,6 +54,13 @@ void MapList::add_map(t_ubyte index, Map* map){
     }
     else
     {
-        (*this)[index] = map;
+        _list[index] = map;
     }
+}
+
+void MapList::init()
+{
+    Map* map = new Map();   //TODO: Read from ini.
+    map->create(0, 7168, 4096, 64, 0, "map0.mul");
+    add_map(0, map);
 }

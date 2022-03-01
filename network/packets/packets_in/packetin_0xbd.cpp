@@ -14,43 +14,26 @@
 
 #include <network/packets/packetlist.h>
 #include <network/socket.h>
-#include <game/client.h>
 #include <debug_support/info.h>
 
 
-const uword_t PacketIn_0x5d::length() {
-    return 73;
+const uword_t PacketIn_0xbd::length() {
+    return 25;
 }
 
-void PacketIn_0x5d::process(Socket* s) {
+void PacketIn_0xbd::process(Socket* s) {
     ADDTOCALLSTACK();
     UNREFERENCED_PARAMETER(s);
-    dword_t junk1;
-    std::string character_name;
-    word_t junk2;
-    dword_t flags;
-    dword_t junk3;
-    dword_t login_count;
-    dword_t junk4;
-    dword_t junk5;
-    dword_t junk6;
-    dword_t junk7;
-    dword_t slot;
-    dword_t ip;
+    udword_t client_major_version;
+    udword_t client_minor_version;
+    udword_t client_revision_version;
+    udword_t client_prototype_version;
+    udword_t other;
 
-    *(this) >> junk1;
-    read_string(character_name, CHARACTERS_STRING_LENGTH);
-    *(this) >> junk2;
-    *(this) >> flags;
-    *(this) >> junk3;
-    *(this) >> login_count;
-    *(this) >> junk4;
-    *(this) >> junk5;
-    *(this) >> junk6;
-    *(this) >> junk7;
-    *(this) >> slot;
-    *(this) >> ip;
-    s->get_client()->event_character_login(character_name, flags, login_count, slot, ip);
-}
-PacketIn_0x5d::~PacketIn_0x5d() {
+    *(this) >> client_major_version;
+    *(this) >> client_minor_version;
+    *(this) >> client_revision_version;
+    *(this) >> client_prototype_version;
+
+    //TODO: store the reported version.
 }

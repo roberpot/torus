@@ -17,27 +17,27 @@
 
 #include <library/types.h>
 
-enum STAT_TYPE {
-    STAT_STR,
-    STAT_DEX,
-    STAT_INT,
+enum class StatType {
+    STR,
+    DEX,
+    INT,
     PRIMARY_STAT_QTY,   ///< Main stat type, can have _base and _mod 
 
-    STAT_HITS = PRIMARY_STAT_QTY,
-    STAT_STAM,
-    STAT_MANA,
+    HITS = PRIMARY_STAT_QTY,
+    STAM,
+    MANA,
     SECONDARY_STAT_QTY, ///< Secondary stat type, can have _base, _mod, _max (doesn't modify anything, it's an standalone prop), _regen_delay, _regen_val and _last_regen
     STATS_QTY = SECONDARY_STAT_QTY,
 
-    STAT_RESFIRE = SECONDARY_STAT_QTY,
-    STAT_RESCOLD,
-    STAT_RESENERGY,
-    STAT_RESPOISON,
-    STAT_RESPHYS,
-    RESISTS_START = STAT_RESFIRE,
-    RESISTS_QTY = STAT_RESPHYS, ///< Resistances, can have _base, _mod and _max (modifies _base).
+    RESFIRE = SECONDARY_STAT_QTY,
+    RESCOLD,
+    RESENERGY,
+    RESPOISON,
+    RESPHYS,
+    RESISTS_START = RESFIRE,
+    RESISTS_QTY = RESPHYS, ///< Resistances, can have _base, _mod and _max (modifies _base).
 
-    STAT_WEIGHT ///< Weight, can have _base (current weight), _max (max carryable weight), _mod (modifies _max (ModMaxWeight prop)).
+    WEIGHT ///< Weight, can have _base (current weight), _max (max carryable weight), _mod (modifies _max (ModMaxWeight prop)).
 };
 
 class CharStats {
@@ -61,7 +61,7 @@ public:
     uword_t get_mod();
     void set_max(uword_t val);
     uword_t get_max();
-    void set_val(uword_t base, uword_t mod);
+    void set_val(uword_t base, uword_t mod = 0);
     uword_t get_val();
 // Regens
     void set_regen_delay(uword_t val);

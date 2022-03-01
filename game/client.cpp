@@ -13,18 +13,21 @@
 */
 
 #include <library/system_headers.h>
-#include <game/client.h>
-#include <network/packets/packetlist.h>
-#include <network/socket.h>
 #include <debug_support/callstack.h>
+#include <game/account.h>
 #include <game/char.h>
+#include <game/client.h>
+#include <network/socket.h>
+#include <network/packets/packetlist.h>
 
-Client::Client(Socket * s) {
+Client::Client(Socket * s) :
+    _socket(s),
+    _movement_sequence(0),
+    _movement_last(0),
+    _char(nullptr),
+    _account(nullptr)
+{
     ADDTOCALLSTACK();
-    _socket = s;
-    _movement_sequence = 0;
-    _movement_last = 0;
-    _char = nullptr;
 }
 
 Client::~Client() {
@@ -74,12 +77,32 @@ void Client::event_disconnect()
     _socket->set_read_closed();
 }
 
+void Client::event_character_login(const std::string& name, const dword_t& flags, const dword_t& login_count, const dword_t& slot, const dword_t& ip)
+{
+    UNREFERENCED_PARAMETER(name);       //TODO
+    UNREFERENCED_PARAMETER(flags);      //TODO
+    UNREFERENCED_PARAMETER(login_count);//TODO
+    UNREFERENCED_PARAMETER(ip);         //TODO
+    if (_account->get_char_count() < slot)
+    {
+        //wrong character id
+        event_disconnect();
+        return;
+    }
+
+    Char* character = _account->get_char(slot);
+
+    PacketOut_0x1b *packet_login_confirm = new PacketOut_0x1b();
+    packet_login_confirm->set_data(character);
+    packet_login_confirm->send(_socket);
+}
+
 Char * Client::get_char() {
     ADDTOCALLSTACK();
     return _char;
 }
 
-void Client::attatch(Char * chr) {
+void Client::attatch(Account* acc) {
     ADDTOCALLSTACK();
-    _char = chr;
+    _account = acc;
 }

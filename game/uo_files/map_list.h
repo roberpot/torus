@@ -20,9 +20,10 @@
 #include <library/types.h>
 #include <game/uo_files/map.h>
 
-extern class MapList : private std::map < t_ubyte, Map*>{
+extern class MapList{
+    std::map< t_ubyte, Map*> _list;
 public:
-    MapList() {}
+    MapList();
     ~MapList();
     /**
     * @brief gets the Map with the given id.
@@ -41,6 +42,8 @@ public:
     t_ubyte get_map_count();
 
     void add_map(t_ubyte index, Map* map);
+
+    void init();//FIXME: Remve when maps are being loaded from ini
 } maplist;
 
 #endif // __TORUS_GAME_MAP_LIST_H

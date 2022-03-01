@@ -23,7 +23,7 @@ AccountsManager torusacc;
 
 AccountsManager::AccountsManager()
 {
-    create("nefthon", "a", 8);
+    create("test", "a", 8);
 }
 
 AccountsManager::~AccountsManager()

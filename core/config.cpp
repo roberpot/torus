@@ -18,12 +18,15 @@
 
 #include <core/config.h>
 #include <debug_support/info.h>
+#include <game/uo_files/map.h>
+#include <game/uo_files/map_list.h>
 #include <library/string.h>
 
 
 Config toruscfg;
 
 Config::Config() {
+    //maplist.init();
 }
 
 void Config::load_config_file(const t_byte * file) {

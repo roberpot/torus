@@ -6,6 +6,13 @@ set(CORE_FILES
         core/errors.cpp core/errors.h)
 SOURCE_GROUP(core FILES ${CORE_FILES})
 
+set(CRYPT_FILES
+        crypt/crypt_entry.cpp crypt/crypt_entry.h
+        crypt/game_crypt.cpp crypt/game_crypt.h
+        crypt/login_crypt.cpp crypt/login_crypt.h
+        crypt/md5.cpp crypt/md5.h)
+SOURCE_GROUP(crypt FILES ${CRYPT_FILES})
+
 set(DB_FILES
         db/sqlite3.c                db/sqlite3.h)
 SOURCE_GROUP(db FILES ${DB_FILES})
@@ -45,22 +52,26 @@ SOURCE_GROUP(network\\packets FILES ${PACKETLIST_FILES})
 set(PACKETIN_FILES
         network/packets/packets_in/packetin_0x0.cpp
         network/packets/packets_in/packetin_0x02.cpp
+        network/packets/packets_in/packetin_0x34.cpp
         network/packets/packets_in/packetin_0x5d.cpp
         network/packets/packets_in/packetin_0x73.cpp
         network/packets/packets_in/packetin_0x80.cpp
         network/packets/packets_in/packetin_0x91.cpp
         network/packets/packets_in/packetin_0xa0.cpp
+        network/packets/packets_in/packetin_0xbd.cpp
+        network/packets/packets_in/packetin_0xbf.cpp
         network/packets/packets_in/packetin_0xef.cpp
         )
 SOURCE_GROUP(network\\packets\\packets_in FILES ${PACKETIN_FILES})
 
 set(PACKETOUT_FILES
         network/packets/packets_out/packetout_0x1b.cpp
-        network/packets/packets_out/packetout_0x22.cpp
         network/packets/packets_out/packetout_0x21.cpp
+        network/packets/packets_out/packetout_0x22.cpp
         network/packets/packets_out/packetout_0x55.cpp
         network/packets/packets_out/packetout_0x6d.cpp
         network/packets/packets_out/packetout_0x73.cpp
+        network/packets/packets_out/packetout_0x78.cpp
         network/packets/packets_out/packetout_0x82.cpp
         network/packets/packets_out/packetout_0x8c.cpp
         network/packets/packets_out/packetout_0xa8.cpp
@@ -92,7 +103,8 @@ set(GAME_FILES
         game/char.cpp               game/char.h
         game/item.cpp               game/item.h
         game/server.cpp             game/server.h
-        game/uid.cpp                game/uid.h)
+        game/uid.cpp                game/uid.h
+        game/word_object_container.cpp game/word_object_container.h)
 SOURCE_GROUP(game FILES ${GAME_FILES})
 
 set(GAME_CHAR_FILES
@@ -125,6 +137,7 @@ SOURCE_GROUP(main FILES ${MAIN_FILES})
 
 set(SOURCE_FILES
         ${CORE_FILES}
+        #${CRYPT_FILES}
         ${DB_FILES}
         ${LIBPQXX_SOURCES}
         ${DEBUG_FILES}
@@ -136,7 +149,7 @@ set(SOURCE_FILES
         ${PARSER_FILES}
         ${THREAD_FILES}
         ${GAME_FILES}
-            ${GAME_UOFILES_FILES}
-            ${GAME_CHAR_FILES}
+        ${GAME_UOFILES_FILES}
+        ${GAME_CHAR_FILES}
         ${TORUS_PARSER_FILES}
         ${MAIN_FILES})

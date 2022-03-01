@@ -16,8 +16,9 @@
 #include <network/packetin.h>
 
 
-PacketIn::PacketIn() :
-    _is_complete(false)
+PacketIn::PacketIn(bool has_dynamic_length) :
+    _is_complete(false),
+    _has_dynamic_length(has_dynamic_length)
 {
 }
 
@@ -35,7 +36,21 @@ void PacketIn::receive(const t_byte* data, const uword_t len)
     udword_t old_length = _current_buffer_length;
     _increase_buffer(len);  //Ensure the buffer can store the data.
     memcpy(_buffer + old_length, data, len);
-    if (_current_buffer_length >= length())
+
+    uword_t expected_length = 0;
+    if (_has_dynamic_length)
+    {
+        // If a packet has dynamic length, we must trust the size received in the buffer.
+        uword_t old_pos = _current_pos; //Store current pos, should be 0 ... but store anyway.
+        _current_pos = 1;               // Move the cursor to position 1, so the next 2 bytes read are the length.
+        (*this) >> expected_length;     // Read the length.
+        _current_pos = old_pos;         // Restore the cursor.
+    }
+    else
+    {
+        expected_length = length();
+    }
+    if (_current_buffer_length >= expected_length)
     {
         _is_complete = true;
         _current_pos = 1; // Move the cursor, so the id is not read when processing it's data in the packets' specific code.

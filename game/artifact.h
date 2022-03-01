@@ -25,9 +25,7 @@
 class Char;
 class Item;
 
-class Artifact : public Uid {
-public:
-    udword_t get_uid();
+class Artifact {
 protected:
     Artifact(udword_t uid);
     Char *get_char();
@@ -40,9 +38,12 @@ public:
     //Name
 private:
     std::string _name;
+    Uid _uid;
 public:
     std::string get_name();
     void set_name(std::string name);
+
+    Uid& get_uid();
 
     //Pos
 private:
