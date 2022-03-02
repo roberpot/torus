@@ -24,12 +24,18 @@ class Account;
 
 extern class AccountsManager{
 public:
-    AccountsManager();
-    ~AccountsManager();
 private:
     std::map<std::string, Account*> _list;
 public:
+
+    /**
+     * @brief Initializer for extern class.
+     */
     void init();
+    /**
+     * @brief Destroyer for extern class.
+     */
+    void shutdown();
     bool exists(std::string name, std::string pw);
     void load_all();
     void save_all();

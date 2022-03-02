@@ -19,18 +19,14 @@
 #include <game/account.h>
 #include <debug_support/callstack.h>
 
-AccountsManager torusacc;
 
-AccountsManager::AccountsManager()
+void AccountsManager::init()
 {
+    ADDTOCALLSTACK();
     create("test", "a", 8);
 }
 
-AccountsManager::~AccountsManager()
-{
-}
-
-void AccountsManager::init()
+void AccountsManager::shutdown()
 {
     ADDTOCALLSTACK();
 }

@@ -85,7 +85,7 @@ public:
     std::vector<std::pair<udword_t, udword_t> > crypto_keys;
     // Maps.
     std::vector<MapFile> map_files;
-    std::vector<std::pair<t_ubyte, t_ubyte>> maps;
+    std::vector<std::pair<t_ubyte, t_ubyte>> maps;  //VirtualMapIndex, MapFileId
 
     void add_game_server(ServerInfo &server);
     void add_game_server(std::string& name, std::string& ip, uword_t& port);

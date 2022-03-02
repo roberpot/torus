@@ -41,12 +41,12 @@ Uid& Artifact::get_uid() {
 }
 
 Artifact::~Artifact(){
-    ADDTOCALLSTACK();
+   ADDTOCALLSTACK();
     _uid.free_uid();
 }
 
 Char * Artifact::get_char() {
-    ADDTOCALLSTACK();
+   ADDTOCALLSTACK();
     Char *pchar = static_cast<Char*>(this);
     if (!pchar)
         return nullptr;
@@ -54,7 +54,7 @@ Char * Artifact::get_char() {
 }
 
 Item * Artifact::get_item() {
-    ADDTOCALLSTACK();
+   ADDTOCALLSTACK();
     Item *pitem = static_cast<Item*>(this);
     if (!pitem)
         return nullptr;
@@ -62,18 +62,16 @@ Item * Artifact::get_item() {
 }
 
 std::string Artifact::get_name(){
-    ADDTOCALLSTACK();
     return _name;
 }
 
 void Artifact::set_name(std::string name){
-    ADDTOCALLSTACK();
     // TODOTRIGGER: @Rename
     _name = name;
 }
 
 void Artifact::move_to(word_t destX, word_t destY){
-    ADDTOCALLSTACK();
+   ADDTOCALLSTACK();
     if (!_position.can_move_to_coord(destX, destY)) {
         //DEBUG_ERROR("Trying to move 0x" << std::hex << get_uid().get_uid() << "to a non-valid dest " << std::dec << destX << ", " << destY);
         //DEBUG_ERROR("Trying to move to a non-valid dest " << std::dec << destX << ", " << destY);
@@ -96,7 +94,7 @@ void Artifact::move_to(word_t destX, word_t destY){
 }
 
 void Artifact::set_z(t_byte destZ) {
-    ADDTOCALLSTACK();
+   ADDTOCALLSTACK();
     if (!_position.can_move_to_z(destZ)) {
         DEBUG_ERROR("Trying to move 0x" << std::hex << get_uid().get_uid() << " out of limits (" << destZ << "), avoiding it.");
         return;
@@ -105,7 +103,7 @@ void Artifact::set_z(t_byte destZ) {
 }
 
 void Artifact::set_map(t_ubyte destMap){
-    ADDTOCALLSTACK();
+   ADDTOCALLSTACK();
     if (!_position.can_move_to_map(destMap)) {
         DEBUG_ERROR("Trying to move 0x" << std::hex << get_uid().get_uid() << " to map out of limits, avoiding it.");
         return;
@@ -114,7 +112,7 @@ void Artifact::set_map(t_ubyte destMap){
 }
 
 void Artifact::set_pos(word_t destX, word_t destY, t_byte destZ, t_ubyte destMap){
-    ADDTOCALLSTACK();
+   ADDTOCALLSTACK();
     move_to(destX, destY);
     set_z(destZ);
     set_map(destMap);
@@ -130,27 +128,27 @@ uword_t Artifact::get_distance(Artifact * target) {
 }
 
 uword_t Artifact::get_distance(CoordPoint target) {
-    ADDTOCALLSTACK();
+   ADDTOCALLSTACK();
     return _position.get_distance(target);
 }
 
 bool Artifact::has_flag(udword_t flag){
-    ADDTOCALLSTACK();
+   ADDTOCALLSTACK();
     return _flags & flag;
 }
 
 void Artifact::set_flag(udword_t flag){
-    ADDTOCALLSTACK();
+   ADDTOCALLSTACK();
     _flags |= flag;
 }
 
 void Artifact::unset_flag(udword_t flag){
-    ADDTOCALLSTACK();
+   ADDTOCALLSTACK();
     _flags &= ~flag;
 }
 
 void Artifact::switch_flag(udword_t flag){
-    ADDTOCALLSTACK();
+   ADDTOCALLSTACK();
     _flags ^= flag;
 }
 
@@ -159,17 +157,17 @@ udword_t Artifact::get_flags() {
 }
 
 void Artifact::set_color(uword_t color) {
-    ADDTOCALLSTACK();
+   ADDTOCALLSTACK();
     _color = color;
 }
 
 uword_t Artifact::get_color() {
-    ADDTOCALLSTACK();
+   ADDTOCALLSTACK();
     return _color;
 }
 
 uqword_t Artifact::get_timer() {
-    ADDTOCALLSTACK();
+   ADDTOCALLSTACK();
     uqword_t diff = 0;
     uqword_t curtime = server.get_serv_time();
     if (_timer > curtime)
@@ -178,6 +176,6 @@ uqword_t Artifact::get_timer() {
 }
 
 void Artifact::set_timer(uqword_t ticks){
-    ADDTOCALLSTACK();
+   ADDTOCALLSTACK();
     _timer = server.get_serv_time() + ticks;
 }

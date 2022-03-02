@@ -26,8 +26,16 @@
 
 extern class Torus {
 public:
-    Torus();
-    void stop();
+
+    /**
+     * @brief Initializer for extern class.
+     */
+    bool init();
+    /**
+     * @brief Destroyer for extern class.
+     */
+    void shutdown();
+
     void set_thread_time(udword_t id, udword_t t);
     void mainloop();
 private:

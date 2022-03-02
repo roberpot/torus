@@ -23,6 +23,7 @@
 #include <debug_support/callstack.h>
 
 Account::Account() {
+    ADDTOCALLSTACK();
     _socket = nullptr;
     _client = nullptr;
 }
@@ -52,8 +53,6 @@ Account::Account(std::string accname, std::string accpw, PRIVLVL accpriv)
     //character->set_pos(633, 858, 0, 0);
     add_char(character);
     _character = character;//FIXME DELETE
-
-    server.add_char(character);
 
 }
 

@@ -22,15 +22,19 @@
 
 extern class UOFileManager{
 public:
-    UOFileManager();
-    ~UOFileManager();
-
 private:
     std::map<t_ubyte, Map*> basemaps;
-    MapList maplist;
 public:
     void read_config();
+
+    /**
+     * @brief Initializer for extern class.
+     */
     bool init();
+    /**
+     * @brief Destroyer for extern class.
+     */
+    void shutdown();
 
 } uofilemgr;
 

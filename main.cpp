@@ -21,6 +21,7 @@
 #include <debug_support/debug.h>
 #include <core/slave.h>
 #include <game/uo_files/uo_file_manager.h>
+#include <game/server.h>
 
 TorusShell torus_shell;
 Torus torus;
@@ -29,15 +30,19 @@ int main(int argc, char* argv[]) {
     torus_shell.start();
     TORUSSHELLECHO("Initializing Torus...");
     toruscfg.load_config_file("torus.ini");
-    if (!uofilemgr.init()) {
-        //return -1;
-    }
     //torusacc.init();
     toruscompiler.add_file(std::string("scripts/torustables.tscp"));
     toruscompiler.compile();
     torusnet.start();
-    TORUSSHELLECHO("Initializing Torus... OK.");
-    torus.mainloop();
+    if (torus.init())
+    {
+        TORUSSHELLECHO("Initializing Torus... OK.");
+        torus.mainloop();
+    }
+    else
+    {
+        TORUSSHELLECHO("Failed to initialize Torus, shuting down...")
+    }
     TORUSSHELLECHO("Shutting down Torus...");
     torusnet.halt();
     torusnet.join();

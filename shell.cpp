@@ -57,7 +57,7 @@ void * TorusShell::run() {
             }
             if (strlen(stripped_buffer) == 1 && stripped_buffer[0] == 'x') {
                 continue_proc = false;
-                torus.stop();
+                torus.shutdown();
             }
 //            if (torusshell.execute_order(stripped_buffer)) {
 //                continue_proc = false;

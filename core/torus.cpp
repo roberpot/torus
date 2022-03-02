@@ -17,15 +17,37 @@
 #include <debug_support/callstack.h>
 #include <threads/utils.h>
 #include <core/config.h>
+#include <game/accounts_manager.h>
 #include <game/server.h>
 #include <game/uo_files/map_list.h>
+#include <game/uo_files/uo_file_manager.h>
 
-Torus::Torus() {
+Server server;
+MapList maplist;
+UOFileManager uofilemgr;
+AccountsManager torusacc;
+
+
+bool Torus::init()
+{
+    ADDTOCALLSTACK();
+    server.init();
+    maplist.init();
+    if (!uofilemgr.init())
+    {
+        return false;
+    }
+    torusacc.init();
+    return true;
 }
 
-void Torus::stop() {
+void Torus::shutdown() {
     ADDTOCALLSTACK();
     _run = false;
+    server.shutdown();
+    maplist.shutdown();
+    uofilemgr.shutdown();
+    torusacc.shutdown();
 }
 
 void Torus::set_thread_time(udword_t id, udword_t t) {
@@ -47,6 +69,7 @@ void Torus::mainloop() {
         while(_run) {
             torus_thread_sleep(toruscfg.tick_duration);
             balance_control();
+            server.tick();
             _slaves_condvar.broadcast();
             //server._serv_time++;
         }

@@ -29,63 +29,51 @@ CharStats::~CharStats() {
 }
 
 void CharStats::set_base(uword_t val) {
-    ADDTOCALLSTACK();
     _base = val;
 }
 
 void CharStats::set_mod(uword_t val) {
-    ADDTOCALLSTACK();
     _mod = val;
 }
 
 void CharStats::set_max(uword_t val) {
-    ADDTOCALLSTACK();
     _max = val;
 }
 
 void CharStats::set_val(uword_t base, uword_t mod) {
-    ADDTOCALLSTACK();
     _base = base;
     _mod = mod;
 }
 
 uword_t CharStats::get_base() {
-    ADDTOCALLSTACK();
     return _base;
 }
 
 uword_t CharStats::get_mod() {
-    ADDTOCALLSTACK();
     return _mod;
 }
 
 uword_t CharStats::get_max() {
-    ADDTOCALLSTACK();
     return _max;
 }
 
 uword_t CharStats::get_val() {
-    ADDTOCALLSTACK();
     return _base + _mod;
 }
 
 void CharStats::set_regen_delay(uword_t val) {
-    ADDTOCALLSTACK();
     _regen_delay = val;
 }
 
 uword_t CharStats::get_regen_delay() {
-    ADDTOCALLSTACK();
     return _regen_delay;
 }
 
 void CharStats::set_regen_val(uword_t val) {
-    ADDTOCALLSTACK();
     _regen_val = val;
 }
 
 uword_t CharStats::get_regen_val() {
-    ADDTOCALLSTACK();
     return _regen_val;
 }
 

@@ -30,18 +30,25 @@ extern class Server {
     uword_t _tick_period;
 
     WorldObjectContainer<Char*> _chars;
+    WorldObjectContainer<Item*> _items;
 public:
-    Server();
-    ~Server();
+    /**
+     * @brief Initializer for extern class.
+     */
+    void init();
+    /**
+     * @brief Destroyer for extern class.
+     */
+    void shutdown();
     uqword_t get_serv_time();
     bool check();
     void load_all();
     void save_all();
     void add_char(Char* chr);
     void add_item(Item *item);
-    Artifact * get_artifact(const Uid& uid);
-    Char *get_char(const Uid& uid);
-    Item *get_item(const Uid& uid);
+    Artifact * get_artifact(Uid& uid);
+    Char *get_char(Uid& uid);
+    Item *get_item(Uid& uid);
     void del_char(Char *chr);
     void del_item(Item *item);
     void del_artifact(Artifact *art);

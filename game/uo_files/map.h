@@ -20,6 +20,8 @@
 #include <library/types.h>
 #include <game/uo_files/map_block.h>
 
+class UOFileManager;
+
 enum MAPID {
     MAP_FELUCCA,
     MAP_TRAMMEL,
@@ -40,9 +42,8 @@ private:
     UOMapBlock *_blocks;
     std::string _filename;
     bool _is_valid;
-public:
-    Map();
-    ~Map();
+protected:
+    friend class UOFileManager;
     /**
     * @brief Create the structure of this map.
     *
@@ -58,6 +59,9 @@ public:
     * @return success or fail;
     */
     bool init();
+public:
+    Map();
+    ~Map();
     /**
     * @brief Checks if this a valid map.
     *

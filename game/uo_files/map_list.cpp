@@ -17,18 +17,6 @@
 #include <debug_support/callstack.h>
 #include <game/uo_files/uo_file_manager.h>
 
-MapList maplist;
-
-MapList::MapList()
-{
-}
-
-MapList::~MapList() {
-    for (int i = 0; i < _list.size(); ++i)
-    {
-        delete _list[i];
-    }
-}
 
 Map *MapList::get_map(t_ubyte id) {
     ADDTOCALLSTACK();
@@ -60,7 +48,12 @@ void MapList::add_map(t_ubyte index, Map* map){
 
 void MapList::init()
 {
-    Map* map = new Map();   //TODO: Read from ini.
-    map->create(0, 7168, 4096, 64, 0, "map0.mul");
-    add_map(0, map);
+    ADDTOCALLSTACK();
+}
+
+void MapList::shutdown()
+{
+    ADDTOCALLSTACK();
+    //Don't delete the maps here, these are just pointer copies of the real maps.
+    //The deletion is done in UOFileManager::shutdown().
 }

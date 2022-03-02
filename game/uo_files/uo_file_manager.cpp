@@ -18,13 +18,6 @@
 #include <debug_support/callstack.h>
 #include <core/config.h>
 
-UOFileManager uofilemgr;
-
-UOFileManager::UOFileManager() {
-}
-
-UOFileManager::~UOFileManager() {
-}
 
 void UOFileManager::read_config() {
     ADDTOCALLSTACK();
@@ -79,5 +72,19 @@ bool UOFileManager::init() {
     }
     //TODO add staticsN.mul load based upon base maps.
 
+
+    Map* map = new Map();   //TODO: Read from ini - REMOVE this.
+    map->create(0, 7168, 4096, 64, 0, "map0.mul");
+    maplist.add_map(0, map);
+
     return true;
+}
+
+void UOFileManager::shutdown()
+{
+    // Clear just the basemaps, the virtual maps are just copies of them.
+    for (auto& map : basemaps)
+    {
+        delete map.second;
+    }
 }

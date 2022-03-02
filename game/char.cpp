@@ -26,6 +26,7 @@ Char::Char() : Artifact(UID_CHAR) {
     _account = nullptr;
     _client = nullptr;
     _body = BodyType::BODY_HUMAN_MALE;
+    server.add_char(this);
 }
 
 Char::Char(udword_t uid) : Artifact(uid) {
@@ -57,7 +58,6 @@ bool Char::can_move(){
 }
 
 void Char::remove() {
-    ADDTOCALLSTACK();
     server.del_char(this);
 }
 
@@ -172,5 +172,6 @@ BodyType Char::get_body()
 
 void Char::set_body(BodyType body)
 {
+    ADDTOCALLSTACK();
     _body = body;
 }

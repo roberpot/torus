@@ -77,36 +77,29 @@ void Uid::free_uid(){
 }
 
 udword_t Uid::get_uid(){
-    ADDTOCALLSTACK();
     return _uid;
 }
 
 udword_t Uid::get_uid_base(){
-    ADDTOCALLSTACK();
     return _uid &~(UID_ITEM | UID_RESOURCE);
 }
 
 void Uid::set_uid_type(udword_t mask) {
-    ADDTOCALLSTACK();
     _uid |= mask;
 }
 
 bool Uid::is_item(){
-    ADDTOCALLSTACK();
     return _uid & UID_ITEM;
 }
 
 bool Uid::is_resource(){
-    ADDTOCALLSTACK();
     return _uid & UID_RESOURCE;
 }
 
 bool Uid::is_char() {
-    ADDTOCALLSTACK();
     return !is_item() && !is_resource();
 }
 
 bool Uid::is_valid(){
-    ADDTOCALLSTACK();
     return !(_uid &UID_UNUSED);
 }

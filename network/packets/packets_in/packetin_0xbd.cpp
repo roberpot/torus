@@ -28,7 +28,8 @@ void PacketIn_0xbd::process(Socket* s) {
     udword_t client_minor_version;
     udword_t client_revision_version;
     udword_t client_prototype_version;
-    udword_t other;
+    udword_t unused;
+    UNREFERENCED_PARAMETER(unused);
 
     *(this) >> client_major_version;
     *(this) >> client_minor_version;

@@ -19,16 +19,13 @@
 #include <game/artifact.h>
 #include <core/config.h>
 
-Server server;
 
-Server::Server() {
-    ADDTOCALLSTACK();
-    _serv_time = 0;
-    _tick_period = toruscfg.tick_duration;
+void Server::init()
+{
 }
 
-Server::~Server() {
-    ADDTOCALLSTACK();
+void Server::shutdown()
+{
 }
 
 uqword_t Server::get_serv_time() {
@@ -49,49 +46,60 @@ void Server::save_all() {
     ADDTOCALLSTACK();
 }
 
-void Server::add_char(Char * chr) {
+void Server::add_char(Char * character) {
     ADDTOCALLSTACK();
-    _chars.add(chr->get_uid(), chr);
-    //TODO WOC
+    _chars.add(character->get_uid(), character);
 }
 
 void Server::add_item(Item * item) {
     ADDTOCALLSTACK();
-    //TODO WOC
+    _items.add(item->get_uid(), item);
 }
 
-Artifact * Server::get_artifact(const Uid& uid) {
+Artifact * Server::get_artifact(Uid& uid) {
     ADDTOCALLSTACK();
-    //TODO WOC
-    return nullptr;
+    Artifact* art = nullptr;
+    if (uid.is_char())
+    {
+        art = _chars.get(uid);
+    }
+    else if (uid.is_item())
+    {
+        art = _items.get(uid);
+    }
+    return art;
 }
 
-Char* Server::get_char(const Uid& uid)
+Char* Server::get_char(Uid& uid)
 {
-    Char *character = nullptr;
-    //TODO WOC
-    return character;
+    return _chars.get(uid);
 }
 
-Item* Server::get_item(const Uid& uid)
+Item* Server::get_item(Uid& uid)
 {
-    //TODO WOC
-    return nullptr;
+    return _items.get(uid);
 }
 
 void Server::del_char(Char * chr) {
     ADDTOCALLSTACK();
-    //TODO WOC
+    _chars.delete_later(chr->get_uid());
 }
 
 void Server::del_item(Item * item) {
     ADDTOCALLSTACK();
-    //TODO WOC
+    _items.delete_later(item->get_uid());
 }
 
 void Server::del_artifact(Artifact * art) {
     ADDTOCALLSTACK();
-    //TODO WOC
+    if (art->get_uid().is_char())
+    {
+        _chars.delete_later(art->get_uid());
+    }
+    else if (art->get_uid().is_item())
+    {
+        _items.delete_later(art->get_uid());
+    }
 }
 
 void Server::tick() {
