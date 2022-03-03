@@ -48,14 +48,17 @@ void WorldObjectContainer<T, Compare, Allocator>::add(Uid uid, T object)
             can_add = false;
         }
     }
-    
-    _container[uid] = object;
+
+    if (can_add)
+    {
+        _container[uid] = object;
+    }
 }
 
 template <class T, class Compare, class Allocator>
 bool WorldObjectContainer<T, Compare, Allocator>::has(Uid uid)
 {
-    return _container.find(object) != _container.end();
+    return _container.find(uid) != _container.end();
 }
 
 template <class T, class Compare, class Allocator>
@@ -79,7 +82,7 @@ T WorldObjectContainer<T, Compare, Allocator>::get(Uid uid)
 template <class T, class Compare, class Allocator>
 void WorldObjectContainer<T, Compare, Allocator>::remove(Uid uid)
 {
-    auto it = _container.find(object);
+    auto it = _container.find(uid);
     if (it != _container.end())
     {
         _container.erase(it);
@@ -123,7 +126,7 @@ void WorldObjectContainer<T, Compare, Allocator>::clear()
 template <class T, class Compare, class Allocator>
 size_t WorldObjectContainer<T, Compare, Allocator>::size()
 {
-    _container.size();
+    return _container.size();
 }
 
 template <class T, class Compare, class Allocator>
@@ -131,8 +134,10 @@ void WorldObjectContainer<T, Compare, Allocator>::tick()
 {
     if (!_delete_queue.empty())
     {
-        for (auto& uid : _delete_queue)
+        while (!_delete_queue.empty())
         {
+            Uid uid = _delete_queue.top();
+            _delete_queue.pop();
             delete _container[uid];
             _container.erase(uid);
         }

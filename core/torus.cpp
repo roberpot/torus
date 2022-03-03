@@ -35,7 +35,7 @@ bool Torus::init()
     maplist.init();
     if (!uofilemgr.init())
     {
-        return false;
+        //return false;
     }
     torusacc.init();
     return true;
