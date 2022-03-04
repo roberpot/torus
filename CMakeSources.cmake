@@ -52,6 +52,7 @@ SOURCE_GROUP(network\\packets FILES ${PACKETLIST_FILES})
 set(PACKETIN_FILES
         network/packets/packets_in/packetin_0x0.cpp
         network/packets/packets_in/packetin_0x02.cpp
+        network/packets/packets_in/packetin_0x06.cpp
         network/packets/packets_in/packetin_0x34.cpp
         network/packets/packets_in/packetin_0x5d.cpp
         network/packets/packets_in/packetin_0x73.cpp
@@ -66,13 +67,16 @@ SOURCE_GROUP(network\\packets\\packets_in FILES ${PACKETIN_FILES})
 
 set(PACKETOUT_FILES
         network/packets/packets_out/packetout_0x1b.cpp
+        network/packets/packets_out/packetout_0x11.cpp
         network/packets/packets_out/packetout_0x21.cpp
         network/packets/packets_out/packetout_0x22.cpp
+        network/packets/packets_out/packetout_0x3a.cpp
         network/packets/packets_out/packetout_0x55.cpp
         network/packets/packets_out/packetout_0x6d.cpp
         network/packets/packets_out/packetout_0x73.cpp
         network/packets/packets_out/packetout_0x78.cpp
         network/packets/packets_out/packetout_0x82.cpp
+        network/packets/packets_out/packetout_0x88.cpp
         network/packets/packets_out/packetout_0x8c.cpp
         network/packets/packets_out/packetout_0xa8.cpp
         network/packets/packets_out/packetout_0xa9.cpp

@@ -13,8 +13,8 @@
  */
 
 
-#include <debug_support/info.h>
 #include <network/packets/packetlist.h>
+#include <debug_support/info.h>
 #include <game/char.h>
 #include <game/server.h>
 #include <game/uid.h>

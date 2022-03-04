@@ -253,26 +253,58 @@ bool Socket::receive(udword_t receive_len)
             t_byte *newbuffer = new t_byte[buffer_len - 4];
             memcpy(newbuffer, &_buffer[4], buffer_len );
             buffer_len -= 4;
+            delete[] _buffer;
             _buffer = newbuffer;
         }
     }
     
-    if (_current_in_packet == nullptr)  // Try to retrieve an incomplete packet.
+    while (buffer_len > 0)
     {
-        t_ubyte id = _buffer[0];
-        _current_in_packet = packet_factory(id);
-    }
 
-    TORUSSHELLECHO("Socket " << this << " receive(0x" << hex(_buffer[0]) << ")[" << std::dec << buffer_len << "] = " << std::endl << hex_dump_buffer(_buffer, buffer_len));
-    if (_current_in_packet != nullptr)
-    {
-        _current_in_packet->receive(_buffer, buffer_len);
-        if (_current_in_packet->is_complete())
+        if (_current_in_packet == nullptr)  // Try to retrieve an incomplete packet.
         {
-            TORUSSHELLECHO("Pushing packet << " << _current_in_packet << "(0x" << hex(_current_in_packet->packet_id()) << ") to _packets_in_queue");
-            _packets_in_queue.push(_current_in_packet);
-            _current_in_packet = nullptr;   // The full packet has been received, clean this pointer so the next data is attacked to another packet.
+            t_ubyte id = _buffer[0];
+            _current_in_packet = packet_factory(id);
         }
+
+        TORUSSHELLECHO("Socket " << this << " receive(0x" << hex(_buffer[0]) << ")[" << std::dec << buffer_len << "] = " << std::endl << hex_dump_buffer(_buffer, buffer_len));
+        if (_current_in_packet != nullptr)
+        {
+            uword_t packet_len = _current_in_packet->length();
+            uword_t bytes_to_read = buffer_len;
+            if (bytes_to_read > packet_len)
+            {
+                bytes_to_read = packet_len;
+            }
+            _current_in_packet->receive(_buffer, bytes_to_read);
+            
+            if (buffer_len - bytes_to_read < 0)    // This happens when a packet is received along a chunk of the next one.
+            {
+                buffer_len = 0;
+            }
+            else
+            {
+                buffer_len -= bytes_to_read;
+            }
+            if (_current_in_packet->is_complete())
+            {
+                //TORUSSHELLECHO("Storing packet << " << _current_in_packet << "(0x" << hex(_current_in_packet->packet_id()) << ") in _packets_in_queue");
+                _packets_in_queue.push(_current_in_packet);
+                _current_in_packet = nullptr;   // The full packet has been received, clean this pointer so the next data is attacked to another packet.
+            }
+            if (buffer_len > 0)
+            {
+                t_byte* new_buffer = new t_byte[buffer_len + bytes_to_read];
+                memcpy(new_buffer, &_buffer[bytes_to_read], buffer_len);
+                delete[] _buffer;
+                _buffer = new_buffer;
+            }
+        }
+        else
+        {
+            break;//Bad packet?
+        }
+
     }
 
 
@@ -445,9 +477,8 @@ void Socket::read_queued_packets()
         PacketIn* in_packet = _packets_in_queue.front();
         if (_is_read_closed == false)
         {
-            TORUSSHELLECHO("Reading packet << " << in_packet << "(0x" << hex(in_packet->packet_id()) << ") from _packets_in_queue");
+            //TORUSSHELLECHO("Reading packet << " << in_packet << "(0x" << hex(in_packet->packet_id()) << ") from _packets_in_queue");
             in_packet->process(this);
-            //TORUSSHELLECHO("Processed");
         }
         _packets_in_queue.pop();
         delete in_packet;

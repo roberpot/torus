@@ -51,14 +51,14 @@ void PacketOut_0xa9::set_data(Client* client)
         {
             nameStr.push_back('\000');
         }
-        write_string(nameStr); // Player Name
+        write_string(nameStr, acc_name_pw_len); // Player Name
         std::string passwordStr = "";
         j = passwordStr.size();
         for (; j < acc_name_pw_len; ++j)
         {
             passwordStr.push_back('\000');
         }
-        write_string(passwordStr);
+        write_string(passwordStr, acc_name_pw_len);
     }
 
 
@@ -93,8 +93,8 @@ void PacketOut_0xa9::set_data(Client* client)
         }
         MapPoint point = points[i];
         write_byte(i);
-        write_string(city);     // City Name
-        write_string(building); // Building Name
+        write_string(city, city_strings_len);     // City Name
+        write_string(building, city_strings_len); // Building Name
         write_dword(point.x);   // X
         write_dword(point.y);   // Y
         write_dword(point.z);   // Z

@@ -22,6 +22,7 @@
 
 #define PACKET_CREATE_CHARACTER Packet_0x00
 #define PACKET_KR_2D_CLIENT_SEED Packet_0xef
+#define PACKET_USE_REQUEST Packet_0x06  //Double click
 #define PACKET_MOVEMENT_REQUEST Packet_0x02
 #define PACKET_MOVEMENT_REJECT Packet_0x21
 #define PACKET_MOVEMENT_ACCEPT Packet_0x22
@@ -30,6 +31,8 @@
 
 
 #define Packet_0x80_length 62
+
+#define PAPERDOLL_TEXT_LENGTH 60
 
 class Char;
 class Client;
@@ -56,11 +59,17 @@ private:
 };
 
 // Movement request
-class PacketIn_0x02 : public PacketIn {
+class PACKET_MOVEMENT_REQUEST : public PacketIn {
 public:
     virtual const uword_t length() override;
     virtual void process(Socket* s) override;
-    ~PacketIn_0x02();
+};
+
+// Double click
+class PACKET_USE_REQUEST : public PacketIn {
+public:
+    virtual const uword_t length() override;
+    virtual void process(Socket* s) override;
 };
 
 // Login confirm
@@ -71,20 +80,32 @@ public:
     ~PacketOut_0x1b();
 };
 
-// Movement rejected
-class PacketOut_0x21 : public PacketOut {
+// Mobile Status
+class PacketOut_0x11 : public PacketOut {
 public:
-    void set_data(t_ubyte seq, Client *client);
-    PacketOut_0x21();
-    ~PacketOut_0x21();
+    void set_data(Char* character);
+    PacketOut_0x11() : PacketOut(0x11, true) {};
+};
+
+// Movement rejected
+class PACKET_MOVEMENT_REJECT : public PacketOut {
+public:
+    void set_data(t_ubyte seq, Char* character);
+    PACKET_MOVEMENT_REJECT() : PacketOut(0x21) {};
 };
 
 // Movement accepted
-class PacketOut_0x22 : public PacketOut {
+class PACKET_MOVEMENT_ACCEPT : public PacketOut {
 public:
-    void set_data(t_ubyte seq, Client* client);
-    PacketOut_0x22();
-    ~PacketOut_0x22();
+    void set_data(const t_ubyte& seq, const udword_t& fast_walk_key);
+    PACKET_MOVEMENT_ACCEPT() : PacketOut(0x22) {};
+};
+
+// Skills Update
+class PacketOut_0x3a : public PacketOut {
+public:
+    void set_data(Char* character);
+    PacketOut_0x3a() : PacketOut(0x3a, true) {};
 };
 
 // Character query
@@ -149,10 +170,17 @@ public:
     ~PacketIn_0x80();
 };
 
+// Paperdoll
+class PacketOut_0x88 : public PacketOut {
+public:
+    void set_data(Char* character);
+    PacketOut_0x88() : PacketOut(0x88) {};
+};
+
 // PacketLoginResponse
 class PacketOut_0x82 : public PacketOut {
 public:
-    enum ResponseCode { //Response codes, copied from SphereX
+    enum class ResponseCode { //Response codes, copied from SphereX
         Invalid = 0x00, // no account
         InUse   = 0x01, // already in use
         Blocked = 0x02, // client blocked

@@ -36,10 +36,12 @@ private:
     t_ubyte _movement_sequence;  ///< Walking sequence.
     uqword_t _movement_last;    ///< Last walk packet received.
 public:
-    void event_walk(t_ubyte dir, t_ubyte seq);
+    void event_walk(const t_ubyte &dir, const t_ubyte &seq, const udword_t &fast_walk_key);
     void add_response_code(PacketOut_0x82::ResponseCode code);
     void event_disconnect();
     void event_character_login(const std::string &name, const dword_t &flags, const dword_t &login_count, const dword_t &slot, const dword_t &ip);
+    void event_double_click(Uid& uid);
+    void event_click(Uid& uid);
 private:
     Char *_char;
     Account *_account;

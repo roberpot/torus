@@ -15,10 +15,14 @@
 #include <library/system_headers.h>
 #include <debug_support/callstack.h>
 #include <game/account.h>
+#include <game/accounts_manager.h>
 #include <game/char.h>
 #include <game/client.h>
+#include <game/uid.h>
+#include <game/server.h>
 #include <network/socket.h>
 #include <network/packets/packetlist.h>
+
 
 Client::Client(Socket * s) :
     _socket(s),
@@ -44,19 +48,34 @@ void Client::send(PacketOut* packet)
     _socket->write(packet);
 }
 
-void Client::event_walk(t_ubyte dir, t_ubyte seq) {
+void Client::event_walk(const t_ubyte& dir, const t_ubyte& seq, const udword_t& fast_walk_key) {
     ADDTOCALLSTACK();
-    if (Dir(dir) > Dir::DIR_QTY) {
-        PacketOut_0x21 *rej = new PacketOut_0x21();
-        rej->set_data(seq, this);
-    }
-    if (get_char()->get_pos().can_move_to_coord(1, 1)) {
-        _movement_sequence++;
+    //_char MUST be valid.
 
+
+
+    PACKET_MOVEMENT_ACCEPT* packet_movement_accept = new PACKET_MOVEMENT_ACCEPT();
+    packet_movement_accept->set_data(seq, fast_walk_key);
+    packet_movement_accept->send(_socket);
+    return; //TODO: WalkChecks
+    if (Dir(dir) > Dir::DIR_QTY) {
+        PACKET_MOVEMENT_REJECT* packet_movement_reject = new PACKET_MOVEMENT_REJECT();
+        packet_movement_reject->set_data(seq, _char);
+        packet_movement_reject->send(_socket);
+        return;
+    }
+    else if (get_char()->get_pos().can_move_to_coord(1, 1))
+    {
+        _movement_sequence++;
+        PACKET_MOVEMENT_ACCEPT* packet_movement_accept = new PACKET_MOVEMENT_ACCEPT();
+        packet_movement_accept->set_data(seq, fast_walk_key);
+        packet_movement_accept->send(_socket);
+        
     }
     else {
-        PacketOut_0x21*rej = new PacketOut_0x21();
-        rej->set_data(seq, this);
+        PACKET_MOVEMENT_REJECT* packet_movement_reject = new PACKET_MOVEMENT_REJECT();
+        packet_movement_reject->set_data(seq, _char);
+        packet_movement_reject->send(_socket);
     }
 }
 
@@ -74,6 +93,7 @@ void Client::event_disconnect()
         _char = nullptr;
         //
     }
+    add_response_code(PacketOut_0x82::ResponseCode::Other);
     _socket->set_read_closed();
 }
 
@@ -90,11 +110,42 @@ void Client::event_character_login(const std::string& name, const dword_t& flags
         return;
     }
 
-    Char* character = _account->get_char(slot);
+    _char = _account->get_char(slot);
 
     PacketOut_0x1b *packet_login_confirm = new PacketOut_0x1b();
-    packet_login_confirm->set_data(character);
+    packet_login_confirm->set_data(_char);
     packet_login_confirm->send(_socket);
+
+    PacketOut_0x78* packet_send_character = new PacketOut_0x78();
+    packet_send_character->set_data(_char);
+    packet_send_character->send(_socket);
+
+    PacketOut_0x55 *packet_login_confirmed = new PacketOut_0x55();
+    packet_login_confirmed->send(_socket);
+
+}
+
+void Client::event_double_click(Uid& uid)
+{
+    if (uid.is_char())
+    {
+        Char *character = server.get_char(uid);        
+        /*if ()//TODO: Is pet & rideable? -> mount
+        {
+
+        }
+        else*/
+        {
+            PacketOut_0x88* packet_paperdoll = new PacketOut_0x88();
+            packet_paperdoll->send(_socket);
+        }
+        
+    }
+}
+
+void Client::event_click(Uid& uid)
+{
+
 }
 
 Char * Client::get_char() {

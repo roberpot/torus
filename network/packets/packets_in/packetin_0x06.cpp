@@ -15,34 +15,19 @@
 #include <network/packets/packetlist.h>
 #include <network/socket.h>
 #include <debug_support/info.h>
-#include <game/server.h>
-#include <game/char.h>
+#include <core/torus.h>
+#include <game/client.h>
+#include <game/uid.h>
 
-const uword_t PacketIn_0x34::length() {
-    return 10;
+
+const uword_t PACKET_USE_REQUEST::length() {
+    return 5;
 }
 
-void PacketIn_0x34::process(Socket* s) {
+void PACKET_USE_REQUEST::process(Socket*s) {
     ADDTOCALLSTACK();
-    UNREFERENCED_PARAMETER(s);
-    
-    dword_t junk;
-    t_byte type;
-    dword_t uid;
-
-    (*this) >> junk;
-    (*this) >> type;
-    (*this) >> uid;
-
-    Char *character = server.get_char(Uid(uid));
-    if (character)
-    {
-        PacketOut_0x11 *packet_mobile = new PacketOut_0x11();
-        packet_mobile->set_data(character);
-    }
-    else
-    {
-        TORUSSHELLECHO("Mobile request for invalid uid: " << uid);
-    }
-
+    udword_t in_uid;
+    *(this) >> in_uid;
+    Uid uid(in_uid);
+    s->get_client()->event_double_click(uid);
 }

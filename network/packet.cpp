@@ -30,6 +30,12 @@ PacketIn* packet_factory(udword_t id ) {
         case 0x00:
             p = new PacketIn_0x00();
             break;
+        case 0x02:
+            p = new PACKET_MOVEMENT_REQUEST();
+            break;
+        case 0x06:
+            p = new PACKET_USE_REQUEST();
+            break;
         case 0x34:
             p = new PacketIn_0x34();
             break;

@@ -21,21 +21,9 @@
 #include <network/socket.h>
 
 
-void PacketOut_0x22::set_data(t_ubyte seq, Client * client) {
+void PACKET_MOVEMENT_ACCEPT::set_data(const t_ubyte& seq, const udword_t& fast_walk_key) {
     ADDTOCALLSTACK();
-    Char *chr = client->get_char();
-    if (!chr) {
-        return;
-    }
     write_ubyte(seq);
     write_ubyte(7); // View color (blue, red, yellow ...)
-}
-
-PacketOut_0x22::PacketOut_0x22() : PacketOut(0x22)
-{
-}
-
-
-PacketOut_0x22::~PacketOut_0x22() {
-    ADDTOCALLSTACK();
+    write_udword(fast_walk_key);
 }

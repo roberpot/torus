@@ -13,36 +13,10 @@
  */
 
 #include <network/packets/packetlist.h>
-#include <network/socket.h>
 #include <debug_support/info.h>
-#include <game/server.h>
 #include <game/char.h>
 
-const uword_t PacketIn_0x34::length() {
-    return 10;
+void PacketOut_0x3a::set_data(Char* character)
+{
 }
 
-void PacketIn_0x34::process(Socket* s) {
-    ADDTOCALLSTACK();
-    UNREFERENCED_PARAMETER(s);
-    
-    dword_t junk;
-    t_byte type;
-    dword_t uid;
-
-    (*this) >> junk;
-    (*this) >> type;
-    (*this) >> uid;
-
-    Char *character = server.get_char(Uid(uid));
-    if (character)
-    {
-        PacketOut_0x11 *packet_mobile = new PacketOut_0x11();
-        packet_mobile->set_data(character);
-    }
-    else
-    {
-        TORUSSHELLECHO("Mobile request for invalid uid: " << uid);
-    }
-
-}

@@ -58,7 +58,7 @@ void PacketOut_0xa8::set_data(Socket* s)
             serverName << '\0';
         }
 
-        write_string(serverName.str());
+        write_string(serverName.str(), 32);
 
         serverPercentFull = 0;  //TODO
         serverTimeZone = 0;

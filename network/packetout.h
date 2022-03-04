@@ -46,7 +46,7 @@ public:
     void write_qword(qword_t qword);
     void write_uqword(uqword_t uqword);
 
-    void write_string(std::string string);
+    void write_string(const std::string& string, uword_t len);
 
 
 private:

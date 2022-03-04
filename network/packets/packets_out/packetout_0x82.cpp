@@ -17,12 +17,6 @@
 #include <debug_support/info.h>
 
 
-//const udword_t Packet_0x82::length()
-//{
-//    ADDTOCALLSTACK();
-//    return 2;
-//}
-
 void PacketOut_0x82::set_data(ResponseCode code)
 {
     ADDTOCALLSTACK();

@@ -19,20 +19,17 @@
 #include <game/client.h>
 
 
-const uword_t PacketIn_0x02::length() {
-    ADDTOCALLSTACK();
+const uword_t PACKET_MOVEMENT_REQUEST::length() {
     return 7;
 }
 
-void PacketIn_0x02::process(Socket*s) {
+void PACKET_MOVEMENT_REQUEST::process(Socket* s) {
     ADDTOCALLSTACK();
     t_byte dir = 0;
-    t_byte sequence = 0;
+    t_ubyte sequence = 0;
+    udword_t fast_walk_key;
     *(this) >> dir;
     *(this) >> sequence;
-    s->get_client()->event_walk(dir, sequence);
-}
-
-PacketIn_0x02::~PacketIn_0x02() {
-    ADDTOCALLSTACK();
+    *(this) >> fast_walk_key;
+    s->get_client()->event_walk(dir, sequence, fast_walk_key);
 }

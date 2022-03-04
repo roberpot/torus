@@ -50,7 +50,7 @@ void * NetworkManager::run() {
                     clientSocket->clean_incoming_packets();
                     continue;
                 }
-                TORUSSHELLECHO("data ready for socket " << clientSocket << ", reading it from" << clientSocket->get_ip_str());
+                //TORUSSHELLECHO("data ready for socket " << clientSocket << ", reading it from" << clientSocket->get_ip_str());
                 if (clientSocket->receive() == false)
                 {
                     continue;
@@ -92,7 +92,7 @@ void * NetworkManager::run() {
                     clientSocket->clean_incoming_packets();
                     continue;
                 }
-                TORUSSHELLECHO("data ready for socket " << clientSocket << ", reading it from" << clientSocket->get_ip_str());
+                //TORUSSHELLECHO("data ready for socket " << clientSocket << ", reading it from" << clientSocket->get_ip_str());
                 if (clientSocket->receive() == false)
                 {
                     continue;

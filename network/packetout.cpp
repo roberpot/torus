@@ -71,18 +71,21 @@ void PacketOut::send(Socket* s)
 
 void PacketOut::write_byte(t_byte byte)
 {
+    ADDTOCALLSTACK();
     _increase_buffer(1);
     _buffer[_current_pos++] = byte;
 }
 
 void PacketOut::write_ubyte(t_ubyte ubyte)
 {
+    ADDTOCALLSTACK();
     _increase_buffer(1);
     _buffer[_current_pos++] = ubyte;
 }
 
 void PacketOut::write_word(word_t word)
 {
+    ADDTOCALLSTACK();
     _increase_buffer(2);
     _buffer[_current_pos++] = t_byte(word >> 8);
     _buffer[_current_pos++] = t_byte(word);
@@ -90,6 +93,7 @@ void PacketOut::write_word(word_t word)
 
 void PacketOut::write_uword(uword_t uword)
 {
+    ADDTOCALLSTACK();
     _increase_buffer(2);
     _buffer[_current_pos++] = t_byte(uword >> 8);
     _buffer[_current_pos++] = t_byte(uword);
@@ -97,6 +101,7 @@ void PacketOut::write_uword(uword_t uword)
 
 void PacketOut::write_dword(dword_t dword)
 {
+    ADDTOCALLSTACK();
     _increase_buffer(4);
     _buffer[_current_pos++] = t_byte(dword >> 24);
     _buffer[_current_pos++] = t_byte(dword >> 16);
@@ -106,6 +111,7 @@ void PacketOut::write_dword(dword_t dword)
 
 void PacketOut::write_udword(udword_t udword)
 {
+    ADDTOCALLSTACK();
     _increase_buffer(4);
     _buffer[_current_pos++] = t_byte(udword >> 24);
     _buffer[_current_pos++] = t_byte(udword >> 16);
@@ -115,6 +121,7 @@ void PacketOut::write_udword(udword_t udword)
 
 void PacketOut::write_qword(qword_t qword)
 {
+    ADDTOCALLSTACK();
     _increase_buffer(8);
     _buffer[_current_pos++] = t_byte(qword >> 56);
     _buffer[_current_pos++] = t_byte(qword >> 48);
@@ -128,6 +135,7 @@ void PacketOut::write_qword(qword_t qword)
 
 void PacketOut::write_uqword(uqword_t uqword)
 {
+    ADDTOCALLSTACK();
     _increase_buffer(8);
     _buffer[_current_pos++] = t_byte(uqword >> 56);
     _buffer[_current_pos++] = t_byte(uqword >> 48);
@@ -139,12 +147,17 @@ void PacketOut::write_uqword(uqword_t uqword)
     _buffer[_current_pos++] = t_byte(uqword);
 }
 
-void PacketOut::write_string(std::string string)
+void PacketOut::write_string(const std::string& string, uword_t len)
 {
-    uword_t size = uword_t(string.size());
-    _increase_buffer(size);
-    for (size_t i = 0; i < size; ++i)
+    //ADDTOCALLSTACK();
+    _increase_buffer(len);
+    size_t i = 0;
+    for (; i < string.size(); ++i)
     {
         _buffer[_current_pos++] = string[i];
+    }
+    for (i; i < size_t(len); ++i)
+    {
+        _buffer[_current_pos++] = '\0';
     }
 }
