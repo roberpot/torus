@@ -37,12 +37,13 @@ set(LIBRARY_FILES
 SOURCE_GROUP(library FILES ${LIBRARY_FILES})
 
 set(NETWORK_FILES
-        network/crypto.cpp network/crypto.h
-        network/packetin.cpp network/packetin.h
-        network/packetout.cpp network/packetout.h
-        network/packet.cpp network/packet.h
-        network/socket.cpp network/socket.h
-        network/networkmanager.cpp network/networkmanager.h)
+        network/crypto.cpp              network/crypto.h
+        network/huffman_compression.cpp network/huffman_compression.h
+        network/packetin.cpp            network/packetin.h
+        network/packetout.cpp           network/packetout.h
+        network/packet.cpp              network/packet.h
+        network/socket.cpp              network/socket.h
+        network/networkmanager.cpp      network/networkmanager.h)
 SOURCE_GROUP(network FILES ${NETWORK_FILES})
 
 set(PACKETLIST_FILES

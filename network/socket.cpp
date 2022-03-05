@@ -62,8 +62,11 @@ void Socket::_init()
     _seed = 0;
     _seeded = false;
 
-    _buffer = new t_byte[BUFFER_SIZE];
-    memset(_buffer, 0, BUFFER_SIZE);
+    _input_buffer = new t_byte[BUFFER_SIZE];
+    memset(_input_buffer, 0, BUFFER_SIZE);
+
+    _output_buffer = new t_byte[BUFFER_SIZE];
+    memset(_output_buffer, 0, BUFFER_SIZE);
 
     if (_server_type == ConnectionType::CONNECTIONTYPE_GAMESERVER)
     {
@@ -205,7 +208,7 @@ bool Socket::receive(udword_t receive_len)
 
 #endif // _WINDOWS
 #ifdef __linux__
-    buffer_len = (udword_t)recv(_socket, _buffer, receive_len, 0);
+    buffer_len = (udword_t)recv(_socket, _input_buffer, receive_len, 0);
     if (buffer_len == 0)
     {
         TORUSSHELLECHO("Socket recv error: " << strerror(errno));
@@ -224,10 +227,9 @@ bool Socket::receive(udword_t receive_len)
     }
 
 
-    t_ubyte first_byte = _buffer[0];
+    t_ubyte first_byte = _input_buffer[0];
     if (_seeded == false)
     {
-
         // check for new seed (sometimes it's received on its own)
         if (buffer_len == 1 && first_byte == 239)
         {
@@ -240,21 +242,21 @@ bool Socket::receive(udword_t receive_len)
         }
         // More than 4 bytes
         // new seed?
-        if (t_ubyte(_buffer[4]) == 145)  // 0x91
+        if (t_ubyte(_input_buffer[4]) == 145)  // 0x91
         {
             //Seed beign received upon new connection, along with packet 0x91.
-            int seed = int((unsigned char)(_buffer[0]) << 24 |
-                (unsigned char)(_buffer[1]) << 16 |
-                (unsigned char)(_buffer[2]) << 8 |
-                (unsigned char)(_buffer[3]));
+            int seed = int((unsigned char)(_input_buffer[0]) << 24 |
+                (unsigned char)(_input_buffer[1]) << 16 |
+                (unsigned char)(_input_buffer[2]) << 8 |
+                (unsigned char)(_input_buffer[3]));
             _seed = seed;
             _seeded = true;
 
             t_byte *newbuffer = new t_byte[buffer_len - 4];
-            memcpy(newbuffer, &_buffer[4], buffer_len );
+            memcpy(newbuffer, &_input_buffer[4], buffer_len );
             buffer_len -= 4;
-            delete[] _buffer;
-            _buffer = newbuffer;
+            delete[] _input_buffer;
+            _input_buffer = newbuffer;
         }
     }
     
@@ -263,11 +265,11 @@ bool Socket::receive(udword_t receive_len)
 
         if (_current_in_packet == nullptr)  // Try to retrieve an incomplete packet.
         {
-            t_ubyte id = _buffer[0];
+            t_ubyte id = _input_buffer[0];
             _current_in_packet = packet_factory(id);
         }
 
-        TORUSSHELLECHO("Socket " << this << " receive(0x" << hex(_buffer[0]) << ")[" << std::dec << buffer_len << "] = " << std::endl << hex_dump_buffer(_buffer, buffer_len));
+        TORUSSHELLECHO("Socket " << this << " receive(0x" << hex(_input_buffer[0]) << ")[" << std::dec << buffer_len << "] = " << std::endl << hex_dump_buffer(_input_buffer, buffer_len));
         if (_current_in_packet != nullptr)
         {
             uword_t packet_len = _current_in_packet->length();
@@ -276,7 +278,7 @@ bool Socket::receive(udword_t receive_len)
             {
                 bytes_to_read = packet_len;
             }
-            _current_in_packet->receive(_buffer, bytes_to_read);
+            _current_in_packet->receive(_input_buffer, bytes_to_read);
             
             if (buffer_len - bytes_to_read < 0)    // This happens when a packet is received along a chunk of the next one.
             {
@@ -295,19 +297,16 @@ bool Socket::receive(udword_t receive_len)
             if (buffer_len > 0)
             {
                 t_byte* new_buffer = new t_byte[buffer_len + bytes_to_read];
-                memcpy(new_buffer, &_buffer[bytes_to_read], buffer_len);
-                delete[] _buffer;
-                _buffer = new_buffer;
+                memcpy(new_buffer, &_input_buffer[bytes_to_read], buffer_len);
+                delete[] _input_buffer;
+                _input_buffer = new_buffer;
             }
         }
         else
         {
             break;//Bad packet?
         }
-
     }
-
-
     return true;
 }
 
@@ -437,6 +436,7 @@ dword_t Socket::get_ip()
 
 void Socket::send_queued_packets()
 {
+    ADDTOCALLSTACK();
     while (!_packets_out_queue.empty())
     {
         PacketOut* out_packet = _packets_out_queue.front();
@@ -444,34 +444,52 @@ void Socket::send_queued_packets()
         {
             //out_packet->print("Sending ");
             TORUSSHELLECHO("Socket " << this << " send(" << out_packet->length() << ") " << std::endl << hex_dump_buffer(out_packet->data(), out_packet->length()));
-
+            udword_t out_len = 0;
+            if (_server_type == ConnectionType::CONNECTIONTYPE_GAMESERVER)
+            {
+                out_len = _huffman.compress(_output_buffer, out_packet->data(), BUFFER_SIZE, out_packet->length());
+            }
+            else
+            {
+                out_len = out_packet->length();
+                memcpy(_output_buffer, out_packet->data(), out_len);
+            }
+            if (out_len == 0)
+            {
+                //Failed, too much data?
+            }
+            else
+            {
 #ifdef _WINDOWS
-            udword_t data_sended = send(_socket, out_packet->data(), out_packet->length(), 0);
-            if (data_sended == SOCKET_ERROR) {
-                THROW_ERROR(NetworkError, "Send failed with error: " << WSAGetLastError());
-            }
-            else if (data_sended != out_packet->length()) {
-                THROW_ERROR(NetworkError, "Send " << data_sended << " bytes, instead of " << out_packet->length() << " bytes.");
-            }
+                udword_t data_sended = send(_socket, _output_buffer, out_len, 0);
+                if (data_sended == SOCKET_ERROR) {
+                    THROW_ERROR(NetworkError, "Send failed with error: " << WSAGetLastError());
+                }
+                else if (data_sended != out_len) {
+                    THROW_ERROR(NetworkError, "Send " << data_sended << " bytes, instead of " << out_len << " bytes.");
+                }
 #endif // _WINDOWS
 #ifdef __linux__
-            ssize_t data_sended = send(_socket, out_packet->data(), out_packet->length(), 0);
-            if (data_sended == -1) {
-                THROW_ERROR(NetworkError, "Send failed");
-            }
-            else if (data_sended != out_packet->length()) {
-                THROW_ERROR(NetworkError, "Send " << data_sended << " bytes, instead of " << out_packet->length() << " bytes.");
-            }
+                ssize_t data_sended = send(_socket, _output_buffer, out_len, 0);
+                if (data_sended == -1) {
+                    THROW_ERROR(NetworkError, "Send failed");
+                }
+                else if (data_sended != out_len) {
+                    THROW_ERROR(NetworkError, "Send " << data_sended << " bytes, instead of " << out_len<< " bytes.");
+                }
 #endif //__linux__
+            }
+            memset(_output_buffer, 0, BUFFER_SIZE);
+            //TODO: Encryption (after compression)
         }
         _packets_out_queue.pop();
         delete out_packet;
-        break;
     }
 }
 
 void Socket::read_queued_packets()
 {
+    ADDTOCALLSTACK();
     while (!_packets_in_queue.empty())
     {
         PacketIn* in_packet = _packets_in_queue.front();
@@ -487,6 +505,7 @@ void Socket::read_queued_packets()
 
 void Socket::clean_incoming_packets()
 {
+    ADDTOCALLSTACK();
     while (!_packets_in_queue.empty())
     {
         PacketIn* in_packet = _packets_in_queue.front();

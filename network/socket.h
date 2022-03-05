@@ -30,6 +30,7 @@
 #include <network/packetin.h>
 #include <network/packetout.h>
 #include <debug_support/callstack.h>
+#include <network/huffman_compression.h>
 
 class Client;
 
@@ -77,8 +78,10 @@ class Socket
     ConnectionType _connection_type;
     ConnectionType _server_type;
     sockaddr_in _connection_info;
+    HuffmanCompression _huffman;
     Client* _client;
-    t_byte *_buffer;
+    t_byte *_input_buffer;
+    t_byte *_output_buffer;
     udword_t _seed;
     bool _seeded;
 #ifdef __linux
