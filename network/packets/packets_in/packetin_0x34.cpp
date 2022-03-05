@@ -28,13 +28,13 @@ void PacketIn_0x34::process(Socket* s) {
     
     dword_t junk;
     t_byte type;
-    dword_t uid;
+    dword_t in_uid;
 
     (*this) >> junk;
     (*this) >> type;
-    (*this) >> uid;
-
-    Char *character = server.get_char(Uid(uid));
+    (*this) >> in_uid;
+    Uid uid(in_uid);
+    Char *character = server.get_char(uid);
     if (character)
     {
         PacketOut_0x11 *packet_mobile = new PacketOut_0x11();
@@ -42,7 +42,7 @@ void PacketIn_0x34::process(Socket* s) {
     }
     else
     {
-        TORUSSHELLECHO("Mobile request for invalid uid: " << uid);
+        TORUSSHELLECHO("Mobile request for invalid uid: " << in_uid);
     }
 
 }

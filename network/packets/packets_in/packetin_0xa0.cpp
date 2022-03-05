@@ -24,10 +24,11 @@ const uword_t PacketIn_0xa0::length() {
 
 void PacketIn_0xa0::process(Socket* s) {
     ADDTOCALLSTACK();
-    word_t server_index; // FIXME: Not working, right now it's receiving 256, it should receive 1
+    ++_current_pos;
+    t_byte server_index; // FIXME: Not working, right now it's receiving 256, it should receive 1
     *(this) >> server_index;
-    if (server_index >= 0x80) {
-        server_index -= 0x80;
+    if (server_index >= TBYTE_MAX) {
+        server_index -= TBYTE_MAX;
     }
 
     // >= 1.26.00 clients list Gives us a 1 based index for some reason.
