@@ -80,7 +80,7 @@ public:
      * 
      * The receipt data may not form the full packet, yet.
      */
-    void receive(const t_byte *data, const uword_t len);
+    void receive(const uint8_t*data, const uword_t len);
     
     /**
      * @brief Completion status of the packet.

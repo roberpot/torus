@@ -62,11 +62,14 @@ void Socket::_init()
     _seed = 0;
     _seeded = false;
 
-    _input_buffer = new t_byte[BUFFER_SIZE];
+    _input_buffer = new uint8_t[BUFFER_SIZE];
     memset(_input_buffer, 0, BUFFER_SIZE);
 
     _output_buffer = new t_byte[BUFFER_SIZE];
     memset(_output_buffer, 0, BUFFER_SIZE);
+
+    _output_encrypted_buffer = new uint8_t[BUFFER_SIZE];
+    memset(_output_encrypted_buffer, 0, BUFFER_SIZE);
 
     if (_server_type == ConnectionType::CONNECTIONTYPE_GAMESERVER)
     {
@@ -199,7 +202,7 @@ bool Socket::receive(udword_t receive_len)
 
     }*/
 #ifdef _WINDOWS
-    buffer_len = uword_t(recv(_socket, _buffer, receive_len, 0));
+    buffer_len = uword_t(recv(_socket, (t_byte*)(_input_buffer), receive_len, 0));
     if (buffer_len == SOCKET_ERROR)
     {
         TORUSSHELLECHO("Socket recv error: " << WSAGetLastError());
@@ -252,7 +255,7 @@ bool Socket::receive(udword_t receive_len)
             _seed = seed;
             _seeded = true;
 
-            t_byte *newbuffer = new t_byte[buffer_len - 4];
+            uint8_t*newbuffer = new uint8_t[buffer_len - 4];
             memcpy(newbuffer, &_input_buffer[4], buffer_len );
             buffer_len -= 4;
             delete[] _input_buffer;
@@ -296,7 +299,7 @@ bool Socket::receive(udword_t receive_len)
             }
             if (buffer_len > 0)
             {
-                t_byte* new_buffer = new t_byte[buffer_len + bytes_to_read];
+                uint8_t* new_buffer = new uint8_t[buffer_len + bytes_to_read];
                 memcpy(new_buffer, &_input_buffer[bytes_to_read], buffer_len);
                 delete[] _input_buffer;
                 _input_buffer = new_buffer;
@@ -447,7 +450,9 @@ void Socket::send_queued_packets()
             udword_t out_len = 0;
             if (_server_type == ConnectionType::CONNECTIONTYPE_GAMESERVER)
             {
-                out_len = _huffman.compress(_output_buffer, out_packet->data(), BUFFER_SIZE, out_packet->length());
+                out_len = _huffman.compress(_output_encrypted_buffer, out_packet->data(), BUFFER_SIZE, out_packet->length());
+                TORUSSHELLECHO("Compressed data =  " << this << " send(" << out_len << ") " << std::endl << hex_dump_buffer(_output_encrypted_buffer, out_len));
+                memcpy(_output_buffer, _output_encrypted_buffer, out_len);
             }
             else
             {
@@ -456,29 +461,31 @@ void Socket::send_queued_packets()
             }
             if (out_len == 0)
             {
+                TORUSSHELLECHO("Failed to compress, aborting the sending of this packet.");
                 //Failed, too much data?
             }
             else
             {
 #ifdef _WINDOWS
-                udword_t data_sended = send(_socket, _output_buffer, out_len, 0);
-                if (data_sended == SOCKET_ERROR) {
+                udword_t sent_len = send(_socket, _output_buffer, out_len, 0);
+                if (sent_len == SOCKET_ERROR) {
                     THROW_ERROR(NetworkError, "Send failed with error: " << WSAGetLastError());
                 }
-                else if (data_sended != out_len) {
-                    THROW_ERROR(NetworkError, "Send " << data_sended << " bytes, instead of " << out_len << " bytes.");
+                else if (sent_len != out_len) {
+                    THROW_ERROR(NetworkError, "Send " << sent_len << " bytes, instead of " << out_len << " bytes.");
                 }
 #endif // _WINDOWS
 #ifdef __linux__
-                ssize_t data_sended = send(_socket, _output_buffer, out_len, 0);
-                if (data_sended == -1) {
+                ssize_t sent_len = send(_socket, _output_buffer, out_len, 0);
+                if (sent_len == -1) {
                     THROW_ERROR(NetworkError, "Send failed");
                 }
-                else if (data_sended != out_len) {
-                    THROW_ERROR(NetworkError, "Send " << data_sended << " bytes, instead of " << out_len<< " bytes.");
+                else if (sent_len != out_len) {
+                    THROW_ERROR(NetworkError, "Send " << sent_len << " bytes, instead of " << out_len<< " bytes.");
                 }
 #endif //__linux__
             }
+            memset(_output_encrypted_buffer, 0, BUFFER_SIZE);            
             memset(_output_buffer, 0, BUFFER_SIZE);
             //TODO: Encryption (after compression)
         }

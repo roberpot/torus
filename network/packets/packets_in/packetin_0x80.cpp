@@ -48,23 +48,25 @@ void PacketIn_0x80::process(Socket* s)
 
     if (acc == nullptr)
     {
+        DEBUG_NOTICE("1");
         //LoginAck -> Invalid account
+        s->get_client()->add_response_code(PacketOut_0x82::ResponseCode::Invalid);
         return ;
     }
     else if (!acc->password_match(account_password))
     {
+        DEBUG_NOTICE("2");
+        s->get_client()->add_response_code(PacketOut_0x82::ResponseCode::BadPass);
         //LoginAck -> Invalid pw
         return;
     }
-    _is_valid_account = true; // TODO: Add real account checks.
 
     if (s == nullptr) { //Sometimes happens at clients' closure.
+        DEBUG_NOTICE("3");
+        s->get_client()->add_response_code(PacketOut_0x82::ResponseCode::Invalid);
         return;
     }
-    if (!_is_valid_account)
-    {
-        //get_client()->add_response_code(Packet_0x82::ResponseCode::Success); // shouldn't be here?
-    }
+
     if (acc->connect(s))
     {
         DEBUG_NOTICE("Received valid account identification, proceeding to send server information.");

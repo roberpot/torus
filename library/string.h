@@ -65,7 +65,7 @@ inline __HexHelperStruct<T> hex(T x) {
     return __HexHelperStruct<T>(x);
 }
 
-std::string hex_dump_buffer(const t_byte * buffer, const udword_t size);
+std::string hex_dump_buffer(const uint8_t* buffer, const udword_t size);
 
 std::vector<std::string> split(const std::string &str, t_byte del);
 std::string clean(const std::string &str);

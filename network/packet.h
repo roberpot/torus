@@ -31,7 +31,7 @@ class PacketIn;
  */
 class Packet {
 protected:
-    t_byte *_buffer;                ///< Buffer of the packet.
+    uint8_t* _buffer;                ///< Buffer of the packet.
     uword_t _current_buffer_length;///< Length of the buffer.
     uword_t _current_pos;          ///< Current position to read/write on the buffer.
 
@@ -58,7 +58,7 @@ public:
      * 
      * @return nullptr if the buffer is empty, the data otherwise.
      */
-    const t_byte *data();
+    const uint8_t*data();
 
     /**
     * @brief    Get this packet's ID.

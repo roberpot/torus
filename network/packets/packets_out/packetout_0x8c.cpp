@@ -22,15 +22,6 @@ void PacketOut_0x8c::set_data(Socket* s, word_t server_index )
 {
     UNREFERENCED_PARAMETER(s);
     t_ubyte index = t_ubyte(server_index);
-    if (index >= TBYTE_MAX)
-    {
-        index -= TBYTE_MAX;
-    }
-    // >= 1.26.00 clients list Gives us a 1 based index for some reason.
-    if (index > 0)
-    {
-        index--;
-    }
     ServerInfo info = toruscfg._game_servers[index];
     std::vector<std::string> ip = split(info.ip, '.');
 

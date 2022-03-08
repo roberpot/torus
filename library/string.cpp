@@ -46,7 +46,7 @@ std::string remove_prefix(const t_byte * p, const t_byte * s) {
     return remove_prefix(p, ss);
 }
 
-std::string hex_dump_buffer(const t_byte* buffer, const udword_t size) {
+std::string hex_dump_buffer(const uint8_t* buffer, const udword_t size) {
     std::stringstream s;
     udword_t line_size = 16;
     udword_t lines = size / line_size;

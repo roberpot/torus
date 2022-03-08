@@ -42,7 +42,7 @@ typedef dword_t socklen_t;
 typedef int socket_t;
 #endif //__linux__
 
-#define BUFFER_SIZE 1024
+#define BUFFER_SIZE 1024*20
 
 enum class ConnectionState
 {
@@ -80,8 +80,9 @@ class Socket
     sockaddr_in _connection_info;
     HuffmanCompression _huffman;
     Client* _client;
-    t_byte *_input_buffer;
-    t_byte *_output_buffer;
+    uint8_t* _input_buffer;
+    t_byte* _output_buffer;
+    uint8_t* _output_encrypted_buffer;
     udword_t _seed;
     bool _seeded;
 #ifdef __linux

@@ -58,7 +58,7 @@ void Client::event_walk(const t_ubyte& dir, const t_ubyte& seq, const udword_t& 
     packet_movement_accept->set_data(seq, fast_walk_key);
     packet_movement_accept->send(_socket);
     return; //TODO: WalkChecks
-    if (Dir(dir) > Dir::DIR_QTY) {
+    /*if (Dir(dir) > Dir::DIR_QTY) {
         PACKET_MOVEMENT_REJECT* packet_movement_reject = new PACKET_MOVEMENT_REJECT();
         packet_movement_reject->set_data(seq, _char);
         packet_movement_reject->send(_socket);
@@ -76,7 +76,7 @@ void Client::event_walk(const t_ubyte& dir, const t_ubyte& seq, const udword_t& 
         PACKET_MOVEMENT_REJECT* packet_movement_reject = new PACKET_MOVEMENT_REJECT();
         packet_movement_reject->set_data(seq, _char);
         packet_movement_reject->send(_socket);
-    }
+    }*/
 }
 
 void Client::add_response_code(PacketOut_0x82::ResponseCode code)
