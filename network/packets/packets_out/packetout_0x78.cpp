@@ -20,10 +20,6 @@
 #include <game/uid.h>
 
 
-PacketOut_0x78::PacketOut_0x78() : PacketOut(0x78, true) {
-    ADDTOCALLSTACK();
-}
-
 void PacketOut_0x78::set_data(Char* character)//(Char* character)
 {
     //Char *character = server.get_char(uid);

@@ -76,8 +76,7 @@ public:
 class PacketOut_0x1b : public PacketOut {
 public:
     void set_data(Char* character);
-    PacketOut_0x1b();
-    ~PacketOut_0x1b();
+    PacketOut_0x1b() : PacketOut(0x1b) {};
 };
 
 // Mobile Status
@@ -118,8 +117,7 @@ public:
 // PacketLoginComplete (game character finished loading)
 class PacketOut_0x55 : public PacketOut {
 public:
-    PacketOut_0x55();
-    ~PacketOut_0x55() {}
+    PacketOut_0x55() : PacketOut(0x55) {};
 };
 
 // Play character
@@ -127,14 +125,12 @@ class PacketIn_0x5d : public PacketIn {
 public:
     virtual const uword_t length() override;
     virtual void process(Socket* s) override;
-    ~PacketIn_0x5d();
 };
 
 // Play Music
 class PacketOut_0x6d : public PacketOut {
 public:
     void set_data(t_ubyte id);
-    PacketOut_0x6d();
 };
 
 // PacketPing In
@@ -142,22 +138,20 @@ class PacketIn_0x73 : public PacketIn {
 public: // IO packet, has both read and write methods.
     virtual const uword_t length() override;
     virtual void process(Socket* s) override;
-    PacketIn_0x73();
-    ~PacketIn_0x73();
 };
 
 // PacketPing Out
 class PacketOut_0x73 : public PacketOut {
 public:
     void set_data(t_ubyte response);
-    PacketOut_0x73();
+    PacketOut_0x73() : PacketOut(0x73) {};
 };
 
 // Send Char
 class PacketOut_0x78 : public PacketOut {
 public:
     void set_data(Char* character); //Char* character
-    PacketOut_0x78();
+    PacketOut_0x78() : PacketOut(0x78, true) {};
 };
 
 // LoginCredentials & ServerListRequest
@@ -167,7 +161,6 @@ public:
     virtual const uword_t length() override;
     virtual void process(Socket* s) override;
     bool is_valid_account();
-    ~PacketIn_0x80();
 };
 
 // Paperdoll
@@ -210,16 +203,14 @@ public:
         Success = 0xFF  // no error
     };
     void set_data(ResponseCode code);
-    PacketOut_0x82();
-    ~PacketOut_0x82();
+    PacketOut_0x82() : PacketOut(0x82) {};
 };
 
 // Play server accepted
 class PacketOut_0x8c : public PacketOut {
 public:
     void set_data(Socket* s, word_t server_index);
-    PacketOut_0x8c();
-    ~PacketOut_0x8c();
+    PacketOut_0x8c() : PacketOut(0x8c) {};
 };
 
 // LoginCredentials & CharList Request
@@ -229,39 +220,33 @@ class PacketIn_0x91 : public PacketIn {
 public:
     virtual const uword_t length() override;
     virtual void process(Socket* s) override;
-    ~PacketIn_0x91();
 };
 
 class PacketIn_0xa0 : public PacketIn {  //ServerSelect -> disconnects from login server, connects to game server and requests character's list and client's flags
 public:
     virtual const uword_t length() override;
     virtual void process(Socket* s) override;
-    PacketIn_0xa0();
-    ~PacketIn_0xa0();
 };
 
 // ServerList
 class PacketOut_0xa8 : public PacketOut {
 public:
     void set_data(Socket *s);
-    PacketOut_0xa8();
-    ~PacketOut_0xa8();
+    PacketOut_0xa8() : PacketOut(0xa8, true) {};
 };
 
 // Characters List
 class PacketOut_0xa9 : public PacketOut {
 public:
     void set_data(Client* client);
-    PacketOut_0xa9();
-    ~PacketOut_0xa9();
+    PacketOut_0xa9() : PacketOut(0xa9, true) {};
 };
 
 // Supported Features
 class PacketOut_0xb9 : public PacketOut {
 public:
     void set_data(dword_t seq, Client* client);
-    PacketOut_0xb9();
-    ~PacketOut_0xb9();
+    PacketOut_0xb9() : PacketOut(0xb9) {};
 };
 
 // Client version (Entering World)
@@ -277,15 +262,14 @@ class PacketIn_0xbf : public PacketIn {
 public:
     virtual const uword_t length() override;
     virtual void process(Socket* s) override;
-    PacketIn_0xbf();
+    PacketIn_0xbf() : PacketIn(true) {};
 };
 
 // Extended Command
 class PacketOut_0xbf : public PacketOut {
 public:
     void set_data();
-    PacketOut_0xbf();
-    ~PacketOut_0xbf();
+    PacketOut_0xbf() : PacketOut(0xBF) {};
 };
 
 // New Client Version
@@ -294,7 +278,6 @@ public:
     virtual const uword_t length() override;
     virtual void process(Socket* s) override;
     PacketIn_0xef();
-    virtual ~PacketIn_0xef();
     udword_t seed() { return _seed; }
 private:
     udword_t _seed;

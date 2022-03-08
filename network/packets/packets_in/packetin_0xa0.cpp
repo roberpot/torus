@@ -44,11 +44,3 @@ void PacketIn_0xa0::process(Socket* s) {
     packet_server_select->set_data(s, server_index);
     packet_server_select->send(s);
 }
-
-PacketIn_0xa0::PacketIn_0xa0()
-{
-}
-
-PacketIn_0xa0::~PacketIn_0xa0() {
-    ADDTOCALLSTACK();
-}

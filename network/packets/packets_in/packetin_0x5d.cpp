@@ -52,5 +52,3 @@ void PacketIn_0x5d::process(Socket* s) {
     *(this) >> ip;
     s->get_client()->event_character_login(character_name, flags, login_count, slot, ip);
 }
-PacketIn_0x5d::~PacketIn_0x5d() {
-}

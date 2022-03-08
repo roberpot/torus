@@ -76,7 +76,7 @@ void Socket::_init()
         _connection_state = ConnectionState::CONNECTIONSTATE_CHARLIST;
     }
 
-    if ( (_connection_type == ConnectionType::CONNECTIONTYPE_CLIENT) &&
+    if ((_connection_type == ConnectionType::CONNECTIONTYPE_CLIENT) &&
         (_server_type == ConnectionType::CONNECTIONTYPE_LOGINSERVER))
     {
         const udword_t packet_0xef_size = 21;
@@ -101,7 +101,7 @@ Socket::~Socket()
     }
     while (_packets_in_queue.empty() == false)
     {
-        PacketIn *p = _packets_in_queue.front();
+        PacketIn* p = _packets_in_queue.front();
         delete p;
         _packets_in_queue.pop();
     }
@@ -127,7 +127,7 @@ Socket::~Socket()
 }
 
 bool Socket::data_ready(fd_set& readSet)
- {
+{
     ADDTOCALLSTACK();
     timeval timeout;
     timeout.tv_sec = 0;  // Zero timeout (poll)
@@ -137,8 +137,8 @@ bool Socket::data_ready(fd_set& readSet)
     {
         set_read_write_closed(true);
     }
-    return ( read == 1 );
- }
+    return (read == 1);
+}
 
 bool Socket::is_read_closed()
 {
@@ -211,7 +211,7 @@ bool Socket::receive(udword_t receive_len)
 
 #endif // _WINDOWS
 #ifdef __linux__
-    buffer_len = (udword_t)recv(_socket, _input_buffer, receive_len, 0);
+    buffer_len = (udword_t)recv(_socket, (t_byte*)(_input_buffer), receive_len, 0);
     if (buffer_len == 0)
     {
         TORUSSHELLECHO("Socket recv error: " << strerror(errno));
@@ -255,14 +255,14 @@ bool Socket::receive(udword_t receive_len)
             _seed = seed;
             _seeded = true;
 
-            uint8_t*newbuffer = new uint8_t[buffer_len - 4];
-            memcpy(newbuffer, &_input_buffer[4], buffer_len );
+            uint8_t* newbuffer = new uint8_t[buffer_len - 4];
+            memcpy(newbuffer, &_input_buffer[4], buffer_len);
             buffer_len -= 4;
             delete[] _input_buffer;
             _input_buffer = newbuffer;
         }
     }
-    
+
     while (buffer_len > 0)
     {
 
@@ -282,7 +282,7 @@ bool Socket::receive(udword_t receive_len)
                 bytes_to_read = packet_len;
             }
             _current_in_packet->receive(_input_buffer, bytes_to_read);
-            
+
             if (buffer_len - bytes_to_read < 0)    // This happens when a packet is received along a chunk of the next one.
             {
                 buffer_len = 0;
@@ -313,7 +313,7 @@ bool Socket::receive(udword_t receive_len)
     return true;
 }
 
-void Socket::write(PacketOut * packet)
+void Socket::write(PacketOut* packet)
 {
     _packets_out_queue.push(packet);
 }
@@ -343,7 +343,7 @@ ConnectionType Socket::get_connection_type()
     return _connection_type;
 }
 
-Socket* Socket::create_socket(sockaddr_in &sockin, ConnectionType server_type)
+Socket* Socket::create_socket(sockaddr_in& sockin, ConnectionType server_type)
 {
     ADDTOCALLSTACK();
     Socket* s;
@@ -364,7 +364,7 @@ socket_t Socket::get_socket()
     return _socket;
 }
 
-bool Socket::client_pending(sockaddr_in &sockin) {
+bool Socket::client_pending(sockaddr_in& sockin) {
     ADDTOCALLSTACK();
 #ifdef _WINDOWS
     UNREFERENCED_PARAMETER(sockin);
@@ -378,7 +378,7 @@ bool Socket::client_pending(sockaddr_in &sockin) {
 #endif //_WINDOWS
 #ifdef __linux__
     socklen_t len = sizeof(sockin);
-    _accepted_socket = accept(_socket, reinterpret_cast<struct sockaddr *>(&sockin), &len);
+    _accepted_socket = accept(_socket, reinterpret_cast<struct sockaddr*>(&sockin), &len);
     return (_accepted_socket != -1);
 #endif //__linux__
 }
@@ -481,11 +481,11 @@ void Socket::send_queued_packets()
                     THROW_ERROR(NetworkError, "Send failed");
                 }
                 else if (sent_len != out_len) {
-                    THROW_ERROR(NetworkError, "Send " << sent_len << " bytes, instead of " << out_len<< " bytes.");
+                    THROW_ERROR(NetworkError, "Send " << sent_len << " bytes, instead of " << out_len << " bytes.");
                 }
 #endif //__linux__
             }
-            memset(_output_encrypted_buffer, 0, BUFFER_SIZE);            
+            memset(_output_encrypted_buffer, 0, BUFFER_SIZE);
             memset(_output_buffer, 0, BUFFER_SIZE);
             //TODO: Encryption (after compression)
         }
@@ -532,7 +532,7 @@ Client* Socket::get_client()
 }
 
 void Socket::set_client(Client* client)
-{  
+{
     _client = client;
 }
 

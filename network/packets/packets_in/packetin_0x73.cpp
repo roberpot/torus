@@ -30,11 +30,3 @@ void PacketIn_0x73::process(Socket* s) {
     response->set_data(1);
     response->send(s);
 }
-
-PacketIn_0x73::PacketIn_0x73()
-{
-}
-
-PacketIn_0x73::~PacketIn_0x73() {
-    ADDTOCALLSTACK();
-}

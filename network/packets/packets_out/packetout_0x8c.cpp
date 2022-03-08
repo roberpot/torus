@@ -33,11 +33,3 @@ void PacketOut_0x8c::set_data(Socket* s, word_t server_index )
     //write_dword(s->get_seed());  //TODO: Add real calculation using zlib and account's name. Sometimes it fails reading the seed in packet 0x91.
     write_dword(0);
 }
-
-PacketOut_0x8c::PacketOut_0x8c() : PacketOut(0x8c)
-{
-}
-
-PacketOut_0x8c::~PacketOut_0x8c() {
-    ADDTOCALLSTACK();
-}

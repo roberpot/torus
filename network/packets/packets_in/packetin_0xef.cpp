@@ -41,6 +41,3 @@ PacketIn_0xef::PacketIn_0xef()
     _client_revision_version = 0;
     _client_prototype_version = 0;
 }
-
-PacketIn_0xef::~PacketIn_0xef() {
-}

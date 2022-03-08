@@ -16,23 +16,9 @@
 #include <network/socket.h>
 #include <debug_support/info.h>
 
-
-//const udword_t Packet_0xb9::length() {
-//    ADDTOCALLSTACK();
-//    return 21;
-//}
-
 void PacketOut_0xb9::set_data(dword_t seq, Client* client)
 {
     UNREFERENCED_PARAMETER(seq);
     UNREFERENCED_PARAMETER(client);
     write_dword(8233695);
-}
-
-PacketOut_0xb9::PacketOut_0xb9() : PacketOut(0xb9)
-{
-}
-
-PacketOut_0xb9::~PacketOut_0xb9()
-{
 }

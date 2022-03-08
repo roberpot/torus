@@ -25,7 +25,3 @@ void PacketIn_0xbf::process(Socket* s) {
     ADDTOCALLSTACK();
     UNREFERENCED_PARAMETER(s);
 }
-
-PacketIn_0xbf::PacketIn_0xbf() : PacketIn(true)
-{
-}

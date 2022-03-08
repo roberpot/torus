@@ -156,7 +156,7 @@ void PacketOut::write_string(const std::string& string, uword_t len)
     {
         _buffer[_current_pos++] = string[i];
     }
-    for (i; i < size_t(len); ++i)
+    for (; i < size_t(len); ++i)
     {
         _buffer[_current_pos++] = '\0';
     }

@@ -92,12 +92,3 @@ void PacketOut_0xa8::set_data(Socket* s)
         }
     }
 }
-
-PacketOut_0xa8::PacketOut_0xa8() : PacketOut(0xa8, true)
-{
-    
-}
-
-PacketOut_0xa8::~PacketOut_0xa8() {
-    ADDTOCALLSTACK();
-}

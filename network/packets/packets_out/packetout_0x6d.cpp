@@ -15,3 +15,8 @@
 #include <network/packets/packetlist.h>
 #include <network/socket.h>
 #include <debug_support/info.h>
+
+void PacketOut_0x6d::set_data(t_ubyte id)
+{
+    UNREFERENCED_PARAMETER(id);
+}

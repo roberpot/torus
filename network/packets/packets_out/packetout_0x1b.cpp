@@ -18,16 +18,9 @@
 #include <debug_support/info.h>
 
 
-PacketOut_0x1b::PacketOut_0x1b() : PacketOut(0x1b) {
-    ADDTOCALLSTACK();
-}
-
-PacketOut_0x1b::~PacketOut_0x1b()
-{
-}
-
 void PacketOut_0x1b::set_data(Char* character)
 {
+    ADDTOCALLSTACK();
     write_dword(character->get_uid().get_uid());
     write_dword(0);              //Unused
     write_word(word_t(character->get_body()));

@@ -18,11 +18,3 @@
 void PacketOut_0xbf::set_data()
 {
 }
-
-PacketOut_0xbf::PacketOut_0xbf() : PacketOut(0xBF) {
-    ADDTOCALLSTACK();
-}
-
-PacketOut_0xbf::~PacketOut_0xbf()
-{
-}

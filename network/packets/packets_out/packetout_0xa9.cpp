@@ -125,11 +125,3 @@ void PacketOut_0xa9::set_data(Client* client)
     write_dword(1960);
     //write_word(0); // Only for enhanced client.
 }
-
-PacketOut_0xa9::PacketOut_0xa9() : PacketOut(0xa9, true)
-{
-}
-
-PacketOut_0xa9::~PacketOut_0xa9()
-{
-}

@@ -81,7 +81,3 @@ bool PacketIn_0x80::is_valid_account()
 {
     return _is_valid_account;
 }
-
-PacketIn_0x80::~PacketIn_0x80()
-{
-}

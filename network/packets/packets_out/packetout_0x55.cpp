@@ -15,7 +15,3 @@
 #include <network/packets/packetlist.h>
 #include <network/socket.h>
 #include <debug_support/info.h>
-
-PacketOut_0x55::PacketOut_0x55() : PacketOut(0x55) {
-    ADDTOCALLSTACK();
-}

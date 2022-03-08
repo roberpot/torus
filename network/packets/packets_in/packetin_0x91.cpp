@@ -67,7 +67,3 @@ void PacketIn_0x91::process(Socket* s)
         packetCharacterList->send(s);
     }    
 }
-
-PacketIn_0x91::~PacketIn_0x91()
-{
-}
