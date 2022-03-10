@@ -51,10 +51,10 @@ uword_t PacketIn::receive(const uint8_t* data, const uword_t len)
             uword_t old_pos = _current_pos; //Store current pos, should be 0 ... but store anyway.
             t_ubyte id = 0;
             _current_pos = 1;               // Move the cursor to position 1, so the next 2 bytes read are the length.
-            (*this) >> expected_length;     // Read the length.
+            expected_length = read_uword();     // Read the length.
             _current_pos = old_pos;         // Restore the cursor.
-            // Delete the buffer to do a normal read without using weird codes to adjust the lengths (readed, expected, etc).
 
+            // Delete the buffer to do a normal read without using weird codes to adjust the lengths (readed, expected, etc).
             delete[] _buffer;
             _buffer = nullptr;
         }
@@ -109,4 +109,63 @@ void PacketIn::read_string(std::string& str, uword_t len)
     str.resize(len);
     memcpy(str.data(), &(_buffer[_current_pos]), len);
     _current_pos += len;
+}
+
+t_byte PacketIn::read_byte()
+{
+    return t_byte(_buffer[_current_pos++]);
+}
+
+t_ubyte PacketIn::read_ubyte()
+{
+    return t_ubyte(_buffer[_current_pos++]);
+}
+
+word_t PacketIn::read_word()
+{
+    return word_t((_buffer[_current_pos++] << 8) |
+                   _buffer[_current_pos++]);
+}
+
+uword_t PacketIn::read_uword()
+{
+    return uword_t((_buffer[_current_pos++] << 8) |
+                    _buffer[_current_pos++]);
+}
+
+dword_t PacketIn::read_dword()
+{
+    return dword_t((_buffer[_current_pos++] << 24) |
+                   (_buffer[_current_pos++] << 16) |
+                   (_buffer[_current_pos++] << 8)  |
+                   _buffer[_current_pos++]);
+}
+
+udword_t PacketIn::read_udword()
+{
+    return udword_t((_buffer[_current_pos++] << 24) |
+                    (_buffer[_current_pos++] << 16) |
+                    (_buffer[_current_pos++] << 8) |
+                    _buffer[_current_pos++]);
+}
+
+void PacketIn::skip(const udword_t& bytes)
+{
+    _current_pos += bytes;
+    if (_current_pos > _current_buffer_length)
+    {
+        _current_pos = _current_buffer_length;
+    }
+}
+
+void PacketIn::rewind(const udword_t& bytes)
+{
+    if (_current_pos - bytes < 0)
+    {
+        _current_pos = 0;
+    }
+    else
+    {
+        _current_pos -= bytes;
+    }
 }

@@ -91,7 +91,7 @@ public:
 
     void read_string(std::string &str, uword_t len = 0);
 
-    template<typename T>
+    //template<typename T>
     /**
      * @brief   Bitwise right shift operator, used to export the buffered data into useable variables.
      *
@@ -100,11 +100,21 @@ public:
      *
      * @return  The shifted result.
      */
-    friend PacketIn& operator>>(PacketIn& p, T& d);
+    //friend PacketIn& operator>>(PacketIn& p, T& d);
+
+    t_byte read_byte();
+    t_ubyte read_ubyte();
+    word_t read_word();
+    uword_t read_uword();
+    dword_t read_dword();
+    udword_t read_udword();
+
+    void skip(const udword_t& bytes);
+    void rewind(const udword_t& bytes);
 
     private:
 };
-
+/*
 template<typename T>
 PacketIn& operator>>(PacketIn& p, T& d)
 {
@@ -116,7 +126,7 @@ PacketIn& operator>>(PacketIn& p, T& d)
     memcpy(&d, &(p._buffer[p._current_pos]), sizeof(d));
     p._current_pos += sizeof(d);
     return p;
-}
+}*/
 
 
 #endif //__TORUS_PACKETIN_H

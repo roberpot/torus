@@ -26,6 +26,18 @@
 
 #define CHARACTERS_STRING_LENGTH 30
 
+
+
+#define ENDIANSWAP2(C, LL) \
+LL = (((C) & 0xff00) >> 8) | \
+     (((C) & 0x00ff) << 8);
+
+#define ENDIANSWAP4(C, LL) \
+LL = (((C) & 0xff000000) >> 24) | \
+     (((C) & 0x00ff0000) >> 8) | \
+     (((C) & 0x0000ff00) << 8) | \
+     (((C) & 0x000000ff) << 24);
+
 class PacketIn;
 
 /**

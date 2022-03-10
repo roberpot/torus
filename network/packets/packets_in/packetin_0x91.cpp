@@ -28,8 +28,7 @@ const uword_t PacketIn_0x91::length()
 
 void PacketIn_0x91::process(Socket* s)
 {
-    dword_t seed;
-    (*this) >> seed;
+    udword_t seed = read_udword();
 
     std::string account_name;
     std::string account_password;

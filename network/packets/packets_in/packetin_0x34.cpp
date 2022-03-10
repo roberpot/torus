@@ -26,13 +26,10 @@ void PacketIn_0x34::process(Socket* s) {
     ADDTOCALLSTACK();
     UNREFERENCED_PARAMETER(s);
     
-    t_byte type;
-    udword_t in_uid = 1;
 
     _current_pos += 4; //Skip first 4 bytes.
-    (*this) >> type;
-    //(*this) >> in_uid; // FIXME: Not reading correctly the value.
-    Uid uid(in_uid);
+    t_byte type = read_byte();
+    Uid uid(read_udword());
     Char *character = server.get_char(uid);
     if (character)
     {
@@ -42,7 +39,6 @@ void PacketIn_0x34::process(Socket* s) {
     }
     else
     {
-        TORUSSHELLECHO("Mobile request for invalid uid: " << in_uid);
+        TORUSSHELLECHO("Mobile request for invalid uid: " << uid.get_uid());
     }
-
 }

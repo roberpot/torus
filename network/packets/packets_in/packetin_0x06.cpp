@@ -26,8 +26,6 @@ const uword_t PACKET_USE_REQUEST::length() {
 
 void PACKET_USE_REQUEST::process(Socket*s) {
     ADDTOCALLSTACK();
-    udword_t in_uid;
-    *(this) >> in_uid;
-    Uid uid(in_uid);
+    Uid uid(read_udword());
     s->get_client()->event_double_click(uid);
 }

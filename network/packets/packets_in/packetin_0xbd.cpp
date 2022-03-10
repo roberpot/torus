@@ -24,17 +24,9 @@ const uword_t PacketIn_0xbd::length() {
 void PacketIn_0xbd::process(Socket* s) {
     ADDTOCALLSTACK();
     UNREFERENCED_PARAMETER(s);
-    udword_t client_major_version;
-    udword_t client_minor_version;
-    udword_t client_revision_version;
-    udword_t client_prototype_version;
-    udword_t unused;
-    UNREFERENCED_PARAMETER(unused);
 
-    *(this) >> client_major_version;
-    *(this) >> client_minor_version;
-    *(this) >> client_revision_version;
-    *(this) >> client_prototype_version;
+    std::string cliver;
+    read_string(cliver, _current_buffer_length - 3);
 
-    //TODO: store the reported version.
+    //TODO: Correctly parse and store the reported version.
 }

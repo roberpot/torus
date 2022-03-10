@@ -25,11 +25,8 @@ const uword_t PACKET_MOVEMENT_REQUEST::length() {
 
 void PACKET_MOVEMENT_REQUEST::process(Socket* s) {
     ADDTOCALLSTACK();
-    t_byte dir = 0;
-    t_ubyte sequence = 0;
-    udword_t fast_walk_key;
-    *(this) >> dir;
-    *(this) >> sequence;
-    *(this) >> fast_walk_key;
+    t_byte dir = read_byte();
+    t_ubyte sequence = read_ubyte();
+    udword_t fast_walk_key = read_udword();
     s->get_client()->event_walk(dir, sequence, fast_walk_key);
 }

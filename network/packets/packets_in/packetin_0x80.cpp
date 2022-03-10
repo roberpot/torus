@@ -40,8 +40,7 @@ void PacketIn_0x80::process(Socket* s)
     account_name = clean(account_name);
     account_password = clean(account_password);
 
-    t_byte command;
-    *(this) >> command;
+    skip(1);    //Command: unused
     TORUSSHELLECHO("[LoginServer] Connection request to account " << account_name <<  ".");
 
     Account *acc = torusacc.get_account(account_name);

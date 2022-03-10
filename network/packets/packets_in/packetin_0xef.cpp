@@ -24,11 +24,11 @@ const uword_t PacketIn_0xef::length() {
 void PacketIn_0xef::process(Socket* s) {
     ADDTOCALLSTACK();
     UNREFERENCED_PARAMETER(s);
-    *(this) >> _seed; 
-    *(this) >> _client_major_version;
-    *(this) >> _client_minor_version;
-    *(this) >> _client_revision_version;
-    *(this) >> _client_prototype_version;
+    _seed = read_dword();
+    _client_major_version = read_dword();
+    _client_minor_version = read_dword();
+    _client_revision_version = read_dword();
+    _client_prototype_version = read_dword();
 
     s->set_seed(_seed);
 }
