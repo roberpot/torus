@@ -50,7 +50,7 @@ void * NetworkManager::run() {
                     clientSocket->clean_incoming_packets();
                     continue;
                 }
-                //TORUSSHELLECHO("data ready for socket " << clientSocket << ", reading it from" << clientSocket->get_ip_str());
+                TORUSSHELLECHO("[GameServer]: Data ready for socket " << clientSocket << ", from IP " << clientSocket->get_ip_str());
                 if (clientSocket->receive() == false)
                 {
                     continue;
@@ -81,18 +81,18 @@ void * NetworkManager::run() {
         {
             for (unsigned int socketId = 0; socketId < socketsCount; ++socketId) {
                 clientSocket = _login_sockets[socketId];
-                v_tmp_sockets.push_back(clientSocket);
                 if (clientSocket->is_read_closed() || clientSocket->is_write_closed())
                 {
-                    clientSocket->shutdown();
+                    //clientSocket->shutdown();
                     continue;
                 }
+                v_tmp_sockets.push_back(clientSocket);
                 if (!FD_ISSET(clientSocket->get_socket(), &readSet))
                 {
                     clientSocket->clean_incoming_packets();
                     continue;
                 }
-                //TORUSSHELLECHO("data ready for socket " << clientSocket << ", reading it from" << clientSocket->get_ip_str());
+                TORUSSHELLECHO("[LoginServer]: Data ready for socket " << clientSocket << ", from IP " << clientSocket->get_ip_str());
                 if (clientSocket->receive() == false)
                 {
                     continue;
@@ -159,9 +159,9 @@ bool NetworkManager::data_ready(fd_set& fd, const std::vector<Socket*>& socket_l
         ++count;
 #endif
 #ifdef __linux__
-        if (count < s)
+        if (s > count)
         {
-            s = count;
+            count = s;
         }
 #endif
     }
@@ -226,6 +226,8 @@ void * NetworkManager::NetworkClientConnector::run() {
 
 void NetworkManager::NetworkClientConnector::halt() {
     _run = false;
+    _loginserver->shutdown();
+    _gameserver->shutdown();
 }
 
 udword_t NetworkManager::NetworkClientConnector::get_server_ip() {

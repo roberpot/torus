@@ -24,6 +24,7 @@ void PacketOut_0x8c::set_data(Socket* s, word_t server_index )
     t_ubyte index = t_ubyte(server_index);
     ServerInfo info = toruscfg._game_servers[index];
     std::vector<std::string> ip = split(info.ip, '.');
+    TORUSSHELLECHO("Connection received to server[" << int(server_index) << "]: " << info.name);
 
     write_ubyte(t_ubyte(atoi(ip[0].c_str())));
     write_ubyte(t_ubyte(atoi(ip[1].c_str())));

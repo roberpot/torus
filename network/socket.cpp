@@ -20,9 +20,9 @@
 #include <iostream>
 
 Socket::Socket(socket_t s, ConnectionType connection_type, ConnectionType server_type) :
-    _socket(s),
-    _connection_type(connection_type),
-    _server_type(server_type)
+        _socket(s),
+        _connection_type(connection_type),
+        _server_type(server_type)
 {
     ADDTOCALLSTACK();
     _init();
@@ -30,7 +30,7 @@ Socket::Socket(socket_t s, ConnectionType connection_type, ConnectionType server
 }
 
 Socket::Socket(ConnectionType connection_type) :
-    _connection_type(connection_type)
+        _connection_type(connection_type)
 {
     ADDTOCALLSTACK();
     _init();
@@ -65,6 +65,9 @@ void Socket::_init()
     _input_buffer = new uint8_t[BUFFER_SIZE];
     memset(_input_buffer, 0, BUFFER_SIZE);
 
+    _input_buffer_tmp = new t_byte[BUFFER_SIZE];
+    memset(_input_buffer_tmp, 0, BUFFER_SIZE);
+
     _output_buffer = new t_byte[BUFFER_SIZE];
     memset(_output_buffer, 0, BUFFER_SIZE);
 
@@ -88,7 +91,8 @@ void Socket::_init()
         PacketIn_0x80* packet_0x80 = static_cast<PacketIn_0x80*>(packet_in);
         _current_in_packet = packet_0x80;
         receive(packet_0x80_size);
-        _current_in_packet = nullptr;
+        TORUSSHELLECHO("New socket");
+        //_current_in_packet = nullptr;
     }
 }
 
@@ -177,32 +181,8 @@ bool Socket::receive(udword_t receive_len)
         receive_len = BUFFER_SIZE;
     }
 
-    /*if (rewinded_len > 0) {
-        TORUSSHELLECHO("rewinding");
-        if (len_remaining < rewinded_len) {
-            init = len_remaining;
-        }
-        else {
-            init = rewinded_len;
-        }
-        memcpy(buffer, rewinded, sizeof(t_byte) * init);
-        rewinded_len -= init;
-        len_remaining -= init;
-        _cur_pos -= rewinded_len;
-        if (rewinded_len == 0) {
-            delete rewinded;
-        }
-        else {
-            memmove(rewinded, &rewinded[init], sizeof(t_byte) * rewinded_len);
-        }
-        if (_cur_pos < 0) // Should never happen?
-        {
-            _cur_pos = 0;
-        }
-
-    }*/
 #ifdef _WINDOWS
-    buffer_len = uword_t(recv(_socket, (t_byte*)(_input_buffer), receive_len, 0));
+    buffer_len = uword_t(recv(_socket, _input_buffer_tmp, receive_len, 0));
     if (buffer_len == SOCKET_ERROR)
     {
         TORUSSHELLECHO("Socket recv error: " << WSAGetLastError());
@@ -211,13 +191,19 @@ bool Socket::receive(udword_t receive_len)
 
 #endif // _WINDOWS
 #ifdef __linux__
-    buffer_len = (udword_t)recv(_socket, (t_byte*)(_input_buffer), receive_len, 0);
-    if (buffer_len == 0)
+    buffer_len = (udword_t)recv(_socket, _input_buffer_tmp, receive_len, 0);
+    if (buffer_len < 0)
     {
         TORUSSHELLECHO("Socket recv error: " << strerror(errno));
         return false;
     }
+    else if(buffer_len == 0)
+    {
+        set_read_write_closed();
+    }
 #endif //__linux__
+
+    memcpy(_input_buffer, _input_buffer_tmp, receive_len);
 
     if (buffer_len > 0 && buffer_len < 1024)
     {
@@ -238,7 +224,7 @@ bool Socket::receive(udword_t receive_len)
         {
             return true;
         }
-        // other ping data
+            // other ping data
         else if (buffer_len < 4 && first_byte != 160) // packet 0xa0 has 4 bytes, let's not skip it
         {
             return true;
@@ -249,32 +235,32 @@ bool Socket::receive(udword_t receive_len)
         {
             //Seed beign received upon new connection, along with packet 0x91.
             int seed = int((unsigned char)(_input_buffer[0]) << 24 |
-                (unsigned char)(_input_buffer[1]) << 16 |
-                (unsigned char)(_input_buffer[2]) << 8 |
-                (unsigned char)(_input_buffer[3]));
+                           (unsigned char)(_input_buffer[1]) << 16 |
+                           (unsigned char)(_input_buffer[2]) << 8 |
+                           (unsigned char)(_input_buffer[3]));
             _seed = seed;
             _seeded = true;
 
-            uint8_t* newbuffer = new uint8_t[buffer_len - 4];
-            memcpy(newbuffer, &_input_buffer[4], buffer_len);
-            buffer_len -= 4;
-            delete[] _input_buffer;
-            _input_buffer = newbuffer;
+            // Clean the current buffer and copy it again from the received buffer from position 4.
+            memset(_input_buffer, 0, BUFFER_SIZE);
+            memcpy(_input_buffer, &_input_buffer_tmp[4], buffer_len);//Copy from pos 4 to the end of the buffer.
+            buffer_len -= 4;    // Decrease the buffer len, since 4 bytes were removed.
         }
     }
 
+    t_ubyte id = _input_buffer[0];
     while (buffer_len > 0)
     {
-
+        TORUSSHELLECHO("Socket " << this << " receive data (0x" << hex(_input_buffer[0]) << ")[" << std::dec << buffer_len << "] = " << std::endl << hex_dump_buffer(_input_buffer, buffer_len));
         if (_current_in_packet == nullptr)  // Try to retrieve an incomplete packet.
         {
-            t_ubyte id = _input_buffer[0];
             _current_in_packet = packet_factory(id);
+            TORUSSHELLECHO("Creating new packet: " << _current_in_packet);
         }
-
-        TORUSSHELLECHO("Socket " << this << " receive(0x" << hex(_input_buffer[0]) << ")[" << std::dec << buffer_len << "] = " << std::endl << hex_dump_buffer(_input_buffer, buffer_len));
-        if (_current_in_packet != nullptr)
+        if (_current_in_packet)
         {
+            TORUSSHELLECHO("Writing data to packet: " << _current_in_packet);
+            //TORUSSHELLECHO("Socket " << this << " append data to packet (0x" << hex(_current_in_packet->packet_id()) << ")[" << std::dec << buffer_len << "] = " << std::endl << hex_dump_buffer(_input_buffer, buffer_len));
             uword_t packet_len = _current_in_packet->length();
             uword_t bytes_to_read = buffer_len;
             if (bytes_to_read > packet_len)
@@ -282,6 +268,9 @@ bool Socket::receive(udword_t receive_len)
                 bytes_to_read = packet_len;
             }
             _current_in_packet->receive(_input_buffer, bytes_to_read);
+            /*TORUSSHELLECHO("Socket " << this << " data after append for packet (0x" << hex(_current_in_packet->packet_id())
+                << ")[" << std::dec << _current_in_packet->current_length() << "] = " << std::endl
+                << hex_dump_buffer(_current_in_packet->data(), _current_in_packet->current_length() ));*/
 
             if (buffer_len - bytes_to_read < 0)    // This happens when a packet is received along a chunk of the next one.
             {
@@ -293,23 +282,20 @@ bool Socket::receive(udword_t receive_len)
             }
             if (_current_in_packet->is_complete())
             {
-                //TORUSSHELLECHO("Storing packet << " << _current_in_packet << "(0x" << hex(_current_in_packet->packet_id()) << ") in _packets_in_queue");
+                TORUSSHELLECHO("Storing packet << " << _current_in_packet << "(0x" << hex(_current_in_packet->packet_id()) << ") in _packets_in_queue");
                 _packets_in_queue.push(_current_in_packet);
                 _current_in_packet = nullptr;   // The full packet has been received, clean this pointer so the next data is attacked to another packet.
             }
             if (buffer_len > 0)
             {
-                uint8_t* new_buffer = new uint8_t[buffer_len + bytes_to_read];
-                memcpy(new_buffer, &_input_buffer[bytes_to_read], buffer_len);
-                delete[] _input_buffer;
-                _input_buffer = new_buffer;
+                DEBUG_INFO("Recursive packet read");
+                memset(_input_buffer, 0, BUFFER_SIZE);
+                memcpy(_input_buffer, &_input_buffer_tmp[bytes_to_read], buffer_len);
             }
         }
-        else
-        {
-            break;//Bad packet?
-        }
     }
+    memset(_input_buffer_tmp, 0, BUFFER_SIZE);
+    memset(_input_buffer, 0, BUFFER_SIZE);
     return true;
 }
 
@@ -433,7 +419,7 @@ dword_t Socket::get_ip()
     return _connection_info.sin_addr.S_un.S_addr;
 #endif
 #ifdef __linux
-    return _connection_info.sin_addr.s_addr;
+    return dword_t(_connection_info.sin_addr.s_addr);
 #endif
 }
 
@@ -443,7 +429,7 @@ void Socket::send_queued_packets()
     while (!_packets_out_queue.empty())
     {
         PacketOut* out_packet = _packets_out_queue.front();
-        if (_is_write_closed == false)
+        if (!_is_write_closed)
         {
             //out_packet->print("Sending ");
             TORUSSHELLECHO("Socket " << this << " send(" << out_packet->length() << ") " << std::endl << hex_dump_buffer(out_packet->data(), out_packet->length()));
@@ -513,6 +499,7 @@ void Socket::read_queued_packets()
 void Socket::clean_incoming_packets()
 {
     ADDTOCALLSTACK();
+    TORUSSHELLECHO("Cleaning packets");
     while (!_packets_in_queue.empty())
     {
         PacketIn* in_packet = _packets_in_queue.front();

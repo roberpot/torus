@@ -42,7 +42,7 @@ typedef dword_t socklen_t;
 typedef int socket_t;
 #endif //__linux__
 
-#define BUFFER_SIZE 1024*20
+#define BUFFER_SIZE 1024 * 20
 
 enum class ConnectionState
 {
@@ -81,6 +81,7 @@ class Socket
     HuffmanCompression _huffman;
     Client* _client;
     uint8_t* _input_buffer;
+    t_byte* _input_buffer_tmp;
     t_byte* _output_buffer;
     uint8_t* _output_encrypted_buffer;
     udword_t _seed;
@@ -93,7 +94,7 @@ class Socket
 public:
 
     Socket(socket_t s, ConnectionType connection_type = ConnectionType::CONNECTIONTYPE_CLIENT,
-            ConnectionType server_type = ConnectionType::CONNECTIONTYPE_LOGINSERVER);
+           ConnectionType server_type = ConnectionType::CONNECTIONTYPE_LOGINSERVER);
     Socket(ConnectionType connection_type = ConnectionType::CONNECTIONTYPE_LOGINSERVER);
     virtual ~Socket();
 
@@ -123,8 +124,8 @@ public:
      *
      * @return  True if it's closed, false otherwise.
      */
-    bool is_write_closed();  
-  
+    bool is_write_closed();
+
     /**
      * @brief   Closes the socket for writing ( if state = true ).
      *
