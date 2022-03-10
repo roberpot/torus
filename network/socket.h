@@ -254,6 +254,8 @@ public:
 
     void set_seed(udword_t seed);
     udword_t get_seed();
+
+    std::vector<uint8_t> buffer_to_vector(uint8_t* buffer, udword_t len);
 };
 
 

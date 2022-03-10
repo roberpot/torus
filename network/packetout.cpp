@@ -149,7 +149,7 @@ void PacketOut::write_uqword(uqword_t uqword)
 
 void PacketOut::write_string(const std::string& string, uword_t len)
 {
-    //ADDTOCALLSTACK();
+    ADDTOCALLSTACK();
     _increase_buffer(len);
     size_t i = 0;
     for (; i < string.size(); ++i)

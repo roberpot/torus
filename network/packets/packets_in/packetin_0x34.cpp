@@ -26,19 +26,19 @@ void PacketIn_0x34::process(Socket* s) {
     ADDTOCALLSTACK();
     UNREFERENCED_PARAMETER(s);
     
-    dword_t junk;
     t_byte type;
-    dword_t in_uid;
+    udword_t in_uid = 1;
 
-    (*this) >> junk;
+    _current_pos += 4; //Skip first 4 bytes.
     (*this) >> type;
-    (*this) >> in_uid;
+    //(*this) >> in_uid; // FIXME: Not reading correctly the value.
     Uid uid(in_uid);
     Char *character = server.get_char(uid);
     if (character)
     {
         PacketOut_0x11 *packet_mobile = new PacketOut_0x11();
         packet_mobile->set_data(character);
+        packet_mobile->send(s);
     }
     else
     {

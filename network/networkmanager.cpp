@@ -59,6 +59,7 @@ void * NetworkManager::run() {
             }
             _game_sockets.clear();
             _game_sockets = v_tmp_sockets;
+            socketsCount = _game_sockets.size();
             v_tmp_sockets.clear();
         }
         for (unsigned int socketId = 0; socketId < socketsCount; ++socketId)
@@ -101,6 +102,7 @@ void * NetworkManager::run() {
             }
             _login_sockets.clear();
             _login_sockets = v_tmp_sockets;
+            socketsCount = _login_sockets.size();
             v_tmp_sockets.clear();
         }
         for (unsigned int socketId = 0; socketId < socketsCount; ++socketId)

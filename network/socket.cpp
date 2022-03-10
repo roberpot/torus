@@ -219,18 +219,21 @@ bool Socket::receive(udword_t receive_len)
     t_ubyte first_byte = _input_buffer[0];
     if (_seeded == false)
     {
-        // check for new seed (sometimes it's received on its own)
+        // Apply some filters
+        // check for new seed (sometimes it's received on its own).
         if (buffer_len == 1 && first_byte == 239)
         {
             return true;
         }
             // other ping data
-        else if (buffer_len < 4 && first_byte != 160) // packet 0xa0 has 4 bytes, let's not skip it
+        else if (buffer_len < 4 && first_byte != 160) // packet 0xa0 has 4 bytes, let's not skip it.
         {
             return true;
         }
-        // More than 4 bytes
-        // new seed?
+
+
+        // Filters done, now handle some specific behaviours:
+        // More than 4 bytes and fifth byte == new seed?
         if (t_ubyte(_input_buffer[4]) == 145)  // 0x91
         {
             //Seed beign received upon new connection, along with packet 0x91.
@@ -248,37 +251,44 @@ bool Socket::receive(udword_t receive_len)
         }
     }
 
-    t_ubyte id = _input_buffer[0];
+    TORUSSHELLECHO("Socket " << this << " receive data (0x" << hex(_input_buffer[0]) << ")[" << std::dec << buffer_len << "] = " << std::endl << hex_dump_buffer(_input_buffer, buffer_len));
+    uword_t total_readed_bytes = 0;
     while (buffer_len > 0)
     {
-        TORUSSHELLECHO("Socket " << this << " receive data (0x" << hex(_input_buffer[0]) << ")[" << std::dec << buffer_len << "] = " << std::endl << hex_dump_buffer(_input_buffer, buffer_len));
+        t_ubyte id = _input_buffer[0];
         if (_current_in_packet == nullptr)  // Try to retrieve an incomplete packet.
         {
             _current_in_packet = packet_factory(id);
-            TORUSSHELLECHO("Creating new packet: " << _current_in_packet);
+            if (_current_in_packet)
+            {
+                //TORUSSHELLECHO("Creating new packet[" << hex(id) << "]: " << _current_in_packet);
+            }
+            else
+            {
+                //Fail msg already printed by packet_factory.
+                break;
+            }
+
         }
         if (_current_in_packet)
         {
-            TORUSSHELLECHO("Writing data to packet: " << _current_in_packet);
-            //TORUSSHELLECHO("Socket " << this << " append data to packet (0x" << hex(_current_in_packet->packet_id()) << ")[" << std::dec << buffer_len << "] = " << std::endl << hex_dump_buffer(_input_buffer, buffer_len));
+            //TORUSSHELLECHO("Writing data to packet: " << _current_in_packet);
             uword_t packet_len = _current_in_packet->length();
             uword_t bytes_to_read = buffer_len;
             if (bytes_to_read > packet_len)
             {
                 bytes_to_read = packet_len;
             }
-            _current_in_packet->receive(_input_buffer, bytes_to_read);
-            /*TORUSSHELLECHO("Socket " << this << " data after append for packet (0x" << hex(_current_in_packet->packet_id())
-                << ")[" << std::dec << _current_in_packet->current_length() << "] = " << std::endl
-                << hex_dump_buffer(_current_in_packet->data(), _current_in_packet->current_length() ));*/
 
-            if (buffer_len - bytes_to_read < 0)    // This happens when a packet is received along a chunk of the next one.
+            uword_t readed_bytes = _current_in_packet->receive(_input_buffer, bytes_to_read);
+
+            if (buffer_len - readed_bytes < 0)    // This happens when a packet is received along a chunk of the next one.
             {
                 buffer_len = 0;
             }
             else
             {
-                buffer_len -= bytes_to_read;
+                buffer_len -= readed_bytes;
             }
             if (_current_in_packet->is_complete())
             {
@@ -290,7 +300,8 @@ bool Socket::receive(udword_t receive_len)
             {
                 DEBUG_INFO("Recursive packet read");
                 memset(_input_buffer, 0, BUFFER_SIZE);
-                memcpy(_input_buffer, &_input_buffer_tmp[bytes_to_read], buffer_len);
+                memcpy(_input_buffer, &_input_buffer_tmp[total_readed_bytes + readed_bytes], buffer_len);
+                total_readed_bytes += readed_bytes;
             }
         }
     }
@@ -437,7 +448,7 @@ void Socket::send_queued_packets()
             if (_server_type == ConnectionType::CONNECTIONTYPE_GAMESERVER)
             {
                 out_len = _huffman.compress(_output_encrypted_buffer, out_packet->data(), BUFFER_SIZE, out_packet->length());
-                TORUSSHELLECHO("Compressed data =  " << this << " send(" << out_len << ") " << std::endl << hex_dump_buffer(_output_encrypted_buffer, out_len));
+                //TORUSSHELLECHO("Compressed data =  " << this << " send(" << out_len << ") " << std::endl << hex_dump_buffer(_output_encrypted_buffer, out_len));
                 memcpy(_output_buffer, _output_encrypted_buffer, out_len);
             }
             else
@@ -447,7 +458,7 @@ void Socket::send_queued_packets()
             }
             if (out_len == 0)
             {
-                TORUSSHELLECHO("Failed to compress, aborting the sending of this packet.");
+                TORUSSHELLECHO("Failed to compress, aborting the send of this packet.");
                 //Failed, too much data?
             }
             else
@@ -496,10 +507,19 @@ void Socket::read_queued_packets()
     }
 }
 
+std::vector<uint8_t> Socket::buffer_to_vector(uint8_t* buffer, udword_t len)
+{
+    std::vector<uint8_t> vec;
+    for (udword_t i = 0; i < len; ++i)
+    {
+        vec.push_back(buffer[i]);
+    }
+    return vec;
+}
+
 void Socket::clean_incoming_packets()
 {
     ADDTOCALLSTACK();
-    TORUSSHELLECHO("Cleaning packets");
     while (!_packets_in_queue.empty())
     {
         PacketIn* in_packet = _packets_in_queue.front();

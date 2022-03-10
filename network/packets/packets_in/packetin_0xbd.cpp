@@ -18,7 +18,7 @@
 
 
 const uword_t PacketIn_0xbd::length() {
-    return 25;
+    return _current_buffer_length;
 }
 
 void PacketIn_0xbd::process(Socket* s) {

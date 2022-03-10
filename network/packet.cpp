@@ -103,6 +103,16 @@ const t_ubyte Packet::packet_id()
     return id;
 }
 
+std::vector<uint8_t> Packet::buffer_to_vector(const uint8_t* buffer, udword_t len)
+{
+    std::vector<uint8_t> vec;
+    for (udword_t i = 0; i < len; ++i)
+    {
+        vec.push_back(buffer[i]);
+    }
+    return vec;
+}
+
 void Packet::_increase_buffer(uword_t len)
 {
     //TORUSSHELLECHO("Increasing buffer by " << len << " bytes, current size = " << _current_buffer_length)

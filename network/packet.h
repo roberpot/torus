@@ -22,6 +22,8 @@
 #pragma warning(disable:4127)
 #endif
 
+#include <vector>
+
 #define CHARACTERS_STRING_LENGTH 30
 
 class PacketIn;
@@ -66,6 +68,8 @@ public:
     * @return The ID, if the buffer has it's ID already assigned.
     */
     const t_ubyte packet_id();
+
+    std::vector<uint8_t> buffer_to_vector(const uint8_t* buffer, udword_t len);
 };
 
 /**

@@ -254,6 +254,7 @@ class PacketIn_0xbd : public PacketIn {
 public:
     virtual const uword_t length() override;
     virtual void process(Socket* s) override;
+    PacketIn_0xbd() : PacketIn(true) {};
 };
 
 // Extended Command
