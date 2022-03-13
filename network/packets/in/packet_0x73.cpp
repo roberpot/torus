@@ -13,10 +13,28 @@
  */
 
 #include <network/packets/packetlist.h>
+#include <network/socket.h>
 #include <debug_support/info.h>
-#include <game/char.h>
+#include <core/torus.h>
+#include <game/client.h>
 
-void PacketOut_0x3a::set_data(Char* character)
+
+namespace Packets
 {
+namespace In
+{
+
+const uword_t Packet_0x73::length() {
+    ADDTOCALLSTACK();
+    return 2;
 }
 
+void Packet_0x73::process(Socket* s) {
+    ADDTOCALLSTACK();
+    Packets::Out::Packet_0x73 *response = new Packets::Out::Packet_0x73();
+    response->set_data(1);
+    response->send(s);
+}
+
+}
+}

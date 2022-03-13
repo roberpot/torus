@@ -13,12 +13,16 @@
  */
 
 #include <network/packets/packetlist.h>
-#include <network/socket.h>
 #include <debug_support/info.h>
+#include <game/char.h>
 
-void PacketOut_0xb9::set_data(dword_t seq, Client* client)
+namespace Packets
 {
-    UNREFERENCED_PARAMETER(seq);
-    UNREFERENCED_PARAMETER(client);
-    write_dword(8233695);
+namespace Out
+{
+void Packet_0x3a::set_data(Char* character)
+{
+}
+
+}
 }

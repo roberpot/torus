@@ -19,6 +19,9 @@
 
 #include <iostream>
 
+using namespace Packets;
+using namespace Packets::In;
+
 Socket::Socket(socket_t s, ConnectionType connection_type, ConnectionType server_type) :
         _socket(s),
         _connection_type(connection_type),
@@ -83,14 +86,12 @@ void Socket::_init()
         (_server_type == ConnectionType::CONNECTIONTYPE_LOGINSERVER))
     {
         const udword_t packet_0xef_size = 21;
-        const udword_t packet_0x80_size = 62;
 
         receive(packet_0xef_size);
         set_connection_state(ConnectionState::CONNECTIONSTATE_LOGIN);
-        PacketIn* packet_in = packet_factory(0x80);
-        PacketIn_0x80* packet_0x80 = static_cast<PacketIn_0x80*>(packet_in);
-        _current_in_packet = packet_0x80;
-        receive(packet_0x80_size);
+        LoginConnect* packet_login_connect = static_cast<LoginConnect*>(packet_factory(0x80));
+        _current_in_packet = packet_login_connect;
+        receive(packet_login_connect->length());
         TORUSSHELLECHO("New socket");
         //_current_in_packet = nullptr;
     }

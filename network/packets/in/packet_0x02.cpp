@@ -15,8 +15,26 @@
 #include <network/packets/packetlist.h>
 #include <network/socket.h>
 #include <debug_support/info.h>
+#include <core/torus.h>
+#include <game/client.h>
 
-void PacketOut_0x6d::set_data(t_ubyte id)
+
+namespace Packets
 {
-    UNREFERENCED_PARAMETER(id);
+namespace In
+{
+
+const uword_t Packet_0x02::length() {
+    return 7;
+}
+
+void Packet_0x02::process(Socket* s) {
+    ADDTOCALLSTACK();
+    t_byte dir = read_byte();
+    t_ubyte sequence = read_ubyte();
+    udword_t fast_walk_key = read_udword();
+    s->get_client()->event_walk(dir, sequence, fast_walk_key);
+}
+
+}
 }

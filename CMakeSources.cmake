@@ -50,41 +50,41 @@ set(PACKETLIST_FILES
         network/packets/packetlist.h)
 SOURCE_GROUP(network\\packets FILES ${PACKETLIST_FILES})
 
-set(PACKETIN_FILES
-        network/packets/packets_in/packetin_0x0.cpp
-        network/packets/packets_in/packetin_0x02.cpp
-        network/packets/packets_in/packetin_0x06.cpp
-        network/packets/packets_in/packetin_0x34.cpp
-        network/packets/packets_in/packetin_0x5d.cpp
-        network/packets/packets_in/packetin_0x73.cpp
-        network/packets/packets_in/packetin_0x80.cpp
-        network/packets/packets_in/packetin_0x91.cpp
-        network/packets/packets_in/packetin_0xa0.cpp
-        network/packets/packets_in/packetin_0xbd.cpp
-        network/packets/packets_in/packetin_0xbf.cpp
-        network/packets/packets_in/packetin_0xef.cpp
+set(PACKETS_IN_FILES
+        network/packets/in/packet_0x0.cpp
+        network/packets/in/packet_0x02.cpp
+        network/packets/in/packet_0x06.cpp
+        network/packets/in/packet_0x34.cpp
+        network/packets/in/packet_0x5d.cpp
+        network/packets/in/packet_0x73.cpp
+        network/packets/in/packet_0x80.cpp
+        network/packets/in/packet_0x91.cpp
+        network/packets/in/packet_0xa0.cpp
+        network/packets/in/packet_0xbd.cpp
+        network/packets/in/packet_0xbf.cpp
+        network/packets/in/packet_0xef.cpp
         )
-SOURCE_GROUP(network\\packets\\packets_in FILES ${PACKETIN_FILES})
+SOURCE_GROUP(network\\packets\\in FILES ${PACKETS_IN_FILES})
 
-set(PACKETOUT_FILES
-        network/packets/packets_out/packetout_0x1b.cpp
-        network/packets/packets_out/packetout_0x11.cpp
-        network/packets/packets_out/packetout_0x21.cpp
-        network/packets/packets_out/packetout_0x22.cpp
-        network/packets/packets_out/packetout_0x3a.cpp
-        network/packets/packets_out/packetout_0x55.cpp
-        network/packets/packets_out/packetout_0x6d.cpp
-        network/packets/packets_out/packetout_0x73.cpp
-        network/packets/packets_out/packetout_0x78.cpp
-        network/packets/packets_out/packetout_0x82.cpp
-        network/packets/packets_out/packetout_0x88.cpp
-        network/packets/packets_out/packetout_0x8c.cpp
-        network/packets/packets_out/packetout_0xa8.cpp
-        network/packets/packets_out/packetout_0xa9.cpp
-        network/packets/packets_out/packetout_0xb9.cpp
-        network/packets/packets_out/packetout_0xbf.cpp
+set(PACKETS_OUT_FILES
+        network/packets/out/packet_0x1b.cpp
+        network/packets/out/packet_0x11.cpp
+        network/packets/out/packet_0x21.cpp
+        network/packets/out/packet_0x22.cpp
+        network/packets/out/packet_0x3a.cpp
+        network/packets/out/packet_0x55.cpp
+        network/packets/out/packet_0x6d.cpp
+        network/packets/out/packet_0x73.cpp
+        network/packets/out/packet_0x78.cpp
+        network/packets/out/packet_0x82.cpp
+        network/packets/out/packet_0x88.cpp
+        network/packets/out/packet_0x8c.cpp
+        network/packets/out/packet_0xa8.cpp
+        network/packets/out/packet_0xa9.cpp
+        network/packets/out/packet_0xb9.cpp
+        network/packets/out/packet_0xbf.cpp
 )
-SOURCE_GROUP(network\\packets\\packets_out FILES ${PACKETOUT_FILES})
+SOURCE_GROUP(network\\packets\\out FILES ${PACKETS_OUT_FILES})
 
 set(PARSER_FILES
         parser/ast.cpp parser/ast.h
@@ -142,15 +142,14 @@ SOURCE_GROUP(main FILES ${MAIN_FILES})
 
 set(SOURCE_FILES
         ${CORE_FILES}
-        #${CRYPT_FILES}
         ${DB_FILES}
         ${LIBPQXX_SOURCES}
         ${DEBUG_FILES}
         ${LIBRARY_FILES}
         ${NETWORK_FILES}
         ${PACKETLIST_FILES}
-        ${PACKETIN_FILES}
-        ${PACKETOUT_FILES}
+        ${PACKETS_IN_FILES}
+        ${PACKETS_OUT_FILES}
         ${PARSER_FILES}
         ${THREAD_FILES}
         ${GAME_FILES}

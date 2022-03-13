@@ -23,45 +23,48 @@
 #include <initializer_list>
 
 
+namespace Packets
+{
+
 PacketIn* packet_factory(udword_t id ) {
     ADDTOCALLSTACK();
     PacketIn * p = nullptr;
     switch (t_ubyte(id)) {
         case 0x00:
-            p = new PacketIn_0x00();
+            p = new Packets::In::CreateCharacter();
             break;
         case 0x02:
-            p = new PACKET_MOVEMENT_REQUEST();
+            p = new Packets::In::MovementRequest();
             break;
         case 0x06:
-            p = new PACKET_USE_REQUEST();
+            p = new Packets::In::UseRequest();
             break;
         case 0x34:
-            p = new PacketIn_0x34();
+            p = new Packets::In::QueryCharacter();
             break;
         case 0x5d:
-            p = new PacketIn_0x5d();
-            break;
-        case 0x80:
-            p = new PacketIn_0x80();
-            break;
-        case 0x91:
-            p = new PacketIn_0x91();
+            p = new Packets::In::PlayCharacter();
             break;
         case 0x73:
-            p = new PacketIn_0x73();
+            p = new Packets::In::Ping();
+            break;
+        case 0x80:
+            p = new Packets::In::LoginConnect();
+            break;
+        case 0x91:
+            p = new Packets::In::ServerConnect();
             break;
         case 0xa0:
-            p = new PacketIn_0xa0();
-            break;
-        case 0xef:
-            p = new PacketIn_0xef();
+            p = new Packets::In::ServerSelect();
             break;
         case 0xbd:
-            p = new PacketIn_0xbd();    //TODO: Inner switch for each 0xBF subpacket.
+            p = new Packets::In::ReportCliver();
             break;
         case 0xbf:
-            p = new PacketIn_0xbf();    //TODO: Inner switch for each 0xBF subpacket.
+            p = new Packets::In::ExtendedCmd();    //TODO: Inner switch for each 0xBF subpacket.
+            break;
+        case 0xef:
+            p = new Packets::In::ReportCliverNew();
             break;
         default:
             TORUSSHELLECHO("Unknown packet code 0x" << hex(id) << ".");
@@ -126,4 +129,6 @@ void Packet::_increase_buffer(uword_t len)
     }
     _buffer = tmp_buffer;
     _current_buffer_length = new_size;
+}
+
 }

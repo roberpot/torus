@@ -12,15 +12,45 @@
  * along with Torus. If not, see <http://www.gnu.org/licenses/>.
  */
 
+
 #include <network/packets/packetlist.h>
-#include <network/socket.h>
 #include <debug_support/info.h>
 #include <game/char.h>
+#include <game/server.h>
+#include <game/uid.h>
 
 
-void PacketOut_0x88::set_data(Char* character)
+namespace Packets
 {
+namespace Out
+{
+
+void Packet_0x78::set_data(Char* character)//(Char* character)
+{
+    //Char *character = server.get_char(uid);
+    if (character == nullptr)
+    {
+        //err
+        return;
+    }
     write_udword(character->get_uid().get_uid());
-    write_string(character->get_name(), PAPERDOLL_TEXT_LENGTH);
-    write_byte(0);//TODO: Flags: 0x01 = WarMode, 0x02 = CanLift
+    write_uword(character->get_pos().get_x());
+    write_uword(character->get_pos().get_y());
+    write_byte(character->get_pos().get_z());
+    write_byte(t_byte(character->get_dir()));
+    write_uword(character->get_color());
+    write_byte(0);      //TODO: Calculate real flags for this packet.
+    write_byte(1);      //TODO: Notoriety
+    /*
+    * loop
+    *   write_udword(item->get_uid());
+    *   write_uword(item->get_id());
+    *   write_byte(item->get_layer());
+    *   write_uword(item->get_color());
+    * endloop
+    */
+    write_dword(0);
+}
+
+}
 }

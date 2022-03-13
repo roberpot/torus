@@ -12,6 +12,26 @@
  * along with Torus. If not, see <http://www.gnu.org/licenses/>.
  */
 
+
+#include <library/system_headers.h>
+#include <debug_support/info.h>
+#include <game/client.h>
+#include <game/char.h>
 #include <network/packets/packetlist.h>
 #include <network/socket.h>
-#include <debug_support/info.h>
+
+
+namespace Packets
+{
+namespace Out
+{
+
+void PACKET_MOVEMENT_ACCEPT::set_data(const t_ubyte& seq, const udword_t& fast_walk_key) {
+    ADDTOCALLSTACK();
+    write_ubyte(seq);
+    write_ubyte(7); // View color (blue, red, yellow ...)
+    write_udword(fast_walk_key);
+}
+
+}
+}

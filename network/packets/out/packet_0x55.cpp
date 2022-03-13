@@ -16,29 +16,10 @@
 #include <network/socket.h>
 #include <debug_support/info.h>
 
+namespace Packets
+{
+namespace Out
+{
 
-const uword_t PacketIn_0xa0::length() {
-    ADDTOCALLSTACK();
-    return 3;
 }
-
-void PacketIn_0xa0::process(Socket* s) {
-    ADDTOCALLSTACK();
-    ++_current_pos;
-    t_byte server_index = read_byte();
-    if (server_index >= TBYTE_MAX) {
-        server_index -= TBYTE_MAX;
-    }
-
-    // >= 1.26.00 clients list Gives us a 1 based index for some reason.
-    if (server_index > 0)
-        server_index--;
-
-    //TODO: Server selection here, read IP and PORTS from configuration for the given server index.
-
-
-    s->set_connection_state(ConnectionState::CONNECTIONSTATE_CHARLIST);
-    PacketOut_0x8c *packet_server_select = new PacketOut_0x8c();
-    packet_server_select->set_data(s, server_index);
-    packet_server_select->send(s);
 }

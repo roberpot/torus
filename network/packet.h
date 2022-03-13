@@ -38,6 +38,9 @@ LL = (((C) & 0xff000000) >> 24) | \
      (((C) & 0x0000ff00) << 8) | \
      (((C) & 0x000000ff) << 24);
 
+
+namespace Packets
+{
 class PacketIn;
 
 /**
@@ -93,6 +96,7 @@ public:
  */
 PacketIn* packet_factory(udword_t id);
 
+}
 #ifdef _MSC_VER
 #pragma warning(default:4127)
 #endif

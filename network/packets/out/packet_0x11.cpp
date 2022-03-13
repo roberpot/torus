@@ -18,7 +18,12 @@
 #include <debug_support/info.h>
 
 
-void PacketOut_0x11::set_data(Char* character)
+namespace Packets
+{
+namespace Out
+{
+
+void Packet_0x11::set_data(Char* character)
 {
     write_udword(character->get_uid().get_uid());
     write_string(character->get_name(), 30);
@@ -163,7 +168,8 @@ word	Maximum Stamina Increase (KR attribute)
 word	Maximum Mana Increase (KR attribute)
 */
 
-
+}
+}
 
 
 

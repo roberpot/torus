@@ -17,27 +17,24 @@
 #include <debug_support/info.h>
 
 
-const uword_t PacketIn_0xef::length() {
-    return 21;
+namespace Packets
+{
+namespace In
+{
+
+const uword_t Packet_0xbd::length() {
+    return _current_buffer_length;
 }
 
-void PacketIn_0xef::process(Socket* s) {
+void Packet_0xbd::process(Socket* s) {
     ADDTOCALLSTACK();
     UNREFERENCED_PARAMETER(s);
-    _seed = read_dword();
-    _client_major_version = read_dword();
-    _client_minor_version = read_dword();
-    _client_revision_version = read_dword();
-    _client_prototype_version = read_dword();
 
-    s->set_seed(_seed);
+    std::string cliver;
+    read_string(cliver, _current_buffer_length - 3);
+
+    //TODO: Correctly parse and store the reported version.
 }
 
-PacketIn_0xef::PacketIn_0xef()
-{
-    _seed = 0;
-    _client_major_version = 0;
-    _client_minor_version = 0;
-    _client_revision_version = 0;
-    _client_prototype_version = 0;
+}
 }

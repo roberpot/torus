@@ -15,17 +15,18 @@
 #include <network/packets/packetlist.h>
 #include <network/socket.h>
 #include <debug_support/info.h>
-#include <core/torus.h>
-#include <game/client.h>
-#include <game/uid.h>
 
 
-const uword_t PACKET_USE_REQUEST::length() {
-    return 5;
+namespace Packets
+{
+namespace Out
+{
+
+void Packet_0x82::set_data(ResponseCode code)
+{
+    ADDTOCALLSTACK();
+    write_ubyte(t_ubyte(code));
 }
 
-void PACKET_USE_REQUEST::process(Socket*s) {
-    ADDTOCALLSTACK();
-    Uid uid(read_udword());
-    s->get_client()->event_double_click(uid);
+}
 }

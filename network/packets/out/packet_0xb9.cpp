@@ -15,12 +15,20 @@
 #include <network/packets/packetlist.h>
 #include <network/socket.h>
 #include <debug_support/info.h>
-#include <core/torus.h>
-#include <game/client.h>
 
 
-void PacketOut_0x73::set_data(t_ubyte response)
+namespace Packets
 {
-    ADDTOCALLSTACK();
-    write_ubyte(response);
+namespace Out
+{
+
+
+void Packet_0xb9::set_data(dword_t seq, Client* client)
+{
+    UNREFERENCED_PARAMETER(seq);
+    UNREFERENCED_PARAMETER(client);
+    write_dword(8233695);
+}
+
+}
 }

@@ -15,18 +15,39 @@
 #include <network/packets/packetlist.h>
 #include <network/socket.h>
 #include <debug_support/info.h>
-#include <core/torus.h>
-#include <game/client.h>
+#include <game/server.h>
+#include <game/char.h>
 
 
-const uword_t PACKET_MOVEMENT_REQUEST::length() {
-    return 7;
+namespace Packets
+{
+namespace In
+{
+
+const uword_t Packet_0x34::length() {
+    return 10;
 }
 
-void PACKET_MOVEMENT_REQUEST::process(Socket* s) {
+void Packet_0x34::process(Socket* s) {
     ADDTOCALLSTACK();
-    t_byte dir = read_byte();
-    t_ubyte sequence = read_ubyte();
-    udword_t fast_walk_key = read_udword();
-    s->get_client()->event_walk(dir, sequence, fast_walk_key);
+    UNREFERENCED_PARAMETER(s);
+    
+
+    _current_pos += 4; //Skip first 4 bytes.
+    t_byte type = read_byte();
+    Uid uid(read_udword());
+    Char *character = server.get_char(uid);
+    if (character)
+    {
+        Packets::Out::Packet_0x11 *packet_mobile = new Packets::Out::Packet_0x11();
+        packet_mobile->set_data(character);
+        packet_mobile->send(s);
+    }
+    else
+    {
+        TORUSSHELLECHO("Mobile request for invalid uid: " << uid.get_uid());
+    }
+}
+
+}
 }

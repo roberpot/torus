@@ -27,7 +27,12 @@
 #endif //_WIN32
 
 
-void PacketOut_0xa8::set_data(Socket* s)
+namespace Packets
+{
+namespace Out
+{
+
+void Packet_0xa8::set_data(Socket* s)
 {
     UNREFERENCED_PARAMETER(s);
     std::stringstream ss;
@@ -91,4 +96,7 @@ void PacketOut_0xa8::set_data(Socket* s)
             write_ubyte(atoi(ip[3].c_str()) & 0xFF);
         }
     }
+}
+
+}
 }

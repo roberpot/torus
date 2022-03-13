@@ -14,22 +14,37 @@
 
 #include <network/packets/packetlist.h>
 #include <network/socket.h>
-#include <core/config.h>
+#include <game/client.h>
 #include <debug_support/info.h>
 
 
-void PacketOut_0x8c::set_data(Socket* s, word_t server_index )
+namespace Packets
 {
-    UNREFERENCED_PARAMETER(s);
-    t_ubyte index = t_ubyte(server_index);
-    ServerInfo info = toruscfg._game_servers[index];
-    std::vector<std::string> ip = split(info.ip, '.');
-    TORUSSHELLECHO("Connection received to server[" << int(server_index) << "]: " << info.name);
+namespace In
+{
 
-    write_ubyte(t_ubyte(atoi(ip[0].c_str())));
-    write_ubyte(t_ubyte(atoi(ip[1].c_str())));
-    write_ubyte(t_ubyte(atoi(ip[2].c_str())));
-    write_ubyte(t_ubyte(atoi(ip[3].c_str())));
-    write_uword(info.port);
-    write_dword(s->get_seed());  //TODO: Add real calculation using zlib and account's name. Sometimes it fails reading the seed in packet 0x91.
+const uword_t Packet_0x5d::length() {
+    return 73;
+}
+
+void Packet_0x5d::process(Socket* s) {
+    ADDTOCALLSTACK();
+    UNREFERENCED_PARAMETER(s);
+    skip(4);
+    std::string character_name;
+    read_string(character_name, CHARACTERS_STRING_LENGTH);
+    skip(2);    
+    dword_t flags = read_dword();
+    skip(4);
+    dword_t login_count = read_dword();
+    skip(4);
+    skip(4);
+    skip(4);
+    skip(4);
+    dword_t slot = read_dword();
+    dword_t ip = read_dword();
+    s->get_client()->event_character_login(character_name, flags, login_count, slot, ip);
+}
+
+}
 }

@@ -24,6 +24,8 @@
 
 class Socket;
 
+namespace Packets
+{
 /*
 * @brief    Representation of a generic incoming packet.
 *
@@ -89,44 +91,40 @@ public:
      */
     bool is_complete();
 
+
+    /**
+     * @brief Read a string from the buffer.
+     * 
+     * @param str The string in which to 
+     * @param len
+     */
     void read_string(std::string &str, uword_t len = 0);
 
-    //template<typename T>
     /**
-     * @brief   Bitwise right shift operator, used to export the buffered data into useable variables.
-     *
-     * @param   p   The Packet to read from.
-     * @param   d   The data into which to write.
-     *
-     * @return  The shifted result.
+     * @brief Reads a signed byte from the buffer.
+     * 
+     * @return The byte.
      */
-    //friend PacketIn& operator>>(PacketIn& p, T& d);
-
     t_byte read_byte();
+
+    /**
+     * @brief Reads a signed byte from the buffer.
+     *
+     * @return The byte.
+     */
     t_ubyte read_ubyte();
     word_t read_word();
     uword_t read_uword();
     dword_t read_dword();
     udword_t read_udword();
 
-    void skip(const udword_t& bytes);
-    void rewind(const udword_t& bytes);
+    void skip(const uword_t& bytes);
+    void rewind(const uword_t& bytes);
 
     private:
 };
-/*
-template<typename T>
-PacketIn& operator>>(PacketIn& p, T& d)
-{
-    if (p._current_pos + sizeof(d) > p.length())
-    {
-        //THROW_ERROR(NetworkError, "Trying to read " << sizeof(T) << " bytes to from " << hex(p._buffer[0]) << ", being currently in the position " << p._current_pos << " and with a total length of " << p.length() " bytes.");
-        return p;
-    }
-    memcpy(&d, &(p._buffer[p._current_pos]), sizeof(d));
-    p._current_pos += sizeof(d);
-    return p;
-}*/
+
+}
 
 
 #endif //__TORUS_PACKETIN_H

@@ -13,32 +13,17 @@
  */
 
 #include <network/packets/packetlist.h>
-#include <network/socket.h>
 #include <debug_support/info.h>
-#include <game/server.h>
-#include <game/char.h>
 
-const uword_t PacketIn_0x34::length() {
-    return 10;
+
+namespace Packets
+{
+namespace Out
+{
+
+void Packet_0xbf::set_data()
+{
 }
 
-void PacketIn_0x34::process(Socket* s) {
-    ADDTOCALLSTACK();
-    UNREFERENCED_PARAMETER(s);
-    
-
-    _current_pos += 4; //Skip first 4 bytes.
-    t_byte type = read_byte();
-    Uid uid(read_udword());
-    Char *character = server.get_char(uid);
-    if (character)
-    {
-        PacketOut_0x11 *packet_mobile = new PacketOut_0x11();
-        packet_mobile->set_data(character);
-        packet_mobile->send(s);
-    }
-    else
-    {
-        TORUSSHELLECHO("Mobile request for invalid uid: " << uid.get_uid());
-    }
+}
 }

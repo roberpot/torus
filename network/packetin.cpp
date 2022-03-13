@@ -15,6 +15,8 @@
 
 #include <network/packetin.h>
 
+namespace Packets
+{
 
 PacketIn::PacketIn(bool has_dynamic_length) :
     _is_complete(false),
@@ -49,7 +51,6 @@ uword_t PacketIn::receive(const uint8_t* data, const uword_t len)
             auto copy_buffer = buffer_to_vector(_buffer, 3);
             // If a packet has dynamic length, we must trust the size received in the buffer.
             uword_t old_pos = _current_pos; //Store current pos, should be 0 ... but store anyway.
-            t_ubyte id = 0;
             _current_pos = 1;               // Move the cursor to position 1, so the next 2 bytes read are the length.
             expected_length = read_uword();     // Read the length.
             _current_pos = old_pos;         // Restore the cursor.
@@ -149,7 +150,7 @@ udword_t PacketIn::read_udword()
                     _buffer[_current_pos++]);
 }
 
-void PacketIn::skip(const udword_t& bytes)
+void PacketIn::skip(const uword_t& bytes)
 {
     _current_pos += bytes;
     if (_current_pos > _current_buffer_length)
@@ -158,7 +159,7 @@ void PacketIn::skip(const udword_t& bytes)
     }
 }
 
-void PacketIn::rewind(const udword_t& bytes)
+void PacketIn::rewind(const uword_t& bytes)
 {
     if (_current_pos - bytes < 0)
     {
@@ -168,4 +169,6 @@ void PacketIn::rewind(const udword_t& bytes)
     {
         _current_pos -= bytes;
     }
+}
+
 }

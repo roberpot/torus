@@ -12,13 +12,32 @@
  * along with Torus. If not, see <http://www.gnu.org/licenses/>.
  */
 
+
 #include <network/packets/packetlist.h>
 #include <network/socket.h>
 #include <debug_support/info.h>
+#include <core/torus.h>
+#include <game/client.h>
 
 
-void PacketOut_0x82::set_data(ResponseCode code)
+namespace Packets
 {
+namespace In
+{
+
+const uword_t Packet_0x00::length() {
     ADDTOCALLSTACK();
-    write_ubyte(t_ubyte(code));
+    return 7;
+}
+
+void Packet_0x00::process(Socket* s) {
+    ADDTOCALLSTACK();
+    UNREFERENCED_PARAMETER(s);
+}
+
+Packet_0x00::~Packet_0x00() {
+    ADDTOCALLSTACK();
+}
+
+}
 }

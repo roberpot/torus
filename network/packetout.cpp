@@ -16,6 +16,10 @@
 #include <network/packetout.h>
 #include <network/socket.h>
 
+
+namespace Packets
+{
+
 PacketOut::PacketOut(udword_t id, bool has_dynamic_length) :
     _has_dynamic_length(has_dynamic_length)
 {
@@ -160,4 +164,6 @@ void PacketOut::write_string(const std::string& string, uword_t len)
     {
         _buffer[_current_pos++] = '\0';
     }
+}
+
 }

@@ -14,24 +14,27 @@
 
 #include <game/account.h>
 #include <game/accounts_manager.h>
-#include <game/client.h>
 #include <library/string.h>
 #include <network/packets/packetlist.h>
 #include <network/socket.h>
 #include <debug_support/info.h>
 #include <shell.h>
 
-const uword_t PacketIn_0x80::length()
+
+namespace Packets
 {
-    return Packet_0x80_length;
+namespace In
+{
+
+const uword_t Packet_0x91::length()
+{
+    return 65;
 }
 
-void PacketIn_0x80::process(Socket* s)
+void Packet_0x91::process(Socket* s)
 {
-    if (s->get_connection_state() != ConnectionState::CONNECTIONSTATE_LOGIN) // Double casting to prevent Warning #C26812 (VS)
-    {
-        return;
-    }
+    udword_t seed = read_udword();
+
     std::string account_name;
     std::string account_password;
     read_string(account_name, 30);
@@ -40,43 +43,34 @@ void PacketIn_0x80::process(Socket* s)
     account_name = clean(account_name);
     account_password = clean(account_password);
 
-    skip(1);    //Command: unused
-    TORUSSHELLECHO("[LoginServer] Connection request to account " << account_name <<  ".");
+    TORUSSHELLECHO("[GameServer] Connection request to account " << account_name <<  ".");
 
-    Account *acc = torusacc.get_account(account_name);
+    Account* acc = torusacc.get_account(account_name);
 
     if (acc == nullptr)
     {
-        DEBUG_NOTICE("1");
         //LoginAck -> Invalid account
-        s->get_client()->add_response_code(PacketOut_0x82::ResponseCode::Invalid);
-        return ;
+        return;
     }
     else if (!acc->password_match(account_password))
     {
-        DEBUG_NOTICE("2");
-        s->get_client()->add_response_code(PacketOut_0x82::ResponseCode::BadPass);
         //LoginAck -> Invalid pw
-        return;
-    }
-
-    if (s == nullptr) { //Sometimes happens at clients' closure.
-        DEBUG_NOTICE("3");
-        s->get_client()->add_response_code(PacketOut_0x82::ResponseCode::Invalid);
         return;
     }
 
     if (acc->connect(s))
     {
-        DEBUG_NOTICE("Received valid account identification, proceeding to send server information.");
-        PacketOut_0xa8* packet = new PacketOut_0xa8();
-        packet->set_data(s);
+        DEBUG_NOTICE("Received valid account identification, proceeding to send client features and characters list.");
+        Packets::Out::Packet_0xb9* packet = new Packets::Out::Packet_0xb9();
+        dword_t featureFlags = 1;
+        packet->set_data(featureFlags, s->get_client());
         packet->send(s);
-        s->set_connection_state(ConnectionState::CONNECTIONSTATE_SERVERLIST);
+
+        Packets::Out::Packet_0xa9* packetCharacterList = new Packets::Out::Packet_0xa9();
+        packetCharacterList->set_data(s->get_client());
+        packetCharacterList->send(s);
     }    
 }
 
-bool PacketIn_0x80::is_valid_account()
-{
-    return _is_valid_account;
+}
 }

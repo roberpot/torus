@@ -15,13 +15,20 @@
 #include <network/packets/packetlist.h>
 #include <network/socket.h>
 #include <debug_support/info.h>
+#include <core/torus.h>
+#include <game/client.h>
 
 
-const uword_t PacketIn_0xbf::length() {
-    return 21;
+namespace Packets
+{
+namespace Out
+{
+
+void Packet_0x73::set_data(t_ubyte response)
+{
+    ADDTOCALLSTACK();
+    write_ubyte(response);
 }
 
-void PacketIn_0xbf::process(Socket* s) {
-    ADDTOCALLSTACK();
-    UNREFERENCED_PARAMETER(s);
+}
 }

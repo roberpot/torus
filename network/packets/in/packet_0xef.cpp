@@ -12,23 +12,40 @@
  * along with Torus. If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 #include <network/packets/packetlist.h>
 #include <network/socket.h>
 #include <debug_support/info.h>
-#include <core/torus.h>
-#include <game/client.h>
 
-const uword_t PacketIn_0x00::length() {
-    ADDTOCALLSTACK();
-    return 7;
+
+namespace Packets
+{
+namespace In
+{
+
+const uword_t Packet_0xef::length() {
+    return 21;
 }
 
-void PacketIn_0x00::process(Socket* s) {
+void Packet_0xef::process(Socket* s) {
     ADDTOCALLSTACK();
     UNREFERENCED_PARAMETER(s);
+    _seed = read_dword();
+    _client_major_version = read_dword();
+    _client_minor_version = read_dword();
+    _client_revision_version = read_dword();
+    _client_prototype_version = read_dword();
+
+    s->set_seed(_seed);
 }
 
-PacketIn_0x00::~PacketIn_0x00() {
-    ADDTOCALLSTACK();
+Packet_0xef::Packet_0xef()
+{
+    _seed = 0;
+    _client_major_version = 0;
+    _client_minor_version = 0;
+    _client_revision_version = 0;
+    _client_prototype_version = 0;
+}
+
+}
 }

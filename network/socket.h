@@ -44,6 +44,8 @@ typedef int socket_t;
 
 #define BUFFER_SIZE 1024 * 20
 
+using namespace Packets;
+
 enum class ConnectionState
 {
     CONNECTIONSTATE_NONE,

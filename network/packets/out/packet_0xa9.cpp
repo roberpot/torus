@@ -18,10 +18,10 @@
 #include <library/types.h>
 
 
-//const udword_t Packet_0xa9::length() {
-//    ADDTOCALLSTACK();
-//    return 21;
-//}
+namespace Packets
+{
+namespace Out
+{
 
 struct MapPoint {
     udword_t x;
@@ -31,7 +31,7 @@ struct MapPoint {
     MapPoint(udword_t px, udword_t py, udword_t pz, udword_t pm) : x(px), y(py), z(pz), m(pm) {};
 };
 
-void PacketOut_0xa9::set_data(Client* client)
+void Packet_0xa9::set_data(Client* client)
 {
     UNREFERENCED_PARAMETER(client); // TODO: Gather packet's data from client.
 
@@ -124,4 +124,7 @@ void PacketOut_0xa9::set_data(Client* client)
     */
     write_dword(1960);
     //write_word(0); // Only for enhanced client.
+}
+
+}
 }

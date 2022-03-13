@@ -15,18 +15,21 @@
 #include <network/packets/packetlist.h>
 #include <network/socket.h>
 #include <debug_support/info.h>
-#include <core/torus.h>
-#include <game/client.h>
 
 
-const uword_t PacketIn_0x73::length() {
-    ADDTOCALLSTACK();
-    return 2;
+namespace Packets
+{
+namespace In
+{
+
+const uword_t Packet_0xbf::length() {
+    return 21;
 }
 
-void PacketIn_0x73::process(Socket* s) {
+void Packet_0xbf::process(Socket* s) {
     ADDTOCALLSTACK();
-    PacketOut_0x73 *response = new PacketOut_0x73();
-    response->set_data(1);
-    response->send(s);
+    UNREFERENCED_PARAMETER(s);
+}
+
+}
 }

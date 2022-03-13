@@ -24,6 +24,9 @@
 #include <network/packets/packetlist.h>
 
 
+using namespace Packets::In;
+using namespace Packets::Out;
+
 Client::Client(Socket * s) :
     _socket(s),
     _movement_sequence(0),
@@ -54,7 +57,7 @@ void Client::event_walk(const t_ubyte& dir, const t_ubyte& seq, const udword_t& 
 
 
 
-    PACKET_MOVEMENT_ACCEPT* packet_movement_accept = new PACKET_MOVEMENT_ACCEPT();
+    Packets::Out::Packet_0x22* packet_movement_accept = new Packets::Out::Packet_0x22();
     packet_movement_accept->set_data(seq, fast_walk_key);
     packet_movement_accept->send(_socket);
     return; //TODO: WalkChecks
@@ -79,10 +82,10 @@ void Client::event_walk(const t_ubyte& dir, const t_ubyte& seq, const udword_t& 
     }*/
 }
 
-void Client::add_response_code(PacketOut_0x82::ResponseCode code)
+void Client::add_response_code(Packets::Out::Packet_0x82::ResponseCode code)
 {
     ADDTOCALLSTACK();
-    PacketOut_0x82* packet = new PacketOut_0x82();
+    Packets::Out::Packet_0x82* packet = new Packets::Out::Packet_0x82();
     packet->set_data(code);
     send(packet);
 }
@@ -93,7 +96,7 @@ void Client::event_disconnect()
         _char = nullptr;
         //
     }
-    add_response_code(PacketOut_0x82::ResponseCode::Other);
+    add_response_code(Packets::Out::Packet_0x82::ResponseCode::Other);
     _socket->set_read_closed();
 }
 
@@ -112,15 +115,15 @@ void Client::event_character_login(const std::string& name, const dword_t& flags
 
     _char = _account->get_char(slot);
 
-    PacketOut_0x1b *packet_login_confirm = new PacketOut_0x1b();
+    Packets::Out::Packet_0x1b *packet_login_confirm = new Packets::Out::Packet_0x1b();
     packet_login_confirm->set_data(_char);
     packet_login_confirm->send(_socket);
 
-    PacketOut_0x78* packet_send_character = new PacketOut_0x78();
+    Packets::Out::Packet_0x78* packet_send_character = new Packets::Out::Packet_0x78();
     packet_send_character->set_data(_char);
     packet_send_character->send(_socket);
 
-    PacketOut_0x55 *packet_login_confirmed = new PacketOut_0x55();
+    Packets::Out::Packet_0x55 *packet_login_confirmed = new Packets::Out::Packet_0x55();
     packet_login_confirmed->send(_socket);
 
 }
@@ -136,7 +139,7 @@ void Client::event_double_click(Uid& uid)
         }
         else*/
         {
-            PacketOut_0x88* packet_paperdoll = new PacketOut_0x88();
+            Packet_0x88* packet_paperdoll = new Packet_0x88();
             packet_paperdoll->send(_socket);
         }
         

@@ -12,31 +12,27 @@
  * along with Torus. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <game/char.h>
-#include <game/uo_files/map_list.h>
+#include <library/system_headers.h>
 #include <network/packets/packetlist.h>
+#include <network/socket.h>
 #include <debug_support/info.h>
+#include <game/client.h>
+#include <game/char.h>
 
 
-void PacketOut_0x1b::set_data(Char* character)
+namespace Packets
 {
+namespace Out
+{
+
+void PACKET_MOVEMENT_REJECT::set_data(t_ubyte seq, Char* character) {
     ADDTOCALLSTACK();
-    write_dword(character->get_uid().get_uid());
-    write_dword(0);              //Unused
-    write_word(word_t(character->get_body()));
+    write_ubyte(seq);
     write_word(character->get_pos().get_x());
     write_word(character->get_pos().get_y());
-    write_word(character->get_pos().get_z());
     write_byte(t_byte(character->get_dir()));
-    write_byte(0);              //Unused
-    write_dword(0xFFFFFFFF);    //Unused
-    write_word(0);              //Unused
-    write_word(0);              //Unused
-    Map* map = maplist.get_map(character->get_pos().get_map());
-    //write_word(map->get_max_x());   //FIXME
-    //write_word(map->get_max_y());
-    write_word(7168);
-    write_word(4096);
-    write_word(0);              //Unused
-    write_dword(0);             //Unused
+    write_ubyte(character->get_pos().get_z());
+}
+
+}
 }

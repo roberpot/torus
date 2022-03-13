@@ -18,6 +18,8 @@
 #include <library/types.h>
 
 class Socket;
+namespace Packets
+{
 
 class PacketOut : public Packet
 {
@@ -60,6 +62,6 @@ private:
     void _write_length();
 };
 
-
+}
 
 #endif //__TORUS_PACKETOUT_H
