@@ -26,6 +26,8 @@ namespace Packets
 namespace In
 {
 
+using namespace ::Out;
+
 const uword_t Packet_0x91::length()
 {
     return 65;
@@ -61,14 +63,14 @@ void Packet_0x91::process(Socket* s)
     if (acc->connect(s))
     {
         DEBUG_NOTICE("Received valid account identification, proceeding to send client features and characters list.");
-        Packets::Out::Packet_0xb9* packet = new Packets::Out::Packet_0xb9();
+        SupportedFeatures* packet_features = new SupportedFeatures();
         dword_t featureFlags = 1;
-        packet->set_data(featureFlags, s->get_client());
-        packet->send(s);
+        packet_features->set_data(featureFlags, s->get_client());
+        packet_features->send(s);
 
-        Packets::Out::Packet_0xa9* packetCharacterList = new Packets::Out::Packet_0xa9();
-        packetCharacterList->set_data(s->get_client());
-        packetCharacterList->send(s);
+        CharList* packet_charlist = new CharList();
+        packet_charlist->set_data(s->get_client());
+        packet_charlist->send(s);
     }    
 }
 

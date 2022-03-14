@@ -20,10 +20,6 @@
 #include <network/packetin.h>
 #include <network/packetout.h>
 
-#define PACKET_MOVEMENT_REJECT Packet_0x21
-#define PACKET_MOVEMENT_ACCEPT Packet_0x22
-#define PACKET_SERVER_LIST Packet_0xa8
-
 class Char;
 class Client;
 class Uid;
@@ -146,18 +142,18 @@ namespace In
         udword_t _client_prototype_version;
     };
 
-    using CreateCharacter = Packets::In::Packet_0x00;
-    using MovementRequest = Packet_0x02;
-    using UseRequest = Packet_0x06;
-    using QueryCharacter = Packet_0x34;
-    using PlayCharacter = Packet_0x5d;
-    using Ping = Packet_0x73;
-    using LoginConnect = Packet_0x80;
-    using ServerConnect = Packet_0x91;
-    using ServerSelect = Packet_0xa0;
-    using ReportCliver = Packet_0xbd;
-    using ExtendedCmd = Packet_0xbf;
-    using ReportCliverNew = Packet_0xef;
+    using CreateCharacter   = Packet_0x00;
+    using MovementRequest   = Packet_0x02;
+    using UseRequest        = Packet_0x06;
+    using QueryCharacter    = Packet_0x34;
+    using PlayCharacter     = Packet_0x5d;
+    using Ping              = Packet_0x73;
+    using LoginConnect      = Packet_0x80;
+    using ServerConnect     = Packet_0x91;
+    using ServerSelect      = Packet_0xa0;
+    using ReportCliver      = Packet_0xbd;
+    using ExtendedCmd       = Packet_0xbf;
+    using ReportCliverNew   = Packet_0xef;
 
 
 }
@@ -179,17 +175,17 @@ namespace Out
     };
 
     // Movement rejected
-    class PACKET_MOVEMENT_REJECT : public PacketOut {
+    class Packet_0x21 : public PacketOut {
     public:
         void set_data(t_ubyte seq, Char* character);
-        PACKET_MOVEMENT_REJECT() : PacketOut(0x21) {};
+        Packet_0x21() : PacketOut(0x21) {};
     };
 
     // Movement accepted
-    class PACKET_MOVEMENT_ACCEPT : public PacketOut {
+    class Packet_0x22 : public PacketOut {
     public:
         void set_data(const t_ubyte& seq, const udword_t& fast_walk_key);
-        PACKET_MOVEMENT_ACCEPT() : PacketOut(0x22) {};
+        Packet_0x22() : PacketOut(0x22) {};
     };
 
     // Skills Update
@@ -223,13 +219,6 @@ namespace Out
     public:
         void set_data(Char* character); //Char* character
         Packet_0x78() : PacketOut(0x78, true) {};
-    };
-
-    // Paperdoll
-    class Packet_0x88 : public PacketOut {
-    public:
-        void set_data(Char* character);
-        Packet_0x88() : PacketOut(0x88) {};
     };
 
     // PacketLoginResponse
@@ -268,6 +257,13 @@ namespace Out
         Packet_0x82() : PacketOut(0x82) {};
     };
 
+    // Paperdoll
+    class Packet_0x88 : public PacketOut {
+    public:
+        void set_data(Char* character);
+        Packet_0x88() : PacketOut(0x88) {};
+    };
+
     // Play server accepted
     class Packet_0x8c : public PacketOut {
     public:
@@ -302,6 +298,23 @@ namespace Out
         void set_data();
         Packet_0xbf() : PacketOut(0xBF) {};
     };
+
+    using LoginConfirm      = Packet_0x1b;
+    using MobileStatus      = Packet_0x11;
+    using MovementReject    = Packet_0x21;
+    using MovementAccept    = Packet_0x22;
+    using SkillsUpdate      = Packet_0x3a;
+    using LoginDone         = Packet_0x55;
+    using PlayMusic         = Packet_0x6d;
+    using PingResponse      = Packet_0x73;
+    using SendCharacter     = Packet_0x78;
+    using LoginResponse     = Packet_0x82;
+    using SendPaperdoll     = Packet_0x88;
+    using ServerAccept      = Packet_0x8c;
+    using ServerList        = Packet_0xa8;
+    using CharList          = Packet_0xa9;
+    using SupportedFeatures = Packet_0xb9;
+    using ExtendedCmd       = Packet_0xbf;
 }
 }
 

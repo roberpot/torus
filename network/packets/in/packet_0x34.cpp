@@ -24,6 +24,7 @@ namespace Packets
 namespace In
 {
 
+using namespace ::Out;
 const uword_t Packet_0x34::length() {
     return 10;
 }
@@ -39,7 +40,7 @@ void Packet_0x34::process(Socket* s) {
     Char *character = server.get_char(uid);
     if (character)
     {
-        Packets::Out::Packet_0x11 *packet_mobile = new Packets::Out::Packet_0x11();
+        MobileStatus* packet_mobile = new MobileStatus();
         packet_mobile->set_data(character);
         packet_mobile->send(s);
     }

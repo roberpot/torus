@@ -27,6 +27,8 @@ namespace Packets
 namespace In
 {
 
+using namespace ::Out;
+
 const uword_t Packet_0x80::length()
 {
     return 62;
@@ -75,9 +77,9 @@ void Packet_0x80::process(Socket* s)
     if (acc->connect(s))
     {
         DEBUG_NOTICE("Received valid account identification, proceeding to send server information.");
-        Packets::Out::Packet_0xa8* packet = new Packets::Out::Packet_0xa8();
-        packet->set_data(s);
-        packet->send(s);
+        ServerList* packet_server_list = new ServerList();
+        packet_server_list->set_data(s);
+        packet_server_list->send(s);
         s->set_connection_state(ConnectionState::CONNECTIONSTATE_SERVERLIST);
     }    
 }

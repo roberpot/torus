@@ -25,7 +25,7 @@ namespace Packets
 namespace Out
 {
 
-void PACKET_MOVEMENT_REJECT::set_data(t_ubyte seq, Char* character) {
+void Packet_0x21::set_data(t_ubyte seq, Char* character) {
     ADDTOCALLSTACK();
     write_ubyte(seq);
     write_word(character->get_pos().get_x());

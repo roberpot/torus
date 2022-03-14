@@ -26,7 +26,7 @@ namespace Packets
 namespace Out
 {
 
-void PACKET_MOVEMENT_ACCEPT::set_data(const t_ubyte& seq, const udword_t& fast_walk_key) {
+void Packet_0x22::set_data(const t_ubyte& seq, const udword_t& fast_walk_key) {
     ADDTOCALLSTACK();
     write_ubyte(seq);
     write_ubyte(7); // View color (blue, red, yellow ...)

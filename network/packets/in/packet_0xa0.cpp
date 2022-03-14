@@ -22,6 +22,8 @@ namespace Packets
 namespace In
 {
 
+using namespace ::Out;
+
 const uword_t Packet_0xa0::length() {
     ADDTOCALLSTACK();
     return 3;
@@ -43,9 +45,9 @@ void Packet_0xa0::process(Socket* s) {
 
 
     s->set_connection_state(ConnectionState::CONNECTIONSTATE_CHARLIST);
-    Packets::Out::Packet_0x8c *packet_server_select = new Packets::Out::Packet_0x8c();
-    packet_server_select->set_data(s, server_index);
-    packet_server_select->send(s);
+    ServerAccept*packet_server_accept = new ServerAccept();
+    packet_server_accept->set_data(s, server_index);
+    packet_server_accept->send(s);
 }
 
 }

@@ -55,39 +55,37 @@ void Client::event_walk(const t_ubyte& dir, const t_ubyte& seq, const udword_t& 
     ADDTOCALLSTACK();
     //_char MUST be valid.
 
-
-
-    Packets::Out::Packet_0x22* packet_movement_accept = new Packets::Out::Packet_0x22();
+    MovementAccept* packet_movement_accept = new MovementAccept();
     packet_movement_accept->set_data(seq, fast_walk_key);
-    packet_movement_accept->send(_socket);
+    send(packet_movement_accept);
     return; //TODO: WalkChecks
     /*if (Dir(dir) > Dir::DIR_QTY) {
-        PACKET_MOVEMENT_REJECT* packet_movement_reject = new PACKET_MOVEMENT_REJECT();
+        MovementReject* packet_movement_reject = new MovementReject();
         packet_movement_reject->set_data(seq, _char);
-        packet_movement_reject->send(_socket);
+        send(packet_movement_reject);
         return;
     }
     else if (get_char()->get_pos().can_move_to_coord(1, 1))
     {
         _movement_sequence++;
-        PACKET_MOVEMENT_ACCEPT* packet_movement_accept = new PACKET_MOVEMENT_ACCEPT();
+        MovementAccept* packet_movement_accept = new MovementAccept();
         packet_movement_accept->set_data(seq, fast_walk_key);
-        packet_movement_accept->send(_socket);
+        send(packet_movement_accept);
         
     }
     else {
-        PACKET_MOVEMENT_REJECT* packet_movement_reject = new PACKET_MOVEMENT_REJECT();
+        MovementReject* packet_movement_reject = new MovementReject();
         packet_movement_reject->set_data(seq, _char);
-        packet_movement_reject->send(_socket);
+        send(packet_movement_reject);
     }*/
 }
 
 void Client::add_response_code(Packets::Out::Packet_0x82::ResponseCode code)
 {
     ADDTOCALLSTACK();
-    Packets::Out::Packet_0x82* packet = new Packets::Out::Packet_0x82();
-    packet->set_data(code);
-    send(packet);
+    LoginResponse* packet_login_response = new LoginResponse;
+    packet_login_response->set_data(code);
+    send(packet_login_response);
 }
 
 void Client::event_disconnect()
@@ -115,16 +113,16 @@ void Client::event_character_login(const std::string& name, const dword_t& flags
 
     _char = _account->get_char(slot);
 
-    Packets::Out::Packet_0x1b *packet_login_confirm = new Packets::Out::Packet_0x1b();
+    LoginConfirm *packet_login_confirm = new LoginConfirm();
     packet_login_confirm->set_data(_char);
-    packet_login_confirm->send(_socket);
+    send(packet_login_confirm);
 
-    Packets::Out::Packet_0x78* packet_send_character = new Packets::Out::Packet_0x78();
+    SendCharacter* packet_send_character = new SendCharacter();
     packet_send_character->set_data(_char);
-    packet_send_character->send(_socket);
+    send(packet_send_character);
 
-    Packets::Out::Packet_0x55 *packet_login_confirmed = new Packets::Out::Packet_0x55();
-    packet_login_confirmed->send(_socket);
+    LoginDone *packet_login_done = new LoginDone();
+    send(packet_login_done);
 
 }
 
@@ -139,8 +137,8 @@ void Client::event_double_click(Uid& uid)
         }
         else*/
         {
-            Packet_0x88* packet_paperdoll = new Packet_0x88();
-            packet_paperdoll->send(_socket);
+            SendPaperdoll* packet_paperdoll = new SendPaperdoll();
+            send(packet_paperdoll);
         }
         
     }

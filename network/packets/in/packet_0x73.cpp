@@ -24,6 +24,7 @@ namespace Packets
 namespace In
 {
 
+using namespace ::Out;
 const uword_t Packet_0x73::length() {
     ADDTOCALLSTACK();
     return 2;
@@ -31,7 +32,7 @@ const uword_t Packet_0x73::length() {
 
 void Packet_0x73::process(Socket* s) {
     ADDTOCALLSTACK();
-    Packets::Out::Packet_0x73 *response = new Packets::Out::Packet_0x73();
+    PingResponse* response = new PingResponse();
     response->set_data(1);
     response->send(s);
 }

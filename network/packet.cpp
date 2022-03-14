@@ -25,46 +25,46 @@
 
 namespace Packets
 {
-
+    using namespace In;
 PacketIn* packet_factory(udword_t id ) {
     ADDTOCALLSTACK();
     PacketIn * p = nullptr;
     switch (t_ubyte(id)) {
         case 0x00:
-            p = new Packets::In::CreateCharacter();
+            p = new CreateCharacter();
             break;
         case 0x02:
-            p = new Packets::In::MovementRequest();
+            p = new MovementRequest();
             break;
         case 0x06:
-            p = new Packets::In::UseRequest();
+            p = new UseRequest();
             break;
         case 0x34:
-            p = new Packets::In::QueryCharacter();
+            p = new QueryCharacter();
             break;
         case 0x5d:
-            p = new Packets::In::PlayCharacter();
+            p = new PlayCharacter();
             break;
         case 0x73:
-            p = new Packets::In::Ping();
+            p = new Ping();
             break;
         case 0x80:
-            p = new Packets::In::LoginConnect();
+            p = new LoginConnect();
             break;
         case 0x91:
-            p = new Packets::In::ServerConnect();
+            p = new ServerConnect();
             break;
         case 0xa0:
-            p = new Packets::In::ServerSelect();
+            p = new ServerSelect();
             break;
         case 0xbd:
-            p = new Packets::In::ReportCliver();
+            p = new ReportCliver();
             break;
         case 0xbf:
-            p = new Packets::In::ExtendedCmd();    //TODO: Inner switch for each 0xBF subpacket.
+            p = new ExtendedCmd();    //TODO: Inner switch for each 0xBF subpacket.
             break;
         case 0xef:
-            p = new Packets::In::ReportCliverNew();
+            p = new ReportCliverNew();
             break;
         default:
             TORUSSHELLECHO("Unknown packet code 0x" << hex(id) << ".");
