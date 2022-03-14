@@ -61,6 +61,11 @@ namespace ttl {
         SyntaxError(int l);
     };
 
+    class DataTypeError : public Exception {
+    public:
+        DataTypeError();
+    };
+
 }
 
 

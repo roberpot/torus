@@ -28,7 +28,7 @@ ID        {ALPHA}{ALPHANUM}*
 #include <debug_support/info.h>
 #include <library/stack.h>
 #include <library/vector.h>
-#include <parser/ast.h>
+#include <parser/ast/ast.h>
 #include <parser/tscp_parser.h>
 
 std::string tmp;
@@ -62,6 +62,7 @@ std::string get_header_id(const char* buffer, const char* label) {
 %x TSCP_BLOCK_DEFNAME
 %x TSCP_BLOCK_TYPEDEFS
 %x TSCP_BLOCK_FUNCTION
+%x TSCP_BLOCK_BOOK
 
 %%
 
@@ -78,6 +79,7 @@ std::string get_header_id(const char* buffer, const char* label) {
 <*>\[[ ]*FUNCTION[ ]+{ID}[ ]*\]      { BEGIN(TSCP_BLOCK_FUNCTION); tscplval.str = new std::string(get_header_id(tscptext, "FUNCTION")); return FUNCTION_BLOCK; }
 <*>\[[ ]*BUTTONEVENTS[ ]+{ID}[ ]*\]  { BEGIN(TSCP_BLOCK_FUNCTION); tscplval.str = new std::string(get_header_id(tscptext, "BUTTONEVENTS")); return BUTTONEVENTS_BLOCK; }
 <*>\[[ ]*TYPEDEFS[ ]*\]              { BEGIN(TSCP_BLOCK_TYPEDEFS); return TYPEDEFS_BLOCK; }
+<*>\[[ ]*BOOK[ ]+{ID}[ ]*\]          { BEGIN(TSCP_BLOCK_BOOK); tscplval.str = new std::string(get_header_id(tscptext, "BOOK")); return BOOK_BLOCK; }
 <*>\[[ ]*EOF[ ]*\]                   { BEGIN(INITIAL); return EOF_BLOCK; }
 
  /* BLOCK RESOURCES */
@@ -103,54 +105,73 @@ std::string get_header_id(const char* buffer, const char* label) {
 <TSCP_BLOCK_TYPEDEFS>-?[0-9]+     { tscplval.INTEGER = atoi(tscptext); return INTEGER; }
 <TSCP_BLOCK_TYPEDEFS>0[0-9a-f]+   { tscplval.INTEGER = strtol(tscptext, &tmpp, 16); return INTEGER; }
 
- /* BLOCK DIALOG */
-<TSCP_BLOCK_FUNCTION>[ \n\t\r]+                  ;
-<TSCP_BLOCK_FUNCTION>"location"                  { return DIALOG_LOCATION; }
-<TSCP_BLOCK_FUNCTION>"page"                      { return DIALOG_PAGE; }
-<TSCP_BLOCK_FUNCTION>"resizepic"                 { return DIALOG_RESIZEPIC; }
-<TSCP_BLOCK_FUNCTION>"gumppictiled"              { return DIALOG_GUMPPICTILED; }
-<TSCP_BLOCK_FUNCTION>"checkertrans"              { return DIALOG_CHECKERTRANS; }
-<TSCP_BLOCK_FUNCTION>"button"                    { return DIALOG_BUTTON; }
-<TSCP_BLOCK_FUNCTION>"dtext"                     { return DIALOG_DTEXT; }
-<TSCP_BLOCK_FUNCTION>"if"                        { return IF; }
-<TSCP_BLOCK_FUNCTION>"elseif"                    { return ELIF; }
-<TSCP_BLOCK_FUNCTION>"elif"                      { return ELIF; }
-<TSCP_BLOCK_FUNCTION>"else"                      { return ELSE; }
-<TSCP_BLOCK_FUNCTION>"for"                       { return FOR; }
-<TSCP_BLOCK_FUNCTION>"return"                    { return RETURN; }
-<TSCP_BLOCK_FUNCTION>"=="                        { return EQUAL; }
-<TSCP_BLOCK_FUNCTION>"!="                        { return NOT_EQUAL; }
-<TSCP_BLOCK_FUNCTION>"<="                        { return LESS_OR_EQUAL; }
-<TSCP_BLOCK_FUNCTION>">="                        { return GREATER_OR_EQUAL; }
-<TSCP_BLOCK_FUNCTION>"&&"                        { return AND; }
-<TSCP_BLOCK_FUNCTION>"||"                        { return OR; }
-<TSCP_BLOCK_FUNCTION>"+="                        { return SUM_ASIG; }
-<TSCP_BLOCK_FUNCTION>"-="                        { return SUB_ASIG; }
-<TSCP_BLOCK_FUNCTION>"*="                        { return MUL_ASIG; }
-<TSCP_BLOCK_FUNCTION>"/="                        { return DIV_ASIG; }
-<TSCP_BLOCK_FUNCTION>"%="                        { return REM_ASIG; }
-<TSCP_BLOCK_FUNCTION>"&="                        { return AND_ASIG; }
-<TSCP_BLOCK_FUNCTION>"^="                        { return XOR_ASIG; }
-<TSCP_BLOCK_FUNCTION>"|="                        { return OR_ASIG; }
-<TSCP_BLOCK_FUNCTION>"++"                        { return UNARY_INCREMENT; }
-<TSCP_BLOCK_FUNCTION>"--"                        { return UNARY_DECREMENT; }
-<TSCP_BLOCK_FUNCTION>\".*\"                      { tscplval.str = new std::string(tscptext); tscplval.str->pop_back(); tscplval.str->erase(0, 1); return STRING; }
-<TSCP_BLOCK_FUNCTION>"TAG"                       { return TAG; }
-<TSCP_BLOCK_FUNCTION>"TAG0"                      { return TAG0; }
-<TSCP_BLOCK_FUNCTION>"CTAG"                      { return CTAG; }
-<TSCP_BLOCK_FUNCTION>"CTAG0"                     { return CTAG0; }
-<TSCP_BLOCK_FUNCTION>"LOCAL"                     { return LOCAL; }
-<TSCP_BLOCK_FUNCTION>"VAR"                       { return VAR; }
-<TSCP_BLOCK_FUNCTION>"SRC"                       { return SRC; }
-<TSCP_BLOCK_FUNCTION>"ACT"                       { return ACT; }
-<TSCP_BLOCK_FUNCTION>"ARGV"                      { return ARGV; }
-<TSCP_BLOCK_FUNCTION>"SELF"                      { return SELF; }
-<TSCP_BLOCK_FUNCTION>"ON_BUTTON"                 { return ON_BUTTON; }
-<TSCP_BLOCK_FUNCTION>"ON_BUTTONS"                { return ON_BUTTONS; }
-<TSCP_BLOCK_FUNCTION>[,();\.=<>\{\}+\-*/!&\[\]]  { return *tscptext; }
-<TSCP_BLOCK_FUNCTION>-?[0-9]+                    { tscplval.INTEGER = atoi(tscptext); return INTEGER; }
-<TSCP_BLOCK_FUNCTION>0[0-9a-f]+                  { tscplval.INTEGER = strtol(tscptext, &tmpp, 16); return INTEGER; }
-<TSCP_BLOCK_FUNCTION>{ID}                        { tscplval.str = new std::string(tscptext); return ID; }
+ /* BLOCK BOOK */
+<TSCP_BLOCK_BOOK>[ \n\t\r]+                          ;
+<TSCP_BLOCK_BOOK>"pages"                             { return BOOK_PAGES; }
+<TSCP_BLOCK_BOOK>"title"                             { return BOOK_TITLE; }
+<TSCP_BLOCK_BOOK>"author"                            { return BOOK_AUTHOR; }
+<TSCP_BLOCK_BOOK>"page"                              { return BOOK_PAGE; }
+<TSCP_BLOCK_BOOK>\"[^\"]*\"                          { tscplval.str = new std::string(tscptext); tscplval.str->pop_back(); tscplval.str->erase(0, 1); return STRING; }
+<TSCP_BLOCK_BOOK>[;=\{\}]                            { return *tscptext; }
+<TSCP_BLOCK_BOOK>[0-9]+                              { tscplval.INTEGER = atoi(tscptext); return INTEGER; }
+<TSCP_BLOCK_BOOK>0[0-9a-f]+                          { tscplval.INTEGER = strtol(tscptext, &tmpp, 16); return INTEGER; }
+
+ /* BLOCK FUNCTION */
+
+<TSCP_BLOCK_FUNCTION>[ \n\t\r]+                          ;
+<TSCP_BLOCK_FUNCTION>"location"                          { return DIALOG_LOCATION; }
+<TSCP_BLOCK_FUNCTION>"page"                              { return DIALOG_PAGE; }
+<TSCP_BLOCK_FUNCTION>"resizepic"                         { return DIALOG_RESIZEPIC; }
+<TSCP_BLOCK_FUNCTION>"gumppictiled"                      { return DIALOG_GUMPPICTILED; }
+<TSCP_BLOCK_FUNCTION>"checkertrans"                      { return DIALOG_CHECKERTRANS; }
+<TSCP_BLOCK_FUNCTION>"button"                            { return DIALOG_BUTTON; }
+<TSCP_BLOCK_FUNCTION>"checkbox"                          { return DIALOG_CHECKBOX; }
+<TSCP_BLOCK_FUNCTION>"dtext"                             { return DIALOG_DTEXT; }
+<TSCP_BLOCK_FUNCTION>"if"                                { return IF; }
+<TSCP_BLOCK_FUNCTION>"elseif"                            { return ELIF; }
+<TSCP_BLOCK_FUNCTION>"elif"                              { return ELIF; }
+<TSCP_BLOCK_FUNCTION>"else"                              { return ELSE; }
+<TSCP_BLOCK_FUNCTION>"for"                               { return FOR; }
+<TSCP_BLOCK_FUNCTION>"return"                            { return RETURN; }
+<TSCP_BLOCK_FUNCTION>"!=="                               { return NOT_EXACT; }
+<TSCP_BLOCK_FUNCTION>"==="                               { return EXACT; }
+<TSCP_BLOCK_FUNCTION>"=="                                { return EQUAL; }
+<TSCP_BLOCK_FUNCTION>"!="                                { return NOT_EQUAL; }
+<TSCP_BLOCK_FUNCTION>"<="                                { return LESS_OR_EQUAL; }
+<TSCP_BLOCK_FUNCTION>">="                                { return GREATER_OR_EQUAL; }
+<TSCP_BLOCK_FUNCTION>"&&"                                { return AND; }
+<TSCP_BLOCK_FUNCTION>"||"                                { return OR; }
+<TSCP_BLOCK_FUNCTION>"+="                                { return SUM_ASIG; }
+<TSCP_BLOCK_FUNCTION>"-="                                { return SUB_ASIG; }
+<TSCP_BLOCK_FUNCTION>"*="                                { return MUL_ASIG; }
+<TSCP_BLOCK_FUNCTION>"/="                                { return DIV_ASIG; }
+<TSCP_BLOCK_FUNCTION>"%="                                { return REM_ASIG; }
+<TSCP_BLOCK_FUNCTION>"&="                                { return AND_ASIG; }
+<TSCP_BLOCK_FUNCTION>"^="                                { return XOR_ASIG; }
+<TSCP_BLOCK_FUNCTION>"|="                                { return OR_ASIG; }
+<TSCP_BLOCK_FUNCTION>"++"                                { return UNARY_INCREMENT; }
+<TSCP_BLOCK_FUNCTION>"--"                                { return UNARY_DECREMENT; }
+<TSCP_BLOCK_FUNCTION>"<<"                                { return SHIFT_LEFT; }
+<TSCP_BLOCK_FUNCTION>\"[^\"]*\"                          { tscplval.str = new std::string(tscptext); tscplval.str->pop_back(); tscplval.str->erase(0, 1); return STRING; }
+<TSCP_BLOCK_FUNCTION>"TAG"                               { return TAG; }
+<TSCP_BLOCK_FUNCTION>"CTAG"                              { return CTAG; }
+<TSCP_BLOCK_FUNCTION>"LOCAL"                             { return LOCAL; }
+<TSCP_BLOCK_FUNCTION>"VAR"                               { return VAR; }
+<TSCP_BLOCK_FUNCTION>"SRC"                               { return SRC; }
+<TSCP_BLOCK_FUNCTION>"ACT"                               { return ACT; }
+<TSCP_BLOCK_FUNCTION>"ARGV"                              { return ARGV; }
+<TSCP_BLOCK_FUNCTION>"SELF"                              { return SELF; }
+<TSCP_BLOCK_FUNCTION>"ARRAY_CLEAR"                       { return ARRAY_CLEAR; }
+<TSCP_BLOCK_FUNCTION>"ARRAY_PUSH"                        { return ARRAY_PUSH; }
+<TSCP_BLOCK_FUNCTION>"ARRAY_INSERT"                      { return ARRAY_INSERT; }
+<TSCP_BLOCK_FUNCTION>"ARRAY_REMOVE"                      { return ARRAY_REMOVE; }
+<TSCP_BLOCK_FUNCTION>"ARRAY_LENGTH"                      { return ARRAY_LENGTH; }
+<TSCP_BLOCK_FUNCTION>"ON_BUTTON"                         { return ON_BUTTON; }
+<TSCP_BLOCK_FUNCTION>"ON_BUTTONS"                        { return ON_BUTTONS; }
+<TSCP_BLOCK_FUNCTION>[,();\:\.=<>\{\}+\-*/!&\[\]\?~]     { return *tscptext; }
+<TSCP_BLOCK_FUNCTION>-?[0-9]+                            { tscplval.INTEGER = atoi(tscptext); return INTEGER; }
+<TSCP_BLOCK_FUNCTION>0[0-9a-f]+                          { tscplval.INTEGER = strtol(tscptext, &tmpp, 16); return INTEGER; }
+<TSCP_BLOCK_FUNCTION>{ID}                                { tscplval.str = new std::string(tscptext); return ID; }
 
  /* Glyphs */
 [=;]                   { return *tscptext; }

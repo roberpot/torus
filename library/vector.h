@@ -51,9 +51,13 @@ namespace ttl {
 
         // Element access
         T& at(udword_t n);
+        T at(udword_t n) const;
         T& operator[](udword_t n);
+        T operator[](udword_t n) const;
         T& front();
+        T front() const;
         T& back();
+        T back() const;
         T* data();
 
         // Capacity
@@ -106,10 +110,10 @@ namespace ttl {
         void assign(udword_t size, const T& t);
 
         // Element access
-        T at(udword_t n);
-        T operator[](udword_t n);
-        T front();
-        T back();
+        T at(udword_t n) const;
+        T operator[](udword_t n) const;
+        T front() const;
+        T back() const;
 
         // Capacity
         bool empty() const;
@@ -237,7 +241,7 @@ namespace ttl {
     }
 
     template<class T, class Allocator>
-    T & vector<T, Allocator>::at(udword_t n) {
+    T& vector<T, Allocator>::at(udword_t n) {
         if (n >= _size) {
             throw VectorError("Out of range.");
         }
@@ -245,7 +249,20 @@ namespace ttl {
     }
 
     template<class T, class Allocator>
-    T & vector<T, Allocator>::operator[](udword_t n) {
+    T vector<T, Allocator>::at(udword_t n) const {
+        if (n >= _size) {
+            throw VectorError("Out of range.");
+        }
+        return _vector[n];
+    }
+
+    template<class T, class Allocator>
+    T& vector<T, Allocator>::operator[](udword_t n) {
+        return _vector[n];
+    }
+
+    template<class T, class Allocator>
+    T vector<T, Allocator>::operator[](udword_t n) const {
         return _vector[n];
     }
 
@@ -255,7 +272,17 @@ namespace ttl {
     }
 
     template<class T, class Allocator>
+    T vector<T, Allocator>::front() const {
+        return _vector[0];
+    }
+
+    template<class T, class Allocator>
     T& vector<T, Allocator>::back() {
+        return _vector[_size - 1];
+    }
+
+    template<class T, class Allocator>
+    T vector<T, Allocator>::back() const {
         return _vector[_size - 1];
     }
 
@@ -647,7 +674,7 @@ namespace ttl {
     }
 
     template<typename T, class V>
-    T __T_tsvector<T, V>::at(udword_t n) {
+    T __T_tsvector<T, V>::at(udword_t n) const {
         _mutex.lock();
         T t = _v.at(n);
         _mutex.unlock();
@@ -655,7 +682,7 @@ namespace ttl {
     }
 
     template<typename T, class V>
-    T __T_tsvector<T, V>::operator[](udword_t n) {
+    T __T_tsvector<T, V>::operator[](udword_t n) const {
         _mutex.lock();
         T & t = _v[n];
         _mutex.unlock();
@@ -663,7 +690,7 @@ namespace ttl {
     }
 
     template<typename T, class V>
-    T __T_tsvector<T, V>::front() {
+    T __T_tsvector<T, V>::front() const {
         _mutex.lock();
         T t = _v[0];
         _mutex.unlock();
@@ -671,7 +698,7 @@ namespace ttl {
     }
 
     template<typename T, class V>
-    T __T_tsvector<T, V>::back() {
+    T __T_tsvector<T, V>::back() const {
         _mutex.lock();
         T t = _v[_v.size() - 1];
         _mutex.unlock();

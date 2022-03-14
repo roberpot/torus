@@ -48,4 +48,8 @@ namespace ttl {
     SyntaxError::SyntaxError(int l) {
         sprintf(_msg, "Syntax error at line %d.", l);
     }
+
+    DataTypeError::DataTypeError() {
+        sprintf(_msg, "Invalid type.");
+    }
 }

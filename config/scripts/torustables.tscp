@@ -36,5 +36,7 @@ As a general rule:
 [RESOURCES]
 scripts/torus_defs.tscp
 scripts/torus_admin.tscp
+scripts/torus_book.tscp
+scripts/torus_dialog.tscp
 
 [EOF]

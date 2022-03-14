@@ -18,12 +18,14 @@
 
 #include <shell.h>
 #include <parser/compiler.h>
-#include <parser/ast.h>
+#include <parser/ast/ast.h>
+#include <parser/ast/ast_garbage_collector.h>
 
-extern ast::Node * tscp_parse(const char * buffer);
+extern ast::Node * tscp_parse(const char * buffer, const std::string& filename);
 
 
 TorusCompiler toruscompiler;
+std::string tscp_current_filename;
 
 
 void TorusCompiler::add_file(std::string f) {
@@ -44,17 +46,28 @@ void TorusCompiler::compile() {
         std::string str((std::istreambuf_iterator<char>(t)),
                         std::istreambuf_iterator<char>());
         try {
-            ast::Node * tree = tscp_parse(str.c_str());
-            if (nullptr != tree) {
+            ast::Node* tree = tscp_parse(str.c_str(), current_file);
+            if (nullptr == tree) {
+                TORUSSHELLECHO("Compiling " << current_file << "... parser unknown error.");
+                ast::GarbageCollector::cleanup();
+                continue;
+            }
+            if (false == tree->validate()) {
+                TORUSSHELLECHO("Compiling " << current_file << "... semantic error.");
+            } else {
+                TORUSSHELLECHO("Compiling " << current_file << "... OK");
                 tree->generate();
             }
-            TORUSSHELLECHO("Compiling " << current_file << "... OK");
+            delete tree;
+            ast::GarbageCollector::cleanup();
         }
         catch (ttl::LexicalError& e) {
             TORUSSHELLECHO("Compiling " << current_file << "... " << e.what());
+            ast::GarbageCollector::cleanup();
         }
         catch (ttl::SyntaxError& e) {
             TORUSSHELLECHO("Compiling " << current_file << "... " << e.what());
+            ast::GarbageCollector::cleanup();
         }
     }
 }

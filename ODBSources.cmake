@@ -43,7 +43,7 @@ set(NETWORK_FILES
 SOURCE_GROUP(network FILES ${NETWORK_FILES})
 
 set(PARSER_FILES
-        parser/ast.cpp parser/ast.h
+        parser/ast/ast.cpp parser/ast/ast.h
         parser/compiler.cpp parser/compiler.h)
 SOURCE_GROUP(parser FILES ${PARSER_FILES})
 
@@ -82,7 +82,7 @@ set (GAME_UOFILES_FILES
 SOURCE_GROUP(game\\uo_files FILES ${GAME_UOFILES_FILES})
 
 set (TORUS_PARSER_FILES
-        parser/ast.h
+        parser/ast/ast.h
         parser/tscp.l
         parser/tscp.y)
 SOURCE_GROUP(parser FILES ${TORUS_PARSER_FILES})

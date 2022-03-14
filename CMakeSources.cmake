@@ -14,7 +14,7 @@ set(CRYPT_FILES
 SOURCE_GROUP(crypt FILES ${CRYPT_FILES})
 
 set(DB_FILES
-        db/sqlite3.c                db/sqlite3.h)
+        db/sqlite3.c db/sqlite3.h)
 SOURCE_GROUP(db FILES ${DB_FILES})
 
 set(DEBUG_FILES
@@ -89,7 +89,7 @@ set(PACKETS_OUT_FILES
 SOURCE_GROUP(network\\packets\\out FILES ${PACKETS_OUT_FILES})
 
 set(PARSER_FILES
-        parser/ast.cpp parser/ast.h
+        parser/ast/ast.cpp parser/ast/ast.h
         parser/compiler.cpp parser/compiler.h)
 SOURCE_GROUP(parser FILES ${PARSER_FILES})
 
@@ -131,7 +131,13 @@ set (GAME_UOFILES_FILES
 SOURCE_GROUP(game\\uo_files FILES ${GAME_UOFILES_FILES})
 
 set (TORUS_PARSER_FILES
-        parser/ast.h
+        parser/ast/arithmetic.cpp parser/ast/arithmetic.h
+        parser/ast/ast_garbage_collector.cpp parser/ast/ast_garbage_collector.h
+        parser/ast/resources.cpp parser/ast/resources.h
+        parser/ast/defname.cpp parser/ast/defname.h
+        parser/ast/base.cpp parser/ast/base.h
+        parser/ast/ast.cpp parser/ast/ast.h
+        parser/ast/visitor.cpp parser/ast/visitor.h
         parser/tscp.l
         parser/tscp.y)
 SOURCE_GROUP(parser FILES ${TORUS_PARSER_FILES})
@@ -142,6 +148,12 @@ set(MAIN_FILES
         shell.cpp shell.h
         main.cpp)
 SOURCE_GROUP(main FILES ${MAIN_FILES})
+
+set(TPU_FILES
+        tpu/data.cpp tpu/data.h
+        tpu/defname.cpp tpu/defname.h
+        tpu/symbol.cpp tpu/symbol.h)
+SOURCE_GROUP(tpu FILES ${TPU_FILES})
 
 set(SOURCE_FILES
         ${CORE_FILES}
@@ -159,4 +171,5 @@ set(SOURCE_FILES
         ${GAME_UOFILES_FILES}
         ${GAME_CHAR_FILES}
         ${TORUS_PARSER_FILES}
-        ${MAIN_FILES})
+        ${MAIN_FILES}
+        ${TPU_FILES})

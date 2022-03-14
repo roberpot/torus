@@ -16,15 +16,17 @@
  * https://github.com/Sphereserver/Scripts
  */
 
-[DEFNAME HARDCODED]
+/*
+[DEFNAME d_harcoded]
 default_item = i_gold;  // If we cannot create the item, make it this.
 default_char = c_man;   // If we cannot create the char, make it this.
 default_seed = i_gold;  // When we make a seed, make it look like this.
 default_msg  = i_gold;  // When we make a bulletin board post, use this item.
 guards  = {c_guard 1 c_guard_f 1};
 deffood = {i_fruit_grapes 1 i_ham 1 i_cheese_cut 1 i_muffin 1 i_fish_cut_cooked 1 i_ribs_cooked 1 i_bird_cooked 1 i_sausages 1 i_fruit_apple 1 i_fruit_peach 1};
+*/
 
-[DEFNAME mount_items]
+[DEFNAME d_mount_items]
 // This contain the list of the mount/mountid the format is:
 // mount_0x<dispid hex> <mount itemid hex>
 // ---------------------------------------------------------
@@ -76,13 +78,13 @@ mount_0xf3 = 03e94;  // hiryu
 mount_0x11c = 03e92;  // armored steed (Mondains Steed, Charger of the Fallen)
 mount_0x115 = 03e91;  // cu sidhe
 mount_0x114 = 03e90;  // reptalon
-mount_0xd5 = 03ec5;   // polar bear (veteran's award)
+mount_0xd5  = 03ec5;   // polar bear (veteran's award)
 // SA
 mount_0x1b0 = 03ec6;  // armored boura
 mount_0x4e6 = 03ec7;  // tiger
 mount_0x4e7 = 03ec8;  // tigress
 
-[DEFNAME hues]
+[DEFNAME d_hues]
 color_text          = -1;
 color_none          = 0;
 color_red1          = 32;
@@ -97,7 +99,7 @@ color_snow          = 1153;
 color_rock          = 1154;
 color_spectral      = 16385;
 
-[DEFNAME hues_range]
+[DEFNAME d_hues_range]
 colors_all     = {2 1001};
 colors_skin    = {1002 1058};
 colors_hair    = {1102 1149};
@@ -142,7 +144,7 @@ color_o_spined = 08ac;
 color_o_horned = 0845;
 color_o_barbed = 0851;
 
-[DEFNAME brains]
+[DEFNAME d_brains]
 brain_none            = 0;
 brain_animal          = 1;
 brain_human           = 2;
@@ -155,7 +157,7 @@ brain_monster         = 8;
 brain_berserk         = 9;
 brain_dragon          = 10;
 
-[DEFNAME sounds]
+[DEFNAME d_sounds]
 snd_wind1       = 21;
 snd_wind2       = 22;
 snd_crickets    = 23;
@@ -601,7 +603,7 @@ snd_spellweave_wildfire               = 1487;
 //snd_spellweave_word_of_death
 //snd_spellweave_gift_of_life
 
-[DEFNAME region_flags]
+[DEFNAME d_region_flags]
 region_antimagic_all        = 00001;  // all magic banned here.
 region_antimagic_recall_in  = 00002;  // teleport,recall in to this, and mark
 region_antimagic_recall_out = 00004;  // can't recall out of here.
@@ -620,7 +622,7 @@ region_flag_guarded         = 04000;  // try tag.guardowner
 region_flag_no_pvp          = 08000;  // players cannot directly harm each other here.
 region_flag_arena           = 010000;  // pvp is allowed, no murder or criminal acts are taken in count.
 
-[DEFNAME spell_flags]
+[DEFNAME d_spellflag]
 spellflag_dir_anim       = 00000001;  // evoke type cast or directed. (animation)
 spellflag_targ_item      = 00000002;  // need to target an object
 spellflag_targ_char      = 00000004;  // needs to target a living thing
@@ -651,7 +653,7 @@ spellflag_bless          = 010000000;  // Benefitial spells like Bless,Agility,e
 spellflag_curse          = 020000000;  // Curses just like Weaken,Purge Magic,Curse,etc.
 spellflag_heal           = 040000000;  // spell used to heal hitpoints
 
-[DEFNAME mem_flags]
+[DEFNAME d_mem_flags]
 memory_sawcrime    = 00001;  // i saw them commit a crime or i was attacked criminally. i can call the guards on them.
 memory_ipet        = 00002;  // i am a pet. (this link is my master) (never time out)
 memory_fight       = 00004;  // active fight going on now. may not have done any damage.
@@ -669,7 +671,7 @@ memory_war_targ    = 02000;  // this is one of my current war targets.
 memory_friend      = 04000;
 memory_gumprecord  = 08000;  // UNUSED!!!! i've a gump opened TAG.DIALOG_NAME contain the name of the gump
 
-[DEFNAME stat_flags]
+[DEFNAME d_stat_flags]
 // apply to chars
 statf_invul         = 000000001;  // invulnerability
 statf_dead          = 000000002;
@@ -703,7 +705,7 @@ statf_saveparity    = 020000000;  // has this char been saved or not ?
 statf_ridden        = 040000000;  // this is the horse. (don't display me) i am being ridden
 statf_onhorse       = 080000000;  // mounted on horseback.
 
-[DEFNAME attr_flags]
+[DEFNAME d_attr_flags]
 // apply to items
 attr_identified  = 00001;  // this is the identified name. ???
 attr_decay       = 00002;  // timer currently set to decay.
@@ -733,7 +735,7 @@ attr_secure      = 01000000;  // secured
 attr_reforged    = 02000000;  // Is Runic Reforged.
 attr_opened      = 04000000;  // Is Door Opened (only used when DOOROPENID is set on the door)
 
-[DEFNAME can_flags]
+[DEFNAME d_can_flags]
 // monster "can" type flags.
 mt_male         = 00000;
 mt_nonmover     = 00000;
@@ -754,11 +756,11 @@ mt_run          = 02000;
 mt_nodclicklos  = 04000;  // when dclicking sth., ignore LOS checks
 mt_nodclickdist = 08000;  // when dclicking sth., ignore distance checks
 
-[DEFNAME sector_flags]
+[DEFNAME d_sector_flags]
 secf_nosleep    = 01;  //sector will never sleep, this flag take over secf_instasleep
 secf_instasleep = 02;  //sector will sleep as soon as there is no active client inside
 
-[DEFNAME alignments]
+[DEFNAME d_alignments]
 // ranges of karma ?
 evil        = {-10000 -6001};
 chaotic     = {-6000 -2001};
@@ -775,7 +777,7 @@ anonymous = {-2000 1999};
 known     = {2000 5999};
 famous    = {6000 10000};
 
-[DEFNAME midis]
+[DEFNAME d_midis]
 // midi music defs
 midi_oldult01             = 0;  //loop
 midi_create               = 1;  //loop
@@ -886,7 +888,7 @@ midi_TheVesperMist        = 102;
 
 
 
-[DEFNAME needstofix]
+[DEFNAME d_needstofix]
 // need to be defined. needs and aversions
 // none 0
 // area types.
@@ -1138,7 +1140,7 @@ t_jungle     = 501;  // Jungle Tiles
 t_furniture  = 502;  // Furniture
 t_soul_forge = 503;  // Soul Forge
 
-[DEFNAME layers]
+[DEFNAME d_layers]
 layer_hand1      = 1;
 layer_hand2      = 2;
 layer_shoes      = 3;
@@ -1234,7 +1236,7 @@ LAYER_SPELL_Nether_Cyclone = 77;
 
 
 
-[DEFNAME def_gumps]
+[DEFNAME d_def_gumps]
 // name the gumps.
 g_btn_green_ok         = 081a;
 g_btn_green_ok_press   = 081b;
@@ -1243,7 +1245,7 @@ g_btn_gray_apply_press = 5205;
 
 
 
-[DEFNAME dam_flags]
+[DEFNAME d_dam_flags]
 dam_god          = 00001;  // unblockable "god" damage
 dam_physical     = 00002;  // some sort of physical damage (as opposed to magical)
 dam_magic        = 00004;  // some sort of magical damage
@@ -1259,7 +1261,7 @@ dam_noreveal     = 04000;  // damage that does not reveal the attacker.
 dam_nounparalyze = 08000;  // victim won't be unparalyzed
 dam_fixed        = 010000;  // damage will not be recalculated with default checks, lowering it because of armor, resistances ...
 
-[DEFNAME can_i_flags]
+[DEFNAME d_can_i_flags]
 can_i_door         = 000001;  // is a door uflag4_door
 can_i_water        = 000002;  // need to swim in it. uflag1_water
 can_i_platform     = 000004;  // we can walk on top of it. (even tho the item itself might block) uflag2_platform
@@ -1286,7 +1288,7 @@ can_i_recycle      = 0400000;  // Can be recycled
 can_i_reforge      = 0800000;  // Can be Runic Reforged.
 can_i_forcedc      = 01000000;  // Items with this flag will not perform any check before @DClick trigger.
 
-[DEFNAME tile_flags]
+[DEFNAME d_tile_flags]
 tilef_background  = 000000001;  // No idea. None whatsoever. Maybe it's the blackness.
 tilef_weapon      = 000000002;  // I smack thee with this here ... club?
 tilef_transparent = 000000004;  // Yeah. So we can see through it?
@@ -1320,7 +1322,7 @@ tilef_door        = 020000000;  // Okay...
 tilef_stairBack   = 040000000;  // Don't we have stairs that go forward or left too? This could cover both...
 tilef_stairRight  = 080000000;  // Well, whatever, you can climb them, so, hey... Good use for a
 
-[DEFNAME def_html] // useful with htmlgumps
+[DEFNAME d_def_html] // useful with htmlgumps
 L1 = "<";
 R1 = ">";
 
@@ -1397,7 +1399,7 @@ BFONT_LPURPLE    = "<basefont color='#8968cd'>";
 BFONT_PURPLE     = "<basefont color='#800080'>";
 BFONT_DPURPLE    = "<basefont color='#551a8b'>";
 
-[DEFNAME profession_ids]
+[DEFNAME d_profession_ids]
 // ARGN2 in f_oncreate_char
 prof_unknown     = 0;
 prof_warrior     = 1;
@@ -1408,7 +1410,7 @@ prof_paladin     = 5;
 prof_samurai     = 6;
 prof_ninja       = 7;
 
-[DEFNAME resdisp_version]
+[DEFNAME d_resdisp_version]
 // RESDISP is a property of the user ACCOUNT
 RDS_PRET2A = 0;
 RDS_T2A    = 1;
@@ -1419,7 +1421,7 @@ RDS_ML     = 5;
 RDS_KR     = 6;
 RDS_SA     = 7;
 
-[DEFNAME talkmode_type]
+[DEFNAME d_talkmode_type]
 // When client or server send a speech packet these have a type
 // You can use them to send a packet or to check ARGN1 in the global speech hook
 talkmode_system   = 0;  // Normal system message.    (client <-> server)
@@ -1436,7 +1438,7 @@ talkmode_spell    = 10;  // Used by spells     (client <-  server)
 talkmode_guild    = 13;  // Used by guild chat     (client  -> server) (client shortcut: \)
 talkmode_alliance = 14;  // Used by alliance chat    (client  -> server) (client shortcut: shift+\)
 
-[DEFNAME skill_flags]
+[DEFNAME d_skill_flags]
 // These flags are used in SKILL definitions
 SKF_SCRIPTED   = 0001;  // fully scripted, no hardcoded behaviour
 SKF_FIGHT      = 0002;  // considered a fight skill, maintains fight active
@@ -1450,7 +1452,7 @@ SKF_NOSFX      = 0100;  // don't play hardcoded sound for this skill
 SKF_RANGED     = 0200;  // considered a ranged skill (combine with SKF_FIGHT)
 SKF_GATHER     = 0400;  // Gathering skill.
 
-[DEFNAME skill_titles]
+[DEFNAME d_skill_titles]
 // Skill ranges for the titles
 SKILLTITLE_NEOPHYTE    = 300;  // this skill lever or higher applies this skilltitle (until a greater one is reached)
 SKILLTITLE_NOVICE      = 400;
@@ -1463,16 +1465,16 @@ SKILLTITLE_GRANDMASTER = 1000;
 SKILLTITLE_ELDER       = 1100;  // This works with the normal skills and Bushido/Ninjitsu too.
 SKILLTITLE_LEGENDARY   = 1200;  // Same here
 
-[DEFNAME trigger_argtype]
+[DEFNAME d_trigger_argtype]
 TAT_AS_ARGN = 1;  // Treat the arguments as ARGN1/2/3
 TAT_AS_ARGS = 2;  // Treat the arguments as ARGS (with ARGV[x] enabled)
 TAT_AS_ARGO = 3;  // Treat the arguments as ARGO
 
-[DEFNAME misc_own]
+[DEFNAME d_misc_own]
 empty_cliloc  = 1042971;
 empty_cliloc2 = 1070722;
 
-[DEFNAME los_flags]
+[DEFNAME d_los_flags]
 los_nb_local_terrain = 00001;  // Terrain inside a region I am standing in does not block LOS
 los_nb_local_static  = 00002;  // Static items inside a region I am standing in do not block LOS
 los_nb_local_dynamic = 00004;  // Dynamic items inside a region I am standing in do not block LOS
@@ -1487,7 +1489,7 @@ los_nc_multi         = 00400;  // Do not allow LOS path checking to go through (
 los_fishing          = 00800;  // Do not allow LOS path checking to go through objects or terrain which do not represent water
 los_nc_water         = 01000;  // Do not allow LOS path checking to go through water.
 
-[DEFNAME passive_buff_icons]
+[DEFNAME d_passive_buff_icons]
 passivebufficon_hidingandorstealth = 1012;
 passivebufficon_activemeditation   = 1013;
 passivebufficon_incognito          = 1032;
@@ -1496,7 +1498,7 @@ passivebufficon_polymorph          = 1035;
 passivebufficon_gargoylefly        = 1054;
 passivebufficon_despair            = 1060;
 
-[DEFNAME debuff_icons]
+[DEFNAME d_debuff_icons]
 debufficon_Dismount        = 1001;
 debufficon_DeathStrike     = 1006;
 debufficon_EvilOmen        = 1007;
@@ -1558,7 +1560,7 @@ debufficon_SwingSpeedSwing         = 1123;
 //debufficon_Entangle
 //debufficon_FallingWalls
 //debufficon_Criminal
-[DEFNAME skill_titles]
+[DEFNAME d_skill_titles]
 // Skill ranges for the titles
 SKILLTITLE_NEOPHYTE    = 300;  // this skill lever or higher applies this skilltitle (until a greater one is reached)
 SKILLTITLE_NOVICE      = 400;
@@ -1571,16 +1573,16 @@ SKILLTITLE_GRANDMASTER = 1000;
 SKILLTITLE_ELDER       = 1100;  // This works with the normal skills and Bushido/Ninjitsu too.
 SKILLTITLE_LEGENDARY   = 1200;  // Same here
 
-[DEFNAME trigger_argtype]
+[DEFNAME d_trigger_argtype]
 TAT_AS_ARGN = 1;  // Treat the arguments as ARGN1/2/3
 TAT_AS_ARGS = 2;  // Treat the arguments as ARGS (with ARGV[x] enabled)
 TAT_AS_ARGO = 3;  // Treat the arguments as ARGO
 
-[DEFNAME misc_own]
+[DEFNAME d_misc_own]
 empty_cliloc  = 1042971;
 empty_cliloc2 = 1070722;
 
-[DEFNAME los_flags]
+[DEFNAME d_los_flags]
 los_nb_local_terrain = 00001;  // Terrain inside a region I am standing in does not block LOS
 los_nb_local_static  = 00002;  // Static items inside a region I am standing in do not block LOS
 los_nb_local_dynamic = 00004;  // Dynamic items inside a region I am standing in do not block LOS
@@ -1595,7 +1597,7 @@ los_nc_multi         = 00400;  // Do not allow LOS path checking to go through (
 los_fishing          = 00800;  // Do not allow LOS path checking to go through objects or terrain which do not represent water
 los_nc_water         = 01000;  // Do not allow LOS path checking to go through water.
 
-[DEFNAME passive_buff_icons]
+[DEFNAME d_passive_buff_icons]
 passivebufficon_hidingandorstealth = 1012;
 passivebufficon_activemeditation   = 1013;
 passivebufficon_incognito          = 1032;
@@ -1604,7 +1606,7 @@ passivebufficon_polymorph          = 1035;
 passivebufficon_gargoylefly        = 1054;
 passivebufficon_despair            = 1060;
 
-[DEFNAME debuff_icons]
+[DEFNAME d_debuff_icons]
 debufficon_Dismount        = 1001;
 debufficon_DeathStrike     = 1006;
 debufficon_EvilOmen        = 1007;
@@ -1667,7 +1669,7 @@ debufficon_SwingSpeedSwing         = 1123;
 //debufficon_FallingWalls
 //debufficon_Criminal
 
-[DEFNAME ref_types]
+[DEFNAME d_ref_types]
 tref_serv         = 000001;
 tref_file         = 000002;
 tref_newfile      = 000004;
@@ -1688,14 +1690,14 @@ tref_object       = 020000;
 tref_char         = 040000;
 tref_item         = 080000;
 
-[DEFNAME death_flags]
+[DEFNAME d_death_flags]
 death_nofamechange     = 001;
 death_nocorpse         = 002;
 death_nolootdrop       = 004;
 death_noconjuredeffect = 008;
 death_hascorpse        = 010;
 
-[DEFNAME noto_types]
+[DEFNAME d_noto_types]
 noto_good       = 1;
 noto_guild_same = 2;
 noto_neutral    = 3;
@@ -1708,7 +1710,7 @@ noto_invul      = 7;
 // Uses new internal variable CANUSE. Script for this is in the addon's folder in the script pack.
 // Used on items for checks or npcs (mounts, golems, etc)
 
-[DEFNAME canuse_flags]
+[DEFNAME d_canuse_flags]
 can_u_all      = 0;
 can_u_male     = 01;
 can_u_female   = 02;
@@ -1717,12 +1719,12 @@ can_u_elf      = 08;
 can_u_gargoyle = 010;
 can_u_none     = 020;
 
-[DEFNAME swing_types]
+[DEFNAME d_swing_types]
 WAR_SWING_EQUIPPING = 00;  // we are recoiling our weapon.
 WAR_SWING_READY     = 01;  // we can swing at any time.
 WAR_SWING_SWINGING  = 02;  // we are swinging our weapon.
 
-[DEFNAME expansions]
+[DEFNAME d_expansions]
 EXPANSION_T2A         = 0;
 EXPANSION_RENAISSANCE = 1;
 EXPANSION_THIRDDAWN   = 2;
@@ -1733,7 +1735,7 @@ EXPANSION_ML          = 6;
 EXPANSION_SA          = 7;
 EXPANSION_HS          = 8;
 
-[DEFNAME theme_packs]
+[DEFNAME d_theme_packs]
 THEME_GOTHIC = 01;
 THEME_RUSTIC = 02;
 
