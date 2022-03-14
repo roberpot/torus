@@ -23,7 +23,7 @@ namespace In
 {
 
 const uword_t Packet_0xbf::length() {
-    return 21;
+    return _current_buffer_length;
 }
 
 void Packet_0xbf::process(Socket* s) {

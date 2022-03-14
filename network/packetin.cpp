@@ -70,7 +70,7 @@ uword_t PacketIn::receive(const uint8_t* data, const uword_t len)
     }
 
     uword_t new_len = expected_length;
-    if (new_len > len) // Don't allow this packet to read data out of buffer size.
+    if (new_len > len && len > 0) // Don't allow this packet to read data out of buffer size.
     {
         new_len = len;
     }
