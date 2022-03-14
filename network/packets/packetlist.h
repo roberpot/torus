@@ -16,12 +16,16 @@
 #ifndef __TORUS_PACKETLIST_H
 #define __TORUS_PACKETLIST_H
 
-#include <string>
+#include <game/enums.h>
 #include <network/packetin.h>
 #include <network/packetout.h>
 
+#include <string>
+
+class Artifact;
 class Char;
 class Client;
+class Item;
 class Uid;
 
 /*
@@ -37,8 +41,8 @@ class Uid;
 namespace Packets
 {
 
-#define Packet_0x80_length 
 #define PAPERDOLL_TEXT_LENGTH 60
+#define TEXT_LENGTH 30
 
 namespace In
 {
@@ -60,6 +64,13 @@ namespace In
 
     // Double click
     class Packet_0x06 : public PacketIn {
+    public:
+        virtual const uword_t length() override;
+        virtual void process(Socket* s) override;
+    };
+
+    // Single click
+    class Packet_0x09 : public PacketIn {
     public:
         virtual const uword_t length() override;
         virtual void process(Socket* s) override;
@@ -145,6 +156,7 @@ namespace In
     using CreateCharacter   = Packet_0x00;
     using MovementRequest   = Packet_0x02;
     using UseRequest        = Packet_0x06;
+    using ClickRequest      = Packet_0x06;
     using QueryCharacter    = Packet_0x34;
     using PlayCharacter     = Packet_0x5d;
     using Ping              = Packet_0x73;
@@ -165,6 +177,13 @@ namespace Out
     public:
         void set_data(Char* character);
         Packet_0x1b() : PacketOut(0x1b) {};
+    };
+    // Ascii Message
+    class Packet_0x1c : public PacketOut {
+    public:
+        void set_data(const std::string& text, Artifact* target, const word_t& hue,
+                      const TalkMode& talk_mode, const Font& font);
+        Packet_0x1c() : PacketOut(0x1c, true) {};
     };
 
     // Mobile Status
@@ -299,8 +318,9 @@ namespace Out
         Packet_0xbf() : PacketOut(0xBF) {};
     };
 
-    using LoginConfirm      = Packet_0x1b;
     using MobileStatus      = Packet_0x11;
+    using LoginConfirm      = Packet_0x1b;
+    using AsciiMessage      = Packet_0x1c;
     using MovementReject    = Packet_0x21;
     using MovementAccept    = Packet_0x22;
     using SkillsUpdate      = Packet_0x3a;

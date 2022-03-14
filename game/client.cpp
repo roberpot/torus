@@ -146,7 +146,19 @@ void Client::event_double_click(Uid& uid)
 
 void Client::event_click(Uid& uid)
 {
-
+    std::string target_name;
+    if (!uid.is_valid())
+    {
+        return;
+    }
+    Artifact *artifact = server.get_artifact(uid);
+    target_name = artifact->get_name();
+    AsciiMessage* packet_message = new AsciiMessage();
+    uword_t hue = 0x0000;
+    TalkMode talk_mode = TalkMode::SAY;
+    Font font = Font::NORMAL;
+    packet_message->set_data(target_name, artifact, hue, talk_mode, font);
+    send(packet_message);
 }
 
 Char * Client::get_char() {

@@ -39,6 +39,9 @@ PacketIn* packet_factory(udword_t id ) {
         case 0x06:
             p = new UseRequest();
             break;
+        case 0x09:
+            p = new ClickRequest();
+            break;
         case 0x34:
             p = new QueryCharacter();
             break;

@@ -17,6 +17,7 @@
 
 #include <library/types.h>
 #include <game/artifact.h>
+#include <game/enums.h>
 #include <game/chars/char_props.h>
 #include <game/chars/char_stats.h>
 
@@ -45,11 +46,6 @@
 #define DISTANCE_SEE_MULTIS 18
 
 
-enum class BodyType
-{
-    BODY_HUMAN_MALE = 0x400,
-    BODY_HUMAN_FEMALE = 0x401
-};
 
 class Account;
 class Item;

@@ -156,7 +156,12 @@ void PacketOut::write_string(const std::string& string, uword_t len)
     ADDTOCALLSTACK();
     _increase_buffer(len);
     size_t i = 0;
-    for (; i < string.size(); ++i)
+    size_t string_length = string.size();
+    if (string_length > len)
+    {
+        string_length = size_t(len);
+    }
+    for (; i < string_length; ++i)
     {
         _buffer[_current_pos++] = string[i];
     }

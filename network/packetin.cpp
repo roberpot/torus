@@ -58,6 +58,7 @@ uword_t PacketIn::receive(const uint8_t* data, const uword_t len)
             // Delete the buffer to do a normal read without using weird codes to adjust the lengths (readed, expected, etc).
             delete[] _buffer;
             _buffer = nullptr;
+            _current_buffer_length = 0; //Also reset it's length.
         }
         else
         {
@@ -79,7 +80,7 @@ uword_t PacketIn::receive(const uint8_t* data, const uword_t len)
         new_len = len;
     }
     _increase_buffer(new_len);  //Ensure the buffer can store the data.
-    memcpy(_buffer + old_length, data, new_len);
+    memcpy(&_buffer[old_length], data, new_len);
     readed_bytes += new_len;    //
     if (_current_buffer_length >= expected_length)
     {

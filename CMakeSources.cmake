@@ -54,6 +54,7 @@ set(PACKETS_IN_FILES
         network/packets/in/packet_0x0.cpp
         network/packets/in/packet_0x02.cpp
         network/packets/in/packet_0x06.cpp
+        network/packets/in/packet_0x09.cpp
         network/packets/in/packet_0x34.cpp
         network/packets/in/packet_0x5d.cpp
         network/packets/in/packet_0x73.cpp
@@ -67,8 +68,9 @@ set(PACKETS_IN_FILES
 SOURCE_GROUP(network\\packets\\in FILES ${PACKETS_IN_FILES})
 
 set(PACKETS_OUT_FILES
-        network/packets/out/packet_0x1b.cpp
         network/packets/out/packet_0x11.cpp
+        network/packets/out/packet_0x1b.cpp
+        network/packets/out/packet_0x1c.cpp
         network/packets/out/packet_0x21.cpp
         network/packets/out/packet_0x22.cpp
         network/packets/out/packet_0x3a.cpp
@@ -106,6 +108,7 @@ set(GAME_FILES
         game/client.cpp             game/client.h
         game/coord_point.cpp        game/coord_point.h
         game/char.cpp               game/char.h
+        game/enums.h
         game/item.cpp               game/item.h
         game/server.cpp             game/server.h
         game/uid.cpp                game/uid.h
