@@ -207,6 +207,13 @@ namespace Out
         Packet_0x21() : PacketOut(0x21) {};
     };
 
+    // Mobile Update
+    class Packet_0x20 : public PacketOut {
+    public:
+        void set_data(Char* character);
+        Packet_0x20() : PacketOut(0x20) {};
+    };
+
     // Movement accepted
     class Packet_0x22 : public PacketOut {
     public:
@@ -230,7 +237,7 @@ namespace Out
     // Play Music
     class Packet_0x6d : public PacketOut {
     public:
-        void set_data(t_ubyte id);
+        void set_data(uword_t id);
         Packet_0x6d() : PacketOut(0x6d) {};
     };
 
@@ -332,6 +339,7 @@ namespace Out
     using MobileStatusBar   = Packet_0x17;
     using LoginConfirm      = Packet_0x1b;
     using AsciiMessage      = Packet_0x1c;
+    using MobileUpdate      = Packet_0x20;
     using MovementReject    = Packet_0x21;
     using MovementAccept    = Packet_0x22;
     using SkillsUpdate      = Packet_0x3a;

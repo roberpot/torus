@@ -27,7 +27,7 @@
 using namespace Packets::In;
 using namespace Packets::Out;
 
-Client::Client(Socket * s) :
+Client::Client(Socket* s) :
     _socket(s),
     _movement_sequence(0),
     _movement_last(0),
@@ -48,7 +48,7 @@ Socket* Client::get_socket() {
 void Client::send(PacketOut* packet)
 {
     ADDTOCALLSTACK();
-    _socket->write(packet);
+    packet->send(_socket);
 }
 
 void Client::event_walk(const t_ubyte& dir, const t_ubyte& seq, const udword_t& fast_walk_key) {
@@ -113,7 +113,7 @@ void Client::event_character_login(const std::string& name, const dword_t& flags
 
     _char = _account->get_char(slot);
 
-    LoginConfirm *packet_login_confirm = new LoginConfirm();
+    LoginConfirm* packet_login_confirm = new LoginConfirm();
     packet_login_confirm->set_data(_char);
     send(packet_login_confirm);
 
@@ -121,7 +121,7 @@ void Client::event_character_login(const std::string& name, const dword_t& flags
     packet_extended_cmd_mapdiffs->sub_cmd_mapdiffs();
     send(packet_extended_cmd_mapdiffs);
 
-    PlayMusic *packet_music = new PlayMusic();
+    PlayMusic* packet_music = new PlayMusic();
     packet_music->set_data(0x09);   //TODO: Set region's musics and send real data.
     send(packet_music);
 
@@ -131,7 +131,7 @@ void Client::event_character_login(const std::string& name, const dword_t& flags
 
     add_character(_char);
 
-    LoginDone *packet_login_done = new LoginDone();
+    LoginDone* packet_login_done = new LoginDone();
     send(packet_login_done);
 
 }
@@ -144,7 +144,7 @@ void Client::event_double_click(Uid& uid)
     }
     if (uid.is_char())
     {
-        Char *character = server.get_char(uid);        
+        Char* character = server.get_char(uid);        
         /*if ()//TODO: Is pet & rideable? -> mount
         {
 
@@ -166,7 +166,7 @@ void Client::event_click(Uid& uid)
     {
         return;
     }
-    Artifact *artifact = server.get_artifact(uid);
+    Artifact* artifact = server.get_artifact(uid);
     target_name = artifact->get_name();
     AsciiMessage* packet_message = new AsciiMessage();
     uword_t hue = 0x0000;
@@ -185,19 +185,26 @@ void Client::add_character(Char* character)
 
     uword_t notoriety = 0x0;    // TODO: Notoriety
     t_ubyte status = 0x0;       // TODO:Poison
-    MobileStatusBar *packet_status_bar = new MobileStatusBar();
+
+    MobileStatusBar* packet_status_bar = new MobileStatusBar();
     packet_status_bar->set_data(character->get_uid(), notoriety, status);
     send(packet_status_bar);
 
+    MobileUpdate* packet_mobile_update = new MobileUpdate();
+    packet_mobile_update->set_data(character);
+    send(packet_mobile_update);
 
+    MobileStatus* packet_mobile_status = new MobileStatus();
+    packet_mobile_status->set_data(character);
+    send(packet_mobile_status);
 }
 
-Char * Client::get_char() {
+Char*  Client::get_char() {
     ADDTOCALLSTACK();
     return _char;
 }
 
-void Client::attatch(Account* acc) {
+void Client::attatch(Account*  acc) {
     ADDTOCALLSTACK();
     _account = acc;
 }

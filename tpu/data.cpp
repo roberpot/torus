@@ -16,6 +16,9 @@
 
 #include <tpu/data.h>
 
+#include <string>
+
+
 namespace tpu {
     Data::Data() : _const(true), _type(DataType::NO_TYPE) {
     }

@@ -16,6 +16,7 @@
 #include <network/socket.h>
 #include <network/networkmanager.h>
 #include <debug_support/info.h>
+#include <library/string.h>
 #include <core/config.h>
 #include <shell.h>
 

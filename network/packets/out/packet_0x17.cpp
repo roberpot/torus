@@ -27,8 +27,10 @@ void Packet_0x17::set_data(Uid& uid, const uword_t& color, const t_ubyte& flag)
 {
     write_udword(uid.get_uid());
     write_word(0x01);
-    write_uword(color);
-    write_ubyte(flag);
+    write_uword(color); //Green Bar
+    write_ubyte(flag);  //is_poisoned?
+    write_uword(color); //Yellow bar
+    write_ubyte(flag);  // is_paralyzed?
 }
 
 }

@@ -14,6 +14,8 @@
 
 
 #include <network/packetin.h>
+#include <shell.h>
+#include <library/string.h>
 
 namespace Packets
 {

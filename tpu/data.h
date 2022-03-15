@@ -17,6 +17,8 @@
 
 #include <library/types.h>
 
+#include <string>
+
 namespace tpu {
     enum class DataType {
         UNKNOWN,

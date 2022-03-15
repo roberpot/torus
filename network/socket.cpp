@@ -16,6 +16,8 @@
 #include <network/socket.h>
 #include <core/config.h>    //Include after socket, this includes windows.h which gives conflicts with winsock2
 #include <game/client.h>
+#include <shell.h>
+#include <library/string.h>
 
 #include <iostream>
 

@@ -16,6 +16,8 @@
 #include <network/socket.h>
 #include <core/config.h>
 #include <debug_support/info.h>
+#include <shell.h>
+#include <library/string.h>
 
 
 namespace Packets

@@ -22,9 +22,9 @@ namespace Packets
 namespace Out
 {
 
-void Packet_0x6d::set_data(t_ubyte id)
+void Packet_0x6d::set_data(uword_t id)
 {
-    write_ubyte(id);
+    write_uword(id);
 }
 
 }

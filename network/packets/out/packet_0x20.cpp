@@ -12,43 +12,31 @@
  * along with Torus. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <library/system_headers.h>
 #include <network/packets/packetlist.h>
 #include <network/socket.h>
 #include <debug_support/info.h>
-#include <game/server.h>
+#include <game/client.h>
 #include <game/char.h>
-#include <shell.h>
 
 
 namespace Packets
 {
-namespace In
+namespace Out
 {
 
-using namespace ::Out;
-const uword_t Packet_0x34::length() {
-    return 10;
-}
-
-void Packet_0x34::process(Socket* s) {
+void Packet_0x20::set_data(Char* character) {
     ADDTOCALLSTACK();
-    UNREFERENCED_PARAMETER(s);
-    
-
-    _current_pos += 4; //Skip first 4 bytes.
-    t_byte type = read_byte();
-    Uid uid(read_udword());
-    Char *character = server.get_char(uid);
-    if (character)
-    {
-        MobileStatus* packet_mobile = new MobileStatus();
-        packet_mobile->set_data(character);
-        packet_mobile->send(s);
-    }
-    else
-    {
-        TORUSSHELLECHO("Mobile request for invalid uid: " << uid.get_uid());
-    }
+    write_udword(character->get_uid().get_uid());
+    write_uword(uword_t(character->get_body()));
+    write_byte(0);
+    write_uword(character->get_color());
+    write_byte(0); // TODO: Flags (0x01 = Frozen, 0x02 = Female, 0x04 = Flying, 0x08 = Yellow HealthBar, 0x10 = Ignore Mobiles, 0x40 = War Mode, 0x80 = Hidden)
+    write_uword(character->get_pos().get_x());
+    write_uword(character->get_pos().get_y());
+    write_word(0);
+    write_byte(t_byte(character->get_dir()));
+    write_byte(character->get_pos().get_z());
 }
 
 }
