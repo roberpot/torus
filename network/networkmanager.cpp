@@ -50,7 +50,7 @@ void * NetworkManager::run() {
                     clientSocket->clean_incoming_packets();
                     continue;
                 }
-                TORUSSHELLECHO("[GameServer]: Data ready for socket " << clientSocket << ", from IP " << clientSocket->get_ip_str());
+                //TORUSSHELLECHO("[GameServer]: Data ready for socket " << clientSocket << ", from IP " << clientSocket->get_ip_str());
                 if (clientSocket->receive() == false)
                 {
                     continue;
@@ -93,7 +93,7 @@ void * NetworkManager::run() {
                     clientSocket->clean_incoming_packets();
                     continue;
                 }
-                TORUSSHELLECHO("[LoginServer]: Data ready for socket " << clientSocket << ", from IP " << clientSocket->get_ip_str());
+                //TORUSSHELLECHO("[LoginServer]: Data ready for socket " << clientSocket << ", from IP " << clientSocket->get_ip_str());
                 if (clientSocket->receive() == false)
                 {
                     continue;

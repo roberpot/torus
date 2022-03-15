@@ -258,6 +258,7 @@ public:
     udword_t get_seed();
 
     std::vector<uint8_t> buffer_to_vector(uint8_t* buffer, udword_t len);
+    std::vector<uint8_t> buffer_to_vector(const t_byte* buffer, udword_t len);
 };
 
 

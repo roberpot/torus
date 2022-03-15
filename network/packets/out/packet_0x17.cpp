@@ -15,16 +15,20 @@
 #include <network/packets/packetlist.h>
 #include <network/socket.h>
 #include <debug_support/info.h>
-
+#include <game/uid.h>
 
 namespace Packets
 {
 namespace Out
 {
 
-void Packet_0x6d::set_data(t_ubyte id)
+
+void Packet_0x17::set_data(Uid& uid, const uword_t& color, const t_ubyte& flag)
 {
-    write_ubyte(id);
+    write_udword(uid.get_uid());
+    write_word(0x01);
+    write_uword(color);
+    write_ubyte(flag);
 }
 
 }

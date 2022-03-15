@@ -64,7 +64,7 @@ PacketIn* packet_factory(udword_t id ) {
             p = new ReportCliver();
             break;
         case 0xbf:
-            p = new ExtendedCmd();    //TODO: Inner switch for each 0xBF subpacket.
+            p = new ExtendedCmdIn();    //TODO: Inner switch for each 0xBF subpacket.
             break;
         case 0xef:
             p = new ReportCliverNew();

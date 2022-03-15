@@ -42,6 +42,8 @@ public:
     void event_character_login(const std::string &name, const dword_t &flags, const dword_t &login_count, const dword_t &slot, const dword_t &ip);
     void event_double_click(Uid& uid);
     void event_click(Uid& uid);
+
+    void add_character(Char* character);
 private:
     Char *_char;
     Account *_account;

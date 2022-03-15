@@ -164,7 +164,7 @@ namespace In
     using ServerConnect     = Packet_0x91;
     using ServerSelect      = Packet_0xa0;
     using ReportCliver      = Packet_0xbd;
-    using ExtendedCmd       = Packet_0xbf;
+    using ExtendedCmdIn     = Packet_0xbf;
     using ReportCliverNew   = Packet_0xef;
 
 
@@ -191,6 +191,13 @@ namespace Out
     public:
         void set_data(Char* character);
         Packet_0x11() : PacketOut(0x11, true) {};
+    };
+
+    // Mobile Status Bar
+    class Packet_0x17 : public PacketOut {
+    public:
+        void set_data(Uid& uid, const uword_t& color, const t_ubyte& flag);
+        Packet_0x17() : PacketOut(0x17, true) {};
     };
 
     // Movement rejected
@@ -224,6 +231,7 @@ namespace Out
     class Packet_0x6d : public PacketOut {
     public:
         void set_data(t_ubyte id);
+        Packet_0x6d() : PacketOut(0x6d) {};
     };
 
     // PacketPing Out
@@ -315,10 +323,13 @@ namespace Out
     class Packet_0xbf : public PacketOut {
     public:
         void set_data();
-        Packet_0xbf() : PacketOut(0xBF) {};
+        void sub_cmd_mapdiffs();
+        void sub_cmd_map(const t_ubyte& map);
+        Packet_0xbf() : PacketOut(0xBF, true) {};
     };
 
     using MobileStatus      = Packet_0x11;
+    using MobileStatusBar   = Packet_0x17;
     using LoginConfirm      = Packet_0x1b;
     using AsciiMessage      = Packet_0x1c;
     using MovementReject    = Packet_0x21;
@@ -334,7 +345,7 @@ namespace Out
     using ServerList        = Packet_0xa8;
     using CharList          = Packet_0xa9;
     using SupportedFeatures = Packet_0xb9;
-    using ExtendedCmd       = Packet_0xbf;
+    using ExtendedCmdOut    = Packet_0xbf;
 }
 }
 

@@ -69,6 +69,7 @@ SOURCE_GROUP(network\\packets\\in FILES ${PACKETS_IN_FILES})
 
 set(PACKETS_OUT_FILES
         network/packets/out/packet_0x11.cpp
+        network/packets/out/packet_0x17.cpp
         network/packets/out/packet_0x1b.cpp
         network/packets/out/packet_0x1c.cpp
         network/packets/out/packet_0x21.cpp

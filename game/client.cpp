@@ -117,9 +117,19 @@ void Client::event_character_login(const std::string& name, const dword_t& flags
     packet_login_confirm->set_data(_char);
     send(packet_login_confirm);
 
-    SendCharacter* packet_send_character = new SendCharacter();
-    packet_send_character->set_data(_char);
-    send(packet_send_character);
+    ExtendedCmdOut* packet_extended_cmd_mapdiffs = new ExtendedCmdOut();
+    packet_extended_cmd_mapdiffs->sub_cmd_mapdiffs();
+    send(packet_extended_cmd_mapdiffs);
+
+    PlayMusic *packet_music = new PlayMusic();
+    packet_music->set_data(0x09);   //TODO: Set region's musics and send real data.
+    send(packet_music);
+
+    ExtendedCmdOut* packet_extended_cmd_change_map = new ExtendedCmdOut();
+    packet_extended_cmd_change_map->sub_cmd_map(_char->get_pos().get_map());
+    send(packet_extended_cmd_change_map);
+
+    add_character(_char);
 
     LoginDone *packet_login_done = new LoginDone();
     send(packet_login_done);
@@ -128,6 +138,10 @@ void Client::event_character_login(const std::string& name, const dword_t& flags
 
 void Client::event_double_click(Uid& uid)
 {
+    if (!uid.is_valid())
+    {
+        return;
+    }
     if (uid.is_char())
     {
         Char *character = server.get_char(uid);        
@@ -138,6 +152,7 @@ void Client::event_double_click(Uid& uid)
         else*/
         {
             SendPaperdoll* packet_paperdoll = new SendPaperdoll();
+            packet_paperdoll->set_data(character);
             send(packet_paperdoll);
         }
         
@@ -159,6 +174,22 @@ void Client::event_click(Uid& uid)
     Font font = Font::NORMAL;
     packet_message->set_data(target_name, artifact, hue, talk_mode, font);
     send(packet_message);
+}
+
+void Client::add_character(Char* character)
+{
+    SendCharacter* packet_send_character = new SendCharacter();
+    packet_send_character->set_data(_char);
+    send(packet_send_character);
+    //TODO: This is also used to update other chars on screen, using packet 0x77
+
+    uword_t notoriety = 0x0;    // TODO: Notoriety
+    t_ubyte status = 0x0;       // TODO:Poison
+    MobileStatusBar *packet_status_bar = new MobileStatusBar();
+    packet_status_bar->set_data(character->get_uid(), notoriety, status);
+    send(packet_status_bar);
+
+
 }
 
 Char * Client::get_char() {

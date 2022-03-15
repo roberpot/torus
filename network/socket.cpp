@@ -91,8 +91,7 @@ void Socket::_init()
         set_connection_state(ConnectionState::CONNECTIONSTATE_LOGIN);
         LoginConnect* packet_login_connect = static_cast<LoginConnect*>(packet_factory(0x80));
         _current_in_packet = packet_login_connect;
-        receive(packet_login_connect->length());
-        TORUSSHELLECHO("New socket");
+        receive(packet_login_connect->length());        
         //_current_in_packet = nullptr;
     }
 }
@@ -252,8 +251,9 @@ bool Socket::receive(udword_t receive_len)
         }
     }
 
-    TORUSSHELLECHO("Socket " << this << " receive data (0x" << hex(_input_buffer[0]) << ")[" << std::dec << buffer_len << "] = " << std::endl << hex_dump_buffer(_input_buffer, buffer_len));
+    //TORUSSHELLECHO("Socket " << this << " receive data (0x" << hex(_input_buffer[0]) << ")[" << std::dec << buffer_len << "] = " << std::endl << hex_dump_buffer(_input_buffer, buffer_len));
     uword_t total_readed_bytes = 0;
+    //auto vec_buffer = buffer_to_vector(_input_buffer_tmp, buffer_len);
     while (buffer_len > 0)
     {
         t_ubyte id = _input_buffer[0];
@@ -266,7 +266,7 @@ bool Socket::receive(udword_t receive_len)
             }
             else
             {
-                //Fail msg already printed by packet_factory.
+                TORUSSHELLECHO("Droping buffer for packet (0x" << hex(_input_buffer[0]) << ")[" << std::dec << buffer_len << "] = " << std::endl << hex_dump_buffer(_input_buffer, buffer_len));
                 break;
             }
 
@@ -293,15 +293,17 @@ bool Socket::receive(udword_t receive_len)
             }
             if (_current_in_packet->is_complete())
             {
-                TORUSSHELLECHO("Storing packet << " << _current_in_packet << "(0x" << hex(_current_in_packet->packet_id()) << ") in _packets_in_queue");
+                //TORUSSHELLECHO("Storing packet << " << _current_in_packet << "(0x" << hex(_current_in_packet->packet_id()) << ") in _packets_in_queue");
                 _packets_in_queue.push(_current_in_packet);
                 _current_in_packet = nullptr;   // The full packet has been received, clean this pointer so the next data is attacked to another packet.
             }
             if (buffer_len > 0)
             {
                 DEBUG_INFO("Recursive packet read");
+                //auto vec_before = buffer_to_vector(_input_buffer, readed_bytes);
                 memset(_input_buffer, 0, BUFFER_SIZE);
                 memcpy(_input_buffer, &_input_buffer_tmp[total_readed_bytes + readed_bytes], buffer_len);
+                //auto vec_after = buffer_to_vector(_input_buffer, buffer_len);
                 total_readed_bytes += readed_bytes;
             }
         }
@@ -514,6 +516,18 @@ std::vector<uint8_t> Socket::buffer_to_vector(uint8_t* buffer, udword_t len)
     for (udword_t i = 0; i < len; ++i)
     {
         vec.push_back(buffer[i]);
+    }
+    return vec;
+}
+
+
+
+std::vector<uint8_t> Socket::buffer_to_vector(const t_byte* buffer, udword_t len)
+{
+    std::vector<uint8_t> vec;
+    for (udword_t i = 0; i < len; ++i)
+    {
+        vec.push_back(uint8_t(buffer[i]));
     }
     return vec;
 }

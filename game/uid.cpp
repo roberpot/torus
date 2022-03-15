@@ -101,5 +101,5 @@ bool Uid::is_char() {
 }
 
 bool Uid::is_valid(){
-    return !(_uid &UID_UNUSED);
+    return ((_uid != UID_UNUSED) && (_uid > 0));
 }
