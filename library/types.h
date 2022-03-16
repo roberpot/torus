@@ -62,9 +62,11 @@ namespace ttl {
 
 #ifdef _WINDOWS
 #define maximum max
+#define minimum min
 #else
 #include <algorithm>
 #define maximum std::max
+#define minimum std::min
 #endif
 
 #endif //__TORUS_TYPES_H

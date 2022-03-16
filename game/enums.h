@@ -52,8 +52,8 @@ enum class Font
 
 enum class BodyType
 {
-    BODY_HUMAN_MALE = 0x400,
-    BODY_HUMAN_FEMALE = 0x401
+    BODY_HUMAN_MALE = 0x190,
+    BODY_HUMAN_FEMALE = 0x191
 };
 
 #endif // __TORUS_GAME_ENUMS_H

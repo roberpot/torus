@@ -14,6 +14,7 @@
 
 #include <network/packets/packetlist.h>
 #include <debug_support/info.h>
+#include <game/uo_files/map_list.h>
 
 
 namespace Packets
@@ -32,10 +33,16 @@ void Packet_0xbf::sub_cmd_mapdiffs()
     write_dword(0); //Not sending mapdiffs (Only supporting newer clients ATM).
 }
 
-void Packet_0xbf::sub_cmd_map(const t_ubyte& map)
-{
+void Packet_0xbf::sub_cmd_map(const t_ubyte& map) {
     write_word(0x08);
-    write_ubyte(map);
+    t_ubyte maps_count = maplist.get_map_count();
+
+    write_ubyte(maps_count);
+
+    for (t_ubyte i = 0; i <= maps_count; ++i) {
+        write_dword(0);
+        write_dword(0);
+    }
 }
 
 }
