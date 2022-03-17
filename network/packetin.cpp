@@ -112,12 +112,14 @@ void PacketIn::read_string(std::string& str, uword_t len)
     if (_current_pos + len > length())
     {
         //THROW_ERROR(NetworkError, "Trying to read " << sizeof(T) << " bytes to from " << hex(p._buffer[0]) << ", being currently in the position " << p._current_pos << " into a string with a total size of " << s.size() " bytes.");
+        TORUSSHELLECHO("Trying to read " << len << " bytes to from " << hex(_buffer[0]) << ", being currently in the position " << _current_pos << " into a string with a total size of " << _current_buffer_length << " bytes.");
         return;
     }
     str.clear();
     str.resize(len);
-    memcpy(str.data(), &(_buffer[_current_pos]), len);
-    _current_pos += len;
+    for (int i = 0; i < len; ++i)         {
+        str[i] = _buffer[_current_pos++];
+    }
 }
 
 t_byte PacketIn::read_byte()
