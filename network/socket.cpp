@@ -67,17 +67,17 @@ void Socket::_init()
     _seed = 0;
     _seeded = false;
 
-    _input_buffer = new uint8_t[BUFFER_SIZE];
-    memset(_input_buffer, 0, BUFFER_SIZE);
+    _input_buffer = new uint8_t[toruscfg.buffer_size];
+    memset(_input_buffer, 0, toruscfg.buffer_size);
 
-    _input_buffer_tmp = new t_byte[BUFFER_SIZE];
-    memset(_input_buffer_tmp, 0, BUFFER_SIZE);
+    _input_buffer_tmp = new t_byte[toruscfg.buffer_size];
+    memset(_input_buffer_tmp, 0, toruscfg.buffer_size);
 
-    _output_buffer = new t_byte[BUFFER_SIZE];
-    memset(_output_buffer, 0, BUFFER_SIZE);
+    _output_buffer = new t_byte[toruscfg.buffer_size];
+    memset(_output_buffer, 0, toruscfg.buffer_size);
 
-    _output_encrypted_buffer = new uint8_t[BUFFER_SIZE];
-    memset(_output_encrypted_buffer, 0, BUFFER_SIZE);
+    _output_encrypted_buffer = new uint8_t[toruscfg.buffer_size];
+    memset(_output_encrypted_buffer, 0, toruscfg.buffer_size);
 
     if (_server_type == ConnectionType::CONNECTIONTYPE_GAMESERVER)
     {
@@ -178,9 +178,9 @@ bool Socket::receive(udword_t receive_len)
     ADDTOCALLSTACK();
     // First check if we rewinded.
     uword_t buffer_len = 0;
-    if (receive_len > BUFFER_SIZE)
+    if (receive_len > toruscfg.buffer_size)
     {
-        receive_len = BUFFER_SIZE;
+        receive_len = toruscfg.buffer_size;
     }
 
 #ifdef _WINDOWS
@@ -247,7 +247,7 @@ bool Socket::receive(udword_t receive_len)
             _seeded = true;
 
             // Clean the current buffer and copy it again from the received buffer from position 4.
-            memset(_input_buffer, 0, BUFFER_SIZE);
+            memset(_input_buffer, 0, toruscfg.buffer_size);
             memcpy(_input_buffer, &_input_buffer_tmp[4], buffer_len);//Copy from pos 4 to the end of the buffer.
             buffer_len -= 4;    // Decrease the buffer len, since 4 bytes were removed.
         }
@@ -303,15 +303,15 @@ bool Socket::receive(udword_t receive_len)
             {
                 DEBUG_INFO("Recursive packet read");
                 //auto vec_before = buffer_to_vector(_input_buffer, readed_bytes);
-                memset(_input_buffer, 0, BUFFER_SIZE);
+                memset(_input_buffer, 0, toruscfg.buffer_size);
                 memcpy(_input_buffer, &_input_buffer_tmp[total_readed_bytes + readed_bytes], buffer_len);
                 //auto vec_after = buffer_to_vector(_input_buffer, buffer_len);
                 total_readed_bytes += readed_bytes;
             }
         }
     }
-    memset(_input_buffer_tmp, 0, BUFFER_SIZE);
-    memset(_input_buffer, 0, BUFFER_SIZE);
+    memset(_input_buffer_tmp, 0, toruscfg.buffer_size);
+    memset(_input_buffer, 0, toruscfg.buffer_size);
     return true;
 }
 
@@ -452,7 +452,7 @@ void Socket::send_queued_packets()
             udword_t out_len = 0;
             if (_server_type == ConnectionType::CONNECTIONTYPE_GAMESERVER)
             {
-                out_len = _huffman.compress(_output_encrypted_buffer, out_packet->data(), BUFFER_SIZE, out_packet->length());
+                out_len = _huffman.compress(_output_encrypted_buffer, out_packet->data(), toruscfg.buffer_size, out_packet->length());
                 //TORUSSHELLECHO("Compressed data =  " << this << " send(" << out_len << ") " << std::endl << hex_dump_buffer(_output_encrypted_buffer, out_len));
                 memcpy(_output_buffer, _output_encrypted_buffer, out_len);
             }
@@ -487,8 +487,8 @@ void Socket::send_queued_packets()
                 }
 #endif //__linux__
             }
-            memset(_output_encrypted_buffer, 0, BUFFER_SIZE);
-            memset(_output_buffer, 0, BUFFER_SIZE);
+            memset(_output_encrypted_buffer, 0, toruscfg.buffer_size);
+            memset(_output_buffer, 0, toruscfg.buffer_size);
             //TODO: Encryption (after compression)
         }
         _packets_out_queue.pop();

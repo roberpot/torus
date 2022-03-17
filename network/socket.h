@@ -42,8 +42,6 @@ typedef dword_t socklen_t;
 typedef int socket_t;
 #endif //__linux__
 
-#define BUFFER_SIZE 1024 * 20
-
 using namespace Packets;
 
 enum class ConnectionState

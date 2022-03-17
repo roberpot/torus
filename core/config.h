@@ -86,6 +86,7 @@ public:
     // Maps.
     std::vector<MapFile> map_files;
     std::vector<std::pair<t_ubyte, t_ubyte>> maps;  //VirtualMapIndex, MapFileId
+    uword_t buffer_size;
 
     void add_game_server(ServerInfo &server);
     void add_game_server(std::string& name, std::string& ip, uword_t& port);

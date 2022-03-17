@@ -225,6 +225,7 @@ void Config::_reset() {
     noto_titles.clear();
     runes.clear();
     crypto_keys.clear();
+    buffer_size = 20480;
 
     // Maps Section
 
