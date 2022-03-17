@@ -41,7 +41,7 @@ void Packet_0x1c::set_data(const std::string& text, Artifact* target, const word
         body = uword_t(static_cast<Char*>(target)->get_body());
     }
     write_uword(body);
-    write_byte(uword_t(talk_mode));
+    write_byte(t_byte(talk_mode));
     write_uword(hue);
     write_uword(uword_t(font));
     write_string(text, TEXT_LENGTH);

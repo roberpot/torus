@@ -331,7 +331,7 @@ namespace Out
     public:
         void set_data();
         void sub_cmd_mapdiffs();
-        void sub_cmd_map(const t_ubyte& map);
+        void sub_cmd_map();
         Packet_0xbf() : PacketOut(0xBF, true) {};
     };
 

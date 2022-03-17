@@ -55,6 +55,8 @@ void Client::event_walk(const t_ubyte& dir, const t_ubyte& seq, const udword_t& 
     ADDTOCALLSTACK();
     //_char MUST be valid.
 
+    UNREFERENCED_PARAMETER(dir);
+
     MovementAccept* packet_movement_accept = new MovementAccept();
     packet_movement_accept->set_data(seq, fast_walk_key);
     send(packet_movement_accept);
@@ -126,7 +128,7 @@ void Client::event_character_login(const std::string& name, const dword_t& flags
     send(packet_music);
 
     ExtendedCmdOut* packet_extended_cmd_change_map = new ExtendedCmdOut();
-    packet_extended_cmd_change_map->sub_cmd_map(_char->get_pos().get_map());
+    packet_extended_cmd_change_map->sub_cmd_map();
     send(packet_extended_cmd_change_map);
 
     add_character(_char);

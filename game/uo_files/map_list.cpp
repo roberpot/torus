@@ -24,8 +24,7 @@ Map *MapList::get_map(t_ubyte id) {
     if (_list.size() > id)
     {
         map = _list[id];
-    }
-    
+    }    
     return map;
 }
 
@@ -56,4 +55,8 @@ void MapList::shutdown()
     ADDTOCALLSTACK();
     //Don't delete the maps here, these are just pointer copies of the real maps.
     //The deletion is done in UOFileManager::shutdown().
+}
+
+bool MapList::is_map_valid(const t_ubyte& map_id) {
+    return _list.at(map_id) != nullptr;
 }

@@ -176,18 +176,16 @@ bool CoordPoint::can_move_to_z(const t_byte& destZ) {
 
 bool CoordPoint::can_move_to_map(const t_ubyte& destMap) {
     ADDTOCALLSTACK();
-    /*if (!maplist.is_map_valid(_m))
-     {
-        return false;
-    }*/
-    return true;
+    return maplist.is_map_valid(destMap);
 }
 
 bool CoordPoint::can_move_to(const word_t& destX, const word_t& destY, const t_byte& destZ, const t_ubyte& destMap) {
+    ADDTOCALLSTACK();
     return can_move_to_coord(destX, destY) && can_move_to_z(destZ) && can_move_to_map(destMap);
 }
 
 bool CoordPoint::can_move_to(const CoordPoint& cp)
 {
+    ADDTOCALLSTACK();
     return can_move_to(cp._x, cp._y, cp._z, cp._m);
 }

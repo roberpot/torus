@@ -36,7 +36,8 @@ void Packet_0x34::process(Socket* s) {
     
 
     _current_pos += 4; //Skip first 4 bytes.
-    t_byte type = read_byte();
+    //t_byte type = read_byte();
+    skip(1);
     Uid uid(read_udword());
     Char *character = server.get_char(uid);
     if (character)

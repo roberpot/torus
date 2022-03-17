@@ -35,7 +35,8 @@ const uword_t Packet_0x91::length()
 
 void Packet_0x91::process(Socket* s)
 {
-    udword_t seed = read_udword();
+    //udword_t seed = read_udword();    //TODO: Seed matching check.
+    skip(4);
 
     std::string account_name;
     std::string account_password;

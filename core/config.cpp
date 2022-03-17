@@ -230,7 +230,7 @@ void Config::_reset() {
     // Maps Section
 
     // Map Files
-/*
+
     //NOTE: Add limit checks to do not exceed BASE_MAP_MAX value.
     MapFile map0new(0, 7168, 4096, 64, "map0.mul");// Map 0 (Felucca)    (New map size)
     map_files.push_back(map0new);
@@ -245,8 +245,8 @@ void Config::_reset() {
     map_files.push_back(map3);
     MapFile map4(4, 1448, 1448, 8, "map4.mul");     // Map 4 (Tokuno Islands)
     map_files.push_back(map4);
-    //MapFile map5(5, 1280, 4096, 32, "map5.mul");    // Map 5 (Ter Mur)
-    //map_files.push_back(map5);
+    MapFile map5(5, 1280, 4096, 32, "map5.mul");    // Map 5 (Ter Mur)
+    map_files.push_back(map5);
 
     //NOTE: Add limit checks to do not exceed VIRTUAL_MAP_MAX value.
     // Virtual (ingame) maps
@@ -260,7 +260,7 @@ void Config::_reset() {
     //
     maps.push_back(std::make_pair<t_ubyte, t_ubyte>(10, 0));  // Adding map 10 as copy of map0.mul / Map0LegacyMUL.uop
     maps.push_back(std::make_pair<t_ubyte, t_ubyte>(11, 3));  // Adding map 11 as copy of map3.mul / Map3LegacyMUL.uop
-*/
+
     // END Maps Section
     
 }

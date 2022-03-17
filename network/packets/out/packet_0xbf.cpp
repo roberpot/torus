@@ -33,7 +33,7 @@ void Packet_0xbf::sub_cmd_mapdiffs()
     write_dword(0); //Not sending mapdiffs (Only supporting newer clients ATM).
 }
 
-void Packet_0xbf::sub_cmd_map(const t_ubyte& map) {
+void Packet_0xbf::sub_cmd_map() {
     write_word(0x08);
     t_ubyte maps_count = maplist.get_map_count();
 

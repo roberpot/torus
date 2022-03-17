@@ -20,8 +20,8 @@ namespace Packets
 {
 namespace Out
 {
-void Packet_0x3a::set_data(Char* character)
-{
+void Packet_0x3a::set_data(Char* character) {
+    UNREFERENCED_PARAMETER(character);
 }
 
 }

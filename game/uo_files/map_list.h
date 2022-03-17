@@ -49,6 +49,8 @@ public:
      * @brief Destroyer for extern class.
      */
     void shutdown();
+
+    bool is_map_valid(const t_ubyte& map_id);
 } maplist;
 
 #endif // __TORUS_GAME_MAP_LIST_H
