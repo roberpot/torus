@@ -87,7 +87,12 @@ uword_t PacketIn::receive(const uint8_t* data, const uword_t len)
     if (_current_buffer_length >= expected_length)
     {
         _is_complete = true;
-        _current_pos = 1; // Move the cursor, so the id is not read when processing it's data in the packets' specific code.
+        if (_has_dynamic_length) {
+            _current_pos = 3;
+        }
+        else {
+            _current_pos = 1; // Move the cursor, so the id is not read when processing it's data in the packets' specific code.
+        }
     }
     TORUSSHELLECHO("Packet " << this << " receive data (0x" << hex(_buffer[0]) << ")[" << std::dec << _current_buffer_length << "] = " << std::endl << hex_dump_buffer(_buffer, _current_buffer_length));
     return readed_bytes;

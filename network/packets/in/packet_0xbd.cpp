@@ -31,7 +31,7 @@ void Packet_0xbd::process(Socket* s) {
     UNREFERENCED_PARAMETER(s);
 
     std::string cliver;
-    read_string(cliver, _current_buffer_length - 3);
+    read_string(cliver, _current_buffer_length - _current_pos);
 
     //TODO: Correctly parse and store the reported version.
 }
