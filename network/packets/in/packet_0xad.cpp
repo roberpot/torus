@@ -33,6 +33,7 @@ void Packet_0xad::process(Socket* s) {
     TalkMode talk_mode = TalkMode(read_byte());
     uword_t color = read_uword();
     Font font = Font(read_word());
+    std::string lang = read_string(4);
     std::wstring text = read_wstring(get_remaining_length());
     s->get_client()->event_talk_unicode(talk_mode, color, font, text);
 }

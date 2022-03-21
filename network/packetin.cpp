@@ -137,7 +137,7 @@ const std::wstring PacketIn::read_wstring(uword_t len) {
     size_t wlen = len / 2;
     wstr.resize(wlen);    
     for (int i = 0; i < wlen; ++i) {
-        wstr[i] = _buffer[_current_pos++];
+        wstr[i] = read_wchar();
     }
     return wstr;
 }
@@ -162,6 +162,11 @@ const uword_t PacketIn::read_uword()
 {
     return uword_t((_buffer[_current_pos++] << 8) |
                     _buffer[_current_pos++]);
+}
+
+const wchar_t PacketIn::read_wchar() {
+    return wchar_t((_buffer[_current_pos++] << 8) |
+                   _buffer[_current_pos++]);
 }
 
 const dword_t PacketIn::read_dword()

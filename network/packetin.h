@@ -146,6 +146,13 @@ protected:
     const uword_t read_uword();
 
     /**
+     * @brief Read a wide character (2 bytes) from the buffer.
+     *
+     * @return The value.
+     */
+    const wchar_t read_wchar();
+
+    /**
      * @brief Read a signed dword_t (4 bytes) from the buffer.
      *
      * @return The value.
