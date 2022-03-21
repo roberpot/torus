@@ -36,6 +36,7 @@ TorusShell::TorusShell() {
 
 void * TorusShell::run() {
     bool continue_proc = true;
+    std::setlocale(LC_ALL, "en_US.UTF-8");
     t_byte c;
     t_byte buffer[256];
     t_byte * stripped_buffer;

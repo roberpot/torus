@@ -182,14 +182,14 @@ void Client::event_talk_ascii(const TalkMode& talkmode, const uword_t& color, co
     UNREFERENCED_PARAMETER(talkmode);
     UNREFERENCED_PARAMETER(color);
     UNREFERENCED_PARAMETER(font);
-    TORUSSHELLECHO("Player " << _char->get_name() << " speaks " << text);
+    TORUSSHELLECHO("Player " << _char->get_name() << " speaks \"" << text.c_str() << "\".");
 }
 
 void Client::event_talk_unicode(const TalkMode& talkmode, const uword_t& color, const Font& font, const std::wstring& text) {
     UNREFERENCED_PARAMETER(talkmode);
     UNREFERENCED_PARAMETER(color);
     UNREFERENCED_PARAMETER(font);
-    TORUSSHELLECHOW(L"Player " << to_wstring(_char->get_name()) << L" speaks " << text);
+    TORUSSHELLECHOW(L"Player " << to_wstring(_char->get_name()) << L" speaks \"" << text.c_str() << "\".");
 }
 
 void Client::add_character(Char* character)

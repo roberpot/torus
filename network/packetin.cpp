@@ -118,9 +118,11 @@ const std::string PacketIn::read_string(uword_t len) {
         return str;
     }
     str.resize(len);
-    for (int i = 0; i < len; ++i) {
+    int i = 0;
+    for (; i < len; ++i) {
         str[i] = _buffer[_current_pos++];
     }
+    str[i] = '/0';
     return str;
 }
 
@@ -135,10 +137,12 @@ const std::wstring PacketIn::read_wstring(uword_t len) {
         return wstr;
     }
     size_t wlen = len / 2;
-    wstr.resize(wlen);    
-    for (int i = 0; i < wlen; ++i) {
+    wstr.resize(wlen);
+    int i = 0;
+    for (; i < wlen; ++i) {
         wstr[i] = read_wchar();
     }
+    wstr[i] = '\0';
     return wstr;
 }
 
@@ -165,8 +169,9 @@ const uword_t PacketIn::read_uword()
 }
 
 const wchar_t PacketIn::read_wchar() {
-    return wchar_t((_buffer[_current_pos++] << 8) |
+    wchar_t ret = ((_buffer[_current_pos++] << 8) |
                    _buffer[_current_pos++]);
+    return ret;
 }
 
 const dword_t PacketIn::read_dword()

@@ -23,7 +23,7 @@
 #define TORUSSHELLECHO(X) { \
     std::stringstream __torusshelecho__; \
     __torusshelecho__ << X; \
-    torus_shell.print(__torusshelecho__.str().c_str()); \
+    torus_shell.print(__torusshelecho__.str()); \
 }
 
 #define TORUSSHELLECHOW(X) { \

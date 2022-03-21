@@ -29,6 +29,7 @@ enum class TalkMode    // Modes we can talk/bark in.
     GUILD = 0xD,    // 13 = Used by guild chat (client shortcut: \)
     ALLIANCE = 0xE, // 14 = Used by alliance chat (client shortcut: shift+\)
     COMMAND = 0xF,  // 15 = GM command prompt
+    ENCODED = 0xC0, // 192 = Encoded speech
 
     // Special talkmodes, used internally by Torus
     SOUND = 0xFE, // Used to check if a char can hear a sound.
