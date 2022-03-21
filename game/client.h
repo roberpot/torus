@@ -27,6 +27,13 @@ class Client {
 public:
     Client(Socket*s);
     ~Client();
+    enum class InputCmd {
+        ADD,
+        GO,
+        REMOVE,
+        QTY        
+    };
+    static const std::wstring input_text_cmds[int(InputCmd::QTY)];
 private:
     Socket*_socket;
 public:
@@ -45,8 +52,11 @@ public:
     void event_talk_ascii(const TalkMode& talkmode, const uword_t& color, const Font& font, const std::string& text);
     void event_talk_unicode(const TalkMode& talkmode, const uword_t& color, const Font& font, const std::wstring& text);
 
+    bool event_input_cmd(const std::wstring& text);
 
     void add_character(Char* character);
+    void update_move(Char* character);
+    
 private:
     Char *_char;
     Account *_account;

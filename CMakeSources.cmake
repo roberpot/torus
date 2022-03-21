@@ -81,6 +81,7 @@ set(PACKETS_OUT_FILES
         network/packets/out/packet_0x55.cpp
         network/packets/out/packet_0x6d.cpp
         network/packets/out/packet_0x73.cpp
+        network/packets/out/packet_0x77.cpp
         network/packets/out/packet_0x78.cpp
         network/packets/out/packet_0x82.cpp
         network/packets/out/packet_0x88.cpp

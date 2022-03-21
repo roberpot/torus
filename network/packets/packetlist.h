@@ -264,6 +264,14 @@ namespace Out
         Packet_0x73() : PacketOut(0x73) {};
     };
 
+    // Move Char
+    class Packet_0x77 : public PacketOut {
+    public:
+        void set_data(Char* character); //Char* character
+        Packet_0x77() : PacketOut(0x77) {
+        };
+    };
+
     // Send Char
     class Packet_0x78 : public PacketOut {
     public:
@@ -355,13 +363,14 @@ namespace Out
     using MobileStatusBar   = Packet_0x17;
     using LoginConfirm      = Packet_0x1b;
     using AsciiMessageOut   = Packet_0x1c;
-    using MobileUpdate      = Packet_0x20;
+    using UpdateCharacter   = Packet_0x20;
     using MovementReject    = Packet_0x21;
     using MovementAccept    = Packet_0x22;
     using SkillsUpdate      = Packet_0x3a;
     using LoginDone         = Packet_0x55;
     using PlayMusic         = Packet_0x6d;
     using PingResponse      = Packet_0x73;
+    using MoveCharacter     = Packet_0x77;
     using SendCharacter     = Packet_0x78;
     using LoginResponse     = Packet_0x82;
     using SendPaperdoll     = Packet_0x88;

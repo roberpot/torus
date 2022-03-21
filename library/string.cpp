@@ -17,6 +17,9 @@
 #include <codecvt>
 #include <locale>
 #include <library/string.h>
+#include <algorithm>
+#include <cctype>
+#include <cwctype>
 
 std::string print_hex_buffer(const t_byte * buffer, udword_t len) {
     std::stringstream s;
@@ -107,6 +110,20 @@ std::vector<std::string> split(const std::string &str, t_byte del) {
     return ret;
 }
 
+std::vector<std::wstring> split(const std::wstring& wstr, t_byte del) {
+    std::vector<std::wstring> ret;
+
+    std::wstring::size_type prev_pos = 0;
+    std::wstring::size_type pos = 0;
+    while ((pos = wstr.find(del, pos)) != std::wstring::npos) {
+        std::wstring substring(wstr.substr(prev_pos, pos - prev_pos));
+        ret.push_back(substring);
+        prev_pos = ++pos;
+    }
+    ret.push_back(wstr.substr(prev_pos, pos - prev_pos)); // Last word
+    return ret;
+}
+
 std::string clean(const std::string &str) {
     std::string ret;
     size_t i = 0;
@@ -122,7 +139,36 @@ std::string clean(const std::string &str) {
     return ret;
 }
 
+std::wstring clean(const std::wstring& str) {
+    std::wstring ret;
+    size_t i = 0;
+    for (; i < str.size(); ++i) {
+        wchar_t chr = str[i];
+        if (chr == 92 || chr == 32 || chr == 34 || chr == '\0') {
+            continue;
+        }
+        ret.push_back(str[i]);
+    }
+    return ret;
+}
+
 std::wstring to_wstring(const std::string& str) {
     using convert_t = std::codecvt_utf8<wchar_t>;
     return std::wstring_convert<std::codecvt_utf8<wchar_t>>().from_bytes(str);
+}
+
+
+size_t find_table(const std::wstring* table, const std::wstring& elem) {
+    size_t pos = 0;
+    bool found = false;
+    for (pos; pos < table->size(); ++pos) {
+        if (_wcsicmp(table[pos].c_str(), elem.c_str()) == 0) {
+            found = true;
+            break;
+        }
+    }
+    if (!found) {
+        pos = SIZE_MAX;
+    }
+    return pos;
 }

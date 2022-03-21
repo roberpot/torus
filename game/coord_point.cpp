@@ -147,15 +147,11 @@ uword_t CoordPoint::get_distance(const CoordPoint& target)
 bool CoordPoint::can_move_to_coord(const word_t& destX, const word_t& destY) {
     ADDTOCALLSTACK();
     Map* map = maplist.get_map(_m);
-    if (map == nullptr)
-    {
+    if (map == nullptr) {
         //err
         return false;
     }
-    if (destX < 0 || destX >map->get_max_x()) {
-        return false;
-    }
-    if (destY < 0 || destY > map->get_max_y()) {
+    if (!map->is_valid_p(destX, destY)) {
         return false;
     }
     /*

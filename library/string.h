@@ -66,10 +66,56 @@ inline __HexHelperStruct<T> hex(T x) {
 }
 
 std::string hex_dump_buffer(const uint8_t* buffer, const udword_t size);
-
+/**
+ * @brief Split a string int a vector of strings by a given separator.
+ * 
+ * @param str The string to split.
+ * @param del The separator from which to split the string.
+ * @return the vector with the separated strings.
+ */
 std::vector<std::string> split(const std::string &str, t_byte del);
-std::string clean(const std::string &str);
+/**
+ * @brief Split a wstring int a vector of wstrings by a given separator.
+ *
+ * @param wstr The wstring to split.
+ * @param del The separator from which to split the wstring.
+ * @return the vector with the separated wstrings.
+ */
+std::vector<std::wstring> split(const std::wstring& wstr, t_byte del);
 
+/**
+ * @brief Cleans a string by removing certain characters.
+ * 
+ * @param str The string to clean.
+ * @return A new string with the cleared data.
+ */
+std::string clean(const std::string &str);
+/**
+ * @brief Cleans a wstring by removing certain characters.
+ *
+ * @param wstr The wstring to clean.
+ * @return A new wstring with the cleared data.
+ */
+std::wstring clean(const std::wstring& wstr);
+
+/**
+ * @brief Transforms a std::string into a std::wstring
+ * 
+ * @param str The string to transform.
+ * @return The transformed wstring.
+ */
 std::wstring to_wstring(const std::string& str);
 
+/**
+ * @brief Finds the given element in the given table.
+ * 
+ * @param table The table in which to look for the given elem.
+ * @param elem The element to find.
+ * 
+ * @return The position of the element if found, SIZE_MAX otherwise.
+ */
+size_t find_table(const std::wstring* table, const std::wstring& elem);
+
 #endif //__TORUS_STRING_H
+
+

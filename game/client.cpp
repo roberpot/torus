@@ -18,6 +18,7 @@
 #include <game/accounts_manager.h>
 #include <game/char.h>
 #include <game/client.h>
+#include <game/coord_point.h>
 #include <game/uid.h>
 #include <game/server.h>
 #include <network/socket.h>
@@ -26,6 +27,12 @@
 
 using namespace Packets::In;
 using namespace Packets::Out;
+
+const std::wstring Client::input_text_cmds[int(InputCmd::QTY)] = {
+    L"ADD",
+    L"GO",
+    L"REMOVE"
+};
 
 Client::Client(Socket* s) :
     _socket(s),
@@ -182,6 +189,11 @@ void Client::event_talk_ascii(const TalkMode& talkmode, const uword_t& color, co
     UNREFERENCED_PARAMETER(talkmode);
     UNREFERENCED_PARAMETER(color);
     UNREFERENCED_PARAMETER(font);
+    if (text.find('.') == 0) {
+        if (event_input_cmd(to_wstring(text)))             {
+            return;
+        }
+    }
     TORUSSHELLECHO("Player " << _char->get_name() << " speaks \"" << text.c_str() << "\".");
 }
 
@@ -189,7 +201,91 @@ void Client::event_talk_unicode(const TalkMode& talkmode, const uword_t& color, 
     UNREFERENCED_PARAMETER(talkmode);
     UNREFERENCED_PARAMETER(color);
     UNREFERENCED_PARAMETER(font);
+    if (text.find('.') == 0) {
+        if (event_input_cmd(text)) {
+            return;
+        }
+    }
     TORUSSHELLECHOW(L"Player " << to_wstring(_char->get_name()) << L" speaks \"" << text.c_str() << "\".");
+}
+
+bool Client::event_input_cmd(const std::wstring& text) {
+    bool valid_cmd = true;
+    std::wstring input_wstr(text);
+    input_wstr.erase(0, 1);
+    std::vector<std::wstring> entries = split(input_wstr, ' '); // split the keyword and params using the whitespace as separator.
+    if (entries.size() > 0) {
+        std::wstring input_cmd = clean(entries[0]); // First entry = keyword.
+        entries.clear();    // reset the entries, to be set again.
+        input_wstr.erase(0, input_cmd.size() + 1);  // remove the input cmd and the first whitespace from the string.
+        entries = split(input_wstr, ',');   // split the text again, but using the comma as separator this time.
+        InputCmd cmd = static_cast<InputCmd>(find_table(input_text_cmds, input_cmd));
+        switch (cmd) {
+            case InputCmd::ADD:
+                break;
+            case InputCmd::GO: {
+                if (entries.size() < 2) {
+                    break;
+                }
+                if (entries.size() == 2) {
+                    uword_t x = uword_t(std::stoi(clean(entries.at(0))));
+                    uword_t y = uword_t(std::stoi(clean(entries.at(1))));
+                    CoordPoint p;
+                    if (!p.can_move_to_coord(x, y)) {
+                        break;
+                    }
+                    _char->set_pos(x, y);
+                    update_move(_char);
+                }
+                else if (entries.size() == 3) {
+                    uword_t x = uword_t(std::stoi(clean(entries.at(0))));
+                    uword_t y = uword_t(std::stoi(clean(entries.at(1))));
+                    t_byte z = t_byte(std::stoi(clean(entries.at(2))));
+                    CoordPoint p;
+                    if (!p.can_move_to_z(z)) {
+                        break;
+                    }
+                    else if (!p.can_move_to_coord(x, y)) {
+                        break;
+                    }
+                    _char->set_pos(x, y, z);
+                    update_move(_char);
+                }
+                else if (entries.size() == 4) {
+                    uword_t x = uword_t(std::stoi(clean(entries.at(0))));
+                    uword_t y = uword_t(std::stoi(clean(entries.at(1))));
+                    t_byte z = t_byte(std::stoi(clean(entries.at(2))));
+                    t_ubyte m = t_byte(std::stoi(clean(entries.at(3))));
+                    CoordPoint p;
+                    if (!p.can_move_to_map(m)) {
+                        break;
+                    }
+                    else if (!p.can_move_to_z(z)) {
+                        break;
+                    }
+                    else if (!p.can_move_to_coord(x, y)) {
+                        break;
+                    }
+                    _char->set_pos(x, y, z, m);
+                    update_move(_char);
+                }
+                break;
+            }
+            case InputCmd::REMOVE:
+                break;
+            default:
+                valid_cmd = false;        
+                break;
+        }
+        if (valid_cmd) {
+            TORUSSHELLECHOW(L"Player " << to_wstring(_char->get_name()) << L" inputs command \"" << text.c_str() << "\".");
+        }
+        else {
+            // No need to output, an invalid command is 13handled as normal speak.
+            //TORUSSHELLECHOW(L"Player " << to_wstring(_char->get_name()) << L" inputs invalid command \"" << text.c_str() << L"\".");
+        }
+    }
+    return valid_cmd;
 }
 
 void Client::add_character(Char* character)
@@ -206,13 +302,31 @@ void Client::add_character(Char* character)
     packet_status_bar->set_data(character->get_uid(), notoriety, status);
     send(packet_status_bar);
 
-    MobileUpdate* packet_mobile_update = new MobileUpdate();
+    UpdateCharacter* packet_mobile_update = new UpdateCharacter();
     packet_mobile_update->set_data(character);
     send(packet_mobile_update);
 
     MobileStatus* packet_mobile_status = new MobileStatus();
     packet_mobile_status->set_data(character);
     send(packet_mobile_status);
+}
+
+void Client::update_move(Char* character) {
+    //Myself        = Packet_0x20
+    //Already seen  = Packet_0x77
+    //Not seen yet  = Packet_0x78 -> TODO: Recording of nearby characters
+    if (_char == character) {
+        UpdateCharacter* packet_mobile_update = new UpdateCharacter();
+        packet_mobile_update->set_data(character);
+        send(packet_mobile_update);
+    }
+    else {
+        //Already seen, or not yet seen ... TODO a dilemma!
+        MoveCharacter* packet_move_character = new MoveCharacter();
+        packet_move_character->set_data(character);
+        send(packet_move_character);        
+    }
+    add_character(character);
 }
 
 Char*  Client::get_char() {

@@ -122,7 +122,6 @@ const std::string PacketIn::read_string(uword_t len) {
     for (; i < len; ++i) {
         str[i] = _buffer[_current_pos++];
     }
-    str[i] = '/0';
     return str;
 }
 
@@ -142,7 +141,6 @@ const std::wstring PacketIn::read_wstring(uword_t len) {
     for (; i < wlen; ++i) {
         wstr[i] = read_wchar();
     }
-    wstr[i] = '\0';
     return wstr;
 }
 
