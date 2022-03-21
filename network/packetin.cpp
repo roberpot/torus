@@ -88,7 +88,7 @@ uword_t PacketIn::receive(const uint8_t* data, const uword_t len)
     {
         _is_complete = true;
         if (_has_dynamic_length) {
-            _current_pos = 1;
+            _current_pos = 3;
         }
         else {
             _current_pos = 1; // Move the cursor, so the id is not read when processing it's data in the packets' specific code.
