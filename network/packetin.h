@@ -96,9 +96,18 @@ public:
      * @brief Read a string from the buffer.
      * 
      * @param str The string in which to 
-     * @param len
+     * @param len The length in bytes of the buffer.
      */
     void read_string(std::string &str, uword_t len = 0);
+    std::string read_string(uword_t len = 0);
+
+    /**
+     * @brief Read a wstring from the buffer.
+     *
+     * @param len The length in bytes of the buffer.
+     * @return The wstring.
+     */
+    std::wstring read_wstring(uword_t len = 0);
 
     /**
      * @brief Reads a signed byte from the buffer.

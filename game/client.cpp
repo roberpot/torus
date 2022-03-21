@@ -170,12 +170,26 @@ void Client::event_click(Uid& uid)
     }
     Artifact* artifact = server.get_artifact(uid);
     target_name = artifact->get_name();
-    AsciiMessage* packet_message = new AsciiMessage();
+    AsciiMessageOut* packet_message = new AsciiMessageOut();
     uword_t hue = 0x0000;
     TalkMode talk_mode = TalkMode::SAY;
     Font font = Font::NORMAL;
     packet_message->set_data(target_name, artifact, hue, talk_mode, font);
     send(packet_message);
+}
+
+void Client::event_talk_ascii(const TalkMode& talkmode, const uword_t& color, const Font& font, const std::string& text) {
+    UNREFERENCED_PARAMETER(talkmode);
+    UNREFERENCED_PARAMETER(color);
+    UNREFERENCED_PARAMETER(font);
+    TORUSSHELLECHO("Player " << _char->get_name() << " speaks " << text);
+}
+
+void Client::event_talk_unicode(const TalkMode& talkmode, const uword_t& color, const Font& font, const std::wstring& text) {
+    UNREFERENCED_PARAMETER(talkmode);
+    UNREFERENCED_PARAMETER(color);
+    UNREFERENCED_PARAMETER(font);
+    TORUSSHELLECHOW(L"Player " << to_wstring(_char->get_name()) << L" speaks " << text);
 }
 
 void Client::add_character(Char* character)

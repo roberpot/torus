@@ -26,13 +26,20 @@
     torus_shell.print(__torusshelecho__.str().c_str()); \
 }
 
+#define TORUSSHELLECHOW(X) { \
+    std::wstringstream __torusshelecho__; \
+    __torusshelecho__ << X; \
+    torus_shell.print(__torusshelecho__.str().c_str()); \
+}
+
 extern class TorusShell : public Thread {
 public:
     TorusShell();
     void * run();
-    void print(const t_byte * s);
+    void print(const std::string& str);
+    void print(const wchar_t* s);
 private:
-    std::ofstream _log_file;
+    std::wofstream _log_file;
 } torus_shell;
 
 #endif //__TORUS_SHELL_H

@@ -36,6 +36,9 @@ PacketIn* packet_factory(udword_t id ) {
         case 0x02:
             p = new MovementRequest();
             break;
+        case 0x03:
+            p = new AsciiMessageIn();
+            break;
         case 0x06:
             p = new UseRequest();
             break;
@@ -59,6 +62,9 @@ PacketIn* packet_factory(udword_t id ) {
             break;
         case 0xa0:
             p = new ServerSelect();
+            break;
+        case 0xad:
+            p = new UnicodeMessageIn();
             break;
         case 0xbd:
             p = new ReportCliver();

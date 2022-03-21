@@ -42,6 +42,9 @@ public:
     void event_character_login(const std::string &name, const dword_t &flags, const dword_t &login_count, const dword_t &slot, const dword_t &ip);
     void event_double_click(Uid& uid);
     void event_click(Uid& uid);
+    void event_talk_ascii(const TalkMode& talkmode, const uword_t& color, const Font& font, const std::string& text);
+    void event_talk_unicode(const TalkMode& talkmode, const uword_t& color, const Font& font, const std::wstring& text);
+
 
     void add_character(Char* character);
 private:

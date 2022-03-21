@@ -14,6 +14,8 @@
 
 #include <iomanip>
 #include <sstream>
+#include <codecvt>
+#include <locale>
 #include <library/string.h>
 
 std::string print_hex_buffer(const t_byte * buffer, udword_t len) {
@@ -118,4 +120,9 @@ std::string clean(const std::string &str) {
         ret.push_back(str[i]);
     }
     return ret;
+}
+
+std::wstring to_wstring(const std::string& str) {
+    using convert_t = std::codecvt_utf8<wchar_t>;
+    return std::wstring_convert<std::codecvt_utf8<wchar_t>>().from_bytes(str);
 }

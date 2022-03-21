@@ -70,4 +70,6 @@ std::string hex_dump_buffer(const uint8_t* buffer, const udword_t size);
 std::vector<std::string> split(const std::string &str, t_byte del);
 std::string clean(const std::string &str);
 
+std::wstring to_wstring(const std::string& str);
+
 #endif //__TORUS_STRING_H

@@ -62,6 +62,14 @@ namespace In
         virtual void process(Socket* s) override;
     };
 
+    // Ascii Message
+    class Packet_0x03 : public PacketIn {
+    public:
+        virtual const uword_t length() override;
+        virtual void process(Socket* s) override;
+        Packet_0x03() : PacketIn(true) {}
+    };
+
     // Double click
     class Packet_0x06 : public PacketIn {
     public:
@@ -121,6 +129,14 @@ namespace In
         virtual void process(Socket* s) override;
     };
 
+    // Unicode Message
+    class Packet_0xad : public PacketIn {
+    public:
+        virtual const uword_t length() override;
+        virtual void process(Socket* s) override;
+        Packet_0xad() : PacketIn(true) {}
+    };
+
     // Client version (Entering World)
     class Packet_0xbd : public PacketIn {
     public:
@@ -155,6 +171,7 @@ namespace In
 
     using CreateCharacter   = Packet_0x00;
     using MovementRequest   = Packet_0x02;
+    using AsciiMessageIn    = Packet_0x03;
     using UseRequest        = Packet_0x06;
     using ClickRequest      = Packet_0x06;
     using QueryCharacter    = Packet_0x34;
@@ -163,11 +180,10 @@ namespace In
     using LoginConnect      = Packet_0x80;
     using ServerConnect     = Packet_0x91;
     using ServerSelect      = Packet_0xa0;
+    using UnicodeMessageIn  = Packet_0xad;
     using ReportCliver      = Packet_0xbd;
     using ExtendedCmdIn     = Packet_0xbf;
     using ReportCliverNew   = Packet_0xef;
-
-
 }
 
 namespace Out
@@ -338,7 +354,7 @@ namespace Out
     using MobileStatus      = Packet_0x11;
     using MobileStatusBar   = Packet_0x17;
     using LoginConfirm      = Packet_0x1b;
-    using AsciiMessage      = Packet_0x1c;
+    using AsciiMessageOut   = Packet_0x1c;
     using MobileUpdate      = Packet_0x20;
     using MovementReject    = Packet_0x21;
     using MovementAccept    = Packet_0x22;

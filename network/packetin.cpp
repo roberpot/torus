@@ -122,6 +122,41 @@ void PacketIn::read_string(std::string& str, uword_t len)
     }
 }
 
+std::string PacketIn::read_string(uword_t len) {
+    std::string str;
+    if (len == 0) {
+        return str;
+    }
+    if (_current_pos + len > length()) {
+        //THROW_ERROR(NetworkError, "Trying to read " << sizeof(T) << " bytes to from " << hex(p._buffer[0]) << ", being currently in the position " << p._current_pos << " into a string with a total size of " << s.size() " bytes.");
+        TORUSSHELLECHO("Trying to read " << len << " bytes to from " << hex(_buffer[0]) << ", being currently in the position " << _current_pos << " into a string with a total size of " << _current_buffer_length << " bytes.");
+        return str;
+    }
+    str.resize(len);
+    for (int i = 0; i < len; ++i) {
+        str[i] = _buffer[_current_pos++];
+    }
+    return str;
+}
+
+std::wstring PacketIn::read_wstring(uword_t len) {
+    std::wstring wstr;
+    if (len == 0) {
+        return wstr;
+    }
+    if (_current_pos + len > length()) {
+        //THROW_ERROR(NetworkError, "Trying to read " << sizeof(T) << " bytes to from " << hex(p._buffer[0]) << ", being currently in the position " << p._current_pos << " into a string with a total size of " << s.size() " bytes.");
+        TORUSSHELLECHO("Trying to read " << len << " bytes to from " << hex(_buffer[0]) << ", being currently in the position " << _current_pos << " into a string with a total size of " << _current_buffer_length << " bytes.");
+        return wstr;
+    }
+    size_t wlen = len / 2;
+    wstr.resize(wlen);    
+    for (int i = 0; i < wlen; ++i) {
+        wstr[i] = _buffer[_current_pos++];
+    }
+    return wstr;
+}
+
 t_byte PacketIn::read_byte()
 {
     return t_byte(_buffer[_current_pos++]);

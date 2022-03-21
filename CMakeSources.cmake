@@ -53,6 +53,7 @@ SOURCE_GROUP(network\\packets FILES ${PACKETLIST_FILES})
 set(PACKETS_IN_FILES
         network/packets/in/packet_0x0.cpp
         network/packets/in/packet_0x02.cpp
+        network/packets/in/packet_0x03.cpp
         network/packets/in/packet_0x06.cpp
         network/packets/in/packet_0x09.cpp
         network/packets/in/packet_0x34.cpp
@@ -61,6 +62,7 @@ set(PACKETS_IN_FILES
         network/packets/in/packet_0x80.cpp
         network/packets/in/packet_0x91.cpp
         network/packets/in/packet_0xa0.cpp
+        network/packets/in/packet_0xad.cpp
         network/packets/in/packet_0xbd.cpp
         network/packets/in/packet_0xbf.cpp
         network/packets/in/packet_0xef.cpp
