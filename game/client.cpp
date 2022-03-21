@@ -234,8 +234,9 @@ bool Client::event_input_cmd(const std::wstring& text) {
                     if (!p.can_move_to_coord(x, y)) {
                         break;
                     }
+                    CoordPoint old_p = _char->get_pos();
                     _char->set_pos(x, y);
-                    update_move(_char);
+                    update_move(_char, old_p);
                 }
                 else if (entries.size() == 3) {
                     uword_t x = uword_t(std::stoi(clean(entries.at(0))));
@@ -248,8 +249,9 @@ bool Client::event_input_cmd(const std::wstring& text) {
                     else if (!p.can_move_to_coord(x, y)) {
                         break;
                     }
+                    CoordPoint old_p = _char->get_pos();
                     _char->set_pos(x, y, z);
-                    update_move(_char);
+                    update_move(_char, old_p);
                 }
                 else if (entries.size() == 4) {
                     uword_t x = uword_t(std::stoi(clean(entries.at(0))));
@@ -266,8 +268,9 @@ bool Client::event_input_cmd(const std::wstring& text) {
                     else if (!p.can_move_to_coord(x, y)) {
                         break;
                     }
+                    CoordPoint old_p = _char->get_pos();
                     _char->set_pos(x, y, z, m);
-                    update_move(_char);
+                    update_move(_char, old_p);
                 }
                 break;
             }
@@ -311,20 +314,28 @@ void Client::add_character(Char* character)
     send(packet_mobile_status);
 }
 
-void Client::update_move(Char* character) {
+void Client::update_move(Char* character, const CoordPoint& old_p) {
     //Myself        = Packet_0x20
     //Already seen  = Packet_0x77
-    //Not seen yet  = Packet_0x78 -> TODO: Recording of nearby characters
+    //Not seen yet  = Packet_0x78
     if (_char == character) {
         UpdateCharacter* packet_mobile_update = new UpdateCharacter();
         packet_mobile_update->set_data(character);
         send(packet_mobile_update);
     }
     else {
-        //Already seen, or not yet seen ... TODO a dilemma!
-        MoveCharacter* packet_move_character = new MoveCharacter();
-        packet_move_character->set_data(character);
-        send(packet_move_character);        
+        //Calculate the distance between my character's position and the target's old position.
+        uword_t dist = _char->get_pos().get_distance(old_p);
+        if (dist > 18) {
+            // The target was too far away, add it to my screen.
+            add_character(character);
+        }
+        else {
+            // The target was already in my screen, just move it.
+            MoveCharacter* packet_move_character = new MoveCharacter();
+            packet_move_character->set_data(character);
+            send(packet_move_character);
+        }
     }
     add_character(character);
 }

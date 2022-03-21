@@ -139,7 +139,7 @@ public:
     bool is_valid_point();
 
     /**
-     * @brief Calculate the Euler distance between this point and another one.
+     * @brief Calculate the Manhattan distance between this point and another one.
      * 
      * @param target The target which distance has to be calculated.
      * @return The distance

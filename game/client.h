@@ -17,6 +17,7 @@
 
 #include <library/types.h>
 #include <network/packets/packetlist.h>
+#include <game/coord_point.h>
 
 class Account;
 class Char;
@@ -55,7 +56,7 @@ public:
     bool event_input_cmd(const std::wstring& text);
 
     void add_character(Char* character);
-    void update_move(Char* character);
+    void update_move(Char* character, const CoordPoint& old_p);
     
 private:
     Char *_char;

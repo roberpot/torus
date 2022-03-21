@@ -141,7 +141,7 @@ bool CoordPoint::is_valid_point()
 
 uword_t CoordPoint::get_distance(const CoordPoint& target)
 {
-    return (_x > target._x ? _x - target._x : target._x - _x) + (_y > target._y ? _y - target._y : target._y - _y);
+    return uword_t(std::abs(_x - target._x) + std::abs(_y - target._y));
 }
 
 bool CoordPoint::can_move_to_coord(const word_t& destX, const word_t& destY) {
