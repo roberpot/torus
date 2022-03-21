@@ -30,8 +30,7 @@ void Packet_0xbd::process(Socket* s) {
     ADDTOCALLSTACK();
     UNREFERENCED_PARAMETER(s);
 
-    std::string cliver;
-    read_string(cliver, _current_buffer_length - _current_pos);
+    std::string cliver = read_string(get_remaining_length());
 
     //TODO: Correctly parse and store the reported version.
 }

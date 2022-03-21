@@ -30,12 +30,12 @@ PacketIn::~PacketIn()
 {
 }
 
-const udword_t PacketIn::current_length()
+const udword_t PacketIn::current_length() const
 {
     return _current_buffer_length;
 }
 
-uword_t PacketIn::receive(const uint8_t* data, const uword_t len)
+const uword_t PacketIn::receive(const uint8_t* data, const uword_t len)
 {
     udword_t old_length = _current_buffer_length;
 
@@ -98,31 +98,16 @@ uword_t PacketIn::receive(const uint8_t* data, const uword_t len)
     return readed_bytes;
 }
 
-bool PacketIn::is_complete()
+const bool PacketIn::is_complete() const
 {
     return _is_complete;
 }
 
-void PacketIn::read_string(std::string& str, uword_t len)
-{
-    if (len == 0)
-    {
-        len = uword_t(str.size());
-    }
-    if (_current_pos + len > length())
-    {
-        //THROW_ERROR(NetworkError, "Trying to read " << sizeof(T) << " bytes to from " << hex(p._buffer[0]) << ", being currently in the position " << p._current_pos << " into a string with a total size of " << s.size() " bytes.");
-        TORUSSHELLECHO("Trying to read " << len << " bytes to from " << hex(_buffer[0]) << ", being currently in the position " << _current_pos << " into a string with a total size of " << _current_buffer_length << " bytes.");
-        return;
-    }
-    str.clear();
-    str.resize(len);
-    for (int i = 0; i < len; ++i)         {
-        str[i] = _buffer[_current_pos++];
-    }
+const uword_t PacketIn::get_remaining_length() const {
+    return _current_buffer_length - _current_pos;
 }
 
-std::string PacketIn::read_string(uword_t len) {
+const std::string PacketIn::read_string(uword_t len) {
     std::string str;
     if (len == 0) {
         return str;
@@ -139,7 +124,7 @@ std::string PacketIn::read_string(uword_t len) {
     return str;
 }
 
-std::wstring PacketIn::read_wstring(uword_t len) {
+const std::wstring PacketIn::read_wstring(uword_t len) {
     std::wstring wstr;
     if (len == 0) {
         return wstr;
@@ -157,29 +142,29 @@ std::wstring PacketIn::read_wstring(uword_t len) {
     return wstr;
 }
 
-t_byte PacketIn::read_byte()
+const t_byte PacketIn::read_byte()
 {
     return t_byte(_buffer[_current_pos++]);
 }
 
-t_ubyte PacketIn::read_ubyte()
+const t_ubyte PacketIn::read_ubyte()
 {
     return t_ubyte(_buffer[_current_pos++]);
 }
 
-word_t PacketIn::read_word()
+const word_t PacketIn::read_word()
 {
     return word_t((_buffer[_current_pos++] << 8) |
                    _buffer[_current_pos++]);
 }
 
-uword_t PacketIn::read_uword()
+const uword_t PacketIn::read_uword()
 {
     return uword_t((_buffer[_current_pos++] << 8) |
                     _buffer[_current_pos++]);
 }
 
-dword_t PacketIn::read_dword()
+const dword_t PacketIn::read_dword()
 {
     return dword_t((_buffer[_current_pos++] << 24) |
                    (_buffer[_current_pos++] << 16) |
@@ -187,7 +172,7 @@ dword_t PacketIn::read_dword()
                    _buffer[_current_pos++]);
 }
 
-udword_t PacketIn::read_udword()
+const udword_t PacketIn::read_udword()
 {
     return udword_t((_buffer[_current_pos++] << 24) |
                     (_buffer[_current_pos++] << 16) |

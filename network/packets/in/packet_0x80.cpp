@@ -40,10 +40,8 @@ void Packet_0x80::process(Socket* s)
     {
         return;
     }
-    std::string account_name;
-    std::string account_password;
-    read_string(account_name, 30);
-    read_string(account_password, 30);
+    std::string account_name = read_string(CHARACTERS_STRING_LENGTH);
+    std::string account_password = read_string(CHARACTERS_STRING_LENGTH);
 
     account_name = clean(account_name);
     account_password = clean(account_password);

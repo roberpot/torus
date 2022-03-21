@@ -31,8 +31,7 @@ void Packet_0x5d::process(Socket* s) {
     ADDTOCALLSTACK();
     UNREFERENCED_PARAMETER(s);
     skip(4);
-    std::string character_name;
-    read_string(character_name, CHARACTERS_STRING_LENGTH);
+    std::string character_name = read_string(CHARACTERS_STRING_LENGTH);
     skip(2);    
     dword_t flags = read_dword();
     skip(4);
