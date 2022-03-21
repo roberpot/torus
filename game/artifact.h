@@ -19,6 +19,7 @@
 
 #include <library/types.h>
 #include <game/coord_point.h>
+#include <game/enums.h>
 #include <game/uid.h>
 
 
@@ -91,6 +92,12 @@ public:
     * @param ticks The new time in ticks.
     */
     void set_timer(uqword_t ticks);
+
+private:
+    Dir _dir;
+public:
+    void set_dir(Dir dir);
+    Dir get_dir();
 };
 
 #endif // __TORUS_GAME_ARTIFACT_H

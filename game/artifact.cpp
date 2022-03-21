@@ -34,6 +34,7 @@ Artifact::Artifact(udword_t uid){
     }
     _flags = 0;
     _color = 0;
+    _dir = Dir::N;
 }
 
 Uid& Artifact::get_uid() {
@@ -191,3 +192,13 @@ void Artifact::set_timer(uqword_t ticks){
     _timer = server.get_serv_time() + ticks;
 }
 
+
+void Artifact::set_dir(Dir dir) {
+    ADDTOCALLSTACK();
+    _dir = dir;
+}
+
+Dir Artifact::get_dir() {
+    ADDTOCALLSTACK();
+    return _dir;
+}

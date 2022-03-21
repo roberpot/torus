@@ -18,14 +18,24 @@
 
 Item::Item() : Artifact(UID_ITEM) {
     ADDTOCALLSTACK();
+    _id = ItemId::FORGE;
 }
 
 Item::Item(udword_t uid) : Artifact(uid) {
     ADDTOCALLSTACK();
+    _id = ItemId::FORGE;
 }
 
 Item::~Item(){
     ADDTOCALLSTACK();
+}
+
+ItemId Item::get_id() const {
+    return _id;
+}
+
+void Item::set_id(const ItemId& id) {
+    _id = id;
 }
 
 bool Item::can_move(){

@@ -359,6 +359,15 @@ namespace Out
         Packet_0xbf() : PacketOut(0xBF, true) {};
     };
 
+    // World Object
+    class Packet_0xf3 : public PacketOut {
+    public:
+        void set_data(Char* character);
+        void set_data(Item* item);
+        Packet_0xf3() : PacketOut(0xf3) {
+        };
+    };
+
     using MobileStatus      = Packet_0x11;
     using MobileStatusBar   = Packet_0x17;
     using LoginConfirm      = Packet_0x1b;
@@ -379,6 +388,7 @@ namespace Out
     using CharList          = Packet_0xa9;
     using SupportedFeatures = Packet_0xb9;
     using ExtendedCmdOut    = Packet_0xbf;
+    using WorldObject       = Packet_0xf3;
 }
 }
 

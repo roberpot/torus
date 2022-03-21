@@ -90,6 +90,7 @@ set(PACKETS_OUT_FILES
         network/packets/out/packet_0xa9.cpp
         network/packets/out/packet_0xb9.cpp
         network/packets/out/packet_0xbf.cpp
+        network/packets/out/packet_0xf3.cpp
 )
 SOURCE_GROUP(network\\packets\\out FILES ${PACKETS_OUT_FILES})
 

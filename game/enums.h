@@ -16,8 +16,7 @@
 #ifndef __TORUS_GAME_ENUMS_H
 #define __TORUS_GAME_ENUMS_H
 
-enum class TalkMode    // Modes we can talk/bark in.
-{
+enum class TalkMode {
     SAY = 0,        // 0 = A character speaking.
     SYSTEM = 1,     // 1 = Display as system prompt
     EMOTE = 2,      // 2 = *smiles* at object (client shortcut: :+space)
@@ -36,8 +35,7 @@ enum class TalkMode    // Modes we can talk/bark in.
     BROADCAST = 0xFF  // It will be converted to something else.
 };
 
-enum class Font
-{
+enum class Font {
     BOLD,       // 0 - Bold Text = Large plain filled block letters.
     SHAD,       // 1 - Text with shadow = small gray
     BOLD_SHAD,  // 2 - Bold+Shadow = Large Gray block letters.
@@ -51,10 +49,38 @@ enum class Font
     QTY
 };
 
-enum class BodyType
-{
+enum class BodyType {
     BODY_HUMAN_MALE = 0x190,
     BODY_HUMAN_FEMALE = 0x191
+};
+
+enum class ItemId {
+    FORGE = 0x0FB1
+};
+
+enum class CharRace {
+    RACE_HUMAN,
+    RACE_ELF,
+    RACE_GARGOYLE,
+    RACE_QTY
+};
+
+enum class CharGender {
+    GENDER_MALE,    ///< Male character.
+    GENDER_FEMALE,  ///< Female character.
+    GENDER_QTY      ///< Monsters.
+};
+
+enum class Dir {
+    N,
+    NE,
+    E,
+    SE,
+    S,
+    SW,
+    W,
+    NW,
+    DIR_QTY
 };
 
 #endif // __TORUS_GAME_ENUMS_H
