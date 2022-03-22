@@ -50,11 +50,13 @@ enum class Font {
 };
 
 enum class BodyType {
+    NONE,
     BODY_HUMAN_MALE = 0x190,
     BODY_HUMAN_FEMALE = 0x191
 };
 
 enum class ItemId {
+    NONE,
     FORGE = 0x0FB1
 };
 
@@ -81,6 +83,18 @@ enum class Dir {
     W,
     NW,
     DIR_QTY
+};
+
+enum class TargetType {
+    NONE,
+    OBJECT,
+    TILE
+};
+
+enum class TargetAction {
+    NONE,
+    ADD,
+    REMOVE
 };
 
 #endif // __TORUS_GAME_ENUMS_H

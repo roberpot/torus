@@ -130,6 +130,11 @@ void Artifact::set_pos(word_t destX, word_t destY, t_byte destZ, t_ubyte destMap
     set_map(destMap);
 }
 
+void Artifact::set_pos(const CoordPoint& p) {
+    ADDTOCALLSTACK();
+    _position = p;
+}
+
 CoordPoint Artifact::get_pos() {
     return _position;
 }

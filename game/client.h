@@ -42,7 +42,9 @@ public:
     void send(PacketOut* packet);
 private:
     t_ubyte _movement_sequence;  ///< Walking sequence.
-    uqword_t _movement_last;    ///< Last walk packet received.
+    uqword_t _movement_last;     ///< Last walk packet received.
+    TargetType _target_type;
+    TargetAction _target_action;
 public:
     void event_walk(const t_ubyte &dir, const t_ubyte &seq, const udword_t &fast_walk_key);
     void add_response_code(Packets::Out::Packet_0x82::ResponseCode code);
@@ -57,6 +59,10 @@ public:
 
     void add_character(Char* character);
     void update_move(Char* character, const CoordPoint& old_p);
+    void add_item(Item* item);
+
+    void get_target(Uid& uid, const t_byte& flags, Uid& target, const CoordPoint& pos, const ItemId& id);
+    void add_target(const TargetType& target_type, const TargetAction& target_action, const ItemId& id, const uword_t& color);
     
 private:
     Char *_char;

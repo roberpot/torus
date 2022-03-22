@@ -58,6 +58,7 @@ set(PACKETS_IN_FILES
         network/packets/in/packet_0x09.cpp
         network/packets/in/packet_0x34.cpp
         network/packets/in/packet_0x5d.cpp
+        network/packets/in/packet_0x6c.cpp
         network/packets/in/packet_0x73.cpp
         network/packets/in/packet_0x80.cpp
         network/packets/in/packet_0x91.cpp
@@ -79,6 +80,7 @@ set(PACKETS_OUT_FILES
         network/packets/out/packet_0x22.cpp
         network/packets/out/packet_0x3a.cpp
         network/packets/out/packet_0x55.cpp
+        network/packets/out/packet_0x6c.cpp
         network/packets/out/packet_0x6d.cpp
         network/packets/out/packet_0x73.cpp
         network/packets/out/packet_0x77.cpp

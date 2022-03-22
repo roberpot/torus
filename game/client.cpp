@@ -19,6 +19,7 @@
 #include <game/char.h>
 #include <game/client.h>
 #include <game/coord_point.h>
+#include <game/item.h>
 #include <game/uid.h>
 #include <game/server.h>
 #include <network/socket.h>
@@ -38,6 +39,8 @@ Client::Client(Socket* s) :
     _socket(s),
     _movement_sequence(0),
     _movement_last(0),
+    _target_type(TargetType::NONE),
+    _target_action(TargetAction::NONE),
     _char(nullptr),
     _account(nullptr)
 {
@@ -99,6 +102,7 @@ void Client::add_response_code(Packets::Out::Packet_0x82::ResponseCode code)
 
 void Client::event_disconnect()
 {
+    ADDTOCALLSTACK();
     if (_char != nullptr) {
         _char = nullptr;
         //
@@ -109,6 +113,7 @@ void Client::event_disconnect()
 
 void Client::event_character_login(const std::string& name, const dword_t& flags, const dword_t& login_count, const dword_t& slot, const dword_t& ip)
 {
+    ADDTOCALLSTACK();
     UNREFERENCED_PARAMETER(name);       //TODO
     UNREFERENCED_PARAMETER(flags);      //TODO
     UNREFERENCED_PARAMETER(login_count);//TODO
@@ -147,6 +152,7 @@ void Client::event_character_login(const std::string& name, const dword_t& flags
 
 void Client::event_double_click(Uid& uid)
 {
+    ADDTOCALLSTACK();
     if (!uid.is_valid())
     {
         return;
@@ -170,6 +176,7 @@ void Client::event_double_click(Uid& uid)
 
 void Client::event_click(Uid& uid)
 {
+    ADDTOCALLSTACK();
     std::string target_name;
     if (!uid.is_valid())
     {
@@ -186,6 +193,7 @@ void Client::event_click(Uid& uid)
 }
 
 void Client::event_talk_ascii(const TalkMode& talkmode, const uword_t& color, const Font& font, const std::string& text) {
+    ADDTOCALLSTACK();
     UNREFERENCED_PARAMETER(talkmode);
     UNREFERENCED_PARAMETER(color);
     UNREFERENCED_PARAMETER(font);
@@ -198,6 +206,7 @@ void Client::event_talk_ascii(const TalkMode& talkmode, const uword_t& color, co
 }
 
 void Client::event_talk_unicode(const TalkMode& talkmode, const uword_t& color, const Font& font, const std::wstring& text) {
+    ADDTOCALLSTACK();
     UNREFERENCED_PARAMETER(talkmode);
     UNREFERENCED_PARAMETER(color);
     UNREFERENCED_PARAMETER(font);
@@ -210,6 +219,7 @@ void Client::event_talk_unicode(const TalkMode& talkmode, const uword_t& color, 
 }
 
 bool Client::event_input_cmd(const std::wstring& text) {
+    ADDTOCALLSTACK();
     bool valid_cmd = true;
     std::wstring input_wstr(text);
     input_wstr.erase(0, 1);
@@ -222,7 +232,14 @@ bool Client::event_input_cmd(const std::wstring& text) {
         InputCmd cmd = static_cast<InputCmd>(find_table(input_text_cmds, input_cmd));
         switch (cmd) {
             case InputCmd::ADD:
+            {
+                TargetType target_type = TargetType::OBJECT;
+                TargetAction target_action = TargetAction::ADD;
+                uword_t color = 0;
+                ItemId id = ItemId::FORGE;
+                add_target(target_type, target_action, id, color);
                 break;
+            }
             case InputCmd::GO: {
                 if (entries.size() < 2) {
                     break;
@@ -293,6 +310,7 @@ bool Client::event_input_cmd(const std::wstring& text) {
 
 void Client::add_character(Char* character)
 {
+    ADDTOCALLSTACK();
     SendCharacter* packet_send_character = new SendCharacter();
     packet_send_character->set_data(_char);
     send(packet_send_character);
@@ -315,6 +333,7 @@ void Client::add_character(Char* character)
 }
 
 void Client::update_move(Char* character, const CoordPoint& old_p) {
+    ADDTOCALLSTACK();
     //Myself        = Packet_0x20
     //Already seen  = Packet_0x77
     //Not seen yet  = Packet_0x78
@@ -338,6 +357,51 @@ void Client::update_move(Char* character, const CoordPoint& old_p) {
         }
     }
     add_character(character);
+}
+
+void Client::add_item(Item* item) {
+    ADDTOCALLSTACK();
+    WorldObject* packet_world_object = new WorldObject();
+    packet_world_object->set_data(item);
+    send(packet_world_object);
+}
+
+void Client::get_target(Uid& uid, const t_byte& flags, Uid& target, const CoordPoint& pos, const ItemId& id) {
+    ADDTOCALLSTACK();
+    UNREFERENCED_PARAMETER(uid);
+    UNREFERENCED_PARAMETER(flags);
+    UNREFERENCED_PARAMETER(target);
+    UNREFERENCED_PARAMETER(id);
+    switch (_target_action) {
+        case TargetAction::ADD:
+        {
+            if (!pos.is_valid_point()) {
+                return;
+            }
+            Item *item = new Item();
+            item->set_id(id);
+            item->set_pos(pos);
+            add_item(item);
+            //TODO: World storage
+        }
+    }
+}
+
+void Client::add_target(const TargetType& target_type, const TargetAction& target_action, const ItemId& id, const uword_t& color) {
+    ADDTOCALLSTACK();
+    if (_target_type != TargetType::NONE) {
+        // Already have a target ... cancel it?
+    }
+    if ((target_type == TargetType::NONE) ||
+        (target_action == TargetAction::NONE)) {
+        return;
+    }
+    AddTarget* packet_target = new AddTarget();
+    t_byte flags = 0;
+    packet_target->set_data(_char->get_uid(), target_type, flags, id, color);
+    _target_type = target_type;
+    _target_action = target_action;
+    send(packet_target);
 }
 
 Char*  Client::get_char() {

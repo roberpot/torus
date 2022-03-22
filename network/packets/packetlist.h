@@ -98,6 +98,13 @@ namespace In
         virtual void process(Socket* s) override;
     };
 
+    // Get target.
+    class Packet_0x6c : public PacketIn {
+    public:
+        virtual const uword_t length() override;
+        virtual void process(Socket* s) override;
+    };
+
     // PacketPing In
     class Packet_0x73 : public PacketIn {
     public: // IO packet, has both read and write methods.
@@ -176,6 +183,7 @@ namespace In
     using ClickRequest      = Packet_0x06;
     using QueryCharacter    = Packet_0x34;
     using PlayCharacter     = Packet_0x5d;
+    using GetTarget         = Packet_0x6c;
     using Ping              = Packet_0x73;
     using LoginConnect      = Packet_0x80;
     using ServerConnect     = Packet_0x91;
@@ -248,6 +256,14 @@ namespace Out
     class Packet_0x55 : public PacketOut {
     public:
         Packet_0x55() : PacketOut(0x55) {};
+    };
+
+    // Add Target
+    class Packet_0x6c : public PacketOut {
+    public:
+        void set_data(Uid& uid, const TargetType& target_type, const t_byte& flags, const ItemId& id, const uword_t& color);
+        Packet_0x6c() : PacketOut(0x6c) {
+        };
     };
 
     // Play Music
@@ -377,6 +393,7 @@ namespace Out
     using MovementAccept    = Packet_0x22;
     using SkillsUpdate      = Packet_0x3a;
     using LoginDone         = Packet_0x55;
+    using AddTarget         = Packet_0x6c;
     using PlayMusic         = Packet_0x6d;
     using PingResponse      = Packet_0x73;
     using MoveCharacter     = Packet_0x77;

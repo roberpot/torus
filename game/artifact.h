@@ -56,6 +56,7 @@ public:
     void set_pos(word_t destX, word_t destY);
     void set_pos(word_t destX, word_t destY, t_byte destZ);
     void set_pos(word_t destX, word_t destY, t_byte destZ, t_ubyte destMap);
+    void set_pos(const CoordPoint& p);
     CoordPoint get_pos();
     uword_t get_distance(Artifact *target);
     uword_t get_distance(CoordPoint target);

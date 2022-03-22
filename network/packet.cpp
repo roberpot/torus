@@ -51,6 +51,9 @@ PacketIn* packet_factory(udword_t id ) {
         case 0x5d:
             p = new PlayCharacter();
             break;
+        case 0x6c:
+            p = new GetTarget();
+            break;
         case 0x73:
             p = new Ping();
             break;
