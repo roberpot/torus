@@ -26,6 +26,7 @@ class Artifact;
 class Char;
 class Client;
 class Item;
+class Tooltip;
 class Uid;
 
 /*
@@ -375,6 +376,14 @@ namespace Out
         Packet_0xbf() : PacketOut(0xBF, true) {};
     };
 
+    // Supported Features
+    class Packet_0xd6 : public PacketOut {
+    public:
+        void set_data(const Tooltip& tooltip);
+        Packet_0xd6() : PacketOut(0xd6, true) {
+        };
+    };
+
     // World Object
     class Packet_0xf3 : public PacketOut {
     public:
@@ -405,6 +414,7 @@ namespace Out
     using CharList          = Packet_0xa9;
     using SupportedFeatures = Packet_0xb9;
     using ExtendedCmdOut    = Packet_0xbf;
+    using TooltipSend       = Packet_0xd6;
     using WorldObject       = Packet_0xf3;
 }
 }

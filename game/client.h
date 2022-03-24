@@ -18,6 +18,7 @@
 #include <library/types.h>
 #include <network/packets/packetlist.h>
 #include <game/coord_point.h>
+#include <game/clients/tooltip.h>
 
 class Account;
 class Char;
@@ -70,6 +71,14 @@ private:
 public:
     Char *get_char();
     void attatch(Account* acc);
+
+private:
+    std::map<Uid, Tooltip> _tooltips;
+public:
+    void send_tooltip(const Uid& uid);
+    virtual Tooltip request_tooltip(const Uid& uid);
+    void reset_tooltip(const Uid& uid);
+    void reset_tooltips();
 };
 
 #endif // __TORUS_GAME_CLIENT_H_

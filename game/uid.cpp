@@ -68,7 +68,7 @@ void Uid::set_uid(udword_t uid) {
 void Uid::find_new_uid(){
     ADDTOCALLSTACK();
     // TODO: DB Table with free uids, query it and use the first free value or create a new index
-    set_uid(highest_uid+1);
+    set_uid(highest_uid + 1);
 }
 
 void Uid::free_uid(){
@@ -76,11 +76,11 @@ void Uid::free_uid(){
     // TODO: DB Table to store free uids.
 }
 
-udword_t Uid::get_uid(){
+udword_t Uid::get_uid() const {
     return _uid;
 }
 
-udword_t Uid::get_uid_base(){
+udword_t Uid::get_uid_base() const {
     return _uid &~(UID_ITEM | UID_RESOURCE);
 }
 
@@ -88,18 +88,18 @@ void Uid::set_uid_type(udword_t mask) {
     _uid |= mask;
 }
 
-bool Uid::is_item(){
+bool Uid::is_item() const {
     return _uid & UID_ITEM;
 }
 
-bool Uid::is_resource(){
+bool Uid::is_resource() const {
     return _uid & UID_RESOURCE;
 }
 
-bool Uid::is_char() {
+bool Uid::is_char() const {
     return !is_item() && !is_resource();
 }
 
-bool Uid::is_valid(){
+bool Uid::is_valid() const {
     return ((_uid != UID_UNUSED) && (_uid > 0));
 }

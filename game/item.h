@@ -62,6 +62,8 @@
 #define CAN_EQUIP_GARGOYLE      0x010   ///< Only gargoyles can equip.
 #define CAN_EQUIP_NONE          0x020   ///< Cannot be equiped.
 
+class Tooltip;
+
 class Item : public Artifact {
     ~Item();
     ItemId _id;
@@ -73,6 +75,10 @@ public:
     bool can_move() override;
     void remove();
     bool tick();
+
+    virtual void init_tooltip() override;
+    virtual Cliloc get_cliloc_static(const udword_t& id) override;
+    virtual Cliloc get_cliloc_dynamic(const udword_t& id, Char* viewer) override;
 };
 
 #endif // __TORUS_GAME_ITEM_H

@@ -28,7 +28,7 @@ void Server::shutdown()
 {
 }
 
-uqword_t Server::get_serv_time() {
+uqword_t Server::get_serv_time() const {
     ADDTOCALLSTACK();
     return _serv_time;
 }
@@ -56,7 +56,7 @@ void Server::add_item(Item * item) {
     _items.add(item->get_uid(), item);
 }
 
-Artifact * Server::get_artifact(Uid& uid) {
+Artifact * Server::get_artifact(const Uid& uid) const {
     ADDTOCALLSTACK();
     Artifact* art = nullptr;
     if (uid.is_char())
@@ -70,12 +70,12 @@ Artifact * Server::get_artifact(Uid& uid) {
     return art;
 }
 
-Char* Server::get_char(Uid& uid)
+Char* Server::get_char(const Uid& uid)
 {
     return _chars.get(uid);
 }
 
-Item* Server::get_item(Uid& uid)
+Item* Server::get_item(const Uid& uid)
 {
     return _items.get(uid);
 }

@@ -175,3 +175,34 @@ void Char::set_body(BodyType body)
     ADDTOCALLSTACK();
     _body = body;
 }
+
+void Char::init_tooltip() {
+    add_cliloc(1050045, true); // ~1_PREFIX~~2_NAME~~3_SUFFIX~
+}
+
+Cliloc Char::get_cliloc_static(const udword_t& id) {
+    Cliloc cliloc(id);
+    switch (id) {
+        default: {
+            break;
+        }
+    }
+    return cliloc;
+}
+
+Cliloc Char::get_cliloc_dynamic(const udword_t& id, Char* viewer) {
+    Cliloc cliloc(id);
+    switch (id) {
+        case 1050045: {
+            cliloc.add_arg("");//Preffix: Lord/Lady?
+            cliloc.add_arg(get_name());
+            cliloc.add_arg("");//Suffix: [GuildName]
+            break;
+        }
+        default: {
+            break;
+        }
+    }
+    return cliloc;
+}
+

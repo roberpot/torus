@@ -81,37 +81,37 @@ public:
     *
     * @return this Uid.
     */
-    udword_t get_uid();
+    udword_t get_uid() const;
     /**
     * @brief Returns the real uid.
     *
     * @return the real uid (without type masks).
     */
-    udword_t get_uid_base();
+    udword_t get_uid_base() const;
     /**
     * @brief Checks if this Uid corresponds to a item.
     *
     * @return true if this Uid is from one item.
     */
-    bool is_item();
+    bool is_item() const;
     /**
     * @brief Checks if this Uid corresponds to a resource.
     *
     * @return true if this Uid is from one resource.
     */
-    bool is_resource();
+    bool is_resource() const;
     /**
     * @brief Checks if this Uid corresponds to a char.
     *
     * @return true if this Uid is from one char.
     */
-    bool is_char();
+    bool is_char() const;
     /**
     * @brief Checks if this Uid is valid.
     *
     * @return true if this Uid is not invalid.
     */
-    bool is_valid();
+    bool is_valid() const;
 };
 
 #endif // __TORUS_GAME_UID_H

@@ -207,3 +207,15 @@ Dir Artifact::get_dir() {
     ADDTOCALLSTACK();
     return _dir;
 }
+
+const Tooltip& Artifact::get_tooltip() {
+    return _tooltip;
+}
+
+void Artifact::add_cliloc(udword_t id, bool dynamic) {
+    Cliloc cliloc(id, dynamic);
+    if (!dynamic) {
+        get_cliloc_static(id);
+    }
+    _tooltip.add_cliloc(cliloc);
+}

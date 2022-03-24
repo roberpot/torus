@@ -88,6 +88,11 @@ public:
     bool can_equip(udword_t iflags);
     BodyType get_body();
     void set_body(BodyType body);
+
+
+    virtual void init_tooltip() override;
+    virtual Cliloc get_cliloc_static(const udword_t& id) override;
+    virtual Cliloc get_cliloc_dynamic(const udword_t& id, Char* viewer) override;
 };
 
 #endif // __TORUS_GAME_CHAR_H_

@@ -40,15 +40,15 @@ public:
      * @brief Destroyer for extern class.
      */
     void shutdown();
-    uqword_t get_serv_time();
+    uqword_t get_serv_time() const;
     bool check();
     void load_all();
     void save_all();
     void add_char(Char* chr);
     void add_item(Item *item);
-    Artifact * get_artifact(Uid& uid);
-    Char *get_char(Uid& uid);
-    Item *get_item(Uid& uid);
+    Artifact * get_artifact(const Uid& uid) const;
+    Char *get_char(const Uid& uid);
+    Item *get_item(const Uid& uid);
     void del_char(Char *chr);
     void del_item(Item *item);
     void del_artifact(Artifact *art);

@@ -23,15 +23,15 @@ class WorldObjectContainer
     ttl::dynamicstack<Uid> _delete_queue;
 public:
     void add(Uid uid, T object);
-    bool has(Uid uid);
-    bool has_uid(Uid uid);
-    T get(Uid uid);
+    bool has(Uid uid) const;
+    bool has_uid(Uid uid) const;
+    T get(Uid uid) const;
     void remove(Uid uid);
     void delete_now(Uid uid);
     void delete_later(Uid uid);
     void delete_all();
     void clear();
-    size_t size();
+    size_t size() const;
     void tick();
 };
 
@@ -56,19 +56,19 @@ void WorldObjectContainer<T, Compare, Allocator>::add(Uid uid, T object)
 }
 
 template <class T, class Compare, class Allocator>
-bool WorldObjectContainer<T, Compare, Allocator>::has(Uid uid)
+bool WorldObjectContainer<T, Compare, Allocator>::has(Uid uid) const
 {
     return _container.find(uid) != _container.end();
 }
 
 template <class T, class Compare, class Allocator>
-bool WorldObjectContainer<T, Compare, Allocator>::has_uid(Uid uid)
+bool WorldObjectContainer<T, Compare, Allocator>::has_uid(Uid uid) const
 {
     return _container.at(uid) != nullptr;
 }
 
 template <class T, class Compare, class Allocator>
-T WorldObjectContainer<T, Compare, Allocator>::get(Uid uid)
+T WorldObjectContainer<T, Compare, Allocator>::get(Uid uid) const
 {
     T ret = nullptr;
     auto it = _container.find(uid);
@@ -124,7 +124,7 @@ void WorldObjectContainer<T, Compare, Allocator>::clear()
 }
 
 template <class T, class Compare, class Allocator>
-size_t WorldObjectContainer<T, Compare, Allocator>::size()
+size_t WorldObjectContainer<T, Compare, Allocator>::size() const
 {
     return _container.size();
 }

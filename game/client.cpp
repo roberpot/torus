@@ -413,3 +413,53 @@ void Client::attatch(Account*  acc) {
     ADDTOCALLSTACK();
     _account = acc;
 }
+
+void Client::send_tooltip(const Uid& uid) {
+    Tooltip tooltip;
+    std::map<Uid, Tooltip>::iterator it = _tooltips.find(uid);
+    bool request = false;
+    if ( it == _tooltips.end()) {
+        request = true;
+    }
+    else {
+        if (tooltip.get_version() != server.get_artifact(uid)->get_tooltip().get_version()) {
+            request = true;
+        }
+        else{
+            tooltip = it->second;
+        }
+    }
+    if (request) {
+        tooltip = request_tooltip(uid);
+        _tooltips[uid] = tooltip;
+    }
+    TooltipSend* packet_tooltip_send = new TooltipSend();
+    packet_tooltip_send->set_data(tooltip);
+    send(packet_tooltip_send);
+}
+
+Tooltip Client::request_tooltip(const Uid& uid) {
+    Tooltip tooltip;
+    Artifact *artifact = server.get_artifact(uid);
+    if (artifact) {
+        tooltip = artifact->get_tooltip();
+        if (tooltip.has_personal_data()) {
+            std::vector<Cliloc> clilocs = tooltip.get_clilocs();
+            for (size_t i = 0; i < clilocs.size(); ++i) {
+                Cliloc cliloc(clilocs[i]);
+                if (cliloc.has_personal_data()) {
+                    cliloc = artifact->get_cliloc_dynamic(cliloc.get_id(), _char);
+                }
+            }
+        }
+    }
+    return tooltip;    
+}
+
+void Client::reset_tooltip(const Uid& uid) {
+    _tooltips.erase(uid);
+}
+
+void Client::reset_tooltips() {
+    _tooltips.clear();
+}

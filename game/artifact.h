@@ -21,6 +21,7 @@
 #include <game/coord_point.h>
 #include <game/enums.h>
 #include <game/uid.h>
+#include <game/clients/tooltip.h>
 
 
 class Char;
@@ -94,11 +95,22 @@ public:
     */
     void set_timer(uqword_t ticks);
 
+//Dir
 private:
     Dir _dir;
 public:
     void set_dir(Dir dir);
     Dir get_dir();
+
+//Tooltips
+private:
+    Tooltip _tooltip;
+public:
+    const Tooltip& get_tooltip();
+    void add_cliloc(udword_t id, bool dynamic = false);
+    virtual void init_tooltip() = 0;
+    virtual Cliloc get_cliloc_static(const udword_t& id) = 0;
+    virtual Cliloc get_cliloc_dynamic(const udword_t& id, Char* viewer) = 0;
 };
 
 #endif // __TORUS_GAME_ARTIFACT_H

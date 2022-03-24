@@ -92,6 +92,7 @@ set(PACKETS_OUT_FILES
         network/packets/out/packet_0xa9.cpp
         network/packets/out/packet_0xb9.cpp
         network/packets/out/packet_0xbf.cpp
+        network/packets/out/packet_0xd6.cpp
         network/packets/out/packet_0xf3.cpp
 )
 SOURCE_GROUP(network\\packets\\out FILES ${PACKETS_OUT_FILES})
@@ -123,10 +124,16 @@ set(GAME_FILES
         game/word_object_container.cpp game/word_object_container.h)
 SOURCE_GROUP(game FILES ${GAME_FILES})
 
-set(GAME_CHAR_FILES
+set(GAME_CHARS_FILES
         game/chars/char_props.cpp    game/chars/char_props.h
         game/chars/char_stats.cpp    game/chars/char_stats.h)
-SOURCE_GROUP(game\\chars FILES ${GAME_CHAR_FILES})
+SOURCE_GROUP(game\\chars FILES ${GAME_CHARS_FILES})
+
+set(GAME_CLIENTS_FILES
+        game/clients/cliloc.cpp             game/clients/cliloc.h
+        game/clients/cliloc_variant.cpp     game/clients/cliloc_variant.h
+        game/clients/tooltip.cpp            game/clients/tooltip.h)
+SOURCE_GROUP(game\\clients FILES ${GAME_CLIENTS_FILES})
 
 set (GAME_UOFILES_FILES
         game/uo_files/map_list.cpp          game/uo_files/map_list.h
@@ -177,7 +184,8 @@ set(SOURCE_FILES
         ${THREAD_FILES}
         ${GAME_FILES}
         ${GAME_UOFILES_FILES}
-        ${GAME_CHAR_FILES}
+        ${GAME_CHARS_FILES}
+        ${GAME_CLIENTS_FILES}
         ${TORUS_PARSER_FILES}
         ${MAIN_FILES}
         ${TPU_FILES})
