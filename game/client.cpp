@@ -24,6 +24,8 @@
 #include <game/server.h>
 #include <network/socket.h>
 #include <network/packets/packetlist.h>
+#include <library/string.h>
+#include <shell.h>
 
 
 using namespace Packets::In;
@@ -383,6 +385,13 @@ void Client::get_target(Uid& uid, const t_byte& flags, Uid& target, const CoordP
             item->set_pos(pos);
             add_item(item);
             //TODO: World storage
+            break;
+        }
+        case TargetAction::REMOVE: {
+            break;
+        }
+        case TargetAction::NONE: {
+            break;
         }
     }
 }

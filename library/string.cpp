@@ -153,7 +153,6 @@ std::wstring clean(const std::wstring& str) {
 }
 
 std::wstring to_wstring(const std::string& str) {
-    using convert_t = std::codecvt_utf8<wchar_t>;
     return std::wstring_convert<std::codecvt_utf8<wchar_t>>().from_bytes(str);
 }
 
@@ -161,8 +160,8 @@ std::wstring to_wstring(const std::string& str) {
 size_t find_table(const std::wstring* table, const std::wstring& elem) {
     size_t pos = 0;
     bool found = false;
-    for (pos; pos < table->size(); ++pos) {
-        if (_wcsicmp(table[pos].c_str(), elem.c_str()) == 0) {
+    for (; pos < table->size(); ++pos) {
+        if (std::wcscmp(table[pos].c_str(), elem.c_str()) == 0) {
             found = true;
             break;
         }

@@ -22,7 +22,6 @@
 class Account;
 class Char;
 class Socket;
-class Packets::PacketOut;
 
 class Client {
 public:
