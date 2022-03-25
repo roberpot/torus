@@ -30,13 +30,11 @@ PacketIn::~PacketIn()
 {
 }
 
-const udword_t PacketIn::current_length() const
-{
+const udword_t PacketIn::current_length() const {
     return _current_buffer_length;
 }
 
-const uword_t PacketIn::receive(const uint8_t* data, const uword_t len)
-{
+const uword_t PacketIn::receive(const uint8_t* data, const uword_t len) {
     udword_t old_length = _current_buffer_length;
 
 
@@ -98,8 +96,7 @@ const uword_t PacketIn::receive(const uint8_t* data, const uword_t len)
     return readed_bytes;
 }
 
-const bool PacketIn::is_complete() const
-{
+const bool PacketIn::is_complete() const {
     return _is_complete;
 }
 
@@ -144,51 +141,58 @@ const std::wstring PacketIn::read_wstring(uword_t len) {
     return wstr;
 }
 
-const t_byte PacketIn::read_byte()
-{
-    return t_byte(_buffer[_current_pos++]);
+const t_byte PacketIn::read_byte() {
+    t_byte ret = t_byte(_buffer[_current_pos]);
+    _current_pos += 1;
+    return ret;
 }
 
-const t_ubyte PacketIn::read_ubyte()
-{
-    return t_ubyte(_buffer[_current_pos++]);
+const t_ubyte PacketIn::read_ubyte() {
+    t_ubyte ret = t_ubyte(_buffer[_current_pos]);
+    _current_pos += 1;
+    return ret;
 }
 
-const word_t PacketIn::read_word()
-{
-    return word_t((_buffer[_current_pos++] << 8) |
-                   _buffer[_current_pos++]);
+const word_t PacketIn::read_word() {
+    word_t ret = word_t(_buffer[_current_pos] << 8 |
+                        _buffer[_current_pos + 1]);
+    _current_pos += 2;
+    return ret;
 }
 
-const uword_t PacketIn::read_uword()
-{
-    return uword_t((_buffer[_current_pos++] << 8) |
-                    _buffer[_current_pos++]);
+const uword_t PacketIn::read_uword() {
+    uword_t ret = uword_t(_buffer[_current_pos] << 8 |
+                          _buffer[_current_pos + 1]);
+    _current_pos += 2;
+    return ret;
 }
 
 const wchar_t PacketIn::read_wchar() {
-    wchar_t ret = ((_buffer[_current_pos++] << 8) |
-                   _buffer[_current_pos++]);
+    wchar_t ret = ((_buffer[_current_pos] << 8) |
+                   _buffer[_current_pos + 1]);
+    _current_pos += 2;
     return ret;
 }
 
 const dword_t PacketIn::read_dword() {
-    return dword_t((_buffer[_current_pos++] << 24) |
-                   (_buffer[_current_pos++] << 16) |
-                   (_buffer[_current_pos++] << 8)  |
-                   _buffer[_current_pos++]);
+    dword_t ret = dword_t((_buffer[_current_pos] << 24) |
+                          (_buffer[_current_pos + 1] << 16) |
+                          (_buffer[_current_pos + 2] << 8) |
+                          _buffer[_current_pos + 3]);
+    _current_pos += 4;
+    return ret;
 }
 
-const udword_t PacketIn::read_udword()
-{
-    return udword_t((_buffer[_current_pos++] << 24) |
-                    (_buffer[_current_pos++] << 16) |
-                    (_buffer[_current_pos++] << 8) |
-                    _buffer[_current_pos++]);
+const udword_t PacketIn::read_udword() {
+    udword_t ret = udword_t((_buffer[_current_pos] << 24) |
+                            (_buffer[_current_pos + 1] << 16) |
+                            (_buffer[_current_pos + 2] << 8) |
+                            _buffer[_current_pos + 3]);
+    _current_pos += 4;
+    return ret;
 }
 
-void PacketIn::skip(const uword_t& bytes)
-{
+void PacketIn::skip(const uword_t& bytes) {
     _current_pos += bytes;
     if (_current_pos > _current_buffer_length)
     {
@@ -196,8 +200,7 @@ void PacketIn::skip(const uword_t& bytes)
     }
 }
 
-void PacketIn::rewind(const uword_t& bytes)
-{
+void PacketIn::rewind(const uword_t& bytes) {
     if (_current_pos - bytes < 0)
     {
         _current_pos = 0;
