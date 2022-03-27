@@ -1,0 +1,15 @@
+# Generated from CLion C/C++ Code Style settings
+BasedOnStyle: Google
+Language: Cpp
+SortIncludes: Never
+AccessModifierOffset: -2
+BreakConstructorInitializers: BeforeColon
+PackConstructorInitializers: CurrentLine
+AllowShortBlocksOnASingleLine: Empty
+AllowShortFunctionsOnASingleLine: None
+AllowShortIfStatementsOnASingleLine: false
+AllowShortLoopsOnASingleLine: false
+DerivePointerAlignment: false
+PointerAlignment: Left
+CommentPragmas: "^!|^:"
+ColumnLimit: 80
