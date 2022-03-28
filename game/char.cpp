@@ -13,6 +13,7 @@
 */
 
 #include <library/system_headers.h>
+#include <library/string.h>
 #include <debug_support/callstack.h>
 
 #include <game/account.h>
@@ -27,6 +28,7 @@ Char::Char() : Artifact(UID_CHAR) {
     _client = nullptr;
     _body = BodyType::BODY_HUMAN_MALE;
     server.add_char(this);
+    init_tooltip();
 }
 
 Char::Char(udword_t uid) : Artifact(uid) {
@@ -34,7 +36,8 @@ Char::Char(udword_t uid) : Artifact(uid) {
     _account = nullptr;
     _client = nullptr;
     _body = BodyType::BODY_HUMAN_MALE;
-    //server.add_char(this);
+    server.add_char(this);
+    init_tooltip();
 }
 
 Char::~Char(){
@@ -194,9 +197,9 @@ Cliloc Char::get_cliloc_dynamic(const udword_t& id, Char* viewer) {
     Cliloc cliloc(id);
     switch (id) {
         case 1050045: {
-            cliloc.add_arg("");//Preffix: Lord/Lady?
-            cliloc.add_arg(get_name());
-            cliloc.add_arg("");//Suffix: [GuildName]
+            cliloc.add_arg(L" ");//Preffix: Lord/Lady?
+            cliloc.add_arg(to_wstring(get_name()));
+            cliloc.add_arg(L" ");//Suffix: [GuildName]
             break;
         }
         default: {

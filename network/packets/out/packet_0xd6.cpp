@@ -25,8 +25,19 @@ namespace Packets
 namespace Out
 {
 
-void Packet_0xd6::set_data(const Tooltip& tooltip) {
-
+void Packet_0xd6::set_data(const Uid& uid, const Tooltip& tooltip) {
+    write_word(1);
+    write_udword(uid.get_uid());
+    write_word(0);
+    write_dword(tooltip.get_version());
+    auto clilocs = tooltip.get_clilocs();
+    for (size_t i = 0; i < clilocs.size(); ++i){
+        Cliloc cliloc = clilocs[i];
+        write_dword(cliloc.get_id());
+        std::wstring str = cliloc.get_args();
+        write_uword(uword_t(str.size()));
+        write_wstring(str);        
+    }
 }
 
 }

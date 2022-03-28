@@ -122,7 +122,7 @@ void Packet_0xa9::set_data(Client* client)
         0x4000 = new movement system;
         0x8000 = unlock new felucca areas)
     */
-    write_dword(1960);
+    write_dword(0x8|0x20|0x40|0x80|0x100|0x8000|0x10000|0x20000|0x400000);
     //write_word(0); // Only for enhanced client.
 }
 

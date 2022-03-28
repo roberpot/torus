@@ -379,7 +379,7 @@ namespace Out
     // Supported Features
     class Packet_0xd6 : public PacketOut {
     public:
-        void set_data(const Tooltip& tooltip);
+        void set_data(const Uid& uid, const Tooltip& tooltip);
         Packet_0xd6() : PacketOut(0xd6, true) {
         };
     };

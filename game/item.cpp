@@ -16,15 +16,18 @@
 #include <game/item.h>
 #include <game/server.h>
 #include <game/clients/tooltip.h>
+#include <library/string.h>
 
 Item::Item() : Artifact(UID_ITEM) {
     ADDTOCALLSTACK();
     _id = ItemId::FORGE;
+    init_tooltip();
 }
 
 Item::Item(udword_t uid) : Artifact(uid) {
     ADDTOCALLSTACK();
     _id = ItemId::FORGE;
+    init_tooltip();
 }
 
 Item::~Item(){
@@ -73,7 +76,7 @@ Cliloc Item::get_cliloc_dynamic(const udword_t& id, Char* viewer) {
     Cliloc cliloc(id);
     switch (id) {
         case 1042971: {
-            cliloc.add_arg(get_name());
+            cliloc.add_arg(to_wstring(get_name()));
             break;
         }
         default: {

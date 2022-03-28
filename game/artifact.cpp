@@ -197,7 +197,6 @@ void Artifact::set_timer(uqword_t ticks){
     _timer = server.get_serv_time() + ticks;
 }
 
-
 void Artifact::set_dir(Dir dir) {
     ADDTOCALLSTACK();
     _dir = dir;

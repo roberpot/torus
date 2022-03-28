@@ -27,22 +27,22 @@ class ClilocVariant {
         STRING
     };
     union VariantValue {
-        std::string _str;
+        std::wstring _str;
         dword_t _val;
         VariantValue() :
-            _str(),
+            _str(L""),
             _val(0) { }
-        VariantValue(const VariantValue& other) {
-            _str = other._str;
-            _val = other._val;
+        VariantValue(const VariantValue& other) : _str(other._str), _val(other._val) {
         }
         VariantValue operator=(const VariantValue& other) {
-            _str = other._str;
-            _val = other._val;
+            if (other._str.size()) {
+                _str = other._str;
+            } else {
+                _val = other._val;
+            }
             return *this;
         }
         ~VariantValue() {
-            _str.~basic_string();
         }
     };
     VariantType _type;
@@ -50,18 +50,18 @@ class ClilocVariant {
 public:
     ClilocVariant();
 
-    ClilocVariant(const std::string& str);
+    ClilocVariant(const std::wstring& str);
     ClilocVariant(const dword_t& val);
     ClilocVariant(const ClilocVariant& other);
     ClilocVariant operator=(const ClilocVariant& other);
     ~ClilocVariant();
 
-    void add_arg(const std::string& str);
+    void add_arg(const std::wstring& str);
     void add_arg(const dword_t& val);
     bool is_type_integer();
     bool is_type_string();
     dword_t get_integer();
-    std::string get_string();
+    std::wstring get_string();
 };
 
 #endif  // __TORUS_GAME_CLIENTS_CLILOC_VARIANT_H_

@@ -41,6 +41,7 @@ public:
 
     void write_byte(t_byte byte);
     void write_ubyte(t_ubyte ubyte);
+    void write_wchar(wchar_t wchar);
     void write_word(word_t word);
     void write_uword(uword_t uword);
     void write_dword(dword_t dword);
@@ -48,7 +49,8 @@ public:
     void write_qword(qword_t qword);
     void write_uqword(uqword_t uqword);
 
-    void write_string(const std::string& string, uword_t len);
+    void write_string(const std::string& string, uword_t len = 0);
+    void write_wstring(const std::wstring& wstring, uword_t len = 0);
 
 
 private:

@@ -87,6 +87,14 @@ void PacketOut::write_ubyte(t_ubyte ubyte)
     _buffer[_current_pos++] = ubyte;
 }
 
+void PacketOut::write_wchar(wchar_t wchar) {
+  ADDTOCALLSTACK();
+  _increase_buffer(2);
+  _buffer[_current_pos++] = t_ubyte(wchar);
+  _buffer[_current_pos++] = t_ubyte(wchar >> 8);
+
+}
+
 void PacketOut::write_word(word_t word)
 {
     ADDTOCALLSTACK();
@@ -157,6 +165,9 @@ void PacketOut::write_string(const std::string& string, uword_t len)
     _increase_buffer(len);
     size_t i = 0;
     size_t string_length = string.size();
+    if (len == 0) {
+        len = string_length;
+    }
     if (string_length > len)
     {
         string_length = size_t(len);
@@ -168,6 +179,24 @@ void PacketOut::write_string(const std::string& string, uword_t len)
     for (; i < size_t(len); ++i)
     {
         _buffer[_current_pos++] = '\0';
+    }
+}
+
+void PacketOut::write_wstring(const std::wstring& wstring, uword_t len) {
+    _increase_buffer(len);
+    size_t i = 0;
+    size_t string_length = wstring.size();
+    if (len == 0) {
+        len = string_length;
+    }
+    if (string_length > len) {
+        string_length = size_t(len);
+    }
+    for (; i < string_length; ++i) {
+        write_wchar(wstring[i]);
+    }
+    for (; i < size_t(len); ++i) {
+        write_wchar('\0');
     }
 }
 

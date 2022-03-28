@@ -17,6 +17,7 @@
 
 #include <string>
 #include <sstream>
+#include <shell.h>
 
 #include <library/types.h>
 
@@ -44,6 +45,7 @@ private:
     std::stringstream s; \
     s << ERROR_MSG; \
     CLASS error(s.str().c_str()); \
+    TORUSSHELLECHO(s); \
     throw error; \
 }
 

@@ -330,6 +330,7 @@ void Client::add_character(Char* character)
     MobileStatus* packet_mobile_status = new MobileStatus();
     packet_mobile_status->set_data(character);
     send(packet_mobile_status);
+    send_tooltip(character->get_uid());
 }
 
 void Client::update_move(Char* character, const CoordPoint& old_p) {
@@ -364,6 +365,7 @@ void Client::add_item(Item* item) {
     WorldObject* packet_world_object = new WorldObject();
     packet_world_object->set_data(item);
     send(packet_world_object);
+    send_tooltip(item->get_uid());
 }
 
 void Client::get_target(Uid& uid, const t_byte& flags, Uid& target, const CoordPoint& pos, const ItemId& id) {
@@ -434,7 +436,7 @@ void Client::send_tooltip(const Uid& uid) {
         _tooltips[uid] = tooltip;
     }
     TooltipSend* packet_tooltip_send = new TooltipSend();
-    packet_tooltip_send->set_data(tooltip);
+    packet_tooltip_send->set_data(uid, tooltip);
     send(packet_tooltip_send);
 }
 

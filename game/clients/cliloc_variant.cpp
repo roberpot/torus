@@ -4,7 +4,7 @@ ClilocVariant::ClilocVariant() :
     _type(VariantType::NONE) {
 }
 
-ClilocVariant::ClilocVariant(const std::string& str) {
+ClilocVariant::ClilocVariant(const std::wstring& str) {
     add_arg(str);
 }
 
@@ -24,9 +24,12 @@ ClilocVariant ClilocVariant::operator=(const ClilocVariant& other) {
 }
 
 ClilocVariant::~ClilocVariant() {
+    if (_type == VariantType::STRING) {
+        //_value._str.~basic_string();
+    }
 }
 
-void ClilocVariant::add_arg(const std::string& str) {
+void ClilocVariant::add_arg(const std::wstring& str) {
     _value._str = str;
     _type = VariantType::STRING;
 }
@@ -52,8 +55,8 @@ dword_t ClilocVariant::get_integer() {
     return val;
 }
 
-std::string ClilocVariant::get_string() {
-    std::string str;
+std::wstring ClilocVariant::get_string() {
+    std::wstring str;
     if (is_type_string()) {
         str = _value._str;
     }
