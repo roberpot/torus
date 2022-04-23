@@ -130,7 +130,7 @@ std::string clean(const std::string &str) {
     for (; i < str.size(); ++i)
     {
         t_byte chr = str[i];
-        if (chr == 92 || chr == 32 || chr == 34 || chr == '\0')
+        if (chr == 92 || chr == 32 || chr == 34 || chr == '\0' || chr == '\r' || chr == '\t')
         {
             continue;
         }

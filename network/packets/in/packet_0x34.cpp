@@ -33,7 +33,6 @@ const uword_t Packet_0x34::length() {
 void Packet_0x34::process(Socket* s) {
     ADDTOCALLSTACK();
     UNREFERENCED_PARAMETER(s);
-    
 
     _current_pos += 4; //Skip first 4 bytes.
     //t_byte type = read_byte();

@@ -35,6 +35,7 @@ const uword_t Packet_0x91::length()
 
 void Packet_0x91::process(Socket* s)
 {
+  ADDTOCALLSTACK();
     //udword_t seed = read_udword();    //TODO: Seed matching check.
     skip(4);
 

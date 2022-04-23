@@ -36,7 +36,8 @@ const uword_t Packet_0x80::length()
 
 void Packet_0x80::process(Socket* s)
 {
-    if (s->get_connection_state() != ConnectionState::CONNECTIONSTATE_LOGIN) // Double casting to prevent Warning #C26812 (VS)
+  ADDTOCALLSTACK();
+    if (s->get_connection_type() != ConnectionType::CONNECTIONTYPE_LOGINSERVER) // Double casting to prevent Warning #C26812 (VS)
     {
         return;
     }
@@ -47,7 +48,7 @@ void Packet_0x80::process(Socket* s)
     account_password = clean(account_password);
 
     skip(1);    //Command: unused
-    TORUSSHELLECHO("[LoginServer] Connection request to account " << account_name <<  ".");
+    TORUSSHELLECHO("[LoginServer] Connection request to account \"" << account_name <<  "\".");
 
     Account *acc = torusacc.get_account(account_name);
 
@@ -82,8 +83,7 @@ void Packet_0x80::process(Socket* s)
     }    
 }
 
-bool Packet_0x80::is_valid_account()
-{
+bool Packet_0x80::is_valid_account() {
     return _is_valid_account;
 }
 
