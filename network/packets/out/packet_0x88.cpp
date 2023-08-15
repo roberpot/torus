@@ -18,18 +18,14 @@
 #include <game/char.h>
 
 
-namespace Packets
-{
-namespace Out
-{
+namespace Packets {
+namespace Out {
 
-void Packet_0x88::set_data(Char* character)
-{
-    write_udword(character->get_uid().get_uid());
-    write_string(character->get_name(), PAPERDOLL_TEXT_LENGTH);
-    write_byte(0);//TODO: Flags: 0x01 = WarMode, 0x02 = CanLift
+void Packet_0x88::set_data(Char* character) {
+  write_udword(character->get_uid().get_uid());
+  write_string(character->get_name(), PAPERDOLL_TEXT_LENGTH);
+  write_byte(0);  // TODO: Flags: 0x01 = WarMode, 0x02 = CanLift
 }
 
-}
-}
-
+}  // namespace Out
+}  // namespace Packets

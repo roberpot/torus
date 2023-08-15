@@ -20,12 +20,6 @@ class std_string_compare {
   }
 };
 
-/*template <typename O>
-class WorldidContainer : public WorldContainer<id, O> {};*/
-
-/*template <typename O>
-class WorldStringContainer : public WorldContainer<std::string, O, std_string_compare>{};*/
-
 
 /**
 * This class is used to store and retrieve the world objects (characters, items ...).
@@ -42,7 +36,7 @@ class WorldStringContainer : public WorldContainer<std::string, O, std_string_co
 template <typename T,
           typename O,
           class Compare   = std::less<Uid>,
-          class Allocator = std::allocator<std::pair<const O, T>>>
+          class Allocator = std::allocator<std::pair<const T, O>>>
 class WorldContainer {
   std::map<T, O, Compare, Allocator> _container;  // TODO: Use ttl map to have this container mutex protected.
   ttl::dynamicstack<T> _delete_queue;

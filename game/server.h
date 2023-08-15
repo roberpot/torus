@@ -31,7 +31,7 @@ extern class Server {
 
     WorldCharactersContainer _chars;
     WorldItemsContainer _items;
-    //WorldStringContainer<Account*> _accounts;
+    WorldAccountsContainer _accounts;
 
 public:
     /**

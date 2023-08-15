@@ -22,70 +22,61 @@
 #include <shell.h>
 
 
-namespace Packets
-{
-namespace In
-{
+namespace Packets {
+namespace In {
 
 using namespace ::Out;
 
-const uword_t Packet_0x80::length()
-{
-    return 62;
+const uword_t Packet_0x80::length() {
+  return 62;
 }
 
-void Packet_0x80::process(Socket* s)
-{
+void Packet_0x80::process(Socket* s) {
   ADDTOCALLSTACK();
-    if (s->get_connection_type() != ConnectionType::CONNECTIONTYPE_LOGINSERVER) // Double casting to prevent Warning #C26812 (VS)
-    {
-        return;
-    }
-    std::string account_name = read_string(CHARACTERS_STRING_LENGTH);
-    std::string account_password = read_string(CHARACTERS_STRING_LENGTH);
+  if (s->get_connection_state() != ConnectionState::CONNECTIONSTATE_LOGIN) {
+    return;
+  }
+  std::string account_name     = read_string(CHARACTERS_STRING_LENGTH);
+  std::string account_password = read_string(CHARACTERS_STRING_LENGTH);
 
-    account_name = clean(account_name);
-    account_password = clean(account_password);
+  account_name     = clean(account_name);
+  account_password = clean(account_password);
 
-    skip(1);    //Command: unused
-    TORUSSHELLECHO("[LoginServer] Connection request to account \"" << account_name <<  "\".");
+  skip(1);  // Command: unused
+  TORUSSHELLECHO("[LoginServer] Connection request to account \"" << account_name << "\".");
 
-    Account *acc = torusacc.get_account(account_name);
+  Account* acc = torusacc.get_account(account_name);
 
-    if (acc == nullptr)
-    {
-        DEBUG_NOTICE("1");
-        //LoginAck -> Invalid account
-        s->get_client()->add_response_code(Packets::Out::Packet_0x82::ResponseCode::Invalid);
-        return ;
-    }
-    else if (!acc->password_match(account_password))
-    {
-        DEBUG_NOTICE("2");
-        s->get_client()->add_response_code(Packets::Out::Packet_0x82::ResponseCode::BadPass);
-        //LoginAck -> Invalid pw
-        return;
-    }
+  if (acc == nullptr) {
+    DEBUG_NOTICE("1");
+    // LoginAck -> Invalid account
+    s->get_client()->add_response_code(Packets::Out::Packet_0x82::ResponseCode::Invalid);
+    return;
+  } else if (!acc->password_match(account_password)) {
+    DEBUG_NOTICE("2");
+    s->get_client()->add_response_code(Packets::Out::Packet_0x82::ResponseCode::BadPass);
+    // LoginAck -> Invalid pw
+    return;
+  }
 
-    if (s == nullptr) { //Sometimes happens at clients' closure.
-        DEBUG_NOTICE("3");
-        s->get_client()->add_response_code(Packets::Out::Packet_0x82::ResponseCode::Invalid);
-        return;
-    }
+  if (s == nullptr) {  // Sometimes happens at clients' closure.
+    DEBUG_NOTICE("3");
+    s->get_client()->add_response_code(Packets::Out::Packet_0x82::ResponseCode::Invalid);
+    return;
+  }
 
-    if (acc->connect(s))
-    {
-        DEBUG_NOTICE("Received valid account identification, proceeding to send server information.");
-        ServerList* packet_server_list = new ServerList();
-        packet_server_list->set_data(s);
-        packet_server_list->send(s);
-        s->set_connection_state(ConnectionState::CONNECTIONSTATE_SERVERLIST);
-    }    
+  if (acc->connect(s)) {
+    DEBUG_NOTICE("Received valid account identification, proceeding to send server information.");
+    ServerList* packet_server_list = new ServerList();
+    packet_server_list->set_data(s);
+    packet_server_list->send(s);
+    s->set_connection_state(ConnectionState::CONNECTIONSTATE_SERVERLIST);
+  }
 }
 
 bool Packet_0x80::is_valid_account() {
-    return _is_valid_account;
+  return _is_valid_account;
 }
 
-}
-}
+}  // namespace In
+}  // namespace Packets

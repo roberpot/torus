@@ -82,7 +82,7 @@ udword_t Uid::get_uid() {
 }
 
 udword_t Uid::get_uid_base() {
-  return _uid & ~(UID_ITEM | UID_RESOURCE);
+  return _uid & ~(0xFF000000);
 }
 
 void Uid::set_uid_type(udword_t mask) {

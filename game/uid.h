@@ -18,9 +18,9 @@
 #include <library/types.h>
 
 #define UID_CLEAR      0x00000000
-#define UID_CHAR       0x0
-#define UID_ITEM       0x01000000
-#define UID_ACCOUNT    0x02000000
+#define UID_CHAR       0x01000000
+#define UID_ITEM       0x02000000
+#define UID_ACCOUNT    0x04000000
 #define UID_RESOURCE   0x08000000
 #define UID_UNUSED     0xFFFFFFFF
 #define UID_INDEX_MASK 0x00FFFFFF
