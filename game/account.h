@@ -17,6 +17,7 @@
 
 #include <string>
 #include <vector>
+#include <game/artifact.h>
 #include <library/system_headers.h>
 #include <library/types.h>
 
@@ -47,7 +48,7 @@ enum PRIVLVL
 
 class Client;
 
-class Account {
+class Account{
 private:
     std::string _name;      ///< Account name, used mostly for login.
     std::string _password;  ///< Account password.
@@ -59,10 +60,13 @@ private:
     Socket *_socket;        ///< Pointer to the socket currently connected to this account.
     PRIVLVL _privlevel;
     Client *_client;
+    Uid _uid;
 public:
     Account();
     ~Account();
     Account(std::string accname, std::string accpw, PRIVLVL accpriv);
+    Account(udword_t uid, std::string accname, std::string accpw, PRIVLVL accpriv);
+    Account(const Account &other);
     /**
     * @brief get the total count of characters this account has.
     *

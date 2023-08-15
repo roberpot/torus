@@ -15,10 +15,13 @@
 #include <network/packets/packetlist.h>
 #include <network/socket.h>
 #include <debug_support/info.h>
-#include <game/server.h>
 #include <game/char.h>
+#include <game/client.h>
+#include <game/server.h>
 #include <shell.h>
 
+const t_byte k_request_status = 4;
+const t_byte k_request_skills = 5;
 
 namespace Packets
 {
@@ -34,21 +37,27 @@ void Packet_0x34::process(Socket* s) {
     ADDTOCALLSTACK();
     UNREFERENCED_PARAMETER(s);
     
-
-    _current_pos += 4; //Skip first 4 bytes.
-    //t_byte type = read_byte();
-    skip(1);
+    skip(4); // Skip first 4 bytes 0xedededed.
+    t_byte request_type = read_byte();
     Uid uid(read_udword());
     Char *character = server.get_char(uid);
     if (character)
     {
-        MobileStatus* packet_mobile = new MobileStatus();
-        packet_mobile->set_data(character);
-        packet_mobile->send(s);
+        if (request_type == k_request_status) {
+            MobileStatus* packet_mobile = new MobileStatus();
+            packet_mobile->set_data(character);
+            packet_mobile->send(s);
+        } else if (request_type == k_request_skills) {
+            //TODO: Skill Window Packet (0x3A)
+        }
     }
     else
     {
         TORUSSHELLECHO("Mobile request for invalid uid: " << uid.get_uid());
+        //LoginAck -> Invalid account ( There's no client message for invalid character uid ).
+        //s->get_client()->add_response_code(Packets::Out::Packet_0x82::ResponseCode::Invalid);
+        // The client doesn't accept response codes at this point, so if this code is reached,
+        // then the client will hang out frozen.
     }
 }
 

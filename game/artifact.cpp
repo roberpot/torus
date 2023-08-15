@@ -23,10 +23,24 @@
 #include <game/uo_files/map_list.h>
 #include <game/server.h>
 
+Artifact::Artifact()
+{
+    _uid.find_new_uid();
+}
+
+Artifact::Artifact(const Artifact& other)
+{
+    _uid = other._uid;
+    _flags = other._flags;
+    _color = other._color;
+    _position = other._position;
+    _timer = other._timer;
+}
+
 Artifact::Artifact(udword_t uid){
     ADDTOCALLSTACK();
     if ((uid &~(UID_ITEM | UID_RESOURCE)) == UID_CLEAR) {
-        _uid.free_uid();
+        _uid.find_new_uid();
         _uid.set_uid_type(uid);
     }
     else {

@@ -62,6 +62,7 @@ private:
 
 public:
     Char();
+    Char(const Char& other);
     Char(udword_t uid);
 
 // Base & Stats

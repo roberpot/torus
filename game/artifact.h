@@ -27,6 +27,8 @@ class Item;
 
 class Artifact {
 protected:
+    Artifact();
+    Artifact(const Artifact& other);
     Artifact(udword_t uid);
     Char *get_char();
     Item *get_item();

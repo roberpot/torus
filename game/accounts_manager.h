@@ -19,13 +19,11 @@
 #include <map>
 #include <library/types.h>
 #include <game/account.h>
+#include <game/word_object_container.h>
 
 class Account;
 
-extern class AccountsManager{
-public:
-private:
-    std::map<std::string, Account*> _list;
+extern class AccountsManager : private ServerAccountsContainer {
 public:
 
     /**

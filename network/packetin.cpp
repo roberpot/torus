@@ -127,6 +127,11 @@ t_byte PacketIn::read_byte()
     return t_byte(_buffer[_current_pos++]);
 }
 
+bool PacketIn::read_bool()
+{
+    return bool(static_cast<bool>(_buffer[_current_pos++]));
+}
+
 t_ubyte PacketIn::read_ubyte()
 {
     return t_ubyte(_buffer[_current_pos++]);

@@ -64,6 +64,7 @@ class Item : public Artifact {
     ~Item();
 public:
     Item();
+    Item(const Item& other);
     Item(udword_t uid);
     bool can_move() override;
     void remove();

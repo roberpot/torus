@@ -108,6 +108,13 @@ public:
     t_byte read_byte();
 
     /**
+     * @brief Reads a bool from the buffer.
+     *
+     * @return The bool.
+     */
+    bool read_bool();
+
+    /**
      * @brief Reads a signed byte from the buffer.
      *
      * @return The byte.

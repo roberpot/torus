@@ -27,26 +27,25 @@ TorusShell torus_shell;
 Torus torus;
 
 int main(int argc, char* argv[]) {
-    torus_shell.start();
-    TORUSSHELLECHO("Initializing Torus...");
-    toruscfg.load_config_file("torus.ini");
-    //torusacc.init();
-    toruscompiler.add_file(std::string("scripts/torustables.tscp"));
-    toruscompiler.compile();
-    torusnet.start();
-    if (torus.init())
-    {
-        TORUSSHELLECHO("Initializing Torus... OK.");
-        torus.mainloop();
-    }
-    else
-    {
-        TORUSSHELLECHO("Failed to initialize Torus, shuting down...")
-    }
-    TORUSSHELLECHO("Shutting down Torus...");
-    torusnet.halt();
-    torusnet.join();
-    TORUSSHELLECHO("Shutting down Torus... OK.");
-    torus_shell.join();
-    return 0;
+  (void)argc;
+  (void)argv;
+  torus_shell.start();
+  TORUSSHELLECHO("Initializing Torus...");
+  toruscfg.load_config_file("torus.ini");
+  // torusacc.init();
+  toruscompiler.add_file(std::string("scripts/torustables.tscp"));
+  toruscompiler.compile();
+  torusnet.start();
+  if (torus.init()) {
+    TORUSSHELLECHO("Initializing Torus... OK.");
+    torus.mainloop();
+  } else {
+    TORUSSHELLECHO("Failed to initialize Torus, shuting down...")
+  }
+  TORUSSHELLECHO("Shutting down Torus...");
+  torusnet.halt();
+  torusnet.join();
+  TORUSSHELLECHO("Shutting down Torus... OK.");
+  torus_shell.join();
+  return 0;
 }

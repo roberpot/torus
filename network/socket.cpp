@@ -278,7 +278,7 @@ bool Socket::receive(udword_t receive_len)
             //TORUSSHELLECHO("Writing data to packet: " << _current_in_packet);
             uword_t packet_len = _current_in_packet->length();
             uword_t bytes_to_read = buffer_len;
-            if (bytes_to_read > packet_len)
+            if (bytes_to_read > packet_len && packet_len != 0)
             {
                 bytes_to_read = packet_len;
             }

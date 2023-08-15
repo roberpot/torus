@@ -29,6 +29,16 @@ Char::Char() : Artifact(UID_CHAR) {
     server.add_char(this);
 }
 
+Char::Char(const Char& other)
+{
+    memcpy(_stats, other._stats, int(StatType::STATS_QTY));
+    _account = other._account;
+    _client = other._client;
+    _body = other._body;
+
+    server.add_char(this);
+}
+
 Char::Char(udword_t uid) : Artifact(uid) {
     ADDTOCALLSTACK();
     _account = nullptr;

@@ -34,7 +34,7 @@ void AccountsManager::shutdown()
 bool AccountsManager::exists(std::string name, std::string pw)
 {
     ADDTOCALLSTACK();
-    return _list.find(name) != _list.end();
+    return has(name.c_str());
 }
 
 void AccountsManager::load_all()
@@ -53,8 +53,7 @@ bool AccountsManager::check()
     return true;
 }
 
-Account * AccountsManager::get_account(std::string name)
-{
+Account * AccountsManager::get_account(std::string name) {
     ADDTOCALLSTACK();
     Account *acc = nullptr;
     if (!name.empty())
@@ -66,21 +65,20 @@ Account * AccountsManager::get_account(std::string name)
                 acc = key.second;
             }
         }*/
-        if (_list.count(name.c_str()) != 0)
+        if (has(name.c_str()))
         {
-            acc = _list[name];
-        }      
+            acc = get(name);
+        }
     }
     return acc;
 }
 
-bool AccountsManager::create(std::string name, std::string pw, t_ubyte privlevel)
-{
+bool AccountsManager::create(std::string name, std::string pw, t_ubyte privlevel) {
     ADDTOCALLSTACK();
     if (exists(name, pw)) {
         DEBUG_ERROR("Error creating account '" << name << "', reason: Account already exists.");
         return false;
     }
-    _list[name] = new Account(name, pw, (PRIVLVL)privlevel);
+    add(name, new Account(name, pw, (PRIVLVL)privlevel));
     return false;
 }

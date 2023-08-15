@@ -29,8 +29,10 @@ extern class Server {
     uqword_t _serv_time; ///< Server time in ticks.
     uword_t _tick_period;
 
-    WorldObjectContainer<Char*> _chars;
-    WorldObjectContainer<Item*> _items;
+    WorldCharactersContainer _chars;
+    WorldItemsContainer _items;
+    //WorldStringContainer<Account*> _accounts;
+
 public:
     /**
      * @brief Initializer for extern class.
