@@ -16,16 +16,39 @@
 #define __TORUS_GAME_UID_H_
 
 #include <library/types.h>
+#include <type_traits>
 
-#define UID_CLEAR      0x00000000
-#define UID_CHAR       0x01000000
-#define UID_ITEM       0x02000000
-#define UID_ACCOUNT    0x04000000
-#define UID_RESOURCE   0x08000000
-#define UID_UNUSED     0xFFFFFFFF
-#define UID_INDEX_MASK 0x00FFFFFF
+enum class UidMask : udword_t {
+  UID_CLEAR      = 0x0,
+  UID_CHAR       = 0x01000000,
+  UID_ITEM       = 0x02000000,
+  UID_ACCOUNT    = 0x04000000,
+  UID_RESOURCE   = 0x08000000,
+  UID_UNUSED     = 0xFFFFFFFF,
+  UID_INDEX_MASK = 0x00FFFFFF,
+  UID_CLEAR_MASK = 0xFF000000
+};
+
+
+bool inline operator&(udword_t lhs, UidMask rhs) {
+  return lhs & static_cast<std::underlying_type<UidMask>::type>(rhs);
+}
+
+bool inline operator&(UidMask lhs, UidMask rhs) {
+  return static_cast<std::underlying_type<UidMask>::type>(lhs) & static_cast<std::underlying_type<UidMask>::type>(rhs);
+}
+
+bool inline operator|(udword_t lhs, UidMask rhs) {
+  return lhs | static_cast<std::underlying_type<UidMask>::type>(rhs);
+}
+
+bool inline operator|(UidMask lhs, UidMask rhs) {
+  return static_cast<std::underlying_type<UidMask>::type>(lhs) | static_cast<std::underlying_type<UidMask>::type>(rhs);
+}
 
 class Artifact;
+
+class UidManager {};
 
 class Uid {
  private:
@@ -46,7 +69,7 @@ class Uid {
    *
    * Finds the first free Uid slot and sets it.
    */
-  void find_new_uid(udword_t mask = UID_CLEAR);
+  void find_new_uid(UidMask mask = UidMask::UID_CLEAR);
   /**
    * @brief Remove this Uid.
    *
@@ -58,7 +81,7 @@ class Uid {
    *
    * @param mask The mask type (UID_ITEM, UID_RESOURCE...).
    */
-  void set_uid_type(udword_t mask);
+  void set_uid_type(UidMask mask);
 
  public:
   /**

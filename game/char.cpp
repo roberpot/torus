@@ -21,7 +21,7 @@
 #include <game/item.h>
 #include <game/server.h>
 
-Char::Char() : Artifact(UID_CHAR) {
+Char::Char() : Artifact(UidMask::UID_CHAR) {
     ADDTOCALLSTACK();
     _account = nullptr;
     _client = nullptr;

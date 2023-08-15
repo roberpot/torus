@@ -16,7 +16,7 @@
 #include <debug_support/callstack.h>
 #include <game/server.h>
 
-Item::Item() : Artifact(UID_ITEM) {
+Item::Item() : Artifact(UidMask::UID_ITEM) {
   ADDTOCALLSTACK();
   _id = ItemId::FORGE;
 }

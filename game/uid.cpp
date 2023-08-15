@@ -20,7 +20,7 @@ udword_t Uid::highest_uid = 0;
 
 Uid::Uid() {
   ADDTOCALLSTACK();
-  _uid = UID_UNUSED;
+  _uid = static_cast<udword_t>(UidMask::UID_UNUSED);
   find_new_uid();
 }
 
@@ -65,11 +65,11 @@ void Uid::set_uid(udword_t uid) {
     highest_uid = get_uid_base() + 1;
 }
 
-void Uid::find_new_uid(udword_t mask) {
+void Uid::find_new_uid(UidMask mask) {
   ADDTOCALLSTACK();
   // TODO: DB Table with free uids, query it and use the first free value or create a new index
   set_uid(highest_uid + 1);
-  _uid |= mask;
+  _uid |= static_cast<int>(mask);
 }
 
 void Uid::free_uid() {
@@ -82,19 +82,19 @@ udword_t Uid::get_uid() {
 }
 
 udword_t Uid::get_uid_base() {
-  return _uid & ~(0xFF000000);
+  return _uid & ~(static_cast<udword_t>(UidMask::UID_CLEAR_MASK));
 }
 
-void Uid::set_uid_type(udword_t mask) {
-  _uid |= mask;
+void Uid::set_uid_type(UidMask mask) {
+  _uid |= static_cast<udword_t>(mask);
 }
 
 bool Uid::is_item() {
-  return _uid & UID_ITEM;
+  return _uid & UidMask::UID_ITEM;
 }
 
 bool Uid::is_resource() {
-  return _uid & UID_RESOURCE;
+  return _uid & UidMask::UID_RESOURCE;
 }
 
 bool Uid::is_char() {
@@ -102,5 +102,5 @@ bool Uid::is_char() {
 }
 
 bool Uid::is_valid() {
-  return ((_uid != UID_UNUSED) && (_uid > 0));
+  return ((_uid != static_cast<int>(UidMask::UID_UNUSED)) && (_uid > 0));
 }

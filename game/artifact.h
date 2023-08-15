@@ -31,6 +31,7 @@ protected:
     Artifact();
     Artifact(const Artifact& other);
     Artifact(udword_t uid);
+    Artifact(UidMask mask);
     Char *get_char();
     Item *get_item();
     virtual void remove() = 0;

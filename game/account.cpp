@@ -26,7 +26,7 @@ Account::Account() {
   ADDTOCALLSTACK();
   _socket = nullptr;
   _client = nullptr;
-  _uid.set_uid_type(UID_ACCOUNT);
+  _uid.set_uid_type(UidMask::UID_ACCOUNT);
   _uid.find_new_uid();
 }
 
@@ -41,12 +41,12 @@ Account::Account(std::string accname, std::string accpw, PRIVLVL accpriv) : Acco
 
 Account::Account(udword_t uid, std::string accname, std::string accpw, PRIVLVL accpriv) {
   ADDTOCALLSTACK();
-
-  if ((uid & ~(UID_ITEM | UID_RESOURCE)) == UID_CLEAR) {
-    _uid.free_uid();
-    _uid.find_new_uid(UID_ACCOUNT);
+  Uid new_uid(uid);
+  if (new_uid.is_valid()) {
+    _uid = new_uid;
   } else {
-    _uid.set_uid(uid);
+    _uid.find_new_uid();
+    TORUSSHELLECHO("Trying to set invalid uid " << uid << " to the Account " << accname << " , defaulting to " << _uid.get_uid());
   }
 
   _name      = accname;
@@ -81,7 +81,7 @@ Account::Account(const Account& other) {
   // TODO: Check if keep this values removed or copy them too.
   _socket = nullptr;
   _client = nullptr;
-  _uid.find_new_uid(UID_ACCOUNT);
+  _uid.find_new_uid(UidMask::UID_ACCOUNT);
 }
 
 t_byte Account::get_char_count() {
