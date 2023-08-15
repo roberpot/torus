@@ -17,16 +17,23 @@
 
 #include <library/types.h>
 #include <network/packets/packetlist.h>
+#include <game/coord_point.h>
 
 class Account;
 class Char;
 class Socket;
-class Packets::PacketOut;
 
 class Client {
 public:
     Client(Socket*s);
     ~Client();
+    enum class InputCmd {
+        ADD,
+        GO,
+        REMOVE,
+        QTY        
+    };
+    static const std::wstring input_text_cmds[int(InputCmd::QTY)];
 private:
     Socket*_socket;
 public:
@@ -34,7 +41,9 @@ public:
     void send(PacketOut* packet);
 private:
     t_ubyte _movement_sequence;  ///< Walking sequence.
-    uqword_t _movement_last;    ///< Last walk packet received.
+    uqword_t _movement_last;     ///< Last walk packet received.
+    TargetType _target_type;
+    TargetAction _target_action;
 public:
     void event_walk(const t_ubyte &dir, const t_ubyte &seq, const udword_t &fast_walk_key);
     void add_response_code(Packets::Out::Packet_0x82::ResponseCode code);
@@ -42,8 +51,18 @@ public:
     void event_character_login(const std::string &name, const dword_t &flags, const dword_t &login_count, const dword_t &slot, const dword_t &ip);
     void event_double_click(Uid& uid);
     void event_click(Uid& uid);
+    void event_talk_ascii(const TalkMode& talkmode, const uword_t& color, const Font& font, const std::string& text);
+    void event_talk_unicode(const TalkMode& talkmode, const uword_t& color, const Font& font, const std::wstring& text);
+
+    bool event_input_cmd(const std::wstring& text);
 
     void add_character(Char* character);
+    void update_move(Char* character, const CoordPoint& old_p);
+    void add_item(Item* item);
+
+    void get_target(Uid& uid, const t_byte& flags, Uid& target, const CoordPoint& pos, const ItemId& id);
+    void add_target(const TargetType& target_type, const TargetAction& target_action, const ItemId& id, const uword_t& color);
+    
 private:
     Char *_char;
     Account *_account;

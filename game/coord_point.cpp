@@ -122,7 +122,7 @@ t_byte CoordPoint::get_map()
     return _m;
 }
 
-bool CoordPoint::is_valid_point()
+bool CoordPoint::is_valid_point() const
 {
     bool is_valid = false;
     //if (maplist.is_map_valid(_m))
@@ -139,23 +139,19 @@ bool CoordPoint::is_valid_point()
     return is_valid;
 }
 
-uword_t CoordPoint::get_distance(const CoordPoint& target)
+uword_t CoordPoint::get_distance(const CoordPoint& target) const
 {
-    return (_x > target._x ? _x - target._x : target._x - _x) + (_y > target._y ? _y - target._y : target._y - _y);
+    return uword_t(std::abs(_x - target._x) + std::abs(_y - target._y));
 }
 
-bool CoordPoint::can_move_to_coord(const word_t& destX, const word_t& destY) {
+bool CoordPoint::can_move_to_coord(const word_t& destX, const word_t& destY) const {
     ADDTOCALLSTACK();
     Map* map = maplist.get_map(_m);
-    if (map == nullptr)
-    {
+    if (map == nullptr) {
         //err
         return false;
     }
-    if (destX < 0 || destX >map->get_max_x()) {
-        return false;
-    }
-    if (destY < 0 || destY > map->get_max_y()) {
+    if (!map->is_valid_p(destX, destY)) {
         return false;
     }
     /*
@@ -166,7 +162,7 @@ bool CoordPoint::can_move_to_coord(const word_t& destX, const word_t& destY) {
     return true;
 }
 
-bool CoordPoint::can_move_to_z(const t_byte& destZ) {
+bool CoordPoint::can_move_to_z(const t_byte& destZ) const {
     ADDTOCALLSTACK();
     if (destZ < TBYTE_MIN || destZ > TBYTE_MAX) {
         return false;
@@ -174,17 +170,17 @@ bool CoordPoint::can_move_to_z(const t_byte& destZ) {
     return true;
 }
 
-bool CoordPoint::can_move_to_map(const t_ubyte& destMap) {
+bool CoordPoint::can_move_to_map(const t_ubyte& destMap) const {
     ADDTOCALLSTACK();
     return maplist.is_map_valid(destMap);
 }
 
-bool CoordPoint::can_move_to(const word_t& destX, const word_t& destY, const t_byte& destZ, const t_ubyte& destMap) {
+bool CoordPoint::can_move_to(const word_t& destX, const word_t& destY, const t_byte& destZ, const t_ubyte& destMap) const {
     ADDTOCALLSTACK();
     return can_move_to_coord(destX, destY) && can_move_to_z(destZ) && can_move_to_map(destMap);
 }
 
-bool CoordPoint::can_move_to(const CoordPoint& cp)
+bool CoordPoint::can_move_to(const CoordPoint& cp) const
 {
     ADDTOCALLSTACK();
     return can_move_to(cp._x, cp._y, cp._z, cp._m);

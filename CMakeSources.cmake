@@ -53,14 +53,17 @@ SOURCE_GROUP(network\\packets FILES ${PACKETLIST_FILES})
 set(PACKETS_IN_FILES
         network/packets/in/packet_0x0.cpp
         network/packets/in/packet_0x02.cpp
+        network/packets/in/packet_0x03.cpp
         network/packets/in/packet_0x06.cpp
         network/packets/in/packet_0x09.cpp
         network/packets/in/packet_0x34.cpp
         network/packets/in/packet_0x5d.cpp
+        network/packets/in/packet_0x6c.cpp
         network/packets/in/packet_0x73.cpp
         network/packets/in/packet_0x80.cpp
         network/packets/in/packet_0x91.cpp
         network/packets/in/packet_0xa0.cpp
+        network/packets/in/packet_0xad.cpp
         network/packets/in/packet_0xbd.cpp
         network/packets/in/packet_0xbf.cpp
         network/packets/in/packet_0xef.cpp
@@ -77,8 +80,10 @@ set(PACKETS_OUT_FILES
         network/packets/out/packet_0x22.cpp
         network/packets/out/packet_0x3a.cpp
         network/packets/out/packet_0x55.cpp
+        network/packets/out/packet_0x6c.cpp
         network/packets/out/packet_0x6d.cpp
         network/packets/out/packet_0x73.cpp
+        network/packets/out/packet_0x77.cpp
         network/packets/out/packet_0x78.cpp
         network/packets/out/packet_0x82.cpp
         network/packets/out/packet_0x88.cpp
@@ -87,6 +92,7 @@ set(PACKETS_OUT_FILES
         network/packets/out/packet_0xa9.cpp
         network/packets/out/packet_0xb9.cpp
         network/packets/out/packet_0xbf.cpp
+        network/packets/out/packet_0xf3.cpp
 )
 SOURCE_GROUP(network\\packets\\out FILES ${PACKETS_OUT_FILES})
 

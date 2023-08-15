@@ -27,7 +27,6 @@ CharProps::CharProps() {
     _body = 400;    //TODO update value with any Body when they get implemented.
     _obody = 400;
     _ocolor = 0;
-    _dir = Dir::N;
 }
 
 CharProps::~CharProps() {
@@ -115,14 +114,4 @@ void CharProps::set_ocolor(udword_t ocolor) {
 udword_t CharProps::get_ocolor() {
     ADDTOCALLSTACK();
     return _ocolor;
-}
-
-void CharProps::set_dir(Dir dir) {
-    ADDTOCALLSTACK();
-    _dir = dir;
-}
-
-Dir CharProps::get_dir() {
-    ADDTOCALLSTACK();
-    return _dir;
 }

@@ -72,7 +72,7 @@ public:
      *
      * @return The length. 
      */
-    const udword_t current_length();
+    const udword_t current_length() const;
 
     /**
      * @brief    Load a chunk of bytes into the buffer.
@@ -82,30 +82,40 @@ public:
      * 
      * The receipt data may not form the full packet, yet.
      */
-    uword_t receive(const uint8_t*data, const uword_t len);
+    const uword_t receive(const uint8_t*data, const uword_t len);
     
     /**
      * @brief Completion status of the packet.
      * 
      * @return True if the data has been completelly received.
      */
-    bool is_complete();
+    const bool is_complete() const;
 
+protected:
+
+    /**
+     * @brief Get the remaining length to read.
+     * 
+     * @return The unreaded length in bytes.
+     */
+    const uword_t get_remaining_length() const;
 
     /**
      * @brief Read a string from the buffer.
      * 
-     * @param str The string in which to 
-     * @param len
+     * @param len The length in bytes to read from the buffer.
+     * @return The newly generated string with the text.
      */
-    void read_string(std::string &str, uword_t len = 0);
+
+    const std::string read_string(uword_t len = 0);
 
     /**
-     * @brief Reads a signed byte from the buffer.
-     * 
-     * @return The byte.
+     * @brief Read a wstring from the buffer.
+     *
+     * @param len The length in bytes to read from the buffer.
+     * @return The newly generated wstring with the text.
      */
-    t_byte read_byte();
+    const std::wstring read_wstring(uword_t len = 0);
 
     /**
      * @brief Reads a bool from the buffer.
@@ -116,19 +126,69 @@ public:
 
     /**
      * @brief Reads a signed byte from the buffer.
+     * 
+     * @return The byte.
+     */
+    const t_byte read_byte();
+
+    /**
+     * @brief Reads an unsigned byte from the buffer.
      *
      * @return The byte.
      */
-    t_ubyte read_ubyte();
-    word_t read_word();
-    uword_t read_uword();
-    dword_t read_dword();
-    udword_t read_udword();
+    const t_ubyte read_ubyte();
 
+    /**
+     * @brief Read a signed word_t (2 bytes) from the buffer.
+     * 
+     * @return The value.
+     */
+    const word_t read_word();
+
+    /**
+     * @brief Read an unsigned word_t (2 bytes) from the buffer.
+     *
+     * @return The value.
+     */
+    const uword_t read_uword();
+
+    /**
+     * @brief Read a wide character (2 bytes) from the buffer.
+     *
+     * @return The value.
+     */
+    const wchar_t read_wchar();
+
+    /**
+     * @brief Read a signed dword_t (4 bytes) from the buffer.
+     *
+     * @return The value.
+     */
+    const dword_t read_dword();
+
+    /**
+     * @brief Read an unsigned dword_t (4 bytes) from the buffer.
+     *
+     * @return The value.
+     */
+    const udword_t read_udword();
+
+    /**
+     * @brief Skip a given number of bytes of the buffer.
+     * 
+     * @param bytes The number of bytes to skip.
+     */
     void skip(const uword_t& bytes);
+
+    /**
+     * @brief Moves the buffer's cursor backwards, allowing to read again at certain positions.
+     * 
+     * @param bytes The number of bytes to rewind.
+     * 
+     * 
+     */
     void rewind(const uword_t& bytes);
 
-    private:
 };
 
 }

@@ -139,6 +139,7 @@ void Config::load_config_file(const t_byte * file) {
         {
             std::string line;
             while (std::getline(f, line)) {
+                line = clean(line);
                 if (line.size() == 0)
                 {
                     continue;

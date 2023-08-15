@@ -65,9 +65,15 @@ void * NetworkManager::run() {
         for (unsigned int socketId = 0; socketId < socketsCount; ++socketId)
         {
             clientSocket = _game_sockets[socketId];
-
+            if (!clientSocket){
+              continue;
+            }
+            if (clientSocket->is_read_closed() && clientSocket->is_write_closed()){
+              continue;
+            }
             if (!clientSocket->is_read_closed())
             {
+                //TORUSSHELLECHO("[GameServer]: Reading queued packets for " << clientSocket << ", index " << socketId);
                 clientSocket->read_queued_packets();
             }
             if (!clientSocket->is_write_closed())

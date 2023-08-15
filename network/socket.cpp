@@ -59,6 +59,7 @@ Socket::Socket(ConnectionType connection_type) :
 
 void Socket::_init()
 {
+  ADDTOCALLSTACK();
     _current_in_packet = nullptr;
     _is_read_closed = false;
     _is_write_closed = false;
@@ -233,10 +234,26 @@ bool Socket::receive(udword_t receive_len)
             return true;
         }
 
-
+        else if (buffer_len == 4)
+        {
+          //Seed beign received upon new connection, along with packet 0x91.
+          int seed = int((unsigned char)(_input_buffer[0]) << 24 |
+                         (unsigned char)(_input_buffer[1]) << 16 |
+                         (unsigned char)(_input_buffer[2]) << 8 |
+                         (unsigned char)(_input_buffer[3]));
+          _seed = seed;
+          _seeded = true;
+          TORUSSHELLECHO("Socket " << this << " receive seed \""  <<
+                         hex(_input_buffer[0]) << " " <<
+                         hex(_input_buffer[1]) << " " <<
+                         hex(_input_buffer[2]) << " " <<
+                         hex(_input_buffer[3]) << "\" = " <<
+                         std::dec << _seed);
+          buffer_len -= 4;    // Decrease the buffer len, since 4 bytes were removed (In this case, skip further read).
+        }
         // Filters done, now handle some specific behaviours:
         // More than 4 bytes and fifth byte == new seed?
-        if (t_ubyte(_input_buffer[4]) == 145)  // 0x91
+        else if (t_ubyte(_input_buffer[4]) == 145)  // 0x91
         {
             //Seed beign received upon new connection, along with packet 0x91.
             int seed = int((unsigned char)(_input_buffer[0]) << 24 |
@@ -253,7 +270,9 @@ bool Socket::receive(udword_t receive_len)
         }
     }
 
-    //TORUSSHELLECHO("Socket " << this << " receive data (0x" << hex(_input_buffer[0]) << ")[" << std::dec << buffer_len << "] = " << std::endl << hex_dump_buffer(_input_buffer, buffer_len));
+    if (buffer_len > 0){
+      TORUSSHELLECHO("Socket " << this << " receive data (0x" << hex(_input_buffer[0]) << ")[" << std::dec << buffer_len << "] = " << std::endl << hex_dump_buffer(_input_buffer, buffer_len));
+    }
     uword_t total_readed_bytes = 0;
     //auto vec_buffer = buffer_to_vector(_input_buffer_tmp, buffer_len);
     while (buffer_len > 0)
@@ -354,7 +373,7 @@ Socket* Socket::create_socket(sockaddr_in& sockin, ConnectionType server_type)
         ConnectionType::CONNECTIONTYPE_CLIENT, server_type);
 #endif //_WINDOWS
 #ifdef __linux__
-    s = new Socket(_accepted_socket);
+    s = new Socket(_accepted_socket, server_type);
     s->_connection_info.sin_family = AF_INET;
     s->_connection_info = sockin;
 #endif //__linux__

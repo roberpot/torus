@@ -23,43 +23,37 @@
 const t_byte k_request_status = 4;
 const t_byte k_request_skills = 5;
 
-namespace Packets
-{
-namespace In
-{
+namespace Packets {
+namespace In {
 
 using namespace ::Out;
 const uword_t Packet_0x34::length() {
-    return 10;
+  return 10;
 }
 
 void Packet_0x34::process(Socket* s) {
-    ADDTOCALLSTACK();
-    UNREFERENCED_PARAMETER(s);
-    
-    skip(4); // Skip first 4 bytes 0xedededed.
-    t_byte request_type = read_byte();
-    Uid uid(read_udword());
-    Char *character = server.get_char(uid);
-    if (character)
-    {
-        if (request_type == k_request_status) {
-            MobileStatus* packet_mobile = new MobileStatus();
-            packet_mobile->set_data(character);
-            packet_mobile->send(s);
-        } else if (request_type == k_request_skills) {
-            //TODO: Skill Window Packet (0x3A)
-        }
+  ADDTOCALLSTACK();
+  UNREFERENCED_PARAMETER(s);
+  skip(4);  // Skip first 4 bytes 0xedededed.
+  t_byte request_type = read_byte();
+  Uid uid(read_udword());
+  Char* character = server.get_char(uid);
+  if (character) {
+    if (request_type == k_request_status) {
+      MobileStatus* packet_mobile = new MobileStatus();
+      packet_mobile->set_data(character);
+      packet_mobile->send(s);
+    } else if (request_type == k_request_skills) {
+      // TODO: Skill Window Packet (0x3A)
     }
-    else
-    {
-        TORUSSHELLECHO("Mobile request for invalid uid: " << uid.get_uid());
-        //LoginAck -> Invalid account ( There's no client message for invalid character uid ).
-        //s->get_client()->add_response_code(Packets::Out::Packet_0x82::ResponseCode::Invalid);
-        // The client doesn't accept response codes at this point, so if this code is reached,
-        // then the client will hang out frozen.
-    }
+  } else {
+    TORUSSHELLECHO("Mobile request for invalid uid: " << uid.get_uid());
+    // LoginAck -> Invalid account ( There's no client message for invalid character uid ).
+    // s->get_client()->add_response_code(Packets::Out::Packet_0x82::ResponseCode::Invalid);
+    // The client doesn't accept response codes at this point, so if this code is reached,
+    // then the client will hang out frozen.
+  }
 }
 
-}
-}
+}  // namespace In
+}  // namespace Packets

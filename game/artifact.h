@@ -19,6 +19,7 @@
 
 #include <library/types.h>
 #include <game/coord_point.h>
+#include <game/enums.h>
 #include <game/uid.h>
 
 
@@ -54,7 +55,10 @@ public:
     void move_to(word_t destX, word_t destY);
     void set_z(t_byte destZ);
     void set_map(t_ubyte destMap);
+    void set_pos(word_t destX, word_t destY);
+    void set_pos(word_t destX, word_t destY, t_byte destZ);
     void set_pos(word_t destX, word_t destY, t_byte destZ, t_ubyte destMap);
+    void set_pos(const CoordPoint& p);
     CoordPoint get_pos();
     uword_t get_distance(Artifact *target);
     uword_t get_distance(CoordPoint target);
@@ -91,6 +95,12 @@ public:
     * @param ticks The new time in ticks.
     */
     void set_timer(uqword_t ticks);
+
+private:
+    Dir _dir;
+public:
+    void set_dir(Dir dir);
+    Dir get_dir();
 };
 
 #endif // __TORUS_GAME_ARTIFACT_H

@@ -14,8 +14,9 @@
 
 #include <network/packets/packetlist.h>
 #include <network/socket.h>
-#include <game/client.h>
 #include <debug_support/info.h>
+#include <game/client.h>
+#include <game/enums.h>
 
 
 namespace Packets
@@ -23,26 +24,17 @@ namespace Packets
 namespace In
 {
 
-const uword_t Packet_0x5d::length() {
-    return 73;
+const uword_t Packet_0x03::length() {
+    return _current_buffer_length;
 }
 
-void Packet_0x5d::process(Socket* s) {
+void Packet_0x03::process(Socket* s) {
     ADDTOCALLSTACK();
-    UNREFERENCED_PARAMETER(s);
-    skip(4);
-    std::string character_name = read_string(CHARACTERS_STRING_LENGTH);
-    skip(2);    
-    dword_t flags = read_dword();
-    skip(4);
-    dword_t login_count = read_dword();
-    skip(4);
-    skip(4);
-    skip(4);
-    skip(4);
-    dword_t slot = read_dword();
-    dword_t ip = read_dword();
-    s->get_client()->event_character_login(character_name, flags, login_count, slot, ip);
+    TalkMode talk_mode = TalkMode(read_byte());
+    uword_t color = read_uword();
+    Font font = Font(read_word());
+    std::string text = read_string(get_remaining_length());
+    s->get_client()->event_talk_ascii(talk_mode, color, font, text);
 }
 
 }

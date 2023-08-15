@@ -136,21 +136,21 @@ public:
      * and if the X and Y coordinates are within its map's bounds.
      * @return True if all checks are passed, false otherwise.
      */
-    bool is_valid_point();
+    bool is_valid_point() const;
 
     /**
-     * @brief Calculate the Euler distance between this point and another one.
+     * @brief Calculate the Manhattan distance between this point and another one.
      * 
      * @param target The target which distance has to be calculated.
      * @return The distance
      */
-    uword_t get_distance(const CoordPoint &target);
+    uword_t get_distance(const CoordPoint &target) const;
 
-    bool can_move_to_coord(const word_t& destX, const word_t& destY);
-    bool can_move_to_z(const t_byte& destZ);
-    bool can_move_to_map(const t_ubyte& destMap);
-    bool can_move_to(const word_t& destX, const word_t& destY, const t_byte& destZ, const t_ubyte& destMap);
-    bool can_move_to(const CoordPoint &cp);
+    bool can_move_to_coord(const word_t& destX, const word_t& destY) const;
+    bool can_move_to_z(const t_byte& destZ) const;
+    bool can_move_to_map(const t_ubyte& destMap) const;
+    bool can_move_to(const word_t& destX, const word_t& destY, const t_byte& destZ, const t_ubyte& destMap) const;
+    bool can_move_to(const CoordPoint &cp) const;
 };
 
 #endif // __TORUS_GAME_COORD_POINT_H_

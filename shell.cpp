@@ -36,6 +36,7 @@ TorusShell::TorusShell() {
 
 void * TorusShell::run() {
     bool continue_proc = true;
+    std::setlocale(LC_ALL, "en_US.UTF-8");
     t_byte c;
     t_byte buffer[256];
     t_byte * stripped_buffer;
@@ -71,8 +72,12 @@ void * TorusShell::run() {
     return NULL;
 }
 
-void TorusShell::print(const t_byte * s) {
-    std::string t = _get_curr_datetime();
-    std::cout << "[" << t << "] " << s << std::endl;
-    _log_file << "[" << t << "] " << s << std::endl;
+void TorusShell::print(const std::string& str) {
+    print(to_wstring(str).c_str());
+}
+
+void TorusShell::print(const wchar_t* s) {
+    std::wstring t = to_wstring(_get_curr_datetime());
+    std::wcout << "[" << t << "] " << s << std::endl;
+    _log_file << L"[" << t << L"] " << s << std::endl;
 }

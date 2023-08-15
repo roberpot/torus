@@ -12,37 +12,35 @@
  * along with Torus. If not, see <http://www.gnu.org/licenses/>.
  */
 
+
 #include <network/packets/packetlist.h>
-#include <network/socket.h>
-#include <game/client.h>
 #include <debug_support/info.h>
+#include <game/char.h>
+#include <game/server.h>
+#include <game/uid.h>
 
 
 namespace Packets
 {
-namespace In
+namespace Out
 {
 
-const uword_t Packet_0x5d::length() {
-    return 73;
-}
-
-void Packet_0x5d::process(Socket* s) {
-    ADDTOCALLSTACK();
-    UNREFERENCED_PARAMETER(s);
-    skip(4);
-    std::string character_name = read_string(CHARACTERS_STRING_LENGTH);
-    skip(2);    
-    dword_t flags = read_dword();
-    skip(4);
-    dword_t login_count = read_dword();
-    skip(4);
-    skip(4);
-    skip(4);
-    skip(4);
-    dword_t slot = read_dword();
-    dword_t ip = read_dword();
-    s->get_client()->event_character_login(character_name, flags, login_count, slot, ip);
+void Packet_0x77::set_data(Char* character)//(Char* character)
+{
+    //Char *character = server.get_char(uid);
+    if (character == nullptr)
+    {
+        //err
+        return;
+    }
+    write_udword(character->get_uid().get_uid());
+    write_uword(character->get_pos().get_x());
+    write_uword(character->get_pos().get_y());
+    write_byte(character->get_pos().get_z());
+    write_byte(t_byte(character->get_dir()));
+    write_uword(character->get_color());
+    write_byte(0);      //TODO: Calculate real flags for this packet.
+    write_byte(1);      //TODO: Notoriety
 }
 
 }

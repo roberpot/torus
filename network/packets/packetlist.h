@@ -62,6 +62,14 @@ namespace In
         virtual void process(Socket* s) override;
     };
 
+    // Ascii Message
+    class Packet_0x03 : public PacketIn {
+    public:
+        virtual const uword_t length() override;
+        virtual void process(Socket* s) override;
+        Packet_0x03() : PacketIn(true) {}
+    };
+
     // Double click
     class Packet_0x06 : public PacketIn {
     public:
@@ -85,6 +93,13 @@ namespace In
 
     // Play character
     class Packet_0x5d : public PacketIn {
+    public:
+        virtual const uword_t length() override;
+        virtual void process(Socket* s) override;
+    };
+
+    // Get target.
+    class Packet_0x6c : public PacketIn {
     public:
         virtual const uword_t length() override;
         virtual void process(Socket* s) override;
@@ -121,6 +136,14 @@ namespace In
         virtual void process(Socket* s) override;
     };
 
+    // Unicode Message
+    class Packet_0xad : public PacketIn {
+    public:
+        virtual const uword_t length() override;
+        virtual void process(Socket* s) override;
+        Packet_0xad() : PacketIn(true) {}
+    };
+
     // Client version (Entering World)
     class Packet_0xbd : public PacketIn {
     public:
@@ -155,19 +178,20 @@ namespace In
 
     using CreateCharacter   = Packet_0x00;
     using MovementRequest   = Packet_0x02;
+    using AsciiMessageIn    = Packet_0x03;
     using UseRequest        = Packet_0x06;
     using ClickRequest      = Packet_0x06;
     using QueryCharacter    = Packet_0x34;
     using PlayCharacter     = Packet_0x5d;
+    using GetTarget         = Packet_0x6c;
     using Ping              = Packet_0x73;
     using LoginConnect      = Packet_0x80;
     using ServerConnect     = Packet_0x91;
     using ServerSelect      = Packet_0xa0;
+    using UnicodeMessageIn  = Packet_0xad;
     using ReportCliver      = Packet_0xbd;
     using ExtendedCmdIn     = Packet_0xbf;
     using ReportCliverNew   = Packet_0xef;
-
-
 }
 
 namespace Out
@@ -234,6 +258,14 @@ namespace Out
         Packet_0x55() : PacketOut(0x55) {};
     };
 
+    // Add Target
+    class Packet_0x6c : public PacketOut {
+    public:
+        void set_data(Uid& uid, const TargetType& target_type, const t_byte& flags, const ItemId& id, const uword_t& color);
+        Packet_0x6c() : PacketOut(0x6c) {
+        };
+    };
+
     // Play Music
     class Packet_0x6d : public PacketOut {
     public:
@@ -246,6 +278,14 @@ namespace Out
     public:
         void set_data(t_ubyte response);
         Packet_0x73() : PacketOut(0x73) {};
+    };
+
+    // Move Char
+    class Packet_0x77 : public PacketOut {
+    public:
+        void set_data(Char* character); //Char* character
+        Packet_0x77() : PacketOut(0x77) {
+        };
     };
 
     // Send Char
@@ -335,17 +375,28 @@ namespace Out
         Packet_0xbf() : PacketOut(0xBF, true) {};
     };
 
+    // World Object
+    class Packet_0xf3 : public PacketOut {
+    public:
+        void set_data(Char* character);
+        void set_data(Item* item);
+        Packet_0xf3() : PacketOut(0xf3) {
+        };
+    };
+
     using MobileStatus      = Packet_0x11;
     using MobileStatusBar   = Packet_0x17;
     using LoginConfirm      = Packet_0x1b;
-    using AsciiMessage      = Packet_0x1c;
-    using MobileUpdate      = Packet_0x20;
+    using AsciiMessageOut   = Packet_0x1c;
+    using UpdateCharacter   = Packet_0x20;
     using MovementReject    = Packet_0x21;
     using MovementAccept    = Packet_0x22;
     using SkillsUpdate      = Packet_0x3a;
     using LoginDone         = Packet_0x55;
+    using AddTarget         = Packet_0x6c;
     using PlayMusic         = Packet_0x6d;
     using PingResponse      = Packet_0x73;
+    using MoveCharacter     = Packet_0x77;
     using SendCharacter     = Packet_0x78;
     using LoginResponse     = Packet_0x82;
     using SendPaperdoll     = Packet_0x88;
@@ -354,6 +405,7 @@ namespace Out
     using CharList          = Packet_0xa9;
     using SupportedFeatures = Packet_0xb9;
     using ExtendedCmdOut    = Packet_0xbf;
+    using WorldObject       = Packet_0xf3;
 }
 }
 

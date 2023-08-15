@@ -18,19 +18,7 @@
 #include <map>
 
 #include <library/types.h>
-
-enum class CharRace {
-    RACE_HUMAN,
-    RACE_ELF,
-    RACE_GARGOYLE,
-    RACE_QTY
-};
-
-enum class CharGender {
-    GENDER_MALE,    ///< Male character.
-    GENDER_FEMALE,  ///< Female character.
-    GENDER_QTY      ///< Monsters.
-};
+#include <game/enums.h>
 
 enum class CharProp {
     PROP_BLOODCOLOR,
@@ -47,18 +35,6 @@ enum class CharProp {
     PROP_INCREASESWINGSPEED,
     PROP_LOWERMANACOST,
     PROP_LOWERREAGENTCOST
-};
-
-enum class Dir {
-    N,
-    NE,
-    E,
-    SE,
-    S,
-    SW,
-    W,
-    NW,
-    DIR_QTY
 };
 
 #define SF_NORMAL       0x00
@@ -119,11 +95,6 @@ private:
 public:
     void set_ocolor(udword_t ocolor);
     udword_t get_ocolor();
-private:
-    Dir _dir;
-public:
-    void set_dir(Dir dir);
-    Dir get_dir();
 
 };
 

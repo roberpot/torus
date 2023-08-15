@@ -48,6 +48,7 @@ Artifact::Artifact(udword_t uid){
     }
     _flags = 0;
     _color = 0;
+    _dir = Dir::N;
 }
 
 Uid& Artifact::get_uid() {
@@ -125,11 +126,27 @@ void Artifact::set_map(t_ubyte destMap){
     _position.set_map(destMap);
 }
 
+void Artifact::set_pos(word_t destX, word_t destY) {
+    ADDTOCALLSTACK();
+    move_to(destX, destY);
+}
+
+void Artifact::set_pos(word_t destX, word_t destY, t_byte destZ) {
+    ADDTOCALLSTACK();
+    move_to(destX, destY);
+    set_z(destZ);
+}
+
 void Artifact::set_pos(word_t destX, word_t destY, t_byte destZ, t_ubyte destMap){
    ADDTOCALLSTACK();
     move_to(destX, destY);
     set_z(destZ);
     set_map(destMap);
+}
+
+void Artifact::set_pos(const CoordPoint& p) {
+    ADDTOCALLSTACK();
+    _position = p;
 }
 
 CoordPoint Artifact::get_pos() {
@@ -192,4 +209,15 @@ uqword_t Artifact::get_timer() {
 void Artifact::set_timer(uqword_t ticks){
    ADDTOCALLSTACK();
     _timer = server.get_serv_time() + ticks;
+}
+
+
+void Artifact::set_dir(Dir dir) {
+    ADDTOCALLSTACK();
+    _dir = dir;
+}
+
+Dir Artifact::get_dir() {
+    ADDTOCALLSTACK();
+    return _dir;
 }
