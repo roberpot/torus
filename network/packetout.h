@@ -16,6 +16,9 @@
 #define __TORUS_PACKETOUT_H
 
 #include <library/types.h>
+#include <network/packet.h>
+
+#include <string>
 
 class Socket;
 namespace Packets

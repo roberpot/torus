@@ -48,8 +48,6 @@ bool inline operator|(UidMask lhs, UidMask rhs) {
 
 class Artifact;
 
-class UidManager {};
-
 class Uid {
  private:
   udword_t _uid;  ///< numeric value.
@@ -63,19 +61,12 @@ class Uid {
    * @param uid the Uid.
    */
   void set_uid(udword_t uid);
-  static udword_t highest_uid;
   /**
    * @brief Find and set a new Uid for this object.
    *
    * Finds the first free Uid slot and sets it.
    */
   void find_new_uid(UidMask mask = UidMask::UID_CLEAR);
-  /**
-   * @brief Remove this Uid.
-   *
-   * Remove this Uid from everywhere and adds it to free uids.
-   */
-  void free_uid();
   /**
    * @brief Sets the type of uid.
    *
@@ -115,37 +106,42 @@ class Uid {
    *
    * @return this Uid.
    */
-  udword_t get_uid();
+  udword_t get_uid() const;
   /**
    * @brief Returns the real uid.
    *
    * @return the real uid (without type masks).
    */
-  udword_t get_uid_base();
+  udword_t get_uid_base() const;
+  /**
+   * @brief Retrieve the type of this uid.
+   * @return the UidMask.
+  */
+  UidMask get_mask() const;
   /**
    * @brief Checks if this Uid corresponds to a item.
    *
    * @return true if this Uid is from one item.
    */
-  bool is_item();
+  bool is_item() const;
   /**
    * @brief Checks if this Uid corresponds to a resource.
    *
    * @return true if this Uid is from one resource.
    */
-  bool is_resource();
+  bool is_resource() const;
   /**
    * @brief Checks if this Uid corresponds to a char.
    *
    * @return true if this Uid is from one char.
    */
-  bool is_char();
+  bool is_char() const;
   /**
    * @brief Checks if this Uid is valid.
    *
    * @return true if this Uid is not invalid.
    */
-  bool is_valid();
+  bool is_valid() const;
 };
 
 #endif  // __TORUS_GAME_UID_H

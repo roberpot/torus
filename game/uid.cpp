@@ -15,13 +15,11 @@
 #include <game/uid.h>
 #include <shell.h>
 #include <debug_support/callstack.h>
-
-udword_t Uid::highest_uid = 0;
+#include <game/uid_manager.h>
 
 Uid::Uid() {
   ADDTOCALLSTACK();
   _uid = static_cast<udword_t>(UidMask::UID_UNUSED);
-  find_new_uid();
 }
 
 Uid::Uid(udword_t uid) {
@@ -36,7 +34,6 @@ Uid::Uid(const Uid& other) {
 
 Uid::~Uid() {
   ADDTOCALLSTACK();
-  free_uid();
 }
 
 bool Uid::operator==(const Uid& uid) const {
@@ -61,46 +58,41 @@ bool Uid::operator>=(const Uid& uid) const {
 void Uid::set_uid(udword_t uid) {
   ADDTOCALLSTACK();
   _uid = uid;
-  if (highest_uid == get_uid_base())
-    highest_uid = get_uid_base() + 1;
 }
 
 void Uid::find_new_uid(UidMask mask) {
   ADDTOCALLSTACK();
-  // TODO: DB Table with free uids, query it and use the first free value or create a new index
-  set_uid(highest_uid + 1);
-  _uid |= static_cast<int>(mask);
+  uidmanager.create(mask);
 }
 
-void Uid::free_uid() {
-  ADDTOCALLSTACK();
-  // TODO: DB Table to store free uids.
-}
-
-udword_t Uid::get_uid() {
+udword_t Uid::get_uid() const {
   return _uid;
 }
 
-udword_t Uid::get_uid_base() {
+udword_t Uid::get_uid_base() const {
   return _uid & ~(static_cast<udword_t>(UidMask::UID_CLEAR_MASK));
+}
+
+UidMask Uid::get_mask() const {
+  return static_cast<UidMask>(_uid & ~(static_cast<udword_t>(UidMask::UID_INDEX_MASK)));
 }
 
 void Uid::set_uid_type(UidMask mask) {
   _uid |= static_cast<udword_t>(mask);
 }
 
-bool Uid::is_item() {
+bool Uid::is_item() const {
   return _uid & UidMask::UID_ITEM;
 }
 
-bool Uid::is_resource() {
+bool Uid::is_resource() const {
   return _uid & UidMask::UID_RESOURCE;
 }
 
-bool Uid::is_char() {
+bool Uid::is_char() const {
   return !is_item() && !is_resource();
 }
 
-bool Uid::is_valid() {
-  return ((_uid != static_cast<int>(UidMask::UID_UNUSED)) && (_uid > 0));
+bool Uid::is_valid() const {
+  return ((_uid != static_cast<udword_t>(UidMask::UID_UNUSED)) && (_uid > 0));
 }

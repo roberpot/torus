@@ -13,11 +13,13 @@
 */
 
 #include <library/system_headers.h>
+#include <game/account.h>
 #include <game/server.h>
 #include <game/char.h>
 #include <game/item.h>
 #include <game/artifact.h>
 #include <core/config.h>
+#include <game/world_object_container.h>
 
 
 void Server::init()
@@ -56,6 +58,10 @@ void Server::add_item(Item * item) {
     _items.add(item->get_uid(), item);
 }
 
+void Server::add_account(Account* account) {
+    _accounts.add(account->get_uid(), account);
+}
+
 Artifact * Server::get_artifact(Uid& uid) {
     ADDTOCALLSTACK();
     Artifact* art = nullptr;
@@ -78,6 +84,10 @@ Char* Server::get_char(Uid& uid)
 Item* Server::get_item(Uid& uid)
 {
     return _items.get(uid);
+}
+
+Account* Server::get_account(const Uid& uid) {
+  return _accounts.get(uid);
 }
 
 void Server::del_char(Char * chr) {
@@ -106,4 +116,8 @@ void Server::tick() {
     ADDTOCALLSTACK();
     //TODO TICKS
     _serv_time += _tick_period;
+
+    _chars.tick();
+    _items.tick();
+    _accounts.tick();
 }

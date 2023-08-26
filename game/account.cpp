@@ -20,6 +20,7 @@
 #include <game/server.h>
 #include <game/uid.h>
 #include <network/socket.h>
+#include <shell.h>
 #include <debug_support/callstack.h>
 
 Account::Account() {
@@ -208,4 +209,8 @@ Client* Account::get_client() {
 bool Account::password_match(const std::string& pw) {
   // Todo: MD5
   return _password == pw;
+}
+
+Uid& Account::get_uid() {
+  return _uid;
 }

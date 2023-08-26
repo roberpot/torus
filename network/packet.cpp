@@ -11,14 +11,14 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Torus. If not, see <http://www.gnu.org/licenses/>.
  */
-
+ 
+#include <library/system_headers.h>
 #include <network/packet.h>
 #include <network/packetin.h>
 #include <network/packets/packetlist.h>
 
 #include <library/string.h>
 #include <core/errors.h>
-#include <network/socket.h>
 #include <shell.h>
 #include <initializer_list>
 

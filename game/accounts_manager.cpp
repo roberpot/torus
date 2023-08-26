@@ -13,11 +13,14 @@
 */
 
 #include <iostream>
+#include <library/system_headers.h>
 #include <game/accounts_manager.h>
 #include <shell.h>
 #include <debug_support/debug.h>
 #include <game/account.h>
 #include <debug_support/callstack.h>
+#include <game/world_object_container.h>
+#include <game/server.h>
 
 
 void AccountsManager::init()
@@ -67,7 +70,7 @@ Account * AccountsManager::get_account(std::string name) {
         }*/
         if (has(name.c_str()))
         {
-            acc = get(name);
+            acc = server.get_account(get(name));
         }
     }
     return acc;
@@ -79,6 +82,8 @@ bool AccountsManager::create(std::string name, std::string pw, t_ubyte privlevel
         DEBUG_ERROR("Error creating account '" << name << "', reason: Account already exists.");
         return false;
     }
-    add(name, new Account(name, pw, (PRIVLVL)privlevel));
+    Account* acc = new Account(name, pw, (PRIVLVL)privlevel);
+    server.add_account(acc);
+    add(name, acc->get_uid());
     return false;
 }

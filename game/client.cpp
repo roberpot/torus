@@ -22,7 +22,6 @@
 #include <game/item.h>
 #include <game/uid.h>
 #include <game/server.h>
-#include <network/socket.h>
 #include <network/packets/packetlist.h>
 #include <library/string.h>
 #include <shell.h>

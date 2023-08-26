@@ -16,9 +16,7 @@
 #define __TORUS_NETWORKMANAGER_H
 
 #include <vector>
-#include <network/socket.h>
-#include <threads/thread.h>
-#include <threads/mutex.h>
+#include <library/system_headers.h>
 
 
 

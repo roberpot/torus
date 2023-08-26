@@ -19,7 +19,7 @@
 #include <library/map.h>
 #include <library/vector.h>
 #include <game/uid.h>
-#include <game/word_object_container.h>
+#include <game/world_object_container.h>
 
 class Char;
 class Item;
@@ -48,9 +48,11 @@ public:
     void save_all();
     void add_char(Char* chr);
     void add_item(Item *item);
+    void add_account(Account* account);
     Artifact * get_artifact(Uid& uid);
     Char *get_char(Uid& uid);
     Item *get_item(Uid& uid);
+    Account* get_account(const Uid& uid);
     void del_char(Char *chr);
     void del_item(Item *item);
     void del_artifact(Artifact *art);

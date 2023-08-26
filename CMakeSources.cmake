@@ -120,7 +120,8 @@ set(GAME_FILES
         game/item.cpp               game/item.h
         game/server.cpp             game/server.h
         game/uid.cpp                game/uid.h
-        game/word_object_container.cpp game/word_object_container.h)
+        game/uid_manager.cpp        game/uid_manager.h
+        game/world_object_container.h)
 SOURCE_GROUP(game FILES ${GAME_FILES})
 
 set(GAME_CHAR_FILES

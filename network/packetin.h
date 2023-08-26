@@ -15,10 +15,10 @@
 #ifndef __TORUS_PACKETIN_H
 #define __TORUS_PACKETIN_H
 
+#include <library/system_headers.h>
 #include <core/errors.h>
 #include <library/types.h>
 #include <network/packet.h>
-#include <network/socket.h>
 
 #include <string>
 

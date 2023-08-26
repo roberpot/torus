@@ -14,7 +14,7 @@
 
 #include <network/packet.h>
 #include <network/packetout.h>
-#include <network/socket.h>
+#include <library/system_headers.h>
 
 
 namespace Packets

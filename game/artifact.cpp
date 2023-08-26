@@ -22,12 +22,15 @@
 #include <game/item.h>
 #include <game/uo_files/map_list.h>
 #include <game/server.h>
+#include <game/uid_manager.h>
+#include <shell.h>
 
 Artifact::Artifact() {
   _uid.find_new_uid();
-  _flags = 0;
-  _color = 0;
-  _dir   = Dir::N;
+  _flags   = 0;
+  _color   = 0;
+  _dir     = Dir::N;
+  _deleted = false;
 }
 
 Artifact::Artifact(const Artifact& other) {
@@ -36,6 +39,7 @@ Artifact::Artifact(const Artifact& other) {
   _color    = other._color;
   _position = other._position;
   _timer    = other._timer;
+  _deleted  = other._deleted;
 }
 
 Artifact::Artifact(udword_t uid) : Artifact() {
@@ -45,7 +49,8 @@ Artifact::Artifact(udword_t uid) : Artifact() {
     _uid = new_uid;
   } else {
     _uid.find_new_uid();
-    TORUSSHELLECHO("Trying to set invalid uid " << uid << " to a new Artifact, defaulting to " << _uid.get_uid());
+    TORUSSHELLECHO("Trying to set invalid uid " << std::to_string(uid) << " to a new Artifact, defaulting to "
+                                                << std::to_string(_uid.get_uid()));
   }
 }
 
@@ -60,7 +65,11 @@ Uid& Artifact::get_uid() {
 
 Artifact::~Artifact() {
   ADDTOCALLSTACK();
-  _uid.free_uid();
+  uidmanager.remove(_uid);
+}
+
+void Artifact::delete_later() {
+  _deleted = true;
 }
 
 Char* Artifact::get_char() {

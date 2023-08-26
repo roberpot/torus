@@ -63,9 +63,10 @@
 #define CAN_EQUIP_NONE          0x020   ///< Cannot be equiped.
 
 class Item : public Artifact {
-    ~Item();
     ItemId _id;
-public:
+
+ public:
+  ~Item();
     Item();
     Item(const Item& other);
     Item(udword_t uid);

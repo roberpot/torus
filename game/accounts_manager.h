@@ -19,7 +19,7 @@
 #include <map>
 #include <library/types.h>
 #include <game/account.h>
-#include <game/word_object_container.h>
+#include <game/world_object_container.h>
 
 class Account;
 

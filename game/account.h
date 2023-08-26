@@ -18,7 +18,6 @@
 #include <string>
 #include <vector>
 #include <game/artifact.h>
-#include <library/system_headers.h>
 #include <library/types.h>
 
 class Char;
@@ -141,6 +140,12 @@ public:
      * @return True if both passwords match, false otherwise.
      */
     bool password_match(const std::string &pw);
+
+    /**
+     * @brief Retrieve the Uid of this Account.
+     * @return The Uid.
+    */
+    Uid& get_uid();
 };
 
 #endif // __TORUS_GAME_ACCOUNT_H

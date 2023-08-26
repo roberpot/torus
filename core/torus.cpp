@@ -19,6 +19,7 @@
 #include <core/config.h>
 #include <game/accounts_manager.h>
 #include <game/server.h>
+#include <game/uid_manager.h>
 #include <game/uo_files/map_list.h>
 #include <game/uo_files/uo_file_manager.h>
 
@@ -26,6 +27,7 @@ Server server;
 MapList maplist;
 UOFileManager uofilemgr;
 AccountsManager torusacc;
+UidManager uidmanager;
 
 
 bool Torus::init()

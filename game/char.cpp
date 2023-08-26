@@ -20,6 +20,7 @@
 #include <game/client.h>
 #include <game/item.h>
 #include <game/server.h>
+#include <game/uid_manager.h>
 
 Char::Char() : Artifact(UidMask::UID_CHAR) {
     ADDTOCALLSTACK();

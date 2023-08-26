@@ -158,7 +158,7 @@ namespace In
     public:
         virtual const uword_t length() override;
         virtual void process(Socket* s) override;
-        Packet_0xbf() : PacketIn(true) {};
+        Packet_0xbf() : PacketIn(true), _length(0) {};
     };
 
     // New Client Version
