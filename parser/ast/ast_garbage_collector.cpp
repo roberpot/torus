@@ -31,7 +31,7 @@ namespace ast {
     }
 
     void GarbageCollector::cleanup() {
-        for(qword_t i = _nodes.size(); i >= 0; --i) {
+        for(qword_t i = _nodes.size() - 1; i >= 0; --i) {
             if (false == _nodes[i].collected) {
                 delete _nodes[i].node;
             }

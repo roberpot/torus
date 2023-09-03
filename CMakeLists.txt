@@ -8,6 +8,14 @@ set(CMAKE_C_STANDARD 11)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake/")
 
+
+# Setting the build type to Debug by default (can be modified in CMake Settings),
+# this is required for Conan to work properly in the first generation without
+# additional arguments.
+set(CMAKE_BUILD_TYPE "DEBUG" CACHE
+  STRING "Choose the type of build." FORCE)
+set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "DEBUG" "RELEASE" "RELWITHDEBINFO")
+
 # compiler flags
 ## Windows flags
 if(MSVC_VERSION)
@@ -29,6 +37,15 @@ set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS
 
 add_definitions(-DSOURCE_PATH="${CMAKE_SOURCE_DIR}")
 
+include("CMakeSources.cmake") # Reading CMakeSources with all of the ${SOURCE_FILES}.
+include("${CMAKE_MODULE_PATH}/conan.cmake")
+
+conan_cmake_autodetect(settings)
+
+conan_cmake_install(PATH_OR_REFERENCE "${CMAKE_MODULE_PATH}/conanfile.txt"
+                BUILD missing
+                CONFIGURATION_TYPES "RELEASE;DEBUG;RELWITHDEBINFO")
+
 find_package(FLEX REQUIRED)
 find_package(BISON REQUIRED)
 
@@ -36,7 +53,6 @@ BISON_TARGET(tscp_parser parser/tscp.y ${CMAKE_CURRENT_SOURCE_DIR}/parser/tscp_p
 FLEX_TARGET(tscp_scanner parser/tscp.l ${CMAKE_CURRENT_SOURCE_DIR}/parser/tscp_scanner.cpp COMPILE_FLAGS "--header-file=parser/tscp_scanner.h --prefix=tscp")
 ADD_FLEX_BISON_DEPENDENCY(tscp_scanner tscp_parser)
 
-include("CMakeSources.cmake") # Reading CMakeSources with all of the ${SOURCE_FILES}.
 
 include_directories(${CMAKE_SOURCE_DIR})
 
@@ -50,10 +66,17 @@ add_executable(torus_server
         ${FLEX_tscp_scanner_OUTPUTS}
         "CMakeSources.cmake")
 
+
+set(CONAN_LIBRARIES
+    #CONAN_PKG::lib
+    )
+
 # additional libs for windows
 if(WIN32)
-    target_link_libraries(torus_server wsock32 ws2_32 kernel32) #ws2_32.lib for windows
+    set(OS_LIBRARIES wsock32 ws2_32 kernel32)
 elseif(UNIX)
-    target_link_libraries(torus_server pthread dl)
+    set(OS_LIBRARIES pthread dl)
 endif()
+
+target_link_libraries(torus_server ${OS_LIBRARIES} ${CONAN_LIBRARIES})
 
