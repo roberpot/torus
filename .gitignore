@@ -4,3 +4,11 @@
 /parser/tscp_scanner*
 /include/odb/build
 /include/odb/x64
+/build
+/cmake
+/CMakeFiles
+/.vs
+/CMakeSettings.json
+/Makefile
+/out
+/cmake_install.cmake

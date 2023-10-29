@@ -14,7 +14,7 @@ set(CRYPT_FILES
 SOURCE_GROUP(crypt FILES ${CRYPT_FILES})
 
 set(DB_FILES
-        db/sqlite3.c db/sqlite3.h)
+        )
 SOURCE_GROUP(db FILES ${DB_FILES})
 
 set(DEBUG_FILES
