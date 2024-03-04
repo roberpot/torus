@@ -5,10 +5,11 @@
 /include/odb/build
 /include/odb/x64
 /build
-/cmake
 /CMakeFiles
 /.vs
+/.vscode
 /CMakeSettings.json
 /Makefile
 /out
 /cmake_install.cmake
+/.cache
